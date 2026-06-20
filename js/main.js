@@ -32,31 +32,27 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 // ===================================
 
 const burger = document.getElementById('nav-burger');
-const mobileOverlay = document.getElementById('nav-mobile-overlay');
+const navLinks = document.querySelector('.nav-links');
 
-if (burger && mobileOverlay) {
+if (burger && navLinks) {
   function closeMobileMenu() {
     burger.classList.remove('open');
-    mobileOverlay.classList.remove('open');
-    document.body.style.overflow = '';
+    navLinks.classList.remove('open');
     burger.setAttribute('aria-expanded', 'false');
-    mobileOverlay.setAttribute('aria-hidden', 'true');
   }
 
   burger.addEventListener('click', () => {
     const isOpen = burger.classList.toggle('open');
-    mobileOverlay.classList.toggle('open', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    navLinks.classList.toggle('open', isOpen);
     burger.setAttribute('aria-expanded', String(isOpen));
-    mobileOverlay.setAttribute('aria-hidden', String(!isOpen));
   });
 
-  mobileOverlay.querySelectorAll('a').forEach(link => {
+  navLinks.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', closeMobileMenu);
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && burger.classList.contains('open')) closeMobileMenu();
+    if (e.key === 'Escape') closeMobileMenu();
   });
 }
 
