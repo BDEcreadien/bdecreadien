@@ -5,8 +5,11 @@ backend:
   auth_type: pkce
   app_id: Ov23liGqo58AP0kJO93W
 
+site_url: https://bdecreadien.github.io/bdecreadien
+display_url: https://bdecreadien.github.io/bdecreadien
+
 media_folder: assets/uploads
-public_folder: assets/uploads
+public_folder: /bdecreadien/assets/uploads
 
 locale: fr
 
