@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>Annonces — BDE CREAD Lyon</title>
+  <meta name="description" content="Petites annonces entre étudiants CREAD Lyon : matériel de dessin, places de concerts, sous-locations d'appartements et plus.">
+  <meta name="author" content="BDE CREAD Lyon">
+  <link rel="canonical" href="https://bdecreadien.fr/annonces.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bdecreadien.fr/annonces.html">
+  <meta property="og:title" content="Annonces étudiantes — BDE CREAD Lyon">
+  <meta property="og:description" content="Matériel, places, logement : les petites annonces des étudiants CREAD Lyon.">
+  <meta property="og:image" content="https://bdecreadien.fr/assets/og-image.jpg">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="BDE CREAD Lyon">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Annonces — BDE CREAD Lyon">
+  <meta name="twitter:description" content="Matériel, places, logement : les petites annonces des étudiants CREAD Lyon.">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- MENU MOBILE OVERLAY -->
+  <div class="nav-mobile-overlay" id="nav-mobile-overlay" aria-hidden="true">
+    <nav class="nav-mobile-links" aria-label="Navigation mobile">
+      <a href="index.html">Accueil</a>
+      <a href="agenda.html">Agenda</a>
+      <a href="communication.html">Communication</a>
+      <a href="annonces.html" aria-current="page">Annonces</a>
+    </nav>
+    <p class="nav-mobile-footer">BDE CREAD Lyon · 2025–2026</p>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/favicon.svg" alt="" aria-hidden="true" width="40" height="40" style="border-radius:50%;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html" aria-current="page">Annonces</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-mobile-overlay">
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+    </button>
+  </nav>
+
+  <!-- HERO PAGE -->
+  <div class="annonces-hero">
+    <div class="page-title-block">
+      <p class="eyebrow" style="color:var(--gris-texte);">Entre étudiants CREAD</p>
+      <h1 style="color:var(--noir);">ANNONCES</h1>
+    </div>
+  </div>
+
+  <main id="main-content">
+
+    <!-- ANNONCES SECTION -->
+    <section class="annonces-section" aria-labelledby="annonces-titre">
+      <div class="annonces-header reveal">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+          <div>
+            <p class="section-label">Petites annonces</p>
+            <h2 class="section-title" id="annonces-titre">Ce que les<br><span class="gradient-text">créadiens vendent</span></h2>
+            <p class="section-intro" style="margin-top:1rem;">
+              Matériel, places, logement… Les annonces sont gérées par le BDE.
+              Pour publier la tienne, envoie un mail à
+              <a href="mailto:bdecreadien@gmail.com" style="color:var(--violet); font-weight:500;">bdecreadien@gmail.com</a>.
+            </p>
+          </div>
+          <a
+            href="mailto:bdecreadien@gmail.com?subject=Nouvelle%20annonce%20BDE%20CREAD&body=Cat%C3%A9gorie%20(Mat%C3%A9riel%20%2F%20Place%20%2F%20Logement%20%2F%20Autre)%20%3A%0ATitre%20%3A%0ADescription%20%3A%0APrix%20%3A%0AContact%20%3A"
+            class="btn btn-outline"
+            style="width:auto; white-space:nowrap; flex-shrink:0;"
+            aria-label="Déposer une annonce par email">
+            <span aria-hidden="true">✉</span> Déposer une annonce
+          </a>
+        </div>
+
+        <div class="annonces-filters" role="group" aria-label="Filtrer les annonces par catégorie">
+          <button class="filter-btn active" data-filter="tous" aria-pressed="true">Tout voir</button>
+          <button class="filter-btn" data-filter="materiel" aria-pressed="false">Matériel</button>
+          <button class="filter-btn" data-filter="place" aria-pressed="false">Places</button>
+          <button class="filter-btn" data-filter="logement" aria-pressed="false">Logement</button>
+          <button class="filter-btn" data-filter="autre" aria-pressed="false">Autre</button>
+        </div>
+      </div>
+
+      <ul class="annonces-grid" id="annonces-grid" role="list" aria-live="polite" aria-label="Liste des annonces"></ul>
+
+      <p class="annonces-empty" id="annonces-empty" role="status">
+        <span class="empty-icon" aria-hidden="true">📭</span>
+        Aucune annonce dans cette catégorie pour le moment.
+      </p>
+    </section>
+
+    <!-- BANNIÈRE DÉPOSER UNE ANNONCE -->
+    <section class="annonces-cta-banner" aria-labelledby="cta-titre">
+      <p class="section-label" style="color:rgba(255,255,255,0.65);">Tu vends quelque chose ?</p>
+      <h2 id="cta-titre" style="font-family:'Bebas Neue',sans-serif; font-size:clamp(48px,7vw,80px); color:white; letter-spacing:3px; line-height:1; margin-bottom:1.5rem;">
+        Publie ton annonce<br>gratuitement
+      </h2>
+      <p style="font-size:16px; font-weight:300; color:rgba(255,255,255,0.75); max-width:480px; margin:0 auto 2.5rem; line-height:1.7;">
+        Envoie-nous un mail avec les infos de ton annonce, on s'occupe de la publier ici sous 24h.
+      </p>
+      <a
+        href="mailto:bdecreadien@gmail.com?subject=Nouvelle%20annonce%20BDE%20CREAD&body=Cat%C3%A9gorie%20(Mat%C3%A9riel%20%2F%20Place%20%2F%20Logement%20%2F%20Autre)%20%3A%0ATitre%20%3A%0ADescription%20%3A%0APrix%20%3A%0AContact%20%3A"
+        class="btn"
+        style="background:white; color:var(--violet); box-shadow:0 8px 30px rgba(0,0,0,0.2); width:auto; display:inline-flex;"
+        aria-label="Envoyer une annonce par email au BDE CREAD">
+        <span aria-hidden="true">✉</span> Envoyer au BDE
+      </a>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+          <img src="assets/favicon.svg" alt="" aria-hidden="true" width="40" height="40" style="border-radius:50%;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+        </a>
+        <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon.</p>
+      </div>
+      <nav class="footer-col" aria-label="Navigation footer">
+        <h4>Navigation</h4>
+        <ul role="list">
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="communication.html">Communication</a></li>
+          <li><a href="annonces.html">Annonces</a></li>
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul role="list">
+          <li><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer">@bdecreadien</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 <span>BDE CREAD Lyon</span></p>
+      <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="footer-insta" aria-label="Suivre le BDE CREAD sur Instagram">@bdecreadien</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda — BDE CREAD Lyon</title>
+  <meta name="description" content="Calendrier des événements du BDE CREAD Lyon. Soirées, sorties, ateliers et dates importantes de l'école. Synchronise l'agenda sur ton téléphone.">
+  <meta name="author" content="BDE CREAD Lyon">
+  <link rel="canonical" href="https://bdecreadien.fr/agenda.html">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bdecreadien.fr/agenda.html">
+  <meta property="og:title" content="Agenda — BDE CREAD Lyon">
+  <meta property="og:description" content="Tous les événements du BDE CREAD Lyon. Synchronise le calendrier sur ton téléphone en 2 minutes.">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="BDE CREAD Lyon">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Agenda — BDE CREAD Lyon">
+  <meta name="twitter:description" content="Tous les événements du BDE CREAD Lyon.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- MENU MOBILE OVERLAY -->
+  <div class="nav-mobile-overlay" id="nav-mobile-overlay" aria-hidden="true">
+    <nav class="nav-mobile-links" aria-label="Navigation mobile">
+      <a href="index.html">Accueil</a>
+      <a href="agenda.html" aria-current="page">Agenda</a>
+      <a href="communication.html">Communication</a>
+      <a href="annonces.html">Annonces</a>
+    </nav>
+    <p class="nav-mobile-footer">BDE CREAD Lyon · 2025–2026</p>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/favicon.svg" alt="" aria-hidden="true" width="40" height="40" style="border-radius:50%;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html" aria-current="page">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html">Annonces</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-mobile-overlay">
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+    </button>
+  </nav>
+
+  <!-- HERO PAGE -->
+  <div class="agenda-hero">
+    <div class="page-title-block">
+      <p class="eyebrow">BDE CREAD Lyon · 2025–2026</p>
+      <h1>AGENDA</h1>
+    </div>
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
+  <main id="main-content">
+    <div class="agenda-layout">
+
+      <!-- CALENDRIER GOOGLE -->
+      <section aria-labelledby="calendrier-titre">
+        <p class="section-label reveal" id="calendrier-titre">Calendrier des événements</p>
+        <div class="calendar-container reveal reveal-delay-1">
+          <iframe
+            src="https://calendar.google.com/calendar/embed?src=4ecec32ec639d124f22369adfff74b9d7d91ef12bb10ef4751686bb166a9d49b%40group.calendar.google.com&ctz=Europe%2FParis&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&hl=fr&bgcolor=%23ffffff&color=%23463A90"
+            title="Calendrier des événements BDE CREAD Lyon"
+            aria-label="Calendrier Google des événements BDE CREAD"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+        </div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="agenda-sidebar" aria-label="Informations agenda">
+
+        <!-- INSCRIPTIONS & BILLETS -->
+        <div class="sidebar-card reveal">
+          <p class="section-label" style="margin-bottom:1rem;">Inscriptions & billets</p>
+          <div id="evenements-list" style="display:flex; flex-direction:column; gap:1rem;"></div>
+        </div>
+
+        <!-- EXPORT -->
+        <div class="sidebar-card reveal reveal-delay-2">
+          <h3>Ajouter à mon calendrier</h3>
+          <p style="font-size:14px; font-weight:300; color:var(--gris-texte); line-height:1.6; margin-bottom:1.5rem;">
+            Synchronise les événements BDE directement dans ton application calendrier. Toutes les mises à jour apparaîtront automatiquement.
+          </p>
+          <button class="btn btn-primary" onclick="openModal('modal-export')" aria-haspopup="dialog">
+            <span aria-hidden="true">📲</span> Comment synchroniser ?
+          </button>
+        </div>
+
+        <!-- PROCHAINS ÉVÉNEMENTS -->
+        <div class="sidebar-card reveal reveal-delay-3">
+          <h3>Prochains événements</h3>
+          <div class="actu-list" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
+              <time class="actu-item-date" datetime="2026-06-26" style="min-width:50px;">
+                <span class="day">26</span>
+                <span class="month">Juin</span>
+              </time>
+              <div class="actu-item-content">
+                <h4 style="font-size:14px;">Remise des projets S2</h4>
+                <p>Amphithéâtre CREAD</p>
+              </div>
+            </div>
+            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
+              <time class="actu-item-date" datetime="2026-07-04" style="min-width:50px;">
+                <span class="day">04</span>
+                <span class="month">Juil</span>
+              </time>
+              <div class="actu-item-content">
+                <h4 style="font-size:14px;">Afterwork BDE</h4>
+                <p>Ninkasi Gerland</p>
+              </div>
+            </div>
+            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
+              <time class="actu-item-date" datetime="2026-09-10" style="min-width:50px;">
+                <span class="day">10</span>
+                <span class="month">Sep</span>
+              </time>
+              <div class="actu-item-content">
+                <h4 style="font-size:14px;">Rentrée 2026</h4>
+                <p>Accueil des L1</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- SECTION ARCHIVES -->
+    <section class="section-archives" aria-labelledby="archives-titre">
+      <div class="section-header reveal">
+        <p class="section-label">Rétrospective</p>
+        <h2 class="section-title" id="archives-titre">Événements<br><span class="gradient-text">passés</span></h2>
+        <p class="section-intro">Retour sur les moments forts organisés par le BDE CREAD cette année.</p>
+      </div>
+      <div class="archives-grid">
+
+        <div class="archive-card reveal reveal-delay-1">
+          <div class="archive-card-date">
+            <span class="day">15</span>
+            <span class="month">Mar</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Soirée Intégration L1</h3>
+            <p>Ninkasi Gerland · ~120 participants</p>
+            <span class="archive-tag">Soirée</span>
+          </div>
+        </div>
+
+        <div class="archive-card reveal reveal-delay-2">
+          <div class="archive-card-date">
+            <span class="day">08</span>
+            <span class="month">Fév</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Visite Musée des Arts Déco</h3>
+            <p>Musée des Arts Décoratifs, Lyon · ~40 étudiants</p>
+            <span class="archive-tag">Culturel</span>
+          </div>
+        </div>
+
+        <div class="archive-card reveal reveal-delay-3">
+          <div class="archive-card-date">
+            <span class="day">22</span>
+            <span class="month">Jan</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Afterwork Semestre 1</h3>
+            <p>Bar du coin · Fin de semestre</p>
+            <span class="archive-tag">Afterwork</span>
+          </div>
+        </div>
+
+        <div class="archive-card reveal reveal-delay-4">
+          <div class="archive-card-date">
+            <span class="day">10</span>
+            <span class="month">Jan</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Vœux BDE 2026</h3>
+            <p>CREAD Lyon · Galette des rois</p>
+            <span class="archive-tag">BDE</span>
+          </div>
+        </div>
+
+        <div class="archive-card reveal">
+          <div class="archive-card-date">
+            <span class="day">12</span>
+            <span class="month">Déc</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Marché de Noël CREAD</h3>
+            <p>Hall CREAD Lyon</p>
+            <span class="archive-tag">BDE</span>
+          </div>
+        </div>
+
+        <div class="archive-card reveal reveal-delay-1">
+          <div class="archive-card-date">
+            <span class="day">05</span>
+            <span class="month">Nov</span>
+          </div>
+          <div class="archive-card-content">
+            <h3>Sortie Biennale de Lyon</h3>
+            <p>Biennale d'art contemporain · ~30 étudiants</p>
+            <span class="archive-tag">Culturel</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL EXPORT CALENDRIER -->
+  <div class="modal-overlay" id="modal-export" role="dialog" aria-modal="true" aria-labelledby="modal-export-titre">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('modal-export')" aria-label="Fermer la fenêtre">✕</button>
+      <h2 id="modal-export-titre">Synchroniser l'agenda</h2>
+      <p class="modal-subtitle">Choisis ton application et suis les étapes — 2 minutes maximum.</p>
+
+      <div class="modal-tabs" data-group="export" role="tablist" aria-label="Choisir une application calendrier">
+        <button class="modal-tab active" role="tab" aria-selected="true" data-group="export" data-target="tab-google" aria-controls="tab-google">Google Cal</button>
+        <button class="modal-tab" role="tab" aria-selected="false" data-group="export" data-target="tab-apple" aria-controls="tab-apple">iPhone / Mac</button>
+        <button class="modal-tab" role="tab" aria-selected="false" data-group="export" data-target="tab-outlook" aria-controls="tab-outlook">Outlook</button>
+      </div>
+
+      <div class="modal-tab-content active" id="tab-google" data-group="export" role="tabpanel">
+        <ol class="export-steps">
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">1</div>
+            <p class="export-step-text">Ouvre <strong>Google Calendar</strong> sur ton navigateur</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">2</div>
+            <p class="export-step-text">Dans le panneau gauche, clique sur <strong>« + »</strong> à côté de "Autres agendas"</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">3</div>
+            <p class="export-step-text">Sélectionne <strong>« À partir d'une URL »</strong></p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">4</div>
+            <p class="export-step-text">Colle le lien ci-dessous et clique sur <strong>« Ajouter l'agenda »</strong></p>
+          </li>
+        </ol>
+        <p class="ical-url" id="ical-url-google" aria-label="Lien iCal à copier">https://calendar.google.com/calendar/ical/4ecec32ec639d124f22369adfff74b9d7d91ef12bb10ef4751686bb166a9d49b%40group.calendar.google.com/public/basic.ics</p>
+        <button class="btn btn-primary" id="copy-ical-btn" onclick="copyIcal()">Copier le lien</button>
+      </div>
+
+      <div class="modal-tab-content" id="tab-apple" data-group="export" role="tabpanel">
+        <ol class="export-steps">
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">1</div>
+            <p class="export-step-text"><strong>Sur iPhone</strong> : Va dans Réglages → Calendrier → Comptes → Ajouter un compte → Autre → Abonnement à un calendrier</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">2</div>
+            <p class="export-step-text"><strong>Sur Mac</strong> : Ouvre Calendrier → Fichier → Nouvel abonnement à un calendrier</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">3</div>
+            <p class="export-step-text">Colle l'URL ci-dessous et confirme</p>
+          </li>
+        </ol>
+        <p class="ical-url" aria-label="Lien iCal à copier">https://calendar.google.com/calendar/ical/4ecec32ec639d124f22369adfff74b9d7d91ef12bb10ef4751686bb166a9d49b%40group.calendar.google.com/public/basic.ics</p>
+        <button class="btn btn-primary" onclick="copyIcal()">Copier le lien</button>
+      </div>
+
+      <div class="modal-tab-content" id="tab-outlook" data-group="export" role="tabpanel">
+        <ol class="export-steps">
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">1</div>
+            <p class="export-step-text">Ouvre <strong>Outlook</strong> (web ou app) → Calendrier</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">2</div>
+            <p class="export-step-text">Clique sur <strong>« Ajouter un calendrier »</strong> → S'abonner depuis le web</p>
+          </li>
+          <li class="export-step">
+            <div class="export-step-num" aria-hidden="true">3</div>
+            <p class="export-step-text">Colle l'URL et clique sur <strong>« Importer »</strong></p>
+          </li>
+        </ol>
+        <p class="ical-url" aria-label="Lien iCal à copier">https://calendar.google.com/calendar/ical/4ecec32ec639d124f22369adfff74b9d7d91ef12bb10ef4751686bb166a9d49b%40group.calendar.google.com/public/basic.ics</p>
+        <button class="btn btn-primary" onclick="copyIcal()">Copier le lien</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+          <img src="assets/favicon.svg" alt="" aria-hidden="true" width="40" height="40" style="border-radius:50%;">
+          <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
+        </a>
+        <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon. Architecture intérieure & design.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="communication.html">Communication</a></li>
+          <li><a href="annonces.html">Annonces</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer">@bdecreadien</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 <span>BDE CREAD Lyon</span> — Tous droits réservés</p>
+      <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="footer-insta" aria-label="Instagram BDE CREAD">@bdecreadien</a>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
