@@ -1,0 +1,79 @@
+backend:
+  name: github
+  repo: BDEcreadien/bdecreadien
+  branch: main
+  auth_type: pkce
+  app_id: Ov23liGqo58AP0kJO93W
+
+media_folder: assets/uploads
+public_folder: assets/uploads
+
+locale: fr
+
+collections:
+
+  - name: "annonces"
+    label: "Annonces"
+    label_singular: "Annonce"
+    folder: "_data/annonces"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{titre}} — {{categorie}}"
+    fields:
+      - { label: "Titre", name: "titre", widget: "string" }
+      - label: "Catégorie"
+        name: "categorie"
+        widget: "select"
+        options:
+          - { label: "Matériel", value: "materiel" }
+          - { label: "Places", value: "place" }
+          - { label: "Logement", value: "logement" }
+          - { label: "Autre", value: "autre" }
+      - { label: "Prix", name: "prix", widget: "string", hint: "Ex: 80 €, Gratuit, À débattre" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Auteur (prénom + initiale)", name: "auteur", widget: "string", hint: "Ex: Léa M." }
+      - { label: "Email de contact", name: "contact", widget: "string" }
+      - { label: "Date de publication", name: "date", widget: "datetime", format: "DD MMMM YYYY", date_format: "DD MMMM YYYY", time_format: false }
+
+  - name: "evenements"
+    label: "Événements"
+    label_singular: "Événement"
+    folder: "_data/evenements"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{titre}} — {{dateAffichage}}"
+    fields:
+      - { label: "Titre", name: "titre", widget: "string" }
+      - { label: "Date (AAAA-MM-JJ)", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Date affichée", name: "dateAffichage", widget: "string", hint: "Ex: Vendredi 4 juillet 2026" }
+      - { label: "Lieu", name: "lieu", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Prix", name: "prix", widget: "string", hint: "Ex: 10€, Gratuit" }
+      - { label: "Lien billetterie", name: "lien", widget: "string", required: false, hint: "URL Shotgun ou HelloAsso" }
+      - label: "Type de lien"
+        name: "typeLien"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Shotgun", value: "shotgun" }
+          - { label: "HelloAsso", value: "helloasso" }
+
+  - name: "equipe"
+    label: "Équipe"
+    label_singular: "Membre"
+    folder: "_data/equipe"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{nom}} — {{role}}"
+    fields:
+      - { label: "Nom complet", name: "nom", widget: "string" }
+      - { label: "Rôle", name: "role", widget: "string", hint: "Ex: Président, Trésorier…" }
+      - label: "Pôle"
+        name: "pole"
+        widget: "select"
+        options:
+          - { label: "Bureau exécutif", value: "bureau" }
+          - { label: "Pôle Événements", value: "evenements" }
+          - { label: "Pôle Communication", value: "communication" }
+      - { label: "Photo", name: "photo", widget: "image", required: false }
+      - { label: "Initiales (fallback)", name: "initiales", widget: "string", hint: "Ex: TM" }
