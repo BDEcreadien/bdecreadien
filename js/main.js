@@ -28,6 +28,49 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 // ===================================
+// ACCUEIL — Événements dynamiques
+// ===================================
+
+function renderActu(data) {
+  const featured = document.getElementById('actu-featured');
+  const list = document.getElementById('actu-list');
+  if (!featured || !list) return;
+
+  if (!data.length) {
+    featured.innerHTML = '<span class="actu-featured-tag">Événement phare</span><h3 class="actu-featured-title">Aucun événement</h3>';
+    return;
+  }
+
+  const first = data[0];
+  const d0 = new Date(first.date);
+  featured.innerHTML = `
+    <span class="actu-featured-tag">Événement phare</span>
+    <h3 class="actu-featured-title">${first.titre}</h3>
+    <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
+  `;
+
+  const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
+  list.innerHTML = data.slice(1, 4).map((ev, i) => {
+    const d = new Date(ev.date);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = d.toLocaleString('fr-FR', { month: 'short' });
+    return `<div class="actu-item reveal ${delays[i] || ''}">
+      <div class="actu-item-date"><span class="day">${day}</span><span class="month">${month}</span></div>
+      <div class="actu-item-content"><h3>${ev.titre}</h3><p>${ev.lieu}${ev.horaire ? ' · ' + ev.horaire : ''}</p></div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+if (document.getElementById('actu-featured')) {
+  fetch('/_data/evenements.json')
+    .then(r => r.json())
+    .then(data => renderActu(Array.isArray(data) ? data : (data.evenements || [])))
+    .catch(() => {});
+}
+
+// ===================================
 // VIDÉOS — Chargement & Rendu
 // ===================================
 
