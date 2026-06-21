@@ -9,7 +9,8 @@
     "description": "NINKASI CORDELIERS, cette soirée se déroula le Jeudi 17 Septembre 2026 de 23h30 à 04h00",
     "prix": "10€",
     "lien": "",
-    "typeLien": ""
+    "typeLien": "",
+    "phare": false
   },
   {
     "titre": "Soirée rentrée CREAD - Little pub",
@@ -21,7 +22,8 @@
     "description": "Les prix de bar de 23h à 2h seront les suivants :\n> Verre d’alcool fort à 3 €\n> Shooter : 1€\n> Pinte : 2 €\n> Soft : 1 €\nLes prix de bar de 2h à 3h30 seront les suivants :\n> Verre d’alcool fort à 4 €\n> Shooter : 2 €\n> Pinte : 3 €\n> Soft : 2 €\nFin du service au bar à 3h30 du matin",
     "prix": "15€",
     "lien": "",
-    "typeLien": ""
+    "typeLien": "",
+    "phare": true
   },
   {
     "titre": "Soirée Halloween - Six",
@@ -33,6 +35,7 @@
     "description": "Soirée Halloween",
     "prix": "10€",
     "lien": "",
-    "typeLien": ""
+    "typeLien": "",
+    "phare": false
   }
 ]
