@@ -940,16 +940,21 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=6&autocomplete=1`);
+    // Photon (Komoot/OSM) : recherche de lieux et établissements, centré sur Lyon
+    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=fr&lat=45.75&lon=4.85`);
     const json = await res.json();
     const results = json.features || [];
     if (!results.length) { list.style.display = 'none'; return; }
     list.innerHTML = results.map((r, i) => {
       const p = r.properties;
-      const nom = p.name || p.label;
-      const detail = [p.postcode, p.city].filter(Boolean).join(' ');
+      const nom = p.name || '';
+      if (!nom) return '';
+      const rue = [p.housenumber, p.street].filter(Boolean).join(' ');
+      const ville = [p.postcode, p.city].filter(Boolean).join(' ');
+      const detail = [rue, ville].filter(Boolean).join(', ');
       return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${nom}</strong>${detail ? `<br><span style="color:var(--gris-texte);font-size:12px;">${detail}</span>` : ''}</div>`;
-    }).join('');
+    }).filter(Boolean).join('');
+    if (!list.innerHTML) { list.style.display = 'none'; return; }
     list._results = results;
     list.style.display = 'block';
   } catch(e) { list.style.display = 'none'; }
@@ -957,8 +962,10 @@ async function searchLieu(q) {
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
   const p = list._results[i].properties;
-  const nom = p.name || p.label;
-  const adresse = [p.name, p.postcode, p.city].filter(Boolean).join(', ');
+  const nom = p.name || '';
+  const rue = [p.housenumber, p.street].filter(Boolean).join(' ');
+  const ville = [p.postcode, p.city].filter(Boolean).join(' ');
+  const adresse = [rue, ville].filter(Boolean).join(', ');
   document.getElementById('ev-lieu').value = nom;
   document.getElementById('ev-adresse').value = adresse;
   list.style.display = 'none';
