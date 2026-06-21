@@ -310,6 +310,46 @@
     .autocomplete-item:hover { background: rgba(70,58,144,0.06); }
     .autocomplete-item strong { color: var(--violet); font-size: 14px; }
 
+    /* ---- GALERIE STOCKAGE ---- */
+    .storage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .storage-item {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+    }
+    .storage-item img {
+      width: 100%; height: 120px; object-fit: cover; display: block;
+    }
+    .storage-item-info {
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--gris-texte);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .storage-item-del {
+      position: absolute;
+      top: 6px; right: 6px;
+      background: rgba(0,0,0,0.55);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 26px; height: 26px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .storage-item-del:hover { background: #c0392b; }
+
     @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
       #screen-app { padding: 1rem; }
@@ -324,7 +364,6 @@
     <img src="assets/Logo.png" alt="BDE CREAD">
     <span>ADMIN — BDE CREAD</span>
   </div>
-  <button id="btn-test" onclick="testConnexion()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.6); padding:6px 14px; border-radius:8px; cursor:pointer; font-size:13px; margin-right:0.5rem;">Tester</button>
   <button id="btn-logout" onclick="logout()">Se déconnecter</button>
 </header>
 
@@ -344,6 +383,7 @@
     <button class="tab active" onclick="switchTab('evenements')">Événements</button>
     <button class="tab" onclick="switchTab('annonces')">Annonces</button>
     <button class="tab" onclick="switchTab('videos')">Médias</button>
+    <button class="tab" onclick="switchTab('stockage')">Stockage</button>
   </div>
 
   <!-- PANEL ÉVÉNEMENTS -->
@@ -521,6 +561,13 @@
   </div>
 </div>
 
+  <!-- PANEL STOCKAGE -->
+  <div class="panel" id="panel-stockage">
+    <div class="storage-grid" id="storage-grid"></div>
+    <div id="storage-empty" class="empty-state" style="display:none;">Aucune photo dans le stockage.</div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -626,10 +673,51 @@ function renderList(type) {
 
 // ---- TABS ----
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.tab:nth-child(${['evenements','annonces','videos'].indexOf(name)+1})`).classList.add('active');
+  const idx = ['evenements','annonces','videos','stockage'].indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
   document.getElementById(`panel-${name}`).classList.add('active');
+  if (name === 'stockage') loadStorage();
+}
+
+// ---- STOCKAGE ----
+async function loadStorage() {
+  const grid = document.getElementById('storage-grid');
+  const empty = document.getElementById('storage-empty');
+  grid.innerHTML = '<p style="color:var(--gris-texte);font-size:13px;">Chargement…</p>';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/assets/uploads?t=${Date.now()}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (!res.ok) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    const files = await res.json();
+    const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+    if (!images.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = images.map(f => `
+      <div class="storage-item">
+        <img src="${f.download_url}" alt="${f.name}" loading="lazy">
+        <div class="storage-item-info">${f.name}</div>
+        <button class="storage-item-del" onclick="deleteStorageFile('${f.path}','${f.sha}')" title="Supprimer">✕</button>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML = `<p style="color:#c0392b;font-size:13px;">Erreur : ${e.message}</p>`;
+  }
+}
+
+async function deleteStorageFile(path, sha) {
+  if (!confirm('Supprimer cette photo définitivement ?')) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+      method: 'DELETE',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Suppression : ${path}`, sha, branch: BRANCH })
+    });
+    if (!res.ok) { const b = await res.json(); throw new Error(b.message); }
+    showToast('Photo supprimée !', 'success');
+    loadStorage();
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
 // ---- FORMULAIRES ----
