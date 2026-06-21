@@ -339,8 +339,36 @@ function buildEditor(type) {
         let title = '', sub = '';
         if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
-        if (type === 'videos') { title = (item.type === 'photo' ? '🖼 ' : '🎬 ') + (item.titre || item.url); sub = item.url; }
         if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
+
+        // Médias : carte avec prévisualisation
+        if (type === 'videos') {
+          const thumb = item.type === 'photo'
+            ? `<img src="${item.url}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
+            : `<video src="${item.url}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" preload="metadata" muted></video>`;
+          return `<div class="item-card">
+            ${thumb}
+            <div class="item-card-info"><div class="item-card-title">${item.titre || '(sans titre)'}</div><div class="item-card-sub">${item.type === 'photo' ? '🖼 Photo' : '🎬 Vidéo'}</div></div>
+            <div class="item-card-actions">
+              <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
+              <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
+            </div></div>`;
+        }
+
+        // Équipe : carte avec photo ronde
+        if (type === 'equipe') {
+          const avatar = item.photo
+            ? `<img src="${item.photo}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+            : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0;">${item.initiales || '?'}</div>`;
+          return `<div class="item-card">
+            ${avatar}
+            <div class="item-card-info"><div class="item-card-title">${item.nom}</div><div class="item-card-sub">${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}</div></div>
+            <div class="item-card-actions">
+              <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
+              <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
+            </div></div>`;
+        }
+
         return `<div class="item-card">
           <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
           <div class="item-card-actions">
