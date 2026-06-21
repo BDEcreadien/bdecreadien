@@ -941,7 +941,7 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=6&countrycodes=fr&accept-language=fr`);
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=8&countrycodes=fr&accept-language=fr&viewbox=4.6,45.6,5.1,46.0&bounded=0`);
     const results = await res.json();
     if (!results.length) { list.innerHTML = '<div class="autocomplete-item" style="color:var(--gris-texte);cursor:default;">Aucun résultat</div>'; list.style.display = 'block'; return; }
     list.innerHTML = results.map((r, i) => {
