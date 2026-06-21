@@ -448,13 +448,16 @@ function formEvenement() {
       </div>
     </div>
     <div class="form-row">
-      <label>Lieu *</label>
+      <label>Lieu * <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(nom affiché, ex: Ninkasi Cordeliers)</span></label>
       <div class="autocomplete-wrap">
-        <input type="text" id="ev-lieu" placeholder="Tape le nom du lieu…" autocomplete="off">
+        <input type="text" id="ev-lieu" placeholder="Ex: Ninkasi Cordeliers" autocomplete="off">
         <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
       </div>
     </div>
-    <div class="form-row"><label>Adresse complète</label><input type="text" id="ev-adresse" readonly style="background:#f5f5f7;color:var(--gris-texte);"></div>
+    <div class="form-row">
+      <label>Adresse <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel, remplie auto — modifiable)</span></label>
+      <input type="text" id="ev-adresse" placeholder="Ex: Rue du Président Carnot, 69002 Lyon">
+    </div>
     <div class="form-row"><label>Description *</label><textarea id="ev-description" placeholder="Décris l'événement…"></textarea></div>
     <div class="form-row">
       <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;">
@@ -937,12 +940,17 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=fr`, { headers: { 'Accept-Language': 'fr' } });
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=6&countrycodes=fr`, { headers: { 'Accept-Language': 'fr' } });
     const results = await res.json();
     if (!results.length) { list.style.display = 'none'; return; }
     list.innerHTML = results.map((r, i) => {
-      const nom = r.name || r.display_name.split(',')[0];
-      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${nom}</strong><br><span style="color:var(--gris-texte);font-size:12px;">${r.display_name}</span></div>`;
+      const nom = r.name || r.display_name.split(',')[0].trim();
+      const addr = r.address || {};
+      const rue = addr.road || addr.pedestrian || addr.footway || '';
+      const ville = addr.city || addr.town || addr.village || '';
+      const cp = addr.postcode || '';
+      const short = [rue, cp && ville ? `${cp} ${ville}` : ville].filter(Boolean).join(', ');
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${nom}</strong>${short ? `<br><span style="color:var(--gris-texte);font-size:12px;">${short}</span>` : ''}</div>`;
     }).join('');
     list._results = results;
     list.style.display = 'block';
@@ -952,9 +960,13 @@ function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
   const r = list._results[i];
   const nom = r.name || r.display_name.split(',')[0].trim();
-  const quartier = r.address?.quarter || r.address?.suburb || r.address?.neighbourhood || '';
-  document.getElementById('ev-lieu').value = quartier ? `${nom} ${quartier}` : nom;
-  document.getElementById('ev-adresse').value = r.display_name;
+  const addr = r.address || {};
+  const rue = addr.road || addr.pedestrian || addr.footway || '';
+  const ville = addr.city || addr.town || addr.village || '';
+  const cp = addr.postcode || '';
+  const short = [rue, cp && ville ? `${cp} ${ville}` : ville].filter(Boolean).join(', ');
+  document.getElementById('ev-lieu').value = nom;
+  document.getElementById('ev-adresse').value = short;
   list.style.display = 'none';
 }
 
