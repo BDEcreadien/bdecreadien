@@ -64,7 +64,7 @@ function renderVideos(data) {
 if (document.getElementById('videos-grid')) {
   fetch('/_data/videos.json')
     .then(r => r.json())
-    .then(data => renderVideos(data))
+    .then(data => renderVideos(Array.isArray(data) ? data : (data.videos || [])))
     .catch(() => {});
 }
 
@@ -191,7 +191,7 @@ function renderEvenements(data) {
 if (document.getElementById('evenements-list')) {
   fetch('/_data/evenements.json')
     .then(r => r.json())
-    .then(data => renderEvenements(data))
+    .then(data => renderEvenements(Array.isArray(data) ? data : (data.evenements || [])))
     .catch(() => renderEvenements([]));
 }
 
@@ -260,6 +260,6 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 if (document.getElementById('annonces-grid')) {
   fetch('/_data/annonces.json')
     .then(r => r.json())
-    .then(data => { annoncesData = data; renderAnnonces(); })
+    .then(data => { annoncesData = Array.isArray(data) ? data : (data.annonces || []); renderAnnonces(); })
     .catch(() => renderAnnonces());
 }
