@@ -1,8 +1,6 @@
 backend:
-  name: github
-  repo: BDEcreadien/bdecreadien
+  name: git-gateway
   branch: main
-  base_url: https://api.netlify.com
 
 site_url: https://darling-elf-ba42e2.netlify.app
 display_url: https://darling-elf-ba42e2.netlify.app
