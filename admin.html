@@ -941,15 +941,15 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const url = `https://api.foursquare.com/v3/autocomplete?query=${encodeURIComponent(q)}&ll=45.75,4.85&limit=6&types=place`;
-    const res = await fetch(url, { headers: { Authorization: FSQ_KEY, Accept: 'application/json' } });
-    const json = await res.json();
-    const results = (json.results || []).filter(r => r.type === 'place' && r.place);
-    if (!results.length) { list.style.display = 'none'; return; }
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=6&countrycodes=fr&accept-language=fr`);
+    const results = await res.json();
+    if (!results.length) { list.innerHTML = '<div class="autocomplete-item" style="color:var(--gris-texte);cursor:default;">Aucun résultat</div>'; list.style.display = 'block'; return; }
     list.innerHTML = results.map((r, i) => {
-      const p = r.place;
-      const adresse = p.location?.formatted_address || '';
-      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${p.name}</strong>${adresse ? `<br><span style="color:var(--gris-texte);font-size:12px;">${adresse}</span>` : ''}</div>`;
+      const a = r.address || {};
+      const rue = [a.house_number, a.road].filter(Boolean).join(' ');
+      const ville = [a.postcode, a.city || a.town || a.village].filter(Boolean).join(' ');
+      const short = [rue, ville].filter(Boolean).join(', ');
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${r.name}</strong>${short ? `<br><span style="color:var(--gris-texte);font-size:12px;">${short}</span>` : ''}</div>`;
     }).join('');
     list._results = results;
     list.style.display = 'block';
@@ -957,11 +957,12 @@ async function searchLieu(q) {
 }
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
-  const p = list._results[i].place;
-  const loc = p.location || {};
-  const adresse = [loc.address, loc.postcode, loc.locality].filter(Boolean).join(', ');
-  document.getElementById('ev-lieu').value = p.name;
-  document.getElementById('ev-adresse').value = adresse;
+  const r = list._results[i];
+  const a = r.address || {};
+  const rue = [a.house_number, a.road].filter(Boolean).join(' ');
+  const ville = [a.postcode, a.city || a.town || a.village].filter(Boolean).join(' ');
+  document.getElementById('ev-lieu').value = r.name;
+  document.getElementById('ev-adresse').value = [rue, ville].filter(Boolean).join(', ');
   list.style.display = 'none';
 }
 
