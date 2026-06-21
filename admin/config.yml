@@ -1,9 +1,11 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: BDEcreadien/bdecreadien
   branch: main
+  base_url: https://sveltia-cms-auth.bdecreadien.workers.dev
 
-site_url: https://darling-elf-ba42e2.netlify.app
-display_url: https://darling-elf-ba42e2.netlify.app
+site_url: https://bdecreadien.pages.dev
+display_url: https://bdecreadien.pages.dev
 
 media_folder: assets/uploads
 public_folder: /bdecreadien/assets/uploads
