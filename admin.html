@@ -271,16 +271,12 @@ function goBack() {
 function selectPage(page) {
   navStack = ['pages'];
   if (page === 'agenda') {
-    navStack.push('editor:evenements');
     openEditor('evenements', true, 'Agenda', 'Événements');
   } else if (page === 'annonces') {
-    navStack.push('editor:annonces');
     openEditor('annonces', true, 'Annonces', 'Annonces');
   } else if (page === 'accueil') {
-    navStack.push('editor:videos');
     openEditor('videos', true, 'Accueil', 'Médias (photos & vidéos)');
   } else if (page === 'communication') {
-    navStack.push('editor:equipe');
     openEditor('equipe', true, 'Communication', 'Équipe BDE');
   }
 }
