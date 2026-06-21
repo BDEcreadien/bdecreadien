@@ -7,353 +7,135 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --violet: #463A90;
-      --orange: #E85100;
+      --violet: #463A90; --orange: #E85100;
       --gradient: linear-gradient(135deg, #463A90, #7B3FA0, #E85100);
-      --noir: #0f0f10;
-      --gris-bg: #f5f5f7;
-      --gris-border: #e0e0e5;
-      --gris-texte: #6b6b7b;
-      --radius: 14px;
+      --noir: #0f0f10; --gris-bg: #f5f5f7;
+      --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
     }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--noir); min-height: 100vh; }
 
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--gris-bg);
-      color: var(--noir);
-      min-height: 100vh;
-    }
-
-    /* ---- HEADER ---- */
-    header {
-      background: var(--noir);
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+    /* HEADER */
+    header { background: var(--noir); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+    .header-logo { display: flex; align-items: center; gap: 0.75rem; }
     .header-logo img { width: 36px; height: 36px; border-radius: 50%; }
-    .header-logo span {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: 1px;
-    }
-    #btn-logout {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.6);
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
+    .header-logo span { font-size: 17px; font-weight: 700; color: white; letter-spacing: 1px; }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-back { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; display: none; }
+    .btn-back:hover { background: rgba(255,255,255,0.14); color: white; }
+    #btn-logout { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     #btn-logout:hover { background: rgba(255,255,255,0.14); color: white; }
 
-    /* ---- LOGIN ---- */
-    #screen-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: calc(100vh - 60px);
-      padding: 2rem;
-    }
-    .login-card {
-      background: white;
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 4px 40px rgba(70,58,144,0.10);
-    }
-    .login-card h1 {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-    .login-card p {
-      font-size: 14px;
-      color: var(--gris-texte);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-    .login-card input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid var(--gris-border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: monospace;
-      margin-bottom: 1rem;
-      transition: border-color 0.2s;
-    }
+    /* LOGIN */
+    #screen-login { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 2rem; }
+    .login-card { background: white; border-radius: 20px; padding: 2.5rem; max-width: 420px; width: 100%; box-shadow: 0 4px 40px rgba(70,58,144,0.10); }
+    .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 0.5rem; }
+    .login-card p { font-size: 14px; color: var(--gris-texte); margin-bottom: 1.5rem; line-height: 1.6; }
+    .login-card input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gris-border); border-radius: 10px; font-size: 14px; font-family: monospace; margin-bottom: 1rem; transition: border-color 0.2s; }
     .login-card input:focus { outline: none; border-color: var(--violet); }
-    .btn-primary {
-      width: 100%;
-      padding: 13px;
-      background: var(--gradient);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary { width: 100%; padding: 13px; background: var(--gradient); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
 
-    /* ---- APP ---- */
-    #screen-app { display: none; padding: 2rem; max-width: 860px; margin: 0 auto; }
+    /* APP */
+    #screen-app { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
 
-    /* ---- TABS ---- */
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      background: white;
-      padding: 6px;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    /* ÉTAPE 1 : CHOIX DE PAGE */
+    #step-pages h2 { font-size: 20px; font-weight: 700; margin-bottom: 1.5rem; color: var(--noir); }
+    .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .page-card {
+      background: white; border-radius: 16px; padding: 1.75rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); cursor: pointer;
+      border: 2px solid transparent; transition: all 0.2s; text-align: center;
     }
-    .tab {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--gris-texte);
-      transition: all 0.2s;
-    }
-    .tab.active {
-      background: var(--gradient);
-      color: white;
-    }
+    .page-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(70,58,144,0.12); }
+    .page-card-icon { font-size: 36px; margin-bottom: 0.75rem; }
+    .page-card-name { font-size: 16px; font-weight: 700; margin-bottom: 0.25rem; }
+    .page-card-desc { font-size: 12px; color: var(--gris-texte); line-height: 1.4; }
 
-    /* ---- PANELS ---- */
-    .panel { display: none; }
-    .panel.active { display: block; }
+    /* ÉTAPE 2 : SECTIONS */
+    #step-sections { display: none; }
+    .step-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+    .step-header h2 { font-size: 20px; font-weight: 700; }
+    .step-header .page-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: rgba(70,58,144,0.1); color: var(--violet); }
 
-    /* ---- LISTE ITEMS ---- */
-    .items-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-
-    .item-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      gap: 1rem;
+    .sections-list { display: flex; flex-direction: column; gap: 1rem; }
+    .section-card {
+      background: white; border-radius: 14px; padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;
+      display: flex; align-items: center; gap: 1.25rem;
+      border: 2px solid transparent; transition: all 0.2s;
     }
+    .section-card:hover { border-color: var(--violet); }
+    .section-card-icon { font-size: 28px; flex-shrink: 0; }
+    .section-card-info { flex: 1; }
+    .section-card-name { font-size: 15px; font-weight: 700; }
+    .section-card-desc { font-size: 13px; color: var(--gris-texte); margin-top: 2px; }
+    .section-card-arrow { color: var(--gris-texte); font-size: 18px; }
+
+    /* ÉTAPE 3 : ÉDITEUR */
+    #step-editor { display: none; }
+    .editor-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+    .editor-header h2 { font-size: 20px; font-weight: 700; }
+
+    /* LISTE ITEMS */
+    .items-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .item-card { background: white; border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); gap: 1rem; }
     .item-card-info { flex: 1; }
-    .item-card-title { font-weight: 600; font-size: 15px; }
-    .item-card-sub { font-size: 13px; color: var(--gris-texte); margin-top: 2px; }
+    .item-card-title { font-weight: 600; font-size: 14px; }
+    .item-card-sub { font-size: 12px; color: var(--gris-texte); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
     .item-card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
-    .btn-edit, .btn-delete {
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
+    .btn-edit, .btn-delete { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
     .btn-edit { background: rgba(70,58,144,0.08); color: var(--violet); }
     .btn-edit:hover { background: rgba(70,58,144,0.15); }
     .btn-delete { background: rgba(220,50,50,0.08); color: #c0392b; }
     .btn-delete:hover { background: rgba(220,50,50,0.15); }
 
-    /* ---- FORMULAIRE ---- */
-    .form-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 1.75rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      margin-bottom: 1rem;
-    }
-    .form-card h3 {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--gris-border);
-    }
+    /* FORMULAIRES */
+    .form-card { background: white; border-radius: var(--radius); padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; display: none; }
+    .form-card.visible { display: block; }
+    .form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--gris-border); }
     .form-row { margin-bottom: 1rem; }
-    .form-row label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--gris-texte);
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-row input, .form-row textarea, .form-row select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--gris-border);
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: inherit;
-      transition: border-color 0.2s;
-      background: white;
-    }
-    .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
-      outline: none;
-      border-color: var(--violet);
-    }
+    .form-row label { display: block; font-size: 12px; font-weight: 600; color: var(--gris-texte); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-row input, .form-row textarea, .form-row select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gris-border); border-radius: 10px; font-size: 14px; font-family: inherit; background: white; transition: border-color 0.2s; }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--violet); }
     .form-row textarea { resize: vertical; min-height: 80px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
-    .btn-cancel {
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: 1.5px solid var(--gris-border);
-      background: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--gris-texte);
-    }
-    .btn-save {
-      padding: 10px 24px;
-      border-radius: 10px;
-      border: none;
-      background: var(--gradient);
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-add {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 11px 20px;
-      background: white;
-      border: 2px dashed var(--gris-border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--violet);
-      cursor: pointer;
-      width: 100%;
-      justify-content: center;
-      transition: all 0.2s;
-    }
+    .btn-cancel { padding: 10px 20px; border-radius: 10px; border: 1.5px solid var(--gris-border); background: white; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gris-texte); }
+    .btn-save { padding: 10px 24px; border-radius: 10px; border: none; background: var(--gradient); color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-add { display: flex; align-items: center; gap: 0.5rem; padding: 11px 20px; background: white; border: 2px dashed var(--gris-border); border-radius: var(--radius); font-size: 14px; font-weight: 600; color: var(--violet); cursor: pointer; width: 100%; justify-content: center; transition: all 0.2s; }
     .btn-add:hover { border-color: var(--violet); background: rgba(70,58,144,0.04); }
+    .empty-state { text-align: center; padding: 2rem; color: var(--gris-texte); font-size: 14px; background: white; border-radius: var(--radius); }
 
-    /* ---- TOAST ---- */
-    #toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      color: white;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-      pointer-events: none;
-      z-index: 999;
-    }
+    /* AUTOCOMPLETE */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1.5px solid var(--violet); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; max-height: 200px; overflow-y: auto; }
+    .autocomplete-item { padding: 9px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--gris-border); line-height: 1.4; }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: rgba(70,58,144,0.06); }
+    .autocomplete-item strong { color: var(--violet); }
+
+    /* MÉDIAS */
+    .media-preview-wrap { display: none; margin-top: 0.75rem; }
+    .media-preview-wrap img, .media-preview-wrap video { max-width: 100%; max-height: 200px; border-radius: 10px; object-fit: cover; }
+
+    /* STOCKAGE */
+    .storage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .storage-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; }
+    .storage-item img, .storage-item video { width: 100%; height: 110px; object-fit: cover; display: block; }
+    .storage-item-info { padding: 6px 8px; font-size: 11px; color: var(--gris-texte); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .storage-item-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .storage-item-del:hover { background: #c0392b; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 2rem; right: 2rem; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; color: white; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; z-index: 999; }
     #toast.show { opacity: 1; transform: translateY(0); }
     #toast.success { background: #1a9e5c; }
     #toast.error { background: #c0392b; }
 
-    .empty-state {
-      text-align: center;
-      padding: 2.5rem;
-      color: var(--gris-texte);
-      font-size: 14px;
-      background: white;
-      border-radius: var(--radius);
-    }
-
-    /* ---- AUTOCOMPLETE ADRESSE ---- */
-    .autocomplete-wrap { position: relative; }
-    .autocomplete-list {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: white;
-      border: 1.5px solid var(--violet);
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      z-index: 100;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-    .autocomplete-item {
-      padding: 10px 14px;
-      font-size: 13px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--gris-border);
-      line-height: 1.4;
-    }
-    .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background: rgba(70,58,144,0.06); }
-    .autocomplete-item strong { color: var(--violet); font-size: 14px; }
-
-    /* ---- GALERIE STOCKAGE ---- */
-    .storage-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .storage-item {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      position: relative;
-    }
-    .storage-item img {
-      width: 100%; height: 120px; object-fit: cover; display: block;
-    }
-    .storage-item-info {
-      padding: 8px 10px;
-      font-size: 11px;
-      color: var(--gris-texte);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .storage-item-del {
-      position: absolute;
-      top: 6px; right: 6px;
-      background: rgba(0,0,0,0.55);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 26px; height: 26px;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      line-height: 1;
-    }
-    .storage-item-del:hover { background: #c0392b; }
-
     @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
       #screen-app { padding: 1rem; }
-      .tabs { flex-wrap: wrap; }
+      .pages-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -364,194 +146,70 @@
     <img src="assets/Logo.png" alt="BDE CREAD">
     <span>ADMIN — BDE CREAD</span>
   </div>
-  <button id="btn-logout" onclick="logout()">Se déconnecter</button>
+  <div class="header-right">
+    <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
+    <button id="btn-logout" onclick="logout()">Se déconnecter</button>
+  </div>
 </header>
 
-<!-- ÉCRAN LOGIN -->
+<!-- LOGIN -->
 <div id="screen-login">
   <div class="login-card">
     <h1>Connexion admin</h1>
-    <p>Entre le token GitHub du compte BDEcreadien pour accéder au tableau de bord. Il sera mémorisé dans le navigateur.</p>
-    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+    <p>Entre le token GitHub pour accéder au tableau de bord. Il sera mémorisé dans le navigateur.</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
     <button class="btn-primary" onclick="login()">Se connecter</button>
   </div>
 </div>
 
-<!-- ÉCRAN APP -->
+<!-- APP -->
 <div id="screen-app">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('evenements')">Événements</button>
-    <button class="tab" onclick="switchTab('annonces')">Annonces</button>
-    <button class="tab" onclick="switchTab('videos')">Médias</button>
-    <button class="tab" onclick="switchTab('stockage')">Stockage</button>
-  </div>
 
-  <!-- PANEL ÉVÉNEMENTS -->
-  <div class="panel active" id="panel-evenements">
-    <div class="items-list" id="list-evenements"></div>
-    <div id="form-evenement-wrap" style="display:none;">
-      <div class="form-card">
-        <h3 id="form-ev-title">Nouvel événement</h3>
-        <div class="form-row">
-          <label>Titre *</label>
-          <input type="text" id="ev-titre" placeholder="Ex: Soirée">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Date *</label>
-            <input type="date" id="ev-date" oninput="autoDateAffichage()">
-          </div>
-          <div class="form-row">
-            <label>Date affichée</label>
-            <input type="text" id="ev-dateAffichage" placeholder="Remplie automatiquement" readonly style="background:#f5f5f7; color:var(--gris-texte);">
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Horaire *</label>
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <input type="time" id="ev-horaire-debut" style="flex:1;">
-              <span style="color:var(--gris-texte); font-size:13px; white-space:nowrap;">→</span>
-              <input type="time" id="ev-horaire-fin" style="flex:1;">
-            </div>
-            <input type="hidden" id="ev-horaire">
-          </div>
-          <div class="form-row">
-            <label>Prix *</label>
-            <select id="ev-prix-select" onchange="onPrixChange()">
-              <option value="">— Choisir —</option>
-              <option value="Gratuit">Gratuit</option>
-              <option value="5€">5€</option>
-              <option value="8€">8€</option>
-              <option value="10€">10€</option>
-              <option value="12€">12€</option>
-              <option value="15€">15€</option>
-              <option value="20€">20€</option>
-              <option value="autre">Autre…</option>
-            </select>
-            <input type="text" id="ev-prix-autre" placeholder="Ex: 7€50" style="display:none; margin-top:0.5rem;">
-            <input type="hidden" id="ev-prix">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Lieu *</label>
-          <div class="autocomplete-wrap">
-            <input type="text" id="ev-lieu" placeholder="Tape le nom du lieu ou l'adresse…" autocomplete="off">
-            <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Adresse complète</label>
-          <input type="text" id="ev-adresse" placeholder="Remplie automatiquement" readonly style="background:#f5f5f7; color:var(--gris-texte);">
-        </div>
-        <div class="form-row">
-          <label>Description *</label>
-          <textarea id="ev-description" placeholder="Décris l'événement..."></textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Lien billetterie (optionnel)</label>
-            <input type="url" id="ev-lien" placeholder="https://shotgun.live/...">
-          </div>
-          <div class="form-row">
-            <label>Type de lien</label>
-            <select id="ev-typeLien">
-              <option value="">Aucun</option>
-              <option value="shotgun">Shotgun</option>
-              <option value="helloasso">HelloAsso</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-cancel" onclick="cancelForm('evenement')">Annuler</button>
-          <button class="btn-save" onclick="saveEvenement()">Publier</button>
-        </div>
+  <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
+  <div id="step-pages">
+    <h2>Quelle page veux-tu modifier ?</h2>
+    <div class="pages-grid">
+      <div class="page-card" onclick="selectPage('accueil')">
+        <div class="page-card-icon">🏠</div>
+        <div class="page-card-name">Accueil</div>
+        <div class="page-card-desc">Photos & vidéos de la page d'accueil</div>
+      </div>
+      <div class="page-card" onclick="selectPage('agenda')">
+        <div class="page-card-icon">📅</div>
+        <div class="page-card-name">Agenda</div>
+        <div class="page-card-desc">Événements à venir</div>
+      </div>
+      <div class="page-card" onclick="selectPage('annonces')">
+        <div class="page-card-icon">📌</div>
+        <div class="page-card-name">Annonces</div>
+        <div class="page-card-desc">Petites annonces des étudiants</div>
+      </div>
+      <div class="page-card" onclick="selectPage('stockage')">
+        <div class="page-card-icon">🗂</div>
+        <div class="page-card-name">Stockage</div>
+        <div class="page-card-desc">Gérer les fichiers uploadés</div>
       </div>
     </div>
-    <button class="btn-add" id="btn-add-ev" onclick="showForm('evenement')">+ Ajouter un événement</button>
   </div>
 
-  <!-- PANEL ANNONCES -->
-  <div class="panel" id="panel-annonces">
-    <div class="items-list" id="list-annonces"></div>
-    <div id="form-annonce-wrap" style="display:none;">
-      <div class="form-card">
-        <h3 id="form-an-title">Nouvelle annonce</h3>
-        <div class="form-row">
-          <label>Titre *</label>
-          <input type="text" id="an-titre" placeholder="Ex: Table à dessin A1">
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Catégorie *</label>
-            <select id="an-categorie">
-              <option value="materiel">Matériel</option>
-              <option value="place">Places</option>
-              <option value="logement">Logement</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <label>Prix *</label>
-            <input type="text" id="an-prix" placeholder="Ex: 80 € ou Gratuit">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Description *</label>
-          <textarea id="an-description" placeholder="Décris ce que tu vends ou proposes..."></textarea>
-        </div>
-        <div class="form-grid">
-          <div class="form-row">
-            <label>Ton prénom + initiale *</label>
-            <input type="text" id="an-auteur" placeholder="Ex: Léa M.">
-          </div>
-          <div class="form-row">
-            <label>Ton email de contact *</label>
-            <input type="email" id="an-contact" placeholder="prenom@cread.fr">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-cancel" onclick="cancelForm('annonce')">Annuler</button>
-          <button class="btn-save" onclick="saveAnnonce()">Publier</button>
-        </div>
-      </div>
+  <!-- ÉTAPE 2 : CHOISIR UNE SECTION (pour pages multi-sections) -->
+  <div id="step-sections">
+    <div class="step-header">
+      <h2 id="sections-title">Que veux-tu modifier ?</h2>
+      <span class="page-badge" id="page-badge"></span>
     </div>
-    <button class="btn-add" id="btn-add-an" onclick="showForm('annonce')">+ Ajouter une annonce</button>
+    <div class="sections-list" id="sections-list"></div>
   </div>
 
-  <!-- PANEL MÉDIAS -->
-  <div class="panel" id="panel-videos">
-    <div class="items-list" id="list-videos"></div>
-    <div id="form-video-wrap" style="display:none;">
-      <div class="form-card">
-        <h3 id="form-vi-title">Nouveau média</h3>
-        <div class="form-row">
-          <label>Fichier * (photo ou vidéo)</label>
-          <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
-        </div>
-        <div id="vi-preview-wrap" style="display:none; margin-top:0.75rem;">
-          <img id="vi-preview-img" style="max-width:100%; max-height:200px; border-radius:10px; object-fit:cover; display:none;">
-          <video id="vi-preview-vid" controls style="max-width:100%; max-height:200px; border-radius:10px; display:none;"></video>
-        </div>
-        <div class="form-row" style="margin-top:0.75rem;">
-          <label>Titre (optionnel)</label>
-          <input type="text" id="vi-titre" placeholder="Ex: Soirée de rentrée 2025">
-        </div>
-        <div class="form-actions">
-          <button class="btn-cancel" onclick="cancelForm('video')">Annuler</button>
-          <button class="btn-save" id="btn-save-media" onclick="saveMedia()">Ajouter</button>
-        </div>
-      </div>
+  <!-- ÉTAPE 3 : ÉDITEUR -->
+  <div id="step-editor">
+    <div class="editor-header">
+      <h2 id="editor-title"></h2>
+      <span class="page-badge" id="editor-badge"></span>
     </div>
-    <button class="btn-add" id="btn-add-vi" onclick="showForm('video')">+ Ajouter un média</button>
+    <div id="editor-content"></div>
   </div>
-</div>
 
-  <!-- PANEL STOCKAGE -->
-  <div class="panel" id="panel-stockage">
-    <div class="storage-grid" id="storage-grid"></div>
-    <div id="storage-empty" class="empty-state" style="display:none;">Aucune photo dans le stockage.</div>
-  </div>
 </div>
 
 <div id="toast"></div>
@@ -559,12 +217,14 @@
 <script>
 const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
-
 let token = '';
-let editIndex = { evenement: -1, annonce: -1, video: -1 };
 let data = { evenements: [], annonces: [], videos: [] };
+let editIndex = { evenement: -1, annonce: -1, video: -1 };
+let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
-// ---- AUTH ----
+// ============================================================
+// AUTH
+// ============================================================
 function login() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) return showToast('Entre un token', 'error');
@@ -572,206 +232,327 @@ function login() {
   token = t;
   init();
 }
-
 function logout() {
   localStorage.removeItem('bde_admin_token');
   document.getElementById('screen-login').style.display = 'flex';
   document.getElementById('screen-app').style.display = 'none';
   document.getElementById('btn-logout').style.display = 'none';
 }
-
-// ---- INIT ----
 async function init() {
   document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('btn-logout').style.display = 'block';
-  await Promise.all([
-    loadData('evenements'),
-    loadData('annonces'),
-    loadData('videos'),
-  ]);
+  showStep('pages');
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos')]);
 }
 
-// ---- GITHUB API ----
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showStep(step, opts = {}) {
+  document.getElementById('step-pages').style.display = 'none';
+  document.getElementById('step-sections').style.display = 'none';
+  document.getElementById('step-editor').style.display = 'none';
+  document.getElementById('step-' + step).style.display = 'block';
+  document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
+}
+
+function goBack() {
+  navStack.pop();
+  const prev = navStack[navStack.length - 1];
+  if (!prev || prev === 'pages') { navStack = ['pages']; showStep('pages'); }
+  else if (prev.startsWith('sections:')) showStep('sections');
+  else if (prev.startsWith('editor:')) {
+    const type = prev.split(':')[1];
+    openEditor(type, false);
+  }
+}
+
+function selectPage(page) {
+  navStack = ['pages'];
+  if (page === 'agenda') {
+    navStack.push('editor:evenements');
+    openEditor('evenements', true, 'Agenda', 'Événements');
+  } else if (page === 'annonces') {
+    navStack.push('editor:annonces');
+    openEditor('annonces', true, 'Annonces', 'Annonces');
+  } else if (page === 'accueil') {
+    navStack.push('editor:videos');
+    openEditor('videos', true, 'Accueil', 'Médias (photos & vidéos)');
+  } else if (page === 'stockage') {
+    navStack.push('editor:stockage');
+    openEditorStockage('Stockage', 'Fichiers uploadés');
+  }
+}
+
+function openEditor(type, push = true, pageName = '', sectionName = '') {
+  if (push) navStack.push(`editor:${type}`);
+  document.getElementById('editor-title').textContent = sectionName || type;
+  document.getElementById('editor-badge').textContent = pageName || '';
+  document.getElementById('editor-content').innerHTML = buildEditor(type);
+  showStep('editor');
+  initEditorEvents(type);
+}
+
+function openEditorStockage(pageName, sectionName) {
+  document.getElementById('editor-title').textContent = sectionName;
+  document.getElementById('editor-badge').textContent = pageName;
+  document.getElementById('editor-content').innerHTML = buildStorageEditor();
+  showStep('editor');
+  loadStorage();
+}
+
+// ============================================================
+// GITHUB API
+// ============================================================
 async function getFile(path) {
-  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`, {
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?t=${Date.now()}`, {
     headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
   });
   if (!res.ok) throw new Error('Fichier introuvable');
   return res.json();
 }
-
 async function saveFile(path, content, sha, message) {
   const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
     method: 'PUT',
     headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), sha, branch: BRANCH })
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(`${res.status} — ${body.message || 'Erreur inconnue'}`);
-  }
+  if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(`${res.status} — ${b.message || ''}`); }
 }
-
 async function loadData(type) {
   try {
     const file = await getFile(`_data/${type}.json`);
     const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0));
     const raw = JSON.parse(new TextDecoder().decode(bytes));
     data[type] = Array.isArray(raw) ? raw : (raw[type] || []);
-    renderList(type);
-  } catch(e) {
-    data[type] = [];
-    renderList(type);
-  }
+  } catch(e) { data[type] = []; }
 }
-
 async function persistData(type, message) {
   const file = await getFile(`_data/${type}.json`);
   await saveFile(`_data/${type}.json`, data[type], file.sha, message);
 }
 
-// ---- RENDU LISTES ----
-function renderList(type) {
-  const el = document.getElementById(`list-${type}`);
-  if (!data[type].length) {
-    el.innerHTML = `<div class="empty-state">Aucun élément pour l'instant.</div>`;
-    return;
-  }
-  el.innerHTML = data[type].map((item, i) => {
-    let title = '', sub = '';
-    if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
-    if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
-    if (type === 'videos') { title = (item.type === 'photo' ? '🖼 ' : '▶ ') + (item.titre || item.url); sub = item.url; }
-    return `
-      <div class="item-card">
-        <div class="item-card-info">
-          <div class="item-card-title">${title}</div>
-          <div class="item-card-sub">${sub}</div>
+// ============================================================
+// BUILDER ÉDITEURS
+// ============================================================
+function buildEditor(type) {
+  const items = data[type] || [];
+  const listHtml = items.length
+    ? items.map((item, i) => {
+        let title = '', sub = '';
+        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
+        if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
+        if (type === 'videos') { title = (item.type === 'photo' ? '🖼 ' : '🎬 ') + (item.titre || item.url); sub = item.url; }
+        return `<div class="item-card">
+          <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
+          <div class="item-card-actions">
+            <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
+            <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
+          </div></div>`;
+      }).join('')
+    : '<div class="empty-state">Aucun élément pour l\'instant.</div>';
+
+  const formHtml = type === 'evenements' ? formEvenement()
+    : type === 'annonces' ? formAnnonce()
+    : formMedia();
+
+  const addLabel = type === 'evenements' ? '+ Ajouter un événement'
+    : type === 'annonces' ? '+ Ajouter une annonce'
+    : '+ Ajouter un média';
+
+  return `
+    <div class="items-list" id="items-list">${listHtml}</div>
+    ${formHtml}
+    <button class="btn-add" id="btn-add" onclick="showForm()">+ ${addLabel.slice(2)}</button>`;
+}
+
+function buildStorageEditor() {
+  return `<div class="storage-grid" id="storage-grid"></div>
+    <div id="storage-empty" class="empty-state" style="display:none;">Aucun fichier dans le stockage.</div>`;
+}
+
+// ============================================================
+// FORMULAIRES HTML
+// ============================================================
+function formEvenement() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouvel événement</h3>
+    <div class="form-row"><label>Titre *</label><input type="text" id="ev-titre" placeholder="Ex: Soirée"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Date *</label><input type="date" id="ev-date" oninput="autoDateAffichage()"></div>
+      <div class="form-row"><label>Date affichée</label><input type="text" id="ev-dateAffichage" readonly style="background:#f5f5f7;color:var(--gris-texte);"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Horaire *</label>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <input type="time" id="ev-horaire-debut" style="flex:1;">
+          <span style="color:var(--gris-texte);font-size:13px;">→</span>
+          <input type="time" id="ev-horaire-fin" style="flex:1;">
         </div>
-        <div class="item-card-actions">
-          <button class="btn-edit" onclick="editItem('${type}', ${i})">Modifier</button>
-          <button class="btn-delete" onclick="deleteItem('${type}', ${i})">Supprimer</button>
-        </div>
-      </div>`;
-  }).join('');
+      </div>
+      <div class="form-row">
+        <label>Prix *</label>
+        <select id="ev-prix-select" onchange="onPrixChange()">
+          <option value="">— Choisir —</option>
+          <option value="Gratuit">Gratuit</option>
+          <option value="5€">5€</option>
+          <option value="8€">8€</option>
+          <option value="10€">10€</option>
+          <option value="12€">12€</option>
+          <option value="15€">15€</option>
+          <option value="20€">20€</option>
+          <option value="autre">Autre…</option>
+        </select>
+        <input type="text" id="ev-prix-autre" placeholder="Ex: 7€50" style="display:none;margin-top:0.5rem;">
+        <input type="hidden" id="ev-prix">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Lieu *</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="ev-lieu" placeholder="Tape le nom du lieu…" autocomplete="off">
+        <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="form-row"><label>Adresse complète</label><input type="text" id="ev-adresse" readonly style="background:#f5f5f7;color:var(--gris-texte);"></div>
+    <div class="form-row"><label>Description *</label><textarea id="ev-description" placeholder="Décris l'événement…"></textarea></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Lien billetterie (optionnel)</label><input type="url" id="ev-lien" placeholder="https://shotgun.live/…"></div>
+      <div class="form-row">
+        <label>Type de lien</label>
+        <select id="ev-typeLien">
+          <option value="">Aucun</option>
+          <option value="shotgun">Shotgun</option>
+          <option value="helloasso">HelloAsso</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" onclick="saveEvenement()">Publier</button>
+    </div>
+  </div>`;
 }
 
-// ---- TABS ----
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const idx = ['evenements','annonces','videos','stockage'].indexOf(name);
-  document.querySelectorAll('.tab')[idx].classList.add('active');
-  document.getElementById(`panel-${name}`).classList.add('active');
-  if (name === 'stockage') loadStorage();
+function formAnnonce() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouvelle annonce</h3>
+    <div class="form-row"><label>Titre *</label><input type="text" id="an-titre" placeholder="Ex: Table à dessin A1"></div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Catégorie *</label>
+        <select id="an-categorie">
+          <option value="materiel">Matériel</option>
+          <option value="place">Places</option>
+          <option value="logement">Logement</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Prix *</label><input type="text" id="an-prix" placeholder="Ex: 80€ ou Gratuit"></div>
+    </div>
+    <div class="form-row"><label>Description *</label><textarea id="an-description" placeholder="Décris ce que tu vends ou proposes…"></textarea></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Ton prénom + initiale *</label><input type="text" id="an-auteur" placeholder="Ex: Léa M."></div>
+      <div class="form-row"><label>Ton email de contact *</label><input type="email" id="an-contact" placeholder="prenom@cread.fr"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" onclick="saveAnnonce()">Publier</button>
+    </div>
+  </div>`;
 }
 
-// ---- STOCKAGE ----
-async function loadStorage() {
-  const grid = document.getElementById('storage-grid');
-  const empty = document.getElementById('storage-empty');
-  grid.innerHTML = '<p style="color:var(--gris-texte);font-size:13px;">Chargement…</p>';
-  try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/assets/uploads?t=${Date.now()}`, {
-      headers: { Authorization: `token ${token}` }
-    });
-    if (!res.ok) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
-    const files = await res.json();
-    const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
-    if (!images.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    grid.innerHTML = images.map(f => `
-      <div class="storage-item">
-        <img src="${f.download_url}" alt="${f.name}" loading="lazy">
-        <div class="storage-item-info">${f.name}</div>
-        <button class="storage-item-del" onclick="deleteStorageFile('${f.path}','${f.sha}')" title="Supprimer">✕</button>
-      </div>`).join('');
-  } catch(e) {
-    grid.innerHTML = `<p style="color:#c0392b;font-size:13px;">Erreur : ${e.message}</p>`;
+function formMedia() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouveau média</h3>
+    <div class="form-row">
+      <label>Fichier * (photo ou vidéo depuis l'ordi)</label>
+      <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
+    </div>
+    <div class="media-preview-wrap" id="vi-preview-wrap">
+      <img id="vi-preview-img" style="display:none;">
+      <video id="vi-preview-vid" controls style="display:none;"></video>
+    </div>
+    <div class="form-row" style="margin-top:0.75rem;">
+      <label>Titre (optionnel)</label>
+      <input type="text" id="vi-titre" placeholder="Ex: Soirée de rentrée 2025">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" id="btn-save-media" onclick="saveMedia()">Ajouter</button>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// FORM ACTIONS
+// ============================================================
+let currentType = '';
+
+function initEditorEvents(type) {
+  currentType = type;
+  if (type === 'evenements') initLieuAutocomplete();
+}
+
+function showForm() {
+  document.getElementById('the-form').classList.add('visible');
+  document.getElementById('btn-add').style.display = 'none';
+  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : 'video'] = -1;
+}
+
+function cancelForm() {
+  document.getElementById('the-form').classList.remove('visible');
+  document.getElementById('btn-add').style.display = 'flex';
+  resetForm();
+}
+
+function resetForm() {
+  if (currentType === 'evenements') {
+    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const sel = document.getElementById('ev-prix-select'); if(sel) sel.value = '';
+    const autre = document.getElementById('ev-prix-autre'); if(autre) autre.style.display = 'none';
+    const sugg = document.getElementById('lieu-suggestions'); if(sugg) sugg.style.display = 'none';
+    document.getElementById('form-title').textContent = 'Nouvel événement';
   }
-}
-
-async function deleteStorageFile(path, sha) {
-  if (!confirm('Supprimer cette photo définitivement ?')) return;
-  try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-      method: 'DELETE',
-      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `Suppression : ${path}`, sha, branch: BRANCH })
-    });
-    if (!res.ok) { const b = await res.json(); throw new Error(b.message); }
-    showToast('Photo supprimée !', 'success');
-    loadStorage();
-  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
-}
-
-// ---- FORMULAIRES ----
-function showForm(type) {
-  document.getElementById(`form-${type}-wrap`).style.display = 'block';
-  document.getElementById(`btn-add-${type === 'evenement' ? 'ev' : type === 'annonce' ? 'an' : 'vi'}`).style.display = 'none';
-}
-
-function cancelForm(type) {
-  document.getElementById(`form-${type}-wrap`).style.display = 'none';
-  document.getElementById(`btn-add-${type === 'evenement' ? 'ev' : type === 'annonce' ? 'an' : 'vi'}`).style.display = 'flex';
-  editIndex[type] = -1;
-  clearForm(type);
-}
-
-function clearForm(type) {
-  if (type === 'evenement') {
-    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('ev-prix-select').value = '';
-    document.getElementById('ev-prix-autre').style.display = 'none';
-    document.getElementById('ev-typeLien').value = '';
-    document.getElementById('lieu-suggestions').style.display = 'none';
-    document.getElementById('form-ev-title').textContent = 'Nouvel événement';
+  if (currentType === 'annonces') {
+    ['an-titre','an-prix','an-description','an-auteur','an-contact'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const cat = document.getElementById('an-categorie'); if(cat) cat.value = 'materiel';
+    document.getElementById('form-title').textContent = 'Nouvelle annonce';
   }
-  if (type === 'annonce') {
-    ['an-titre','an-prix','an-description','an-auteur','an-contact'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('an-categorie').value = 'materiel';
-    document.getElementById('form-an-title').textContent = 'Nouvelle annonce';
-  }
-  if (type === 'video') {
-    document.getElementById('vi-file').value = '';
-    document.getElementById('vi-titre').value = '';
-    document.getElementById('vi-preview-wrap').style.display = 'none';
-    document.getElementById('vi-preview-img').style.display = 'none';
-    document.getElementById('vi-preview-vid').style.display = 'none';
-    document.getElementById('form-vi-title').textContent = 'Nouveau média';
+  if (currentType === 'videos') {
+    const fi = document.getElementById('vi-file'); if(fi) fi.value = '';
+    const ti = document.getElementById('vi-titre'); if(ti) ti.value = '';
+    const pw = document.getElementById('vi-preview-wrap'); if(pw) pw.style.display = 'none';
+    document.getElementById('form-title').textContent = 'Nouveau média';
   }
 }
 
 function editItem(type, i) {
-  editIndex[type === 'evenements' ? 'evenement' : type === 'annonces' ? 'annonce' : 'video'] = i;
+  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video' };
+  editIndex[map[type]] = i;
+  document.getElementById('the-form').classList.add('visible');
+  document.getElementById('btn-add').style.display = 'none';
+
   if (type === 'evenements') {
     const ev = data.evenements[i];
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
-    const [hDebut, hFin] = (ev.horaire || '').split(/\s*[–—-]\s*/);
-    document.getElementById('ev-horaire-debut').value = hDebut ? hDebut.replace('h',':') : '';
-    document.getElementById('ev-horaire-fin').value = hFin ? hFin.replace('h',':') : '';
-    document.getElementById('ev-horaire').value = ev.horaire || '';
+    const [hD, hF] = (ev.horaire || '').split(/\s*[–—-]\s*/);
+    document.getElementById('ev-horaire-debut').value = hD ? hD.replace('h',':') : '';
+    document.getElementById('ev-horaire-fin').value = hF ? hF.replace('h',':') : '';
+    const prixOpts = ['Gratuit','5€','8€','10€','12€','15€','20€'];
+    if (prixOpts.includes(ev.prix)) { document.getElementById('ev-prix-select').value = ev.prix; }
+    else if (ev.prix) { document.getElementById('ev-prix-select').value = 'autre'; document.getElementById('ev-prix-autre').value = ev.prix; document.getElementById('ev-prix-autre').style.display = 'block'; }
+    document.getElementById('ev-prix').value = ev.prix || '';
     document.getElementById('ev-lieu').value = ev.lieu || '';
     document.getElementById('ev-adresse').value = ev.adresse || '';
-    const prixVal = ev.prix || '';
-    const prixOpts = ['Gratuit','5€','8€','10€','12€','15€','20€'];
-    if (prixOpts.includes(prixVal)) {
-      document.getElementById('ev-prix-select').value = prixVal;
-      document.getElementById('ev-prix-autre').style.display = 'none';
-    } else if (prixVal) {
-      document.getElementById('ev-prix-select').value = 'autre';
-      document.getElementById('ev-prix-autre').value = prixVal;
-      document.getElementById('ev-prix-autre').style.display = 'block';
-    }
-    document.getElementById('ev-prix').value = prixVal;
     document.getElementById('ev-description').value = ev.description || '';
     document.getElementById('ev-lien').value = ev.lien || '';
     document.getElementById('ev-typeLien').value = ev.typeLien || '';
-    document.getElementById('form-ev-title').textContent = 'Modifier l\'événement';
-    showForm('evenement');
+    document.getElementById('form-title').textContent = 'Modifier l\'événement';
   }
   if (type === 'annonces') {
     const an = data.annonces[i];
@@ -781,21 +562,19 @@ function editItem(type, i) {
     document.getElementById('an-description').value = an.description || '';
     document.getElementById('an-auteur').value = an.auteur || '';
     document.getElementById('an-contact').value = an.contact || '';
-    document.getElementById('form-an-title').textContent = 'Modifier l\'annonce';
-    showForm('annonce');
+    document.getElementById('form-title').textContent = 'Modifier l\'annonce';
   }
   if (type === 'videos') {
     const vi = data.videos[i];
     document.getElementById('vi-titre').value = vi.titre || '';
-    const img = document.getElementById('vi-preview-img');
-    const vid = document.getElementById('vi-preview-vid');
     if (vi.url) {
+      const img = document.getElementById('vi-preview-img');
+      const vid = document.getElementById('vi-preview-vid');
       if (vi.type === 'photo') { img.src = vi.url; img.style.display = 'block'; vid.style.display = 'none'; }
       else { vid.src = vi.url; vid.style.display = 'block'; img.style.display = 'none'; }
       document.getElementById('vi-preview-wrap').style.display = 'block';
     }
-    document.getElementById('form-vi-title').textContent = 'Modifier le média';
-    showForm('video');
+    document.getElementById('form-title').textContent = 'Modifier le média';
   }
 }
 
@@ -804,44 +583,57 @@ async function deleteItem(type, i) {
   data[type].splice(i, 1);
   try {
     await persistData(type, `Suppression dans ${type}`);
-    renderList(type);
+    refreshList(type);
     showToast('Supprimé !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- SAVE ÉVÉNEMENT ----
+function refreshList(type) {
+  document.getElementById('items-list').innerHTML = buildEditor(type).split('items-list"')[1].split('</div>')[0] + '</div>';
+  openEditor(type, false, document.getElementById('editor-badge').textContent, document.getElementById('editor-title').textContent);
+}
+
+// ============================================================
+// SAVE ÉVÉNEMENT
+// ============================================================
+function onPrixChange() {
+  const sel = document.getElementById('ev-prix-select').value;
+  const autre = document.getElementById('ev-prix-autre');
+  if (sel === 'autre') { autre.style.display = 'block'; document.getElementById('ev-prix').value = ''; autre.oninput = () => document.getElementById('ev-prix').value = autre.value; }
+  else { autre.style.display = 'none'; document.getElementById('ev-prix').value = sel; }
+}
+function autoDateAffichage() {
+  const val = document.getElementById('ev-date').value;
+  if (!val) return;
+  const d = new Date(val + 'T12:00:00');
+  const s = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('ev-dateAffichage').value = s.charAt(0).toUpperCase() + s.slice(1);
+}
 async function saveEvenement() {
   const titre = document.getElementById('ev-titre').value.trim();
   const date = document.getElementById('ev-date').value;
-  const dateAffichage = document.getElementById('ev-dateAffichage').value.trim();
-  const lieu = document.getElementById('ev-lieu').value.trim();
-  const prix = document.getElementById('ev-prix').value.trim();
-  const description = document.getElementById('ev-description').value.trim();
-  if (!titre || !date || !dateAffichage || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
-
+  const dateAffichage = document.getElementById('ev-dateAffichage').value;
   const debut = document.getElementById('ev-horaire-debut').value;
   const fin = document.getElementById('ev-horaire-fin').value;
-  if (!debut || !fin) return showToast('Remplis l\'horaire de début et de fin', 'error');
+  const lieu = document.getElementById('ev-lieu').value.trim();
+  const prix = document.getElementById('ev-prix').value;
+  const description = document.getElementById('ev-description').value.trim();
+  if (!titre || !date || !debut || !fin || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
   const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
-  const adresse = document.getElementById('ev-adresse').value.trim();
-
-  const ev = { titre, date, dateAffichage, horaire, lieu, adresse, description, prix,
-    lien: document.getElementById('ev-lien').value.trim(),
-    typeLien: document.getElementById('ev-typeLien').value };
-
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value };
   const idx = editIndex.evenement;
-  if (idx >= 0) { data.evenements[idx] = ev; }
-  else { data.evenements.push(ev); }
-
+  if (idx >= 0) data.evenements[idx] = ev; else data.evenements.push(ev);
   try {
     await persistData('evenements', idx >= 0 ? `Modification : ${titre}` : `Nouvel événement : ${titre}`);
-    renderList('evenements');
-    cancelForm('evenement');
+    openEditor('evenements', false, 'Agenda', 'Événements');
+    cancelForm();
     showToast('Événement publié !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- SAVE ANNONCE ----
+// ============================================================
+// SAVE ANNONCE
+// ============================================================
 async function saveAnnonce() {
   const titre = document.getElementById('an-titre').value.trim();
   const prix = document.getElementById('an-prix').value.trim();
@@ -849,50 +641,42 @@ async function saveAnnonce() {
   const auteur = document.getElementById('an-auteur').value.trim();
   const contact = document.getElementById('an-contact').value.trim();
   if (!titre || !prix || !description || !auteur || !contact) return showToast('Remplis tous les champs obligatoires', 'error');
-
   const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   const an = { titre, categorie: document.getElementById('an-categorie').value, prix, description, auteur, contact, date: today };
-
   const idx = editIndex.annonce;
-  if (idx >= 0) { data.annonces[idx] = an; }
-  else { data.annonces.push(an); }
-
+  if (idx >= 0) data.annonces[idx] = an; else data.annonces.push(an);
   try {
     await persistData('annonces', idx >= 0 ? `Modification : ${titre}` : `Nouvelle annonce : ${titre}`);
-    renderList('annonces');
-    cancelForm('annonce');
+    openEditor('annonces', false, 'Annonces', 'Annonces');
+    cancelForm();
     showToast('Annonce publiée !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- MÉDIAS ----
+// ============================================================
+// MÉDIAS
+// ============================================================
 function onMediaSelected() {
   const file = document.getElementById('vi-file').files[0];
   if (!file) return;
-  const wrap = document.getElementById('vi-preview-wrap');
+  const url = URL.createObjectURL(file);
   const img = document.getElementById('vi-preview-img');
   const vid = document.getElementById('vi-preview-vid');
-  const url = URL.createObjectURL(file);
-  if (file.type.startsWith('image/')) {
-    img.src = url; img.style.display = 'block'; vid.style.display = 'none';
-  } else {
-    vid.src = url; vid.style.display = 'block'; img.style.display = 'none';
-  }
-  wrap.style.display = 'block';
+  if (file.type.startsWith('image/')) { img.src = url; img.style.display = 'block'; vid.style.display = 'none'; }
+  else { vid.src = url; vid.style.display = 'block'; img.style.display = 'none'; }
+  document.getElementById('vi-preview-wrap').style.display = 'block';
 }
-
 async function uploadMedia(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async e => {
       const base64 = e.target.result.split(',')[1];
-      const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
       const path = `assets/uploads/${filename}`;
       const type = file.type.startsWith('image/') ? 'photo' : 'video';
       try {
         const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-          method: 'PUT',
-          headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+          method: 'PUT', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: `Média : ${filename}`, content: base64, branch: BRANCH })
         });
         if (!res.ok) { const b = await res.json(); reject(new Error(`${res.status} — ${b.message}`)); return; }
@@ -902,13 +686,11 @@ async function uploadMedia(file) {
     reader.readAsDataURL(file);
   });
 }
-
 async function saveMedia() {
   const titre = document.getElementById('vi-titre').value.trim();
   const file = document.getElementById('vi-file').files[0];
   const idx = editIndex.video;
   if (!file && idx < 0) return showToast('Sélectionne un fichier', 'error');
-
   const btn = document.getElementById('btn-save-media');
   btn.textContent = 'Envoi…'; btn.disabled = true;
   try {
@@ -917,116 +699,82 @@ async function saveMedia() {
     if (file) ({ url, type } = await uploadMedia(file));
     const vi = { type, url, titre };
     if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
-  } catch(e) {
-    btn.textContent = 'Ajouter'; btn.disabled = false;
-    return showToast('Erreur upload : ' + e.message, 'error');
-  }
+  } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
   btn.textContent = 'Ajouter'; btn.disabled = false;
-
   try {
     await persistData('videos', idx >= 0 ? 'Modification média' : 'Nouveau média');
-    renderList('videos');
-    cancelForm('video');
+    openEditor('videos', false, 'Accueil', 'Médias (photos & vidéos)');
+    cancelForm();
     showToast('Média ajouté !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- TOAST ----
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `show ${type}`;
-  setTimeout(() => t.className = '', 3000);
-}
-
-// ---- TEST CONNEXION ----
-async function testConnexion() {
+// ============================================================
+// STOCKAGE
+// ============================================================
+async function loadStorage() {
+  const grid = document.getElementById('storage-grid');
+  const empty = document.getElementById('storage-empty');
+  grid.innerHTML = '<p style="color:var(--gris-texte);font-size:13px;">Chargement…</p>';
   try {
-    // Test 1 : identité du token
-    const r1 = await fetch('https://api.github.com/user', {
-      headers: { Authorization: `token ${token}` }
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/assets/uploads?t=${Date.now()}`, { headers: { Authorization: `token ${token}` } });
+    if (!res.ok) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    const files = await res.json();
+    const medias = files.filter(f => /\.(jpg|jpeg|png|gif|webp|mp4|mov|webm)$/i.test(f.name));
+    if (!medias.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = medias.map(f => {
+      const isVideo = /\.(mp4|mov|webm)$/i.test(f.name);
+      const preview = isVideo
+        ? `<video src="${f.download_url}" style="width:100%;height:110px;object-fit:cover;" preload="none"></video>`
+        : `<img src="${f.download_url}" alt="${f.name}" loading="lazy">`;
+      return `<div class="storage-item">${preview}<div class="storage-item-info">${f.name}</div><button class="storage-item-del" onclick="deleteStorageFile('${f.path}','${f.sha}')" title="Supprimer">✕</button></div>`;
+    }).join('');
+  } catch(e) { grid.innerHTML = `<p style="color:#c0392b;font-size:13px;">Erreur : ${e.message}</p>`; }
+}
+async function deleteStorageFile(path, sha) {
+  if (!confirm('Supprimer ce fichier définitivement ?')) return;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+      method: 'DELETE', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Suppression : ${path}`, sha, branch: BRANCH })
     });
-    if (!r1.ok) { showToast(`Token invalide (${r1.status})`, 'error'); return; }
-    const user = await r1.json();
-
-    // Test 2 : accès en lecture au repo
-    const r2 = await fetch(`https://api.github.com/repos/${REPO}`, {
-      headers: { Authorization: `token ${token}` }
-    });
-    if (!r2.ok) { showToast(`Pas accès au repo (${r2.status})`, 'error'); return; }
-    const repo = await r2.json();
-    const perm = repo.permissions;
-
-    showToast(`✓ ${user.login} — push: ${perm?.push ? 'OUI' : 'NON'} — admin: ${perm?.admin ? 'OUI' : 'NON'}`, perm?.push ? 'success' : 'error');
-  } catch(e) {
-    showToast('Erreur réseau : ' + e.message, 'error');
-  }
+    if (!res.ok) { const b = await res.json(); throw new Error(b.message); }
+    showToast('Fichier supprimé !', 'success');
+    loadStorage();
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- PRIX ----
-function onPrixChange() {
-  const sel = document.getElementById('ev-prix-select').value;
-  const autre = document.getElementById('ev-prix-autre');
-  if (sel === 'autre') {
-    autre.style.display = 'block';
-    document.getElementById('ev-prix').value = '';
-    autre.oninput = () => document.getElementById('ev-prix').value = autre.value;
-  } else {
-    autre.style.display = 'none';
-    document.getElementById('ev-prix').value = sel;
-  }
-}
-
-// ---- DATE AFFICHÉE AUTO ----
-function autoDateAffichage() {
-  const val = document.getElementById('ev-date').value;
-  if (!val) return;
-  const d = new Date(val + 'T12:00:00');
-  const affichage = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('ev-dateAffichage').value = affichage.charAt(0).toUpperCase() + affichage.slice(1);
-}
-
-// ---- AUTOCOMPLETE LIEU (Nominatim) ----
+// ============================================================
+// AUTOCOMPLETE LIEU
+// ============================================================
 let nominatimTimer = null;
-
 function initLieuAutocomplete() {
   const input = document.getElementById('ev-lieu');
   const list = document.getElementById('lieu-suggestions');
-
+  if (!input) return;
   input.addEventListener('input', () => {
     clearTimeout(nominatimTimer);
     const q = input.value.trim();
     if (q.length < 3) { list.style.display = 'none'; return; }
     nominatimTimer = setTimeout(() => searchLieu(q), 350);
   });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.autocomplete-wrap')) list.style.display = 'none';
-  });
+  document.addEventListener('click', e => { if (!e.target.closest('.autocomplete-wrap')) list.style.display = 'none'; });
 }
-
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=fr`, {
-      headers: { 'Accept-Language': 'fr' }
-    });
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=fr`, { headers: { 'Accept-Language': 'fr' } });
     const results = await res.json();
     if (!results.length) { list.style.display = 'none'; return; }
-
     list.innerHTML = results.map((r, i) => {
-      const nom = r.namedetails?.name || r.name || '';
-      const adresse = r.display_name || '';
-      return `<div class="autocomplete-item" onclick="selectLieu(${i})">
-        <strong>${nom || adresse.split(',')[0]}</strong><br>
-        <span style="color:var(--gris-texte); font-size:12px;">${adresse}</span>
-      </div>`;
+      const nom = r.name || r.display_name.split(',')[0];
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${nom}</strong><br><span style="color:var(--gris-texte);font-size:12px;">${r.display_name}</span></div>`;
     }).join('');
     list._results = results;
     list.style.display = 'block';
   } catch(e) { list.style.display = 'none'; }
 }
-
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
   const r = list._results[i];
@@ -1037,11 +785,17 @@ function selectLieu(i) {
   list.style.display = 'none';
 }
 
-// ---- BOOT ----
+// ============================================================
+// TOAST & BOOT
+// ============================================================
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 3500);
+}
 window.addEventListener('DOMContentLoaded', () => {
   token = localStorage.getItem('bde_admin_token') || '';
   document.getElementById('btn-logout').style.display = 'none';
-  initLieuAutocomplete();
   if (token) init();
 });
 </script>
