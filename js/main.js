@@ -116,42 +116,17 @@ function copyIcal() {
 }
 
 // ===================================
-// ÉVÉNEMENTS — Données & Rendu
+// ÉVÉNEMENTS — Chargement & Rendu
 // ===================================
 
-const evenementsData = [
-  {
-    id: 1,
-    titre: 'Soirée de fin d\'année',
-    date: '2026-07-04',
-    dateAffichage: 'Vendredi 4 juillet 2026',
-    lieu: 'Ninkasi Gerland, Lyon',
-    description: 'La grande soirée de fin d\'année du BDE CREAD. Ne ratez pas ça !',
-    prix: '10€',
-    lien: null,          // ex: 'https://shotgun.live/fr/events/...'
-    typeLien: null,      // 'shotgun' | 'helloasso' | null
-  },
-  {
-    id: 2,
-    titre: 'Afterwork BDE',
-    date: '2026-06-27',
-    dateAffichage: 'Vendredi 27 juin 2026',
-    lieu: 'À définir',
-    description: 'Un verre entre créadiens pour fêter la fin du semestre.',
-    prix: 'Gratuit',
-    lien: null,
-    typeLien: null,
-  }
-];
-
-const labelLien = { shotgun: '🎟 Prendre sa place', helloasso: '✅ S\'inscrire' };
+const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
-function renderEvenements() {
+function renderEvenements(data) {
   const container = document.getElementById('evenements-list');
-  if (!container || evenementsData.length === 0) return;
+  if (!container || !data.length) return;
 
-  container.innerHTML = evenementsData.map(ev => `
+  container.innerHTML = data.map(ev => `
     <div class="actu-item reveal" style="padding:1.5rem; border-radius:16px; border:1px solid rgba(70,58,144,0.1); background:white; align-items:flex-start; gap:1.5rem;">
       <div class="actu-item-date">
         <span class="day">${new Date(ev.date).getDate().toString().padStart(2,'0')}</span>
@@ -173,66 +148,15 @@ function renderEvenements() {
 }
 
 if (document.getElementById('evenements-list')) {
-  renderEvenements();
+  fetch('/_data/evenements.json')
+    .then(r => r.json())
+    .then(data => renderEvenements(data))
+    .catch(() => renderEvenements([]));
 }
 
 // ===================================
-// ANNONCES — Données & Filtres
+// ANNONCES — Chargement & Filtres
 // ===================================
-
-const SHEET_ID = 'VOTRE_GOOGLE_SHEET_ID';
-const annoncesData = [
-  {
-    id: 1,
-    categorie: 'materiel',
-    titre: 'Table à dessin A1 Rotring',
-    description: 'Table à dessin professionnelle en très bon état, utilisée 2 ans. Idéale pour les L1/L2.',
-    prix: '80 €',
-    auteur: 'Léa M.',
-    date: '18 juin 2026',
-    contact: 'lea.m@cread.fr'
-  },
-  {
-    id: 2,
-    categorie: 'place',
-    titre: 'Place concert — Bon Entendeur',
-    description: 'Une place pour le concert de Bon Entendeur au Ninkasi le 28 juin. Plus disponible pour y aller.',
-    prix: '25 €',
-    auteur: 'Hugo D.',
-    date: '17 juin 2026',
-    contact: 'hugo.d@cread.fr'
-  },
-  {
-    id: 3,
-    categorie: 'logement',
-    titre: 'Sous-location studio Presqu\'île — Août',
-    description: 'Studio 18m² entièrement meublé, proche tram, disponible tout le mois d\'août. Loyer charges comprises.',
-    prix: '520 €/mois',
-    auteur: 'Emma R.',
-    date: '15 juin 2026',
-    contact: 'emma.r@cread.fr'
-  },
-  {
-    id: 4,
-    categorie: 'materiel',
-    titre: 'Maquettes + matériaux divers',
-    description: 'Lot de matériaux pour maquettes : balsa, carton plume, colle, pinces. Fin d\'année, je vide mon atelier.',
-    prix: 'À débattre',
-    auteur: 'Nathan P.',
-    date: '14 juin 2026',
-    contact: 'nathan.p@cread.fr'
-  },
-  {
-    id: 5,
-    categorie: 'autre',
-    titre: 'Covoiturage Lyon → Paris',
-    description: 'Covoiturage tous les vendredis soir vers Paris, retour dimanche. 2 places disponibles.',
-    prix: '30 €/trajet',
-    auteur: 'Chloé B.',
-    date: '12 juin 2026',
-    contact: 'chloe.b@cread.fr'
-  }
-];
 
 const badgeLabels = {
   materiel: 'Matériel',
@@ -240,6 +164,8 @@ const badgeLabels = {
   logement: 'Logement',
   autre: 'Autre'
 };
+
+let annoncesData = [];
 
 function renderAnnonces(filtre = 'tous') {
   const grid = document.getElementById('annonces-grid');
@@ -291,5 +217,8 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 if (document.getElementById('annonces-grid')) {
-  renderAnnonces();
+  fetch('/_data/annonces.json')
+    .then(r => r.json())
+    .then(data => { annoncesData = data; renderAnnonces(); })
+    .catch(() => renderAnnonces());
 }

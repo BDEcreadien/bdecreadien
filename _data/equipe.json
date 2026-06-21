@@ -1,0 +1,23 @@
+[
+  {
+    "nom": "Tom Maradan",
+    "role": "Président",
+    "pole": "bureau",
+    "initiales": "TM",
+    "photo": "assets/team/tom-maradan.jpg"
+  },
+  {
+    "nom": "Morgane Nury",
+    "role": "Vice-Présidente",
+    "pole": "bureau",
+    "initiales": "MN",
+    "photo": "assets/team/morgane-nury.jpg"
+  },
+  {
+    "nom": "Julien Persiani",
+    "role": "Trésorier",
+    "pole": "bureau",
+    "initiales": "JP",
+    "photo": "assets/team/julien-persiani.jpg"
+  }
+]

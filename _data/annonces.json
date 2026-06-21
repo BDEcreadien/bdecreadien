@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "categorie": "materiel",
+    "titre": "Table à dessin A1 Rotring",
+    "description": "Table à dessin professionnelle en très bon état, utilisée 2 ans. Idéale pour les L1/L2.",
+    "prix": "80 €",
+    "auteur": "Léa M.",
+    "date": "18 juin 2026",
+    "contact": "lea.m@cread.fr"
+  },
+  {
+    "id": 2,
+    "categorie": "place",
+    "titre": "Place concert — Bon Entendeur",
+    "description": "Une place pour le concert de Bon Entendeur au Ninkasi le 28 juin. Plus disponible pour y aller.",
+    "prix": "25 €",
+    "auteur": "Hugo D.",
+    "date": "17 juin 2026",
+    "contact": "hugo.d@cread.fr"
+  },
+  {
+    "id": 3,
+    "categorie": "logement",
+    "titre": "Sous-location studio Presqu'île — Août",
+    "description": "Studio 18m² entièrement meublé, proche tram, disponible tout le mois d'août. Loyer charges comprises.",
+    "prix": "520 €/mois",
+    "auteur": "Emma R.",
+    "date": "15 juin 2026",
+    "contact": "emma.r@cread.fr"
+  }
+]
