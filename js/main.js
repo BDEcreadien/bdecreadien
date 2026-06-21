@@ -41,8 +41,9 @@ function renderActu(data) {
     return;
   }
 
-  const first = data[0];
-  const d0 = new Date(first.date);
+  const phareIdx = data.findIndex(e => e.phare);
+  const first = phareIdx >= 0 ? data[phareIdx] : data[0];
+  const rest = data.filter((_, i) => i !== (phareIdx >= 0 ? phareIdx : 0));
   featured.innerHTML = `
     <span class="actu-featured-tag">Événement phare</span>
     <h3 class="actu-featured-title">${first.titre}</h3>
@@ -50,7 +51,7 @@ function renderActu(data) {
   `;
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
-  list.innerHTML = data.slice(1, 4).map((ev, i) => {
+  list.innerHTML = rest.slice(0, 3).map((ev, i) => {
     const d = new Date(ev.date);
     const day = d.getDate().toString().padStart(2, '0');
     const month = d.toLocaleString('fr-FR', { month: 'short' });

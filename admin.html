@@ -337,7 +337,7 @@ function buildEditor(type) {
   const listHtml = items.length
     ? items.map((item, i) => {
         let title = '', sub = '';
-        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
+        if (type === 'evenements') { title = (item.phare ? '⭐ ' : '') + item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
 
@@ -447,6 +447,12 @@ function formEvenement() {
     </div>
     <div class="form-row"><label>Adresse complète</label><input type="text" id="ev-adresse" readonly style="background:#f5f5f7;color:var(--gris-texte);"></div>
     <div class="form-row"><label>Description *</label><textarea id="ev-description" placeholder="Décris l'événement…"></textarea></div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;">
+        <input type="checkbox" id="ev-phare" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">
+        <span>⭐ Événement phare <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(affiché en grand sur l'accueil)</span></span>
+      </label>
+    </div>
     <div class="form-grid">
       <div class="form-row"><label>Lien billetterie (optionnel)</label><input type="url" id="ev-lien" placeholder="https://shotgun.live/…"></div>
       <div class="form-row">
@@ -580,6 +586,7 @@ function cancelForm() {
 function resetForm() {
   if (currentType === 'evenements') {
     ['ev-titre','ev-date','ev-dateAffichage','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const ph = document.getElementById('ev-phare'); if(ph) ph.checked = false;
     const sel = document.getElementById('ev-prix-select'); if(sel) sel.value = '';
     const autre = document.getElementById('ev-prix-autre'); if(autre) autre.style.display = 'none';
     const sugg = document.getElementById('lieu-suggestions'); if(sugg) sugg.style.display = 'none';
@@ -627,6 +634,7 @@ function editItem(type, i) {
     document.getElementById('ev-description').value = ev.description || '';
     document.getElementById('ev-lien').value = ev.lien || '';
     document.getElementById('ev-typeLien').value = ev.typeLien || '';
+    document.getElementById('ev-phare').checked = !!ev.phare;
     document.getElementById('form-title').textContent = 'Modifier l\'événement';
   }
   if (type === 'annonces') {
@@ -707,8 +715,10 @@ async function saveEvenement() {
   const description = document.getElementById('ev-description').value.trim();
   if (!titre || !date || !debut || !fin || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
   const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
-  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value };
+  const phare = document.getElementById('ev-phare').checked;
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare };
   const idx = editIndex.evenement;
+  if (phare) data.evenements.forEach((e, i) => { if (i !== idx) e.phare = false; });
   if (idx >= 0) data.evenements[idx] = ev; else data.evenements.push(ev);
   try {
     await persistData('evenements', idx >= 0 ? `Modification : ${titre}` : `Nouvel événement : ${titre}`);
