@@ -1,24 +1,15 @@
-[
-  {
-    "id": 1,
-    "titre": "Soirée de fin d'année",
-    "date": "2026-07-04",
-    "dateAffichage": "Vendredi 4 juillet 2026",
-    "lieu": "Ninkasi Gerland, Lyon",
-    "description": "La grande soirée de fin d'année du BDE CREAD. Ne ratez pas ça !",
-    "prix": "10€",
-    "lien": "",
-    "typeLien": ""
-  },
-  {
-    "id": 2,
-    "titre": "Afterwork BDE",
-    "date": "2026-06-27",
-    "dateAffichage": "Vendredi 27 juin 2026",
-    "lieu": "À définir",
-    "description": "Un verre entre créadiens pour fêter la fin du semestre.",
-    "prix": "Gratuit",
-    "lien": "",
-    "typeLien": ""
-  }
-]
+{
+  "evenements": [
+    {
+      "id": 1,
+      "titre": "Soirée de la rentrée",
+      "date": "2026-09-17",
+      "dateAffichage": "Jeudi 17 Septembre 2026",
+      "lieu": "Ninkasi Cordelierq",
+      "description": "NINKASI CORDELIERS, cette soirée se déroula le Jeudi 17 Septembre 2026 de 23h30 à 04h00",
+      "prix": "10€",
+      "lien": "",
+      "typeLien": ""
+    }
+  ]
+}
