@@ -368,7 +368,12 @@
         <div class="form-grid">
           <div class="form-row">
             <label>Horaire *</label>
-            <input type="text" id="ev-horaire" placeholder="Ex: 23h30 – 04h00">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="time" id="ev-horaire-debut" style="flex:1;">
+              <span style="color:var(--gris-texte); font-size:13px; white-space:nowrap;">→</span>
+              <input type="time" id="ev-horaire-fin" style="flex:1;">
+            </div>
+            <input type="hidden" id="ev-horaire">
           </div>
           <div class="form-row">
             <label>Prix *</label>
@@ -610,7 +615,7 @@ function cancelForm(type) {
 
 function clearForm(type) {
   if (type === 'evenement') {
-    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
+    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ev-typeLien').value = '';
     document.getElementById('lieu-suggestions').style.display = 'none';
     document.getElementById('form-ev-title').textContent = 'Nouvel événement';
@@ -633,6 +638,9 @@ function editItem(type, i) {
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
+    const [hDebut, hFin] = (ev.horaire || ' – ').split(' – ');
+    document.getElementById('ev-horaire-debut').value = hDebut ? hDebut.replace('h',':') : '';
+    document.getElementById('ev-horaire-fin').value = hFin ? hFin.replace('h',':') : '';
     document.getElementById('ev-horaire').value = ev.horaire || '';
     document.getElementById('ev-lieu').value = ev.lieu || '';
     document.getElementById('ev-adresse').value = ev.adresse || '';
@@ -683,9 +691,11 @@ async function saveEvenement() {
   const description = document.getElementById('ev-description').value.trim();
   if (!titre || !date || !dateAffichage || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
 
-  const horaire = document.getElementById('ev-horaire').value.trim();
+  const debut = document.getElementById('ev-horaire-debut').value;
+  const fin = document.getElementById('ev-horaire-fin').value;
+  if (!debut || !fin) return showToast('Remplis l\'horaire de début et de fin', 'error');
+  const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
   const adresse = document.getElementById('ev-adresse').value.trim();
-  if (!horaire) return showToast('Remplis tous les champs obligatoires', 'error');
 
   const ev = { titre, date, dateAffichage, horaire, lieu, adresse, description, prix,
     lien: document.getElementById('ev-lien').value.trim(),
@@ -797,7 +807,9 @@ async function searchLieu(q) {
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
   const r = list._results[i];
-  const nom = r.namedetails?.name || r.name || r.display_name.split(',')[0];
+  // Prend les 2 premières parties du display_name pour avoir "Ninkasi Cordeliers" au lieu de juste "Ninkasi"
+  const parts = r.display_name.split(',');
+  const nom = parts.slice(0, 2).map(s => s.trim()).join(' ');
   document.getElementById('ev-lieu').value = nom;
   document.getElementById('ev-adresse').value = r.display_name;
   list.style.display = 'none';
