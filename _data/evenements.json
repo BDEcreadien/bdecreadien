@@ -10,5 +10,17 @@
     "prix": "10€",
     "lien": "",
     "typeLien": ""
+  },
+  {
+    "titre": "Soirée Little pub",
+    "date": "2026-09-23",
+    "dateAffichage": "Mercredi 23 septembre 2026",
+    "horaire": "23h00 – 04h00",
+    "lieu": "My Little Pub Pentes de la Croix-Rousse",
+    "adresse": "My Little Pub, Rue Saint-Benoît, Clos-Jouve, Pentes de la Croix-Rousse, Lyon 1er Arrondissement, Lyon, Métropole de Lyon, Rhône, Auvergne-Rhône-Alpes, France métropolitaine, 69001, France",
+    "description": "Les prix de bar de 23h à 2h seront les suivants :\n> Verre d’alcool fort à 3 €\n> Shooter : 1€\n> Pinte : 2 €\n> Soft : 1 €\nLes prix de bar de 2h à 3h30 seront les suivants :\n> Verre d’alcool fort à 4 €\n> Shooter : 2 €\n> Pinte : 3 €\n> Soft : 2 €\nFin du service au bar à 3h30 du matin",
+    "prix": "15€",
+    "lien": "",
+    "typeLien": ""
   }
 ]
