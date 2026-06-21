@@ -71,6 +71,21 @@ collections:
                   - { label: "Shotgun", value: "shotgun" }
                   - { label: "HelloAsso", value: "helloasso" }
 
+  - name: "videos"
+    label: "Vidéos"
+    files:
+      - name: "liste"
+        label: "Galerie vidéos"
+        file: "_data/videos.json"
+        fields:
+          - label: "Vidéos"
+            name: "videos"
+            widget: "list"
+            summary: "{{fields.titre}}"
+            fields:
+              - { label: "URL YouTube ou Vimeo", name: "url", widget: "string", hint: "Ex: https://www.youtube.com/watch?v=..." }
+              - { label: "Titre (optionnel)", name: "titre", widget: "string", required: false }
+
   - name: "equipe"
     label: "Équipe"
     files:

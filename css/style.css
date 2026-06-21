@@ -1732,81 +1732,84 @@ footer {
    SECTION INSTAGRAM
    =================================== */
 
-.section-insta {
+/* ===================================
+   SECTION VIDÉOS
+   =================================== */
+
+.section-videos {
   padding: 5rem 3rem;
   background: var(--noir);
-  text-align: center;
 }
 
-.section-insta .section-label {
+.section-videos .section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-videos .section-label {
   color: rgba(255,255,255,0.4);
 }
 
-.section-insta .section-title {
+.section-videos .section-title {
   color: white;
   margin-top: 0.5rem;
 }
 
-.insta-widget-container {
-  margin-top: 3rem;
-  border-radius: 20px;
-  overflow: hidden;
-  min-height: 280px;
-  background: rgba(255,255,255,0.04);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255,255,255,0.06);
-  padding: 3rem;
-}
-
-.insta-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.insta-placeholder-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-  background: var(--gradient);
+.videos-grid:has(.video-item:nth-child(1):nth-last-child(1)),
+.videos-grid:has(.video-item:nth-child(1):nth-last-child(2)),
+.videos-grid:has(.video-item:nth-child(1):nth-last-child(3)) {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.video-item {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.insta-placeholder p {
-  font-size: 15px;
-  font-weight: 300;
-  color: rgba(255,255,255,0.45);
-  max-width: 360px;
-  line-height: 1.6;
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
 }
 
-.insta-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--gradient);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 100px;
-  font-family: 'Barlow Condensed', sans-serif;
+.video-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-titre {
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: var(--transition);
-  box-shadow: 0 6px 20px rgba(232,81,0,0.3);
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  line-height: 1.4;
 }
 
-.insta-link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(232,81,0,0.4);
+@media (max-width: 768px) {
+  .videos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .videos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ===================================

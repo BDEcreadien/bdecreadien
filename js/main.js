@@ -28,6 +28,47 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 // ===================================
+// VIDÉOS — Chargement & Rendu
+// ===================================
+
+function getEmbedUrl(url) {
+  if (!url) return null;
+  // YouTube
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  // Vimeo
+  const vi = url.match(/vimeo\.com\/(\d+)/);
+  if (vi) return `https://player.vimeo.com/video/${vi[1]}`;
+  return url;
+}
+
+function renderVideos(data) {
+  const grid = document.getElementById('videos-grid');
+  if (!grid) return;
+  if (!data.length) return;
+
+  grid.innerHTML = data.map(v => `
+    <div class="video-item reveal">
+      <div class="video-wrapper">
+        <iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy"></iframe>
+      </div>
+      ${v.titre ? `<p class="video-titre">${v.titre}</p>` : ''}
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+if (document.getElementById('videos-grid')) {
+  fetch('/_data/videos.json')
+    .then(r => r.json())
+    .then(data => renderVideos(data))
+    .catch(() => {});
+}
+
+// ===================================
 // MENU HAMBURGER MOBILE
 // ===================================
 
