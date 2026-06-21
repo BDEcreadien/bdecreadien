@@ -816,10 +816,9 @@ async function searchLieu(q) {
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
   const r = list._results[i];
-  // Prend les 2 premières parties du display_name pour avoir "Ninkasi Cordeliers" au lieu de juste "Ninkasi"
-  const parts = r.display_name.split(',');
-  const nom = parts.slice(0, 2).map(s => s.trim()).join(' ');
-  document.getElementById('ev-lieu').value = nom;
+  const nom = r.name || r.display_name.split(',')[0].trim();
+  const quartier = r.address?.quarter || r.address?.suburb || r.address?.neighbourhood || '';
+  document.getElementById('ev-lieu').value = quartier ? `${nom} ${quartier}` : nom;
   document.getElementById('ev-adresse').value = r.display_name;
   list.style.display = 'none';
 }
