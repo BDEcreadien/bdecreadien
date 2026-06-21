@@ -449,15 +449,15 @@ function formEvenement() {
       </div>
     </div>
     <div class="form-row">
-      <label>Lieu * <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(nom affiché, ex: Ninkasi Cordeliers)</span></label>
-      <div class="autocomplete-wrap">
-        <input type="text" id="ev-lieu" placeholder="Ex: Ninkasi Cordeliers" autocomplete="off">
-        <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
-      </div>
+      <label>Lieu * <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(nom affiché librement — ex: Six Brotteaux)</span></label>
+      <input type="text" id="ev-lieu" placeholder="Ex: Six Brotteaux">
     </div>
     <div class="form-row">
-      <label>Adresse <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel, remplie auto — modifiable)</span></label>
-      <input type="text" id="ev-adresse" placeholder="Ex: Rue du Président Carnot, 69002 Lyon">
+      <label>Adresse <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(tape la rue pour chercher)</span></label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="ev-adresse" placeholder="Ex: Rue Juliette Récamier Lyon…" autocomplete="off">
+        <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
+      </div>
     </div>
     <div class="form-row"><label>Description *</label><textarea id="ev-description" placeholder="Décris l'événement…"></textarea></div>
     <div class="form-row">
@@ -927,7 +927,7 @@ async function deleteStorageFile(path, sha) {
 // ============================================================
 let nominatimTimer = null;
 function initLieuAutocomplete() {
-  const input = document.getElementById('ev-lieu');
+  const input = document.getElementById('ev-adresse');
   const list = document.getElementById('lieu-suggestions');
   if (!input) return;
   input.addEventListener('input', () => {
@@ -941,15 +941,13 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=8&countrycodes=fr&accept-language=fr&viewbox=4.6,45.6,5.1,46.0&bounded=0`);
-    const results = await res.json();
+    const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=6&autocomplete=1`);
+    const json = await res.json();
+    const results = json.features || [];
     if (!results.length) { list.innerHTML = '<div class="autocomplete-item" style="color:var(--gris-texte);cursor:default;">Aucun résultat</div>'; list.style.display = 'block'; return; }
     list.innerHTML = results.map((r, i) => {
-      const a = r.address || {};
-      const rue = [a.house_number, a.road].filter(Boolean).join(' ');
-      const ville = [a.postcode, a.city || a.town || a.village].filter(Boolean).join(' ');
-      const short = [rue, ville].filter(Boolean).join(', ');
-      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${r.name}</strong>${short ? `<br><span style="color:var(--gris-texte);font-size:12px;">${short}</span>` : ''}</div>`;
+      const p = r.properties;
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${p.label}</strong></div>`;
     }).join('');
     list._results = results;
     list.style.display = 'block';
@@ -957,12 +955,8 @@ async function searchLieu(q) {
 }
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
-  const r = list._results[i];
-  const a = r.address || {};
-  const rue = [a.house_number, a.road].filter(Boolean).join(' ');
-  const ville = [a.postcode, a.city || a.town || a.village].filter(Boolean).join(' ');
-  document.getElementById('ev-lieu').value = r.name;
-  document.getElementById('ev-adresse').value = [rue, ville].filter(Boolean).join(', ');
+  const p = list._results[i].properties;
+  document.getElementById('ev-adresse').value = p.label;
   list.style.display = 'none';
 }
 
