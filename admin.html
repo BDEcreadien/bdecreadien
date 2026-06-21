@@ -324,6 +324,7 @@
     <img src="assets/Logo.png" alt="BDE CREAD">
     <span>ADMIN — BDE CREAD</span>
   </div>
+  <button id="btn-test" onclick="testConnexion()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.6); padding:6px 14px; border-radius:8px; cursor:pointer; font-size:13px; margin-right:0.5rem;">Tester</button>
   <button id="btn-logout" onclick="logout()">Se déconnecter</button>
 </header>
 
@@ -785,6 +786,30 @@ function showToast(msg, type) {
   t.textContent = msg;
   t.className = `show ${type}`;
   setTimeout(() => t.className = '', 3000);
+}
+
+// ---- TEST CONNEXION ----
+async function testConnexion() {
+  try {
+    // Test 1 : identité du token
+    const r1 = await fetch('https://api.github.com/user', {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (!r1.ok) { showToast(`Token invalide (${r1.status})`, 'error'); return; }
+    const user = await r1.json();
+
+    // Test 2 : accès en lecture au repo
+    const r2 = await fetch(`https://api.github.com/repos/${REPO}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (!r2.ok) { showToast(`Pas accès au repo (${r2.status})`, 'error'); return; }
+    const repo = await r2.json();
+    const perm = repo.permissions;
+
+    showToast(`✓ ${user.login} — push: ${perm?.push ? 'OUI' : 'NON'} — admin: ${perm?.admin ? 'OUI' : 'NON'}`, perm?.push ? 'success' : 'error');
+  } catch(e) {
+    showToast('Erreur réseau : ' + e.message, 'error');
+  }
 }
 
 // ---- PRIX ----
