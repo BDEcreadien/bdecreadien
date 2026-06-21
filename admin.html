@@ -285,6 +285,31 @@
       border-radius: var(--radius);
     }
 
+    /* ---- AUTOCOMPLETE ADRESSE ---- */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: white;
+      border: 1.5px solid var(--violet);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      z-index: 100;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .autocomplete-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--gris-border);
+      line-height: 1.4;
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: rgba(70,58,144,0.06); }
+    .autocomplete-item strong { color: var(--violet); font-size: 14px; }
+
     @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
       #screen-app { padding: 1rem; }
@@ -342,13 +367,24 @@
         </div>
         <div class="form-grid">
           <div class="form-row">
-            <label>Lieu *</label>
-            <input type="text" id="ev-lieu" placeholder="Ex: Ninkasi Gerland">
+            <label>Horaire *</label>
+            <input type="text" id="ev-horaire" placeholder="Ex: 23h30 – 04h00">
           </div>
           <div class="form-row">
             <label>Prix *</label>
             <input type="text" id="ev-prix" placeholder="Ex: 10€ ou Gratuit">
           </div>
+        </div>
+        <div class="form-row">
+          <label>Lieu *</label>
+          <div class="autocomplete-wrap">
+            <input type="text" id="ev-lieu" placeholder="Tape le nom du lieu ou l'adresse…" autocomplete="off">
+            <div class="autocomplete-list" id="lieu-suggestions" style="display:none;"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Adresse complète</label>
+          <input type="text" id="ev-adresse" placeholder="Remplie automatiquement" readonly style="background:#f5f5f7; color:var(--gris-texte);">
         </div>
         <div class="form-row">
           <label>Description *</label>
@@ -571,8 +607,9 @@ function cancelForm(type) {
 
 function clearForm(type) {
   if (type === 'evenement') {
-    ['ev-titre','ev-date','ev-dateAffichage','ev-lieu','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
+    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ev-typeLien').value = '';
+    document.getElementById('lieu-suggestions').style.display = 'none';
     document.getElementById('form-ev-title').textContent = 'Nouvel événement';
   }
   if (type === 'annonce') {
@@ -593,7 +630,9 @@ function editItem(type, i) {
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
+    document.getElementById('ev-horaire').value = ev.horaire || '';
     document.getElementById('ev-lieu').value = ev.lieu || '';
+    document.getElementById('ev-adresse').value = ev.adresse || '';
     document.getElementById('ev-prix').value = ev.prix || '';
     document.getElementById('ev-description').value = ev.description || '';
     document.getElementById('ev-lien').value = ev.lien || '';
@@ -641,7 +680,11 @@ async function saveEvenement() {
   const description = document.getElementById('ev-description').value.trim();
   if (!titre || !date || !dateAffichage || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
 
-  const ev = { titre, date, dateAffichage, lieu, description, prix,
+  const horaire = document.getElementById('ev-horaire').value.trim();
+  const adresse = document.getElementById('ev-adresse').value.trim();
+  if (!horaire) return showToast('Remplis tous les champs obligatoires', 'error');
+
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse, description, prix,
     lien: document.getElementById('ev-lien').value.trim(),
     typeLien: document.getElementById('ev-typeLien').value };
 
@@ -707,10 +750,61 @@ function showToast(msg, type) {
   setTimeout(() => t.className = '', 3000);
 }
 
+// ---- AUTOCOMPLETE LIEU (Nominatim) ----
+let nominatimTimer = null;
+
+function initLieuAutocomplete() {
+  const input = document.getElementById('ev-lieu');
+  const list = document.getElementById('lieu-suggestions');
+
+  input.addEventListener('input', () => {
+    clearTimeout(nominatimTimer);
+    const q = input.value.trim();
+    if (q.length < 3) { list.style.display = 'none'; return; }
+    nominatimTimer = setTimeout(() => searchLieu(q), 350);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.autocomplete-wrap')) list.style.display = 'none';
+  });
+}
+
+async function searchLieu(q) {
+  const list = document.getElementById('lieu-suggestions');
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=fr`, {
+      headers: { 'Accept-Language': 'fr' }
+    });
+    const results = await res.json();
+    if (!results.length) { list.style.display = 'none'; return; }
+
+    list.innerHTML = results.map((r, i) => {
+      const nom = r.namedetails?.name || r.name || '';
+      const adresse = r.display_name || '';
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})">
+        <strong>${nom || adresse.split(',')[0]}</strong><br>
+        <span style="color:var(--gris-texte); font-size:12px;">${adresse}</span>
+      </div>`;
+    }).join('');
+    list._results = results;
+    list.style.display = 'block';
+  } catch(e) { list.style.display = 'none'; }
+}
+
+function selectLieu(i) {
+  const list = document.getElementById('lieu-suggestions');
+  const r = list._results[i];
+  const nom = r.namedetails?.name || r.name || r.display_name.split(',')[0];
+  document.getElementById('ev-lieu').value = nom;
+  document.getElementById('ev-adresse').value = r.display_name;
+  list.style.display = 'none';
+}
+
 // ---- BOOT ----
 window.addEventListener('DOMContentLoaded', () => {
   token = localStorage.getItem('bde_admin_token') || '';
   document.getElementById('btn-logout').style.display = 'none';
+  initLieuAutocomplete();
   if (token) init();
 });
 </script>

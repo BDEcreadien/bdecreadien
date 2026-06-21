@@ -175,7 +175,8 @@ function renderEvenements(data) {
       </div>
       <div style="flex:1;">
         <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:19px; font-weight:700; color:var(--noir);">${ev.titre}</h3>
-        <p style="font-size:13px; color:var(--gris-texte); margin-top:4px;">📍 ${ev.lieu}</p>
+        <p style="font-size:13px; color:var(--gris-texte); margin-top:4px;">📍 ${ev.lieu}${ev.adresse ? ` — <span style="font-style:italic;">${ev.adresse}</span>` : ''}</p>
+        ${ev.horaire ? `<p style="font-size:13px; color:var(--gris-texte); margin-top:2px;">🕐 ${ev.horaire}</p>` : ''}
         <p style="font-size:14px; font-weight:300; color:var(--gris-texte); margin-top:8px; line-height:1.5;">${ev.description}</p>
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:1rem; flex-wrap:wrap; gap:0.75rem;">
           <span style="font-family:'Bebas Neue',sans-serif; font-size:20px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
