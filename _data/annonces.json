@@ -1,13 +1,12 @@
 [
   {
-    "id": 2,
+    "titre": "essai",
     "categorie": "place",
-    "titre": "Place concert â Bon Entendeur",
-    "description": "Une place pour le concert de Bon Entendeur au Ninkasi le 28 juin. Plus disponible pour y aller.",
     "prix": "25 â¬",
+    "description": "Une place pour le concert de Bon Entendeur au Ninkasi le 28 juin. Plus disponible pour y aller.",
     "auteur": "Hugo D.",
-    "date": "17 juin 2026",
-    "contact": "hugo.d@cread.fr"
+    "contact": "hugo.d@cread.fr",
+    "date": "21 juin 2026"
   },
   {
     "id": 3,
