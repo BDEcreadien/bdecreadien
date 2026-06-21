@@ -217,6 +217,7 @@
 <script>
 const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
+const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
 let data = { evenements: [], annonces: [], videos: [], equipe: [] };
 let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1 };
@@ -940,33 +941,26 @@ function initLieuAutocomplete() {
 async function searchLieu(q) {
   const list = document.getElementById('lieu-suggestions');
   try {
-    // Photon (Komoot/OSM) : recherche de lieux et établissements, centré sur Lyon
-    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=6&lang=fr&lat=45.75&lon=4.85`);
+    const url = `https://api.foursquare.com/v3/autocomplete?query=${encodeURIComponent(q)}&ll=45.75,4.85&limit=6&types=place`;
+    const res = await fetch(url, { headers: { Authorization: FSQ_KEY, Accept: 'application/json' } });
     const json = await res.json();
-    const results = json.features || [];
+    const results = (json.results || []).filter(r => r.type === 'place' && r.place);
     if (!results.length) { list.style.display = 'none'; return; }
     list.innerHTML = results.map((r, i) => {
-      const p = r.properties;
-      const nom = p.name || '';
-      if (!nom) return '';
-      const rue = [p.housenumber, p.street].filter(Boolean).join(' ');
-      const ville = [p.postcode, p.city].filter(Boolean).join(' ');
-      const detail = [rue, ville].filter(Boolean).join(', ');
-      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${nom}</strong>${detail ? `<br><span style="color:var(--gris-texte);font-size:12px;">${detail}</span>` : ''}</div>`;
-    }).filter(Boolean).join('');
-    if (!list.innerHTML) { list.style.display = 'none'; return; }
+      const p = r.place;
+      const adresse = p.location?.formatted_address || '';
+      return `<div class="autocomplete-item" onclick="selectLieu(${i})"><strong>${p.name}</strong>${adresse ? `<br><span style="color:var(--gris-texte);font-size:12px;">${adresse}</span>` : ''}</div>`;
+    }).join('');
     list._results = results;
     list.style.display = 'block';
   } catch(e) { list.style.display = 'none'; }
 }
 function selectLieu(i) {
   const list = document.getElementById('lieu-suggestions');
-  const p = list._results[i].properties;
-  const nom = p.name || '';
-  const rue = [p.housenumber, p.street].filter(Boolean).join(' ');
-  const ville = [p.postcode, p.city].filter(Boolean).join(' ');
-  const adresse = [rue, ville].filter(Boolean).join(', ');
-  document.getElementById('ev-lieu').value = nom;
+  const p = list._results[i].place;
+  const loc = p.location || {};
+  const adresse = [loc.address, loc.postcode, loc.locality].filter(Boolean).join(', ');
+  document.getElementById('ev-lieu').value = p.name;
   document.getElementById('ev-adresse').value = adresse;
   list.style.display = 'none';
 }
