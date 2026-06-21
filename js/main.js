@@ -47,16 +47,13 @@ function renderVideos(data) {
   if (!grid) return;
   if (!data.length) return;
 
-  grid.innerHTML = data.map(v => `
-    <div class="video-item reveal">
-      <div class="video-wrapper">
-        <iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy"></iframe>
-      </div>
-      ${v.titre ? `<p class="video-titre">${v.titre}</p>` : ''}
-    </div>
-  `).join('');
+  grid.innerHTML = data.map(v => {
+    const isPhoto = v.type === 'photo' || (!v.type && !getEmbedUrl(v.url)?.includes('embed'));
+    const media = isPhoto
+      ? `<div class="video-wrapper"><img src="${v.url}" alt="${v.titre || 'Photo BDE'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy"></div>`
+      : `<div class="video-wrapper"><iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    return `<div class="video-item reveal">${media}${v.titre ? `<p class="video-titre">${v.titre}</p>` : ''}</div>`;
+  }).join('');
 
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 }

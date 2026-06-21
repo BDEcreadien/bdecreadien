@@ -343,7 +343,7 @@
   <div class="tabs">
     <button class="tab active" onclick="switchTab('evenements')">Événements</button>
     <button class="tab" onclick="switchTab('annonces')">Annonces</button>
-    <button class="tab" onclick="switchTab('videos')">Vidéos</button>
+    <button class="tab" onclick="switchTab('videos')">Médias</button>
   </div>
 
   <!-- PANEL ÉVÉNEMENTS -->
@@ -479,15 +479,33 @@
     <button class="btn-add" id="btn-add-an" onclick="showForm('annonce')">+ Ajouter une annonce</button>
   </div>
 
-  <!-- PANEL VIDÉOS -->
+  <!-- PANEL MÉDIAS -->
   <div class="panel" id="panel-videos">
     <div class="items-list" id="list-videos"></div>
     <div id="form-video-wrap" style="display:none;">
       <div class="form-card">
-        <h3 id="form-vi-title">Nouvelle vidéo</h3>
+        <h3 id="form-vi-title">Nouveau média</h3>
         <div class="form-row">
-          <label>URL YouTube ou Vimeo *</label>
-          <input type="url" id="vi-url" placeholder="https://www.youtube.com/watch?v=...">
+          <label>Type *</label>
+          <select id="vi-type" onchange="onMediaTypeChange()">
+            <option value="video">Vidéo (YouTube / Vimeo)</option>
+            <option value="photo">Photo (depuis l'ordi)</option>
+          </select>
+        </div>
+        <div id="vi-video-fields">
+          <div class="form-row">
+            <label>URL YouTube ou Vimeo *</label>
+            <input type="url" id="vi-url" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+        </div>
+        <div id="vi-photo-fields" style="display:none;">
+          <div class="form-row">
+            <label>Photo *</label>
+            <input type="file" id="vi-file" accept="image/*" onchange="onPhotoSelected()">
+          </div>
+          <div id="vi-preview-wrap" style="display:none; margin-top:0.5rem;">
+            <img id="vi-preview" style="max-width:100%; max-height:200px; border-radius:10px; object-fit:cover;">
+          </div>
         </div>
         <div class="form-row">
           <label>Titre (optionnel)</label>
@@ -495,11 +513,11 @@
         </div>
         <div class="form-actions">
           <button class="btn-cancel" onclick="cancelForm('video')">Annuler</button>
-          <button class="btn-save" onclick="saveVideo()">Ajouter</button>
+          <button class="btn-save" id="btn-save-media" onclick="saveMedia()">Ajouter</button>
         </div>
       </div>
     </div>
-    <button class="btn-add" id="btn-add-vi" onclick="showForm('video')">+ Ajouter une vidéo</button>
+    <button class="btn-add" id="btn-add-vi" onclick="showForm('video')">+ Ajouter un média</button>
   </div>
 </div>
 
@@ -591,7 +609,7 @@ function renderList(type) {
     let title = '', sub = '';
     if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
     if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
-    if (type === 'videos') { title = item.titre || item.url; sub = item.url; }
+    if (type === 'videos') { title = (item.type === 'photo' ? '🖼 ' : '▶ ') + (item.titre || item.url); sub = item.url; }
     return `
       <div class="item-card">
         <div class="item-card-info">
@@ -643,7 +661,11 @@ function clearForm(type) {
   }
   if (type === 'video') {
     ['vi-url','vi-titre'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('form-vi-title').textContent = 'Nouvelle vidéo';
+    document.getElementById('vi-type').value = 'video';
+    document.getElementById('vi-video-fields').style.display = 'block';
+    document.getElementById('vi-photo-fields').style.display = 'none';
+    document.getElementById('vi-preview-wrap').style.display = 'none';
+    document.getElementById('form-vi-title').textContent = 'Nouveau média';
   }
 }
 
@@ -690,9 +712,15 @@ function editItem(type, i) {
   }
   if (type === 'videos') {
     const vi = data.videos[i];
-    document.getElementById('vi-url').value = vi.url || '';
+    document.getElementById('vi-type').value = vi.type || 'video';
+    onMediaTypeChange();
+    document.getElementById('vi-url').value = vi.type === 'video' ? (vi.url || '') : '';
     document.getElementById('vi-titre').value = vi.titre || '';
-    document.getElementById('form-vi-title').textContent = 'Modifier la vidéo';
+    if (vi.type === 'photo' && vi.url) {
+      document.getElementById('vi-preview').src = vi.url;
+      document.getElementById('vi-preview-wrap').style.display = 'block';
+    }
+    document.getElementById('form-vi-title').textContent = 'Modifier le média';
     showForm('video');
   }
 }
@@ -763,21 +791,77 @@ async function saveAnnonce() {
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
-// ---- SAVE VIDÉO ----
-async function saveVideo() {
-  const url = document.getElementById('vi-url').value.trim();
-  if (!url) return showToast('Entre une URL', 'error');
-  const vi = { url, titre: document.getElementById('vi-titre').value.trim() };
+// ---- MÉDIAS ----
+function onMediaTypeChange() {
+  const type = document.getElementById('vi-type').value;
+  document.getElementById('vi-video-fields').style.display = type === 'video' ? 'block' : 'none';
+  document.getElementById('vi-photo-fields').style.display = type === 'photo' ? 'block' : 'none';
+}
 
+function onPhotoSelected() {
+  const file = document.getElementById('vi-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('vi-preview').src = e.target.result;
+    document.getElementById('vi-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async e => {
+      const base64 = e.target.result.split(',')[1];
+      const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const path = `assets/uploads/${filename}`;
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+          method: 'PUT',
+          headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Photo : ${filename}`, content: base64, branch: BRANCH })
+        });
+        if (!res.ok) { const b = await res.json(); reject(new Error(`${res.status} — ${b.message}`)); return; }
+        resolve(`/${path}`);
+      } catch(e) { reject(e); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function saveMedia() {
+  const type = document.getElementById('vi-type').value;
+  const titre = document.getElementById('vi-titre').value.trim();
   const idx = editIndex.video;
-  if (idx >= 0) { data.videos[idx] = vi; }
-  else { data.videos.push(vi); }
+
+  if (type === 'video') {
+    const url = document.getElementById('vi-url').value.trim();
+    if (!url) return showToast('Entre une URL', 'error');
+    const vi = { type: 'video', url, titre };
+    if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
+  } else {
+    const file = document.getElementById('vi-file').files[0];
+    if (!file && idx < 0) return showToast('Sélectionne une photo', 'error');
+    const btn = document.getElementById('btn-save-media');
+    btn.textContent = 'Envoi…'; btn.disabled = true;
+    try {
+      let url = idx >= 0 ? data.videos[idx].url : '';
+      if (file) url = await uploadPhoto(file);
+      const vi = { type: 'photo', url, titre };
+      if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
+    } catch(e) {
+      btn.textContent = 'Ajouter'; btn.disabled = false;
+      return showToast('Erreur upload : ' + e.message, 'error');
+    }
+    btn.textContent = 'Ajouter'; btn.disabled = false;
+  }
 
   try {
-    await persistData('videos', idx >= 0 ? 'Modification vidéo' : 'Nouvelle vidéo');
+    await persistData('videos', idx >= 0 ? 'Modification média' : 'Nouveau média');
     renderList('videos');
     cancelForm('video');
-    showToast('Vidéo ajoutée !', 'success');
+    showToast('Média ajouté !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
