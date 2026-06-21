@@ -9,13 +9,12 @@
     "date": "21 juin 2026"
   },
   {
-    "id": 3,
+    "titre": "Sous-location studio",
     "categorie": "logement",
-    "titre": "Sous-location studio Presqu'Ã®le â AoÃ»t",
+    "prix": "520 €/mois",
     "description": "Studio 18mÂ² entiÃ¨rement meublÃ©, proche tram, disponible tout le mois d'aoÃ»t. Loyer charges comprises.",
-    "prix": "520 â¬/mois",
     "auteur": "Emma R.",
-    "date": "15 juin 2026",
-    "contact": "emma.r@cread.fr"
+    "contact": "emma.r@cread.fr",
+    "date": "21 juin 2026"
   }
 ]
