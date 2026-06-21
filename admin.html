@@ -377,7 +377,19 @@
           </div>
           <div class="form-row">
             <label>Prix *</label>
-            <input type="text" id="ev-prix" placeholder="Ex: 10€">
+            <select id="ev-prix-select" onchange="onPrixChange()">
+              <option value="">— Choisir —</option>
+              <option value="Gratuit">Gratuit</option>
+              <option value="5€">5€</option>
+              <option value="8€">8€</option>
+              <option value="10€">10€</option>
+              <option value="12€">12€</option>
+              <option value="15€">15€</option>
+              <option value="20€">20€</option>
+              <option value="autre">Autre…</option>
+            </select>
+            <input type="text" id="ev-prix-autre" placeholder="Ex: 7€50" style="display:none; margin-top:0.5rem;">
+            <input type="hidden" id="ev-prix">
           </div>
         </div>
         <div class="form-row">
@@ -616,6 +628,8 @@ function cancelForm(type) {
 function clearForm(type) {
   if (type === 'evenement') {
     ['ev-titre','ev-date','ev-dateAffichage','ev-horaire','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ev-prix-select').value = '';
+    document.getElementById('ev-prix-autre').style.display = 'none';
     document.getElementById('ev-typeLien').value = '';
     document.getElementById('lieu-suggestions').style.display = 'none';
     document.getElementById('form-ev-title').textContent = 'Nouvel événement';
@@ -644,7 +658,17 @@ function editItem(type, i) {
     document.getElementById('ev-horaire').value = ev.horaire || '';
     document.getElementById('ev-lieu').value = ev.lieu || '';
     document.getElementById('ev-adresse').value = ev.adresse || '';
-    document.getElementById('ev-prix').value = ev.prix || '';
+    const prixVal = ev.prix || '';
+    const prixOpts = ['Gratuit','5€','8€','10€','12€','15€','20€'];
+    if (prixOpts.includes(prixVal)) {
+      document.getElementById('ev-prix-select').value = prixVal;
+      document.getElementById('ev-prix-autre').style.display = 'none';
+    } else if (prixVal) {
+      document.getElementById('ev-prix-select').value = 'autre';
+      document.getElementById('ev-prix-autre').value = prixVal;
+      document.getElementById('ev-prix-autre').style.display = 'block';
+    }
+    document.getElementById('ev-prix').value = prixVal;
     document.getElementById('ev-description').value = ev.description || '';
     document.getElementById('ev-lien').value = ev.lien || '';
     document.getElementById('ev-typeLien').value = ev.typeLien || '';
@@ -761,6 +785,20 @@ function showToast(msg, type) {
   t.textContent = msg;
   t.className = `show ${type}`;
   setTimeout(() => t.className = '', 3000);
+}
+
+// ---- PRIX ----
+function onPrixChange() {
+  const sel = document.getElementById('ev-prix-select').value;
+  const autre = document.getElementById('ev-prix-autre');
+  if (sel === 'autre') {
+    autre.style.display = 'block';
+    document.getElementById('ev-prix').value = '';
+    autre.oninput = () => document.getElementById('ev-prix').value = autre.value;
+  } else {
+    autre.style.display = 'none';
+    document.getElementById('ev-prix').value = sel;
+  }
 }
 
 // ---- DATE AFFICHÉE AUTO ----
