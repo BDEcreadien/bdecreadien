@@ -526,28 +526,14 @@
       <div class="form-card">
         <h3 id="form-vi-title">Nouveau média</h3>
         <div class="form-row">
-          <label>Type *</label>
-          <select id="vi-type" onchange="onMediaTypeChange()">
-            <option value="video">Vidéo (YouTube / Vimeo)</option>
-            <option value="photo">Photo (depuis l'ordi)</option>
-          </select>
+          <label>Fichier * (photo ou vidéo)</label>
+          <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
         </div>
-        <div id="vi-video-fields">
-          <div class="form-row">
-            <label>URL YouTube ou Vimeo *</label>
-            <input type="url" id="vi-url" placeholder="https://www.youtube.com/watch?v=...">
-          </div>
+        <div id="vi-preview-wrap" style="display:none; margin-top:0.75rem;">
+          <img id="vi-preview-img" style="max-width:100%; max-height:200px; border-radius:10px; object-fit:cover; display:none;">
+          <video id="vi-preview-vid" controls style="max-width:100%; max-height:200px; border-radius:10px; display:none;"></video>
         </div>
-        <div id="vi-photo-fields" style="display:none;">
-          <div class="form-row">
-            <label>Photo *</label>
-            <input type="file" id="vi-file" accept="image/*" onchange="onPhotoSelected()">
-          </div>
-          <div id="vi-preview-wrap" style="display:none; margin-top:0.5rem;">
-            <img id="vi-preview" style="max-width:100%; max-height:200px; border-radius:10px; object-fit:cover;">
-          </div>
-        </div>
-        <div class="form-row">
+        <div class="form-row" style="margin-top:0.75rem;">
           <label>Titre (optionnel)</label>
           <input type="text" id="vi-titre" placeholder="Ex: Soirée de rentrée 2025">
         </div>
@@ -748,11 +734,11 @@ function clearForm(type) {
     document.getElementById('form-an-title').textContent = 'Nouvelle annonce';
   }
   if (type === 'video') {
-    ['vi-url','vi-titre'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('vi-type').value = 'video';
-    document.getElementById('vi-video-fields').style.display = 'block';
-    document.getElementById('vi-photo-fields').style.display = 'none';
+    document.getElementById('vi-file').value = '';
+    document.getElementById('vi-titre').value = '';
     document.getElementById('vi-preview-wrap').style.display = 'none';
+    document.getElementById('vi-preview-img').style.display = 'none';
+    document.getElementById('vi-preview-vid').style.display = 'none';
     document.getElementById('form-vi-title').textContent = 'Nouveau média';
   }
 }
@@ -800,12 +786,12 @@ function editItem(type, i) {
   }
   if (type === 'videos') {
     const vi = data.videos[i];
-    document.getElementById('vi-type').value = vi.type || 'video';
-    onMediaTypeChange();
-    document.getElementById('vi-url').value = vi.type === 'video' ? (vi.url || '') : '';
     document.getElementById('vi-titre').value = vi.titre || '';
-    if (vi.type === 'photo' && vi.url) {
-      document.getElementById('vi-preview').src = vi.url;
+    const img = document.getElementById('vi-preview-img');
+    const vid = document.getElementById('vi-preview-vid');
+    if (vi.url) {
+      if (vi.type === 'photo') { img.src = vi.url; img.style.display = 'block'; vid.style.display = 'none'; }
+      else { vid.src = vi.url; vid.style.display = 'block'; img.style.display = 'none'; }
       document.getElementById('vi-preview-wrap').style.display = 'block';
     }
     document.getElementById('form-vi-title').textContent = 'Modifier le média';
@@ -880,38 +866,37 @@ async function saveAnnonce() {
 }
 
 // ---- MÉDIAS ----
-function onMediaTypeChange() {
-  const type = document.getElementById('vi-type').value;
-  document.getElementById('vi-video-fields').style.display = type === 'video' ? 'block' : 'none';
-  document.getElementById('vi-photo-fields').style.display = type === 'photo' ? 'block' : 'none';
-}
-
-function onPhotoSelected() {
+function onMediaSelected() {
   const file = document.getElementById('vi-file').files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('vi-preview').src = e.target.result;
-    document.getElementById('vi-preview-wrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  const wrap = document.getElementById('vi-preview-wrap');
+  const img = document.getElementById('vi-preview-img');
+  const vid = document.getElementById('vi-preview-vid');
+  const url = URL.createObjectURL(file);
+  if (file.type.startsWith('image/')) {
+    img.src = url; img.style.display = 'block'; vid.style.display = 'none';
+  } else {
+    vid.src = url; vid.style.display = 'block'; img.style.display = 'none';
+  }
+  wrap.style.display = 'block';
 }
 
-async function uploadPhoto(file) {
+async function uploadMedia(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async e => {
       const base64 = e.target.result.split(',')[1];
       const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const path = `assets/uploads/${filename}`;
+      const type = file.type.startsWith('image/') ? 'photo' : 'video';
       try {
         const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
           method: 'PUT',
           headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `Photo : ${filename}`, content: base64, branch: BRANCH })
+          body: JSON.stringify({ message: `Média : ${filename}`, content: base64, branch: BRANCH })
         });
         if (!res.ok) { const b = await res.json(); reject(new Error(`${res.status} — ${b.message}`)); return; }
-        resolve(`/${path}`);
+        resolve({ url: `/${path}`, type });
       } catch(e) { reject(e); }
     };
     reader.readAsDataURL(file);
@@ -919,31 +904,24 @@ async function uploadPhoto(file) {
 }
 
 async function saveMedia() {
-  const type = document.getElementById('vi-type').value;
   const titre = document.getElementById('vi-titre').value.trim();
+  const file = document.getElementById('vi-file').files[0];
   const idx = editIndex.video;
+  if (!file && idx < 0) return showToast('Sélectionne un fichier', 'error');
 
-  if (type === 'video') {
-    const url = document.getElementById('vi-url').value.trim();
-    if (!url) return showToast('Entre une URL', 'error');
-    const vi = { type: 'video', url, titre };
+  const btn = document.getElementById('btn-save-media');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+  try {
+    let url = idx >= 0 ? data.videos[idx].url : '';
+    let type = idx >= 0 ? data.videos[idx].type : 'photo';
+    if (file) ({ url, type } = await uploadMedia(file));
+    const vi = { type, url, titre };
     if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
-  } else {
-    const file = document.getElementById('vi-file').files[0];
-    if (!file && idx < 0) return showToast('Sélectionne une photo', 'error');
-    const btn = document.getElementById('btn-save-media');
-    btn.textContent = 'Envoi…'; btn.disabled = true;
-    try {
-      let url = idx >= 0 ? data.videos[idx].url : '';
-      if (file) url = await uploadPhoto(file);
-      const vi = { type: 'photo', url, titre };
-      if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
-    } catch(e) {
-      btn.textContent = 'Ajouter'; btn.disabled = false;
-      return showToast('Erreur upload : ' + e.message, 'error');
-    }
+  } catch(e) {
     btn.textContent = 'Ajouter'; btn.disabled = false;
+    return showToast('Erreur upload : ' + e.message, 'error');
   }
+  btn.textContent = 'Ajouter'; btn.disabled = false;
 
   try {
     await persistData('videos', idx >= 0 ? 'Modification média' : 'Nouveau média');

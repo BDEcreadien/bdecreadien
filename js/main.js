@@ -48,10 +48,14 @@ function renderVideos(data) {
   if (!data.length) return;
 
   grid.innerHTML = data.map(v => {
-    const isPhoto = v.type === 'photo' || (!v.type && !getEmbedUrl(v.url)?.includes('embed'));
-    const media = isPhoto
-      ? `<div class="video-wrapper"><img src="${v.url}" alt="${v.titre || 'Photo BDE'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy"></div>`
-      : `<div class="video-wrapper"><iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    let media;
+    if (v.type === 'photo') {
+      media = `<div class="video-wrapper"><img src="${v.url}" alt="${v.titre || 'Photo BDE'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy"></div>`;
+    } else if (v.type === 'video') {
+      media = `<div class="video-wrapper"><video src="${v.url}" controls style="position:absolute;inset:0;width:100%;height:100%;" preload="metadata"></video></div>`;
+    } else {
+      media = `<div class="video-wrapper"><iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    }
     return `<div class="video-item reveal">${media}${v.titre ? `<p class="video-titre">${v.titre}</p>` : ''}</div>`;
   }).join('');
 
