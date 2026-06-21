@@ -538,7 +538,10 @@ async function saveFile(path, content, sha, message) {
     headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), sha, branch: BRANCH })
   });
-  if (!res.ok) throw new Error('Erreur de sauvegarde');
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(`${res.status} — ${body.message || 'Erreur inconnue'}`);
+  }
 }
 
 async function loadData(type) {
