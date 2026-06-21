@@ -565,7 +565,8 @@ async function saveFile(path, content, sha, message) {
 async function loadData(type) {
   try {
     const file = await getFile(`_data/${type}.json`);
-    const raw = JSON.parse(atob(file.content.replace(/\n/g, '')));
+    const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0));
+    const raw = JSON.parse(new TextDecoder().decode(bytes));
     data[type] = Array.isArray(raw) ? raw : (raw[type] || []);
     renderList(type);
   } catch(e) {
@@ -653,7 +654,7 @@ function editItem(type, i) {
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
-    const [hDebut, hFin] = (ev.horaire || ' – ').split(' – ');
+    const [hDebut, hFin] = (ev.horaire || '').split(/\s*[–—-]\s*/);
     document.getElementById('ev-horaire-debut').value = hDebut ? hDebut.replace('h',':') : '';
     document.getElementById('ev-horaire-fin').value = hFin ? hFin.replace('h',':') : '';
     document.getElementById('ev-horaire').value = ev.horaire || '';
