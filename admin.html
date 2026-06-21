@@ -184,10 +184,10 @@
         <div class="page-card-name">Annonces</div>
         <div class="page-card-desc">Petites annonces des étudiants</div>
       </div>
-      <div class="page-card" onclick="selectPage('stockage')">
-        <div class="page-card-icon">🗂</div>
-        <div class="page-card-name">Stockage</div>
-        <div class="page-card-desc">Gérer les fichiers uploadés</div>
+      <div class="page-card" onclick="selectPage('communication')">
+        <div class="page-card-icon">👥</div>
+        <div class="page-card-name">Communication</div>
+        <div class="page-card-desc">Membres de l'équipe BDE</div>
       </div>
     </div>
   </div>
@@ -218,8 +218,8 @@
 const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
 let token = '';
-let data = { evenements: [], annonces: [], videos: [] };
-let editIndex = { evenement: -1, annonce: -1, video: -1 };
+let data = { evenements: [], annonces: [], videos: [], equipe: [] };
+let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
 // ============================================================
@@ -243,7 +243,7 @@ async function init() {
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('btn-logout').style.display = 'block';
   showStep('pages');
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe')]);
 }
 
 // ============================================================
@@ -279,9 +279,9 @@ function selectPage(page) {
   } else if (page === 'accueil') {
     navStack.push('editor:videos');
     openEditor('videos', true, 'Accueil', 'Médias (photos & vidéos)');
-  } else if (page === 'stockage') {
-    navStack.push('editor:stockage');
-    openEditorStockage('Stockage', 'Fichiers uploadés');
+  } else if (page === 'communication') {
+    navStack.push('editor:equipe');
+    openEditor('equipe', true, 'Communication', 'Équipe BDE');
   }
 }
 
@@ -344,6 +344,7 @@ function buildEditor(type) {
         if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'videos') { title = (item.type === 'photo' ? '🖼 ' : '🎬 ') + (item.titre || item.url); sub = item.url; }
+        if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
         return `<div class="item-card">
           <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
           <div class="item-card-actions">
@@ -355,11 +356,13 @@ function buildEditor(type) {
 
   const formHtml = type === 'evenements' ? formEvenement()
     : type === 'annonces' ? formAnnonce()
+    : type === 'equipe' ? formMembre()
     : formMedia();
 
-  const addLabel = type === 'evenements' ? '+ Ajouter un événement'
-    : type === 'annonces' ? '+ Ajouter une annonce'
-    : '+ Ajouter un média';
+  const addLabel = type === 'evenements' ? 'Ajouter un événement'
+    : type === 'annonces' ? 'Ajouter une annonce'
+    : type === 'equipe' ? 'Ajouter un membre'
+    : 'Ajouter un média';
 
   return `
     <div class="items-list" id="items-list">${listHtml}</div>
@@ -464,6 +467,38 @@ function formAnnonce() {
   </div>`;
 }
 
+function formMembre() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouveau membre</h3>
+    <div class="form-grid">
+      <div class="form-row"><label>Nom complet *</label><input type="text" id="mb-nom" placeholder="Ex: Léa Martin"></div>
+      <div class="form-row"><label>Initiales *</label><input type="text" id="mb-initiales" placeholder="Ex: LM" maxlength="3"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label>Rôle *</label><input type="text" id="mb-role" placeholder="Ex: Responsable comm."></div>
+      <div class="form-row">
+        <label>Pôle *</label>
+        <select id="mb-pole">
+          <option value="bureau">Bureau exécutif</option>
+          <option value="evenements">Pôle Événements</option>
+          <option value="communication">Pôle Communication</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Photo (depuis l'ordi)</label>
+      <input type="file" id="mb-photo" accept="image/*" onchange="onMembrePhotoSelected()">
+    </div>
+    <div class="media-preview-wrap" id="mb-preview-wrap">
+      <img id="mb-preview-img" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" id="btn-save-membre" onclick="saveMembre()">Publier</button>
+    </div>
+  </div>`;
+}
+
 function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
@@ -494,6 +529,14 @@ let currentType = '';
 function initEditorEvents(type) {
   currentType = type;
   if (type === 'evenements') initLieuAutocomplete();
+}
+
+function onMembrePhotoSelected() {
+  const file = document.getElementById('mb-photo').files[0];
+  if (!file) return;
+  const img = document.getElementById('mb-preview-img');
+  img.src = URL.createObjectURL(file);
+  document.getElementById('mb-preview-wrap').style.display = 'block';
 }
 
 function showForm() {
@@ -527,10 +570,16 @@ function resetForm() {
     const pw = document.getElementById('vi-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouveau média';
   }
+  if (currentType === 'equipe') {
+    ['mb-nom','mb-initiales','mb-role'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const pole = document.getElementById('mb-pole'); if(pole) pole.value = 'bureau';
+    const pw = document.getElementById('mb-preview-wrap'); if(pw) pw.style.display = 'none';
+    document.getElementById('form-title').textContent = 'Nouveau membre';
+  }
 }
 
 function editItem(type, i) {
-  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video' };
+  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre' };
   editIndex[map[type]] = i;
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
@@ -563,6 +612,18 @@ function editItem(type, i) {
     document.getElementById('an-auteur').value = an.auteur || '';
     document.getElementById('an-contact').value = an.contact || '';
     document.getElementById('form-title').textContent = 'Modifier l\'annonce';
+  }
+  if (type === 'equipe') {
+    const mb = data.equipe[i];
+    document.getElementById('mb-nom').value = mb.nom || '';
+    document.getElementById('mb-initiales').value = mb.initiales || '';
+    document.getElementById('mb-role').value = mb.role || '';
+    document.getElementById('mb-pole').value = mb.pole || 'bureau';
+    if (mb.photo) {
+      document.getElementById('mb-preview-img').src = mb.photo;
+      document.getElementById('mb-preview-wrap').style.display = 'block';
+    }
+    document.getElementById('form-title').textContent = 'Modifier le membre';
   }
   if (type === 'videos') {
     const vi = data.videos[i];
@@ -650,6 +711,43 @@ async function saveAnnonce() {
     openEditor('annonces', false, 'Annonces', 'Annonces');
     cancelForm();
     showToast('Annonce publiée !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+// ============================================================
+// SAVE MEMBRE ÉQUIPE
+// ============================================================
+async function saveMembre() {
+  const nom = document.getElementById('mb-nom').value.trim();
+  const initiales = document.getElementById('mb-initiales').value.trim();
+  const role = document.getElementById('mb-role').value.trim();
+  const pole = document.getElementById('mb-pole').value;
+  if (!nom || !initiales || !role) return showToast('Remplis tous les champs obligatoires', 'error');
+
+  const file = document.getElementById('mb-photo').files[0];
+  const btn = document.getElementById('btn-save-membre');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+
+  let photo = editIndex.membre >= 0 ? (data.equipe[editIndex.membre].photo || '') : '';
+  if (file) {
+    try {
+      const result = await uploadMedia(file);
+      photo = result.url;
+    } catch(e) {
+      btn.textContent = 'Publier'; btn.disabled = false;
+      return showToast('Erreur photo : ' + e.message, 'error');
+    }
+  }
+  btn.textContent = 'Publier'; btn.disabled = false;
+
+  const mb = { nom, role, pole, initiales, photo };
+  const idx = editIndex.membre;
+  if (idx >= 0) data.equipe[idx] = mb; else data.equipe.push(mb);
+  try {
+    await persistData('equipe', idx >= 0 ? `Modification : ${nom}` : `Nouveau membre : ${nom}`);
+    openEditor('equipe', false, 'Communication', 'Équipe BDE');
+    cancelForm();
+    showToast('Membre publié !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
