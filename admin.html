@@ -343,9 +343,10 @@ function buildEditor(type) {
 
         // Médias : carte avec prévisualisation
         if (type === 'videos') {
+          const rawUrl = item.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.url}` : item.url;
           const thumb = item.type === 'photo'
-            ? `<img src="${item.url}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
-            : `<video src="${item.url}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" preload="metadata" muted></video>`;
+            ? `<img src="${rawUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
+            : `<video src="${rawUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" preload="metadata" muted></video>`;
           return `<div class="item-card">
             ${thumb}
             <div class="item-card-info"><div class="item-card-title">${item.titre || '(sans titre)'}</div><div class="item-card-sub">${item.type === 'photo' ? '🖼 Photo' : '🎬 Vidéo'}</div></div>
@@ -357,8 +358,9 @@ function buildEditor(type) {
 
         // Équipe : carte avec photo ronde
         if (type === 'equipe') {
-          const avatar = item.photo
-            ? `<img src="${item.photo}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+          const photoUrl = item.photo?.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.photo}` : item.photo;
+          const avatar = photoUrl
+            ? `<img src="${photoUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
             : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0;">${item.initiales || '?'}</div>`;
           return `<div class="item-card">
             ${avatar}
