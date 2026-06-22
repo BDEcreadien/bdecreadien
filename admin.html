@@ -912,14 +912,12 @@ function formGalerie() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouvelle photo</h3>
     <div class="form-row">
-      <label>Photo * (JPG, PNG, WebP)</label>
-      <input type="file" id="gl-file" accept="image/*" onchange="onGalerieSelected()">
+      <label>Photo(s) * — sélectionne-en plusieurs d'un coup</label>
+      <input type="file" id="gl-file" accept="image/*" multiple onchange="onGalerieSelected()">
     </div>
-    <div class="media-preview-wrap" id="gl-preview-wrap">
-      <img id="gl-preview-img" style="display:none;">
-    </div>
-    <div class="form-row" style="margin-top:0.75rem;">
-      <label>Légende (optionnelle)</label>
+    <div id="gl-preview-wrap" style="display:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:0.75rem;"></div>
+    <div class="form-row" style="margin-top:0.75rem;" id="gl-titre-row">
+      <label>Légende commune (optionnelle)</label>
       <input type="text" id="gl-titre" placeholder="Ex: Soirée de rentrée 2025">
     </div>
     <div class="form-actions">
@@ -933,17 +931,14 @@ function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
     <div class="form-row">
-      <label>Fichier * (photo ou vidéo)</label>
-      <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
+      <label>Fichier(s) * — sélectionne-en plusieurs d'un coup</label>
+      <input type="file" id="vi-file" accept="image/*,video/*" multiple onchange="onMediaSelected()">
       <p id="vi-size-warn" style="margin-top:0.5rem;font-size:12px;color:#c0392b;line-height:1.5;"></p>
       <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Photos OK · Vidéos MP4 max 25 Mo.</p>
     </div>
-    <div class="media-preview-wrap" id="vi-preview-wrap">
-      <img id="vi-preview-img" style="display:none;">
-      <video id="vi-preview-vid" controls style="display:none;"></video>
-    </div>
+    <div id="vi-preview-wrap" style="display:none;flex-wrap:wrap;gap:8px;margin-top:0.75rem;"></div>
     <div class="form-row" style="margin-top:0.75rem;">
-      <label>Titre (optionnel)</label>
+      <label>Titre commun (optionnel)</label>
       <input type="text" id="vi-titre" placeholder="Ex: Soirée de rentrée 2025">
     </div>
     <div class="form-actions">
@@ -1002,14 +997,13 @@ function resetForm() {
   if (currentType === 'videos') {
     const fi = document.getElementById('vi-file'); if(fi) fi.value = '';
     const ti = document.getElementById('vi-titre'); if(ti) ti.value = '';
-    const pw = document.getElementById('vi-preview-wrap'); if(pw) pw.style.display = 'none';
+    const pw = document.getElementById('vi-preview-wrap'); if(pw) { pw.innerHTML = ''; pw.style.display = 'none'; }
     document.getElementById('form-title').textContent = 'Nouveau média';
   }
   if (currentType === 'galerie') {
     const fi = document.getElementById('gl-file'); if(fi) fi.value = '';
     const ti = document.getElementById('gl-titre'); if(ti) ti.value = '';
-    const pw = document.getElementById('gl-preview-wrap'); if(pw) pw.style.display = 'none';
-    const img = document.getElementById('gl-preview-img'); if(img) img.style.display = 'none';
+    const pw = document.getElementById('gl-preview-wrap'); if(pw) { pw.innerHTML = ''; pw.style.display = 'none'; }
     document.getElementById('form-title').textContent = 'Nouvelle photo';
   }
   if (currentType === 'equipe') {
@@ -1092,11 +1086,12 @@ function editItem(type, i) {
     const vi = data.videos[i];
     document.getElementById('vi-titre').value = vi.titre || '';
     if (vi.url) {
-      const img = document.getElementById('vi-preview-img');
-      const vid = document.getElementById('vi-preview-vid');
-      if (vi.type === 'photo') { img.src = vi.url; img.style.display = 'block'; vid.style.display = 'none'; }
-      else { vid.src = vi.url; vid.style.display = 'block'; img.style.display = 'none'; }
-      document.getElementById('vi-preview-wrap').style.display = 'block';
+      const wrap = document.getElementById('vi-preview-wrap');
+      const rawUrl = vi.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${vi.url}` : vi.url;
+      wrap.innerHTML = vi.type === 'photo'
+        ? `<img src="${rawUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;">`
+        : `<video src="${rawUrl}" muted preload="metadata" style="width:80px;height:60px;object-fit:cover;border-radius:6px;"></video>`;
+      wrap.style.display = 'flex';
     }
     document.getElementById('form-title').textContent = 'Modifier le média';
   }
@@ -1398,144 +1393,185 @@ async function saveMembre() {
 // MÉDIAS
 // ============================================================
 function onMediaSelected() {
-  const file = document.getElementById('vi-file').files[0];
-  if (!file) return;
+  const files = Array.from(document.getElementById('vi-file').files);
+  if (!files.length) return;
   const warn = document.getElementById('vi-size-warn');
   const MAX = 25 * 1024 * 1024;
-  if (file.size > MAX) {
-    const mb = (file.size / 1024 / 1024).toFixed(1);
-    if (warn) warn.innerHTML = `⚠️ Fichier trop lourd (${mb} Mo, max 25 Mo). Les vidéos .MOV ne sont pas supportées directement.<br>→ <strong>Convertis-la en MP4 compressé</strong> ou <strong>poste-la sur Instagram/YouTube et ajoute le lien</strong> dans la section Agenda.`;
+  const tooBig = files.filter(f => f.size > MAX);
+  if (tooBig.length) {
+    const names = tooBig.map(f => `${f.name} (${(f.size/1024/1024).toFixed(1)} Mo)`).join(', ');
+    if (warn) warn.innerHTML = `⚠️ Fichier(s) trop lourd(s) : ${names}. Vidéos MP4 max 25 Mo.`;
     document.getElementById('vi-file').value = '';
     return;
   }
   if (warn) warn.innerHTML = '';
-  const url = URL.createObjectURL(file);
-  const img = document.getElementById('vi-preview-img');
-  const vid = document.getElementById('vi-preview-vid');
-  if (file.type.startsWith('image/')) { img.src = url; img.style.display = 'block'; vid.style.display = 'none'; }
-  else { vid.src = url; vid.style.display = 'block'; img.style.display = 'none'; }
-  document.getElementById('vi-preview-wrap').style.display = 'block';
+  const wrap = document.getElementById('vi-preview-wrap');
+  wrap.innerHTML = '';
+  wrap.style.display = 'flex';
+  files.forEach(file => {
+    const url = URL.createObjectURL(file);
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;';
+      wrap.appendChild(img);
+    } else {
+      const vid = document.createElement('video');
+      vid.src = url; vid.muted = true; vid.preload = 'metadata';
+      vid.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;';
+      wrap.appendChild(vid);
+    }
+  });
 }
-async function uploadMedia(file) {
-  if (file.size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (max 25 Mo). Convertis la vidéo en MP4 compressé.');
+
+// Crée un blob GitHub et retourne son sha + path (sans commit)
+async function createBlob(file) {
   const type = file.type.startsWith('image/') ? 'photo' : 'video';
-  const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+  const filename = `${Date.now()}_${Math.random().toString(36).slice(2,6)}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
   const path = `assets/uploads/${filename}`;
-
-  showProgress('Lecture du fichier…');
-
-  // Lecture base64
   const base64 = await new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = e => res(e.target.result.split(',')[1]);
     r.onerror = rej;
     r.readAsDataURL(file);
   });
-
-  setProgress(20, 'Envoi du fichier…');
-
-  // Étape 1 : créer le blob
   const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
     method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ content: base64, encoding: 'base64' })
   });
-  if (!blobRes.ok) { hideProgress(); const b = await blobRes.json(); throw new Error(`Blob : ${b.message}`); }
+  if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`Blob : ${b.message}`); }
   const { sha: blobSha } = await blobRes.json();
+  return { path, blobSha, type, url: `/${path}` };
+}
 
-  setProgress(60, 'Enregistrement…');
-
-  // Étapes 2-5 : commit du fichier avec retry sur conflit 409
+// Commit une liste d'entrées { path, blobSha } en un seul commit avec retry
+async function commitEntries(entries, message) {
   for (let attempt = 0; attempt < 3; attempt++) {
     const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/ref/heads/${BRANCH}`, { headers: { Authorization: `token ${token}` } });
-    if (!refRes.ok) { hideProgress(); throw new Error('Impossible de lire la branche'); }
+    if (!refRes.ok) throw new Error('Impossible de lire la branche');
     const { object: { sha: commitSha } } = await refRes.json();
-
     const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${commitSha}`, { headers: { Authorization: `token ${token}` } });
-    if (!commitRes.ok) { hideProgress(); throw new Error('Impossible de lire le commit'); }
+    if (!commitRes.ok) throw new Error('Impossible de lire le commit');
     const { tree: { sha: treeSha } } = await commitRes.json();
-
     const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
       method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base_tree: treeSha, tree: [{ path, mode: '100644', type: 'blob', sha: blobSha }] })
+      body: JSON.stringify({ base_tree: treeSha, tree: entries.map(e => ({ path: e.path, mode: '100644', type: 'blob', sha: e.blobSha })) })
     });
-    if (!treeRes.ok) { hideProgress(); throw new Error('Impossible de créer le tree'); }
+    if (!treeRes.ok) throw new Error('Impossible de créer le tree');
     const { sha: newTreeSha } = await treeRes.json();
-
-    setProgress(80, 'Finalisation…');
-
     const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
       method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `Média : ${filename}`, tree: newTreeSha, parents: [commitSha] })
+      body: JSON.stringify({ message, tree: newTreeSha, parents: [commitSha] })
     });
-    if (!newCommitRes.ok) { hideProgress(); throw new Error('Impossible de créer le commit'); }
+    if (!newCommitRes.ok) throw new Error('Impossible de créer le commit');
     const { sha: newCommitSha } = await newCommitRes.json();
-
     const patchRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
       method: 'PATCH', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ sha: newCommitSha })
     });
-    if (patchRes.ok) { setProgress(100, 'Terminé !'); await new Promise(r => setTimeout(r, 500)); hideProgress(); break; }
+    if (patchRes.ok) return;
     const patchBody = await patchRes.json();
     if (patchRes.status === 422 && attempt < 2) { await new Promise(r => setTimeout(r, 800)); continue; }
-    hideProgress(); throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
+    throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
   }
-
-  return { url: `/${path}`, type };
 }
+
+// Upload un seul fichier (compatibilité descendante pour couvertures d'événements etc.)
+async function uploadMedia(file, suffix = '') {
+  if (file.size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (max 25 Mo). Convertis la vidéo en MP4 compressé.');
+  showProgress('Lecture du fichier…');
+  const entry = await createBlob(file);
+  setProgress(50, 'Envoi du fichier…');
+  await commitEntries([entry], `Média : ${entry.path.split('/').pop()}`);
+  setProgress(100, 'Terminé !');
+  await new Promise(r => setTimeout(r, 400));
+  hideProgress();
+  return { url: entry.url, type: entry.type };
+}
+
+// Upload plusieurs fichiers en parallèle puis un seul commit
+async function uploadMediaBatch(files) {
+  showProgress(`Lecture de ${files.length} fichier(s)…`);
+  const entries = await Promise.all(files.map(f => createBlob(f)));
+  setProgress(50, `Envoi de ${files.length} fichier(s)…`);
+  await commitEntries(entries, `Ajout de ${files.length} média(s)`);
+  setProgress(100, 'Terminé !');
+  await new Promise(r => setTimeout(r, 400));
+  hideProgress();
+  return entries;
+}
+
 async function saveMedia() {
   const titre = document.getElementById('vi-titre').value.trim();
-  const file = document.getElementById('vi-file')?.files[0];
+  const files = Array.from(document.getElementById('vi-file')?.files || []);
   const idx = editIndex.video;
-  if (!file && idx < 0) return showToast('Sélectionne un fichier', 'error');
+  if (!files.length && idx < 0) return showToast('Sélectionne un fichier', 'error');
   const btn = document.getElementById('btn-save-media');
   btn.textContent = 'Envoi…'; btn.disabled = true;
   try {
-    let url = idx >= 0 ? data.videos[idx].url : '';
-    let type = idx >= 0 ? data.videos[idx].type : 'photo';
-    if (file) ({ url, type } = await uploadMedia(file));
-    const vi = { type, url, titre };
-    if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
+    if (idx >= 0) {
+      // Modification : un seul fichier
+      let url = data.videos[idx].url;
+      let type = data.videos[idx].type;
+      if (files.length) ({ url, type } = await uploadMedia(files[0]));
+      data.videos[idx] = { type, url, titre };
+    } else if (files.length === 1) {
+      const { url, type } = await uploadMedia(files[0]);
+      data.videos.push({ type, url, titre });
+    } else {
+      const entries = await uploadMediaBatch(files);
+      entries.forEach(e => data.videos.push({ type: e.type, url: e.url, titre }));
+    }
   } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
   btn.textContent = 'Ajouter'; btn.disabled = false;
   try {
-    await persistData('videos', idx >= 0 ? 'Modification média' : 'Nouveau média');
+    await persistData('videos', idx >= 0 ? 'Modification média' : `Ajout de ${files.length} média(s)`);
     openEditor('videos', false, 'Accueil', 'Médias (photos & vidéos)');
     cancelForm();
-    showToast('Média ajouté !', 'success');
+    showToast(files.length > 1 ? `${files.length} médias ajoutés !` : 'Média ajouté !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
 function onGalerieSelected() {
-  const file = document.getElementById('gl-file').files[0];
-  if (!file) return;
-  const img = document.getElementById('gl-preview-img');
-  img.src = URL.createObjectURL(file);
-  img.style.display = 'block';
-  document.getElementById('gl-preview-wrap').style.display = 'block';
+  const files = Array.from(document.getElementById('gl-file').files);
+  if (!files.length) return;
+  const wrap = document.getElementById('gl-preview-wrap');
+  wrap.innerHTML = '';
+  wrap.style.display = 'flex';
+  files.forEach(file => {
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;';
+    wrap.appendChild(img);
+  });
 }
 
 async function saveGalerie() {
   const titre = document.getElementById('gl-titre').value.trim();
-  const file = document.getElementById('gl-file')?.files[0];
+  const files = Array.from(document.getElementById('gl-file')?.files || []);
   const idx = editIndex.galerie;
-  if (!file && idx < 0) return showToast('Sélectionne une photo', 'error');
+  if (!files.length && idx < 0) return showToast('Sélectionne une photo', 'error');
   const btn = document.getElementById('btn-save-galerie');
   btn.textContent = 'Envoi…'; btn.disabled = true;
   try {
-    let url = idx >= 0 ? data.galerie[idx].url : '';
-    if (file) {
-      const uploaded = await uploadMedia(file);
-      url = uploaded.url;
+    if (idx >= 0) {
+      let url = data.galerie[idx].url;
+      if (files.length) { const uploaded = await uploadMedia(files[0]); url = uploaded.url; }
+      data.galerie[idx] = { url, titre };
+    } else if (files.length === 1) {
+      const { url } = await uploadMedia(files[0]);
+      data.galerie.push({ url, titre });
+    } else {
+      const entries = await uploadMediaBatch(files);
+      entries.forEach(e => data.galerie.push({ url: e.url, titre }));
     }
-    const gl = { url, titre };
-    if (idx >= 0) data.galerie[idx] = gl; else data.galerie.push(gl);
   } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
   btn.textContent = 'Ajouter'; btn.disabled = false;
   try {
-    await persistData('galerie', idx >= 0 ? 'Modification photo galerie' : 'Nouvelle photo galerie');
+    await persistData('galerie', idx >= 0 ? 'Modification photo galerie' : `Ajout de ${files.length} photo(s)`);
     openEditor('galerie', false, 'Galerie', 'Photos galerie');
     cancelForm();
-    showToast('Photo ajoutée !', 'success');
+    showToast(files.length > 1 ? `${files.length} photos ajoutées !` : 'Photo ajoutée !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
