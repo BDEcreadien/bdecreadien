@@ -1,9 +1,21 @@
 {
   "chiffres": [
-    { "number": "350+", "label": "Étudiants CREAD" },
-    { "number": "12", "label": "Événements par an" },
-    { "number": "3", "label": "Promos actives" },
-    { "number": "1", "label": "BDE au top" }
+    {
+      "number": "20",
+      "label": "Membres du BDE"
+    },
+    {
+      "number": "500+",
+      "label": "Étudiants CREAD"
+    },
+    {
+      "number": "3",
+      "label": "Promos actives"
+    },
+    {
+      "number": "1",
+      "label": "BDE au top"
+    }
   ],
   "contact": {
     "email": "bdecreadien@gmail.com",
@@ -12,26 +24,26 @@
   "canaux": [
     {
       "nom": "Instagram",
+      "type": "instagram",
       "description": "Actu du BDE, photos d'événements, stories et annonces en direct. Notre canal principal.",
       "lien": "https://www.instagram.com/bdecreadien",
       "lienLabel": "@bdecreadien",
-      "type": "instagram",
       "bientot": false
     },
     {
       "nom": "Email",
+      "type": "email",
       "description": "Pour contacter le BDE directement : annonces, partenariats, questions ou suggestions.",
       "lien": "mailto:bdecreadien@gmail.com",
       "lienLabel": "bdecreadien@gmail.com",
-      "type": "email",
       "bientot": false
     },
     {
       "nom": "Groupe Teams",
+      "type": "autre",
       "description": "Le groupe officiel de communication interne CREAD arrivera ici très prochainement.",
       "lien": "",
       "lienLabel": "À venir",
-      "type": "teams",
       "bientot": true
     }
   ]
