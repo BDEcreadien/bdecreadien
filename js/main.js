@@ -51,7 +51,7 @@ function renderActu(data) {
     <span class="actu-featured-tag">Événement phare</span>
     <h3 class="actu-featured-title">${first.titre}</h3>
     <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
-    ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top:1rem; width:auto; display:inline-block;">${labelLien[first.typeLien] || 'Voir'}</a>` : ''}
+    ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top:1rem; width:auto; display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
   `;
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
@@ -62,7 +62,7 @@ function renderActu(data) {
     return `<div class="actu-item reveal ${delays[i] || ''}">
       <div class="actu-item-date"><span class="day">${day}</span><span class="month">${month}</span></div>
       <div class="actu-item-content"><h3>${ev.titre}</h3><p>${ev.lieu}${ev.horaire ? ' · ' + ev.horaire : ''}</p></div>
-      ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="actu-item-link" style="flex-shrink:0; font-size:11px; font-weight:700; color:var(--violet); text-decoration:none; white-space:nowrap;">→ Voir</a>` : ''}
+      ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="actu-item-link" style="flex-shrink:0; font-size:11px; font-weight:700; color:var(--violet); text-decoration:none; white-space:nowrap;">Billetterie</a>` : ''}
     </div>`;
   }).join('');
 
@@ -229,7 +229,7 @@ function renderEvenements(data) {
         ${ev.horaire ? `<p style="font-size:12px; color:var(--gris-texte); margin-top:1px;">${ev.horaire}</p>` : ''}
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; flex-wrap:wrap; gap:6px;">
           <span style="font-family:'Bebas Neue',sans-serif; font-size:16px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
-          ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien]}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien]}</a>` : ''}
+          ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien] || 'var(--violet)'}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
         </div>
       </div>
     </div>`;
