@@ -785,6 +785,8 @@ function formMedia() {
     <div class="form-row">
       <label>Fichier * (photo ou vidéo depuis l'ordi)</label>
       <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
+      <p id="vi-size-warn" style="margin-top:0.5rem;font-size:12px;color:#c0392b;line-height:1.5;"></p>
+      <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Photos OK. Vidéos : max 25 Mo en MP4. Les fichiers .MOV sont souvent trop lourds.</p>
     </div>
     <div class="media-preview-wrap" id="vi-preview-wrap">
       <img id="vi-preview-img" style="display:none;">
@@ -1146,6 +1148,15 @@ async function saveMembre() {
 function onMediaSelected() {
   const file = document.getElementById('vi-file').files[0];
   if (!file) return;
+  const warn = document.getElementById('vi-size-warn');
+  const MAX = 25 * 1024 * 1024;
+  if (file.size > MAX) {
+    const mb = (file.size / 1024 / 1024).toFixed(1);
+    if (warn) warn.innerHTML = `⚠️ Fichier trop lourd (${mb} Mo, max 25 Mo). Les vidéos .MOV ne sont pas supportées directement.<br>→ <strong>Convertis-la en MP4 compressé</strong> ou <strong>poste-la sur Instagram/YouTube et ajoute le lien</strong> dans la section Agenda.`;
+    document.getElementById('vi-file').value = '';
+    return;
+  }
+  if (warn) warn.innerHTML = '';
   const url = URL.createObjectURL(file);
   const img = document.getElementById('vi-preview-img');
   const vid = document.getElementById('vi-preview-vid');
@@ -1154,7 +1165,7 @@ function onMediaSelected() {
   document.getElementById('vi-preview-wrap').style.display = 'block';
 }
 async function uploadMedia(file) {
-  if (file.size > 100 * 1024 * 1024) throw new Error('Fichier trop lourd (max 100 Mo). Compresse la vidéo avant.');
+  if (file.size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (max 25 Mo). Convertis la vidéo en MP4 compressé.');
   const type = file.type.startsWith('image/') ? 'photo' : 'video';
   const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
   const path = `assets/uploads/${filename}`;
