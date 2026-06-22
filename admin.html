@@ -93,6 +93,8 @@
 
     /* FORMULAIRES */
     .form-card { background: white; border-radius: var(--radius); padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; display: none; }
+    .params-card { background: white; border-radius: var(--radius); padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; }
+    .params-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--gris-border); }
     .form-card.visible { display: block; }
     .form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--gris-border); }
     .form-row { margin-bottom: 1rem; }
@@ -413,11 +415,11 @@ function buildParametresEditor() {
       <div class="form-row"><label>Libellé ${i+1}</label><input type="text" id="cfg-lbl-${i}" value="${c.label || ''}" placeholder="Ex: Étudiants CREAD"></div>
     </div>`).join('');
   return `
-    <div class="form-card" style="max-width:100%;margin-bottom:1.5rem;">
+    <div class="params-card">
       <h3>Chiffres clés <span style="font-size:12px;font-weight:400;color:var(--gris-texte);">(affichés sur la page d'accueil)</span></h3>
       ${chiffresHtml}
     </div>
-    <div class="form-card" style="max-width:100%;margin-bottom:1.5rem;">
+    <div class="params-card">
       <h3>Contact & réseaux</h3>
       <div class="form-row"><label>Email de contact</label><input type="email" id="cfg-email" value="${cfg.contact?.email || ''}" placeholder="bdecreadien@gmail.com"></div>
       <div class="form-row"><label>Instagram <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(sans le @)</span></label><input type="text" id="cfg-insta" value="${cfg.contact?.instagram || ''}" placeholder="bdecreadien"></div>
