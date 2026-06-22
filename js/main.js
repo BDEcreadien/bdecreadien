@@ -101,7 +101,7 @@ function renderVideos(data) {
     if (v.type === 'photo') {
       media = `<div class="video-wrapper"><img src="${v.url}" alt="${v.titre || 'Photo BDE'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy"></div>`;
     } else if (v.type === 'video') {
-      media = `<div class="video-wrapper video-wrapper--native"><video src="${v.url}" autoplay muted loop playsinline controls style="width:100%;height:100%;display:block;border-radius:14px;" preload="auto"></video></div>`;
+      media = `<div class="video-wrapper video-wrapper--native"><video src="${v.url}" muted loop playsinline controls style="width:100%;height:100%;display:block;border-radius:14px;" preload="auto"></video></div>`;
     } else {
       media = `<div class="video-wrapper"><iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
     }
@@ -109,6 +109,16 @@ function renderVideos(data) {
   }).join('');
 
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  const videoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const vid = entry.target;
+      if (entry.isIntersecting) { vid.play().catch(() => {}); }
+      else { vid.pause(); }
+    });
+  }, { threshold: 0.3 });
+
+  grid.querySelectorAll('video').forEach(vid => videoObserver.observe(vid));
 }
 
 if (document.getElementById('videos-grid')) {
