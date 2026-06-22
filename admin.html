@@ -266,8 +266,21 @@ async function init() {
   document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('btn-logout').style.display = 'block';
-  showStep('pages');
+
+  // Affiche un loader le temps de charger les données depuis GitHub
+  document.getElementById('step-pages').style.display = 'none';
+  document.getElementById('step-sections').style.display = 'none';
+  document.getElementById('step-editor').style.display = 'none';
+  document.getElementById('btn-back').style.display = 'none';
+  const loader = document.createElement('div');
+  loader.id = 'init-loader';
+  loader.innerHTML = '<p style="text-align:center;padding:4rem 2rem;color:var(--gris-texte);font-size:15px;">Chargement des données…</p>';
+  document.getElementById('screen-app').prepend(loader);
+
   await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config')]);
+
+  loader.remove();
+  showStep('pages');
 }
 
 // ============================================================
