@@ -86,12 +86,13 @@ function renderActu(data) {
     <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
     <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
       ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="width:auto;display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
-      <button onclick="partagerEvenement('${first.titre.replace(/'/g,"\\'")}','${first.date || ''}')" class="btn-share" aria-label="Partager cet événement">
+      <button class="btn-share btn-share-featured" aria-label="Partager cet événement">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         Partager
       </button>
     </div>
   `;
+  featured.querySelector('.btn-share-featured')?.addEventListener('click', () => partagerEvenement(first.titre, first.date || ''));
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
   list.innerHTML = rest.slice(0, 3).map((ev, i) => {
@@ -293,7 +294,7 @@ function renderEvenements(data) {
           <span style="font-family:'Bebas Neue',sans-serif; font-size:16px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
           <div style="display:flex;gap:6px;align-items:center;">
             ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien] || 'var(--violet)'}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
-            <button onclick="partagerEvenement('${ev.titre.replace(/'/g,"\\'")}','${ev.date || ''}')" class="btn-share" style="font-size:11px;padding:5px 10px;" aria-label="Partager">
+            <button class="btn-share" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date || ''}" style="font-size:11px;padding:5px 10px;" aria-label="Partager">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>
           </div>
@@ -303,6 +304,9 @@ function renderEvenements(data) {
   }).join('');
 
   container.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  container.querySelectorAll('.btn-share[data-titre]').forEach(btn => {
+    btn.addEventListener('click', () => partagerEvenement(btn.dataset.titre, btn.dataset.date));
+  });
 }
 
 if (document.getElementById('evenements-list')) {
