@@ -78,6 +78,8 @@
 
     /* LISTE ITEMS */
     .items-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .pole-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+    .pole-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet); padding: 0.25rem 0; border-bottom: 1px solid var(--gris-border); margin-bottom: 0.25rem; }
     .item-card { background: white; border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); gap: 1rem; }
     .item-card-info { flex: 1; }
     .item-card-title { font-weight: 600; font-size: 14px; }
@@ -349,14 +351,72 @@ async function persistData(type, message) {
 // ============================================================
 // BUILDER ÉDITEURS
 // ============================================================
+function buildEquipeEditor() {
+  const poles = [
+    { key: 'bureau', label: 'Bureau exécutif' },
+    { key: 'evenements', label: 'Pôle Événements' },
+    { key: 'communication', label: 'Pôle Communication' }
+  ];
+  const poleLabels = { bureau: 'Bureau exécutif', evenements: 'Pôle Événements', communication: 'Pôle Communication' };
+
+  const groupHtml = poles.map(pole => {
+    const membres = data.equipe
+      .map((m, i) => ({ m, i }))
+      .filter(({ m }) => m.pole === pole.key);
+    if (!membres.length) return `<div class="pole-group"><p class="pole-group-label">${pole.label}</p><p style="color:var(--gris-texte);font-size:13px;padding:0.5rem 0;">Aucun membre</p></div>`;
+
+    const cards = membres.map(({ m, i }, posInPole) => {
+      const photoUrl = m.photo?.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${m.photo}` : m.photo;
+      const avatar = photoUrl
+        ? `<img src="${photoUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+        : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0;">${m.initiales || '?'}</div>`;
+      const isFirst = posInPole === 0;
+      const isLast = posInPole === membres.length - 1;
+      return `<div class="item-card">
+        ${avatar}
+        <div class="item-card-info"><div class="item-card-title">${m.nom}</div><div class="item-card-sub">${m.role}</div></div>
+        <div style="display:flex;flex-direction:column;gap:2px;margin-right:4px;">
+          <button onclick="moveEquipe(${i},'up')" style="background:none;border:1px solid var(--gris-border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1;color:var(--gris-texte);${isFirst?'opacity:0.3;pointer-events:none;':''}" ${isFirst?'disabled':''}>↑</button>
+          <button onclick="moveEquipe(${i},'down')" style="background:none;border:1px solid var(--gris-border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1;color:var(--gris-texte);${isLast?'opacity:0.3;pointer-events:none;':''}" ${isLast?'disabled':''}>↓</button>
+        </div>
+        <div class="item-card-actions">
+          <button class="btn-edit" onclick="editItem('equipe',${i})">Modifier</button>
+          <button class="btn-delete" onclick="deleteItem('equipe',${i})">Supprimer</button>
+        </div></div>`;
+    }).join('');
+
+    return `<div class="pole-group"><p class="pole-group-label">${pole.label}</p>${cards}</div>`;
+  }).join('');
+
+  return `
+    <div class="items-list" id="items-list">${groupHtml}</div>
+    ${formMembre()}
+    <button class="btn-add" id="btn-add" onclick="showForm()">+ Ajouter un membre</button>`;
+}
+
+async function moveEquipe(i, dir) {
+  const pole = data.equipe[i].pole;
+  const poleMembers = data.equipe.map((m, idx) => ({ m, idx })).filter(({ m }) => m.pole === pole);
+  const posInPole = poleMembers.findIndex(({ idx }) => idx === i);
+  const swapPos = dir === 'up' ? posInPole - 1 : posInPole + 1;
+  if (swapPos < 0 || swapPos >= poleMembers.length) return;
+  const j = poleMembers[swapPos].idx;
+  [data.equipe[i], data.equipe[j]] = [data.equipe[j], data.equipe[i]];
+  try {
+    await persistData('equipe', 'Réorganisation équipe');
+    openEditor('equipe', false, 'Communication', 'Équipe BDE');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
 function buildEditor(type) {
+  if (type === 'equipe') return buildEquipeEditor();
+
   const items = data[type] || [];
   const listHtml = items.length
     ? items.map((item, i) => {
         let title = '', sub = '';
         if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
-        if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
         if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} — ${item.lieu}`; }
 
         // Médias : carte avec prévisualisation
@@ -374,20 +434,8 @@ function buildEditor(type) {
             </div></div>`;
         }
 
-        // Équipe : carte avec photo ronde
-        if (type === 'equipe') {
-          const photoUrl = item.photo?.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.photo}` : item.photo;
-          const avatar = photoUrl
-            ? `<img src="${photoUrl}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
-            : `<div style="width:44px;height:44px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0;">${item.initiales || '?'}</div>`;
-          return `<div class="item-card">
-            ${avatar}
-            <div class="item-card-info"><div class="item-card-title">${item.nom}</div><div class="item-card-sub">${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}</div></div>
-            <div class="item-card-actions">
-              <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
-              <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
-            </div></div>`;
-        }
+        // Équipe : géré séparément par buildEquipeEditor()
+        if (type === 'equipe') return '';
 
         return `<div class="item-card">
           <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
