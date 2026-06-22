@@ -307,10 +307,37 @@ fetch(`/_data/config.json?t=${Date.now()}`)
       const delays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
       grid.innerHTML = cfg.chiffres.map((c, i) => `
         <div class="chiffre-item reveal ${delays[i] || ''}">
-          <p class="chiffre-number">${c.number}</p>
+          <p class="chiffre-number" data-target="${c.number}">${c.number}</p>
           <p class="chiffre-label">${c.label}</p>
         </div>`).join('');
-      grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target.querySelector('.chiffre-number');
+          if (!el || el.dataset.animated) return;
+          el.dataset.animated = '1';
+          const raw = el.dataset.target;
+          const suffix = raw.replace(/[\d]/g, '');
+          const target = parseInt(raw.replace(/\D/g, ''), 10);
+          if (isNaN(target)) return;
+          const duration = 1200;
+          const start = performance.now();
+          const update = (now) => {
+            const p = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(target * ease) + suffix;
+            if (p < 1) requestAnimationFrame(update);
+          };
+          requestAnimationFrame(update);
+          counterObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.5 });
+
+      grid.querySelectorAll('.chiffre-item').forEach(el => {
+        revealObserver.observe(el);
+        counterObserver.observe(el);
+      });
     }
     // Canaux de communication
     const canauxGrid = document.getElementById('canaux-grid');

@@ -227,6 +227,15 @@
 </div>
 
 <div id="toast"></div>
+<div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
+    <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;transition:width 0.3s;"></div>
+    </div>
+    <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
+  </div>
+</div>
 
 <script>
 const REPO = 'BDEcreadien/bdecreadien';
@@ -965,7 +974,10 @@ async function saveArchive() {
 }
 
 async function deleteItem(type, i) {
-  if (!confirm('Supprimer cet élément ?')) return;
+  const item = data[type][i];
+  const label = item.titre || item.nom || item.name || 'cet élément';
+  const confirmed = await showConfirm(`Supprimer "${label}" ?`, 'Cette action est irréversible.');
+  if (!confirmed) return;
   const item = data[type][i];
   data[type].splice(i, 1);
   try {
@@ -1170,6 +1182,8 @@ async function uploadMedia(file) {
   const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
   const path = `assets/uploads/${filename}`;
 
+  showProgress('Lecture du fichier…');
+
   // Lecture base64
   const base64 = await new Promise((res, rej) => {
     const r = new FileReader();
@@ -1178,46 +1192,52 @@ async function uploadMedia(file) {
     r.readAsDataURL(file);
   });
 
+  setProgress(20, 'Envoi du fichier…');
+
   // Étape 1 : créer le blob
   const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
     method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ content: base64, encoding: 'base64' })
   });
-  if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`Blob : ${b.message}`); }
+  if (!blobRes.ok) { hideProgress(); const b = await blobRes.json(); throw new Error(`Blob : ${b.message}`); }
   const { sha: blobSha } = await blobRes.json();
+
+  setProgress(60, 'Enregistrement…');
 
   // Étapes 2-5 : commit du fichier avec retry sur conflit 409
   for (let attempt = 0; attempt < 3; attempt++) {
     const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/ref/heads/${BRANCH}`, { headers: { Authorization: `token ${token}` } });
-    if (!refRes.ok) throw new Error('Impossible de lire la branche');
+    if (!refRes.ok) { hideProgress(); throw new Error('Impossible de lire la branche'); }
     const { object: { sha: commitSha } } = await refRes.json();
 
     const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${commitSha}`, { headers: { Authorization: `token ${token}` } });
-    if (!commitRes.ok) throw new Error('Impossible de lire le commit');
+    if (!commitRes.ok) { hideProgress(); throw new Error('Impossible de lire le commit'); }
     const { tree: { sha: treeSha } } = await commitRes.json();
 
     const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
       method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ base_tree: treeSha, tree: [{ path, mode: '100644', type: 'blob', sha: blobSha }] })
     });
-    if (!treeRes.ok) throw new Error('Impossible de créer le tree');
+    if (!treeRes.ok) { hideProgress(); throw new Error('Impossible de créer le tree'); }
     const { sha: newTreeSha } = await treeRes.json();
+
+    setProgress(80, 'Finalisation…');
 
     const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
       method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: `Média : ${filename}`, tree: newTreeSha, parents: [commitSha] })
     });
-    if (!newCommitRes.ok) throw new Error('Impossible de créer le commit');
+    if (!newCommitRes.ok) { hideProgress(); throw new Error('Impossible de créer le commit'); }
     const { sha: newCommitSha } = await newCommitRes.json();
 
     const patchRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
       method: 'PATCH', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ sha: newCommitSha })
     });
-    if (patchRes.ok) break;
+    if (patchRes.ok) { setProgress(100, 'Terminé !'); await new Promise(r => setTimeout(r, 500)); hideProgress(); break; }
     const patchBody = await patchRes.json();
     if (patchRes.status === 422 && attempt < 2) { await new Promise(r => setTimeout(r, 800)); continue; }
-    throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
+    hideProgress(); throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
   }
 
   return { url: `/${path}`, type };
@@ -1322,6 +1342,42 @@ function selectLieu(i) {
 // ============================================================
 // TOAST & BOOT
 // ============================================================
+function showProgress(label = 'Envoi en cours…') {
+  document.getElementById('upload-label').textContent = label;
+  setProgress(0);
+  document.getElementById('upload-progress').style.display = 'flex';
+}
+function setProgress(pct, label) {
+  document.getElementById('upload-bar').style.width = pct + '%';
+  document.getElementById('upload-pct').textContent = pct + '%';
+  if (label) document.getElementById('upload-label').textContent = label;
+}
+function hideProgress() {
+  document.getElementById('upload-progress').style.display = 'none';
+}
+
+function showConfirm(title, subtitle = '') {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = `
+      <div style="background:white;border-radius:16px;padding:2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div style="width:48px;height:48px;background:rgba(220,50,50,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <p style="font-size:16px;font-weight:700;margin-bottom:0.4rem;">${title}</p>
+        ${subtitle ? `<p style="font-size:13px;color:#6b6b7b;margin-bottom:1.5rem;">${subtitle}</p>` : '<div style="margin-bottom:1.5rem;"></div>'}
+        <div style="display:flex;gap:0.75rem;">
+          <button id="confirm-cancel" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #e0e0e5;background:white;font-size:14px;font-weight:600;cursor:pointer;">Annuler</button>
+          <button id="confirm-ok" style="flex:1;padding:10px;border-radius:10px;border:none;background:#c0392b;color:white;font-size:14px;font-weight:600;cursor:pointer;">Supprimer</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#confirm-cancel').onclick = () => { overlay.remove(); resolve(false); };
+    overlay.querySelector('#confirm-ok').onclick = () => { overlay.remove(); resolve(true); };
+  });
+}
+
 function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = `show ${type}`;
