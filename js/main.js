@@ -2,6 +2,9 @@
 // BDE CREAD — Script principal
 // ===================================
 
+const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
+const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
+
 // Navigation scroll
 const nav = document.querySelector('nav');
 if (nav) {
@@ -48,6 +51,7 @@ function renderActu(data) {
     <span class="actu-featured-tag">Événement phare</span>
     <h3 class="actu-featured-title">${first.titre}</h3>
     <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
+    ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top:1rem; width:auto; display:inline-block;">${labelLien[first.typeLien] || 'Voir'}</a>` : ''}
   `;
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
@@ -58,6 +62,7 @@ function renderActu(data) {
     return `<div class="actu-item reveal ${delays[i] || ''}">
       <div class="actu-item-date"><span class="day">${day}</span><span class="month">${month}</span></div>
       <div class="actu-item-content"><h3>${ev.titre}</h3><p>${ev.lieu}${ev.horaire ? ' · ' + ev.horaire : ''}</p></div>
+      ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="actu-item-link" style="flex-shrink:0; font-size:11px; font-weight:700; color:var(--violet); text-decoration:none; white-space:nowrap;">→ Voir</a>` : ''}
     </div>`;
   }).join('');
 
@@ -204,9 +209,6 @@ function copyIcal() {
 // ===================================
 // ÉVÉNEMENTS — Chargement & Rendu
 // ===================================
-
-const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
-const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
 function renderEvenements(data) {
   const container = document.getElementById('evenements-list');
