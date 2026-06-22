@@ -276,6 +276,38 @@ if (document.getElementById('archives-grid')) {
 }
 
 // ===================================
+// CONFIG — Chiffres clés & Contact
+// ===================================
+
+fetch('/_data/config.json')
+  .then(r => r.json())
+  .then(cfg => {
+    // Chiffres
+    const grid = document.getElementById('chiffres-grid');
+    if (grid && cfg.chiffres?.length) {
+      const delays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
+      grid.innerHTML = cfg.chiffres.map((c, i) => `
+        <div class="chiffre-item reveal ${delays[i] || ''}">
+          <p class="chiffre-number">${c.number}</p>
+          <p class="chiffre-label">${c.label}</p>
+        </div>`).join('');
+      grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    }
+    // Contact (email + instagram sur toutes les pages)
+    if (cfg.contact?.email) {
+      document.querySelectorAll('a[href^="mailto:"]').forEach(a => { a.href = 'mailto:' + cfg.contact.email; });
+    }
+    if (cfg.contact?.instagram) {
+      const handle = cfg.contact.instagram.replace(/^@/, '');
+      document.querySelectorAll('a[href*="instagram.com/bdecreadien"]').forEach(a => {
+        a.href = 'https://www.instagram.com/' + handle;
+        a.querySelectorAll('span, text').forEach(s => { if (s.textContent.startsWith('@')) s.textContent = '@' + handle; });
+      });
+    }
+  })
+  .catch(() => {});
+
+// ===================================
 // ÉQUIPE — Chargement & Rendu
 // ===================================
 

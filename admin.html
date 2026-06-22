@@ -196,6 +196,11 @@
         <div class="page-card-name">Archives</div>
         <div class="page-card-desc">Événements passés</div>
       </div>
+      <div class="page-card" onclick="selectPage('parametres')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+        <div class="page-card-name">Paramètres</div>
+        <div class="page-card-desc">Chiffres clés, contact, Instagram</div>
+      </div>
     </div>
   </div>
 
@@ -226,7 +231,7 @@ const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
 const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
-let data = { evenements: [], annonces: [], videos: [], equipe: [] };
+let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null };
 let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
@@ -251,7 +256,7 @@ async function init() {
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('btn-logout').style.display = 'block';
   showStep('pages');
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config')]);
 }
 
 // ============================================================
@@ -288,6 +293,12 @@ function selectPage(page) {
     openEditor('equipe', true, 'Communication', 'Équipe BDE');
   } else if (page === 'archives') {
     openEditor('archives', true, 'Archives', 'Événements passés');
+  } else if (page === 'parametres') {
+    showStep('editor');
+    navStack = ['pages'];
+    document.getElementById('editor-breadcrumb').innerHTML = '<span onclick="showStep(\'pages\')" style="cursor:pointer;color:var(--violet);">Pages</span> › Paramètres';
+    document.getElementById('editor-title').textContent = 'Paramètres du site';
+    document.getElementById('editor-content').innerHTML = buildParametresEditor();
   }
 }
 
@@ -331,8 +342,8 @@ async function loadData(type) {
     const file = await getFile(`_data/${type}.json`);
     const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0));
     const raw = JSON.parse(new TextDecoder().decode(bytes));
-    data[type] = Array.isArray(raw) ? raw : (raw[type] || []);
-  } catch(e) { data[type] = []; }
+    data[type] = type === 'config' ? raw : (Array.isArray(raw) ? raw : (raw[type] || []));
+  } catch(e) { data[type] = type === 'config' ? null : []; }
 }
 async function persistData(type, message) {
   // Toujours récupérer le SHA le plus récent ; si 409, on réessaie une fois avec le SHA actuel
@@ -392,6 +403,42 @@ function buildEquipeEditor() {
     <div class="items-list" id="items-list">${groupHtml}</div>
     ${formMembre()}
     <button class="btn-add" id="btn-add" onclick="showForm()">+ Ajouter un membre</button>`;
+}
+
+function buildParametresEditor() {
+  const cfg = data.config || { chiffres: [{number:'',label:''},{number:'',label:''},{number:'',label:''},{number:'',label:''}], contact: { email:'', instagram:'' } };
+  const chiffresHtml = (cfg.chiffres || []).map((c, i) => `
+    <div class="form-grid" style="margin-bottom:0.75rem;">
+      <div class="form-row"><label>Nombre ${i+1}</label><input type="text" id="cfg-num-${i}" value="${c.number || ''}" placeholder="Ex: 350+"></div>
+      <div class="form-row"><label>Libellé ${i+1}</label><input type="text" id="cfg-lbl-${i}" value="${c.label || ''}" placeholder="Ex: Étudiants CREAD"></div>
+    </div>`).join('');
+  return `
+    <div class="form-card" style="max-width:100%;margin-bottom:1.5rem;">
+      <h3>Chiffres clés <span style="font-size:12px;font-weight:400;color:var(--gris-texte);">(affichés sur la page d'accueil)</span></h3>
+      ${chiffresHtml}
+    </div>
+    <div class="form-card" style="max-width:100%;margin-bottom:1.5rem;">
+      <h3>Contact & réseaux</h3>
+      <div class="form-row"><label>Email de contact</label><input type="email" id="cfg-email" value="${cfg.contact?.email || ''}" placeholder="bdecreadien@gmail.com"></div>
+      <div class="form-row"><label>Instagram <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(sans le @)</span></label><input type="text" id="cfg-insta" value="${cfg.contact?.instagram || ''}" placeholder="bdecreadien"></div>
+    </div>
+    <div class="form-actions" style="justify-content:flex-end;">
+      <button class="btn-save" onclick="saveParametres()">Enregistrer les paramètres</button>
+    </div>`;
+}
+
+async function saveParametres() {
+  const chiffres = [0,1,2,3].map(i => ({
+    number: document.getElementById(`cfg-num-${i}`)?.value.trim() || '',
+    label: document.getElementById(`cfg-lbl-${i}`)?.value.trim() || ''
+  }));
+  const email = document.getElementById('cfg-email').value.trim();
+  const instagram = document.getElementById('cfg-insta').value.trim();
+  data.config = { chiffres, contact: { email, instagram } };
+  try {
+    await persistData('config', 'Mise à jour paramètres site');
+    showToast('Paramètres enregistrés !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
 async function moveEquipe(i, dir) {

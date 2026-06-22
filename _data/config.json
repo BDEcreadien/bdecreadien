@@ -1,0 +1,12 @@
+{
+  "chiffres": [
+    { "number": "350+", "label": "Étudiants CREAD" },
+    { "number": "12", "label": "Événements par an" },
+    { "number": "3", "label": "Promos actives" },
+    { "number": "1", "label": "BDE au top" }
+  ],
+  "contact": {
+    "email": "bdecreadien@gmail.com",
+    "instagram": "bdecreadien"
+  }
+}
