@@ -5,20 +5,41 @@
 const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
-// Transitions entre pages
-document.addEventListener('DOMContentLoaded', () => {
-  document.body.style.opacity = '1';
-  document.querySelectorAll('a[href]').forEach(a => {
-    const href = a.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http') || a.target === '_blank') return;
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      document.body.style.transition = 'opacity 0.2s ease';
-      document.body.style.opacity = '0';
-      setTimeout(() => { window.location.href = href; }, 200);
+// Transitions entre pages — overlay dégradé BDE
+(function () {
+  const overlay = document.createElement('div');
+  overlay.id = 'page-transition-overlay';
+  overlay.innerHTML = `<img src="assets/Logo.png" alt="BDE CREAD" width="72" height="72" style="border-radius:50%;object-fit:cover;box-shadow:0 4px 24px rgba(0,0,0,0.25);">`;
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:99999;
+    background:linear-gradient(135deg,#7B2FBE 0%,#C4391C 100%);
+    display:flex;align-items:center;justify-content:center;
+    opacity:1;transition:opacity 0.18s ease;pointer-events:all;
+  `;
+  document.documentElement.appendChild(overlay);
+
+  // Fade out au chargement
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.pointerEvents = 'none'; }, 180);
     });
   });
-});
+
+  // Fade in au clic sur un lien interne
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http') || a.target === '_blank') return;
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        overlay.style.pointerEvents = 'all';
+        overlay.style.opacity = '1';
+        setTimeout(() => { window.location.href = href; }, 180);
+      });
+    });
+  });
+})();
 
 // Navigation scroll
 const nav = document.querySelector('nav');
