@@ -570,12 +570,12 @@ if (document.getElementById('equipe-container')) {
 // GALERIE PHOTOS — Communication
 // ===================================
 if (document.getElementById('galerie-grid')) {
-  fetch(`/_data/videos.json?t=${Date.now()}`)
+  fetch(`/_data/galerie.json?t=${Date.now()}`)
     .then(r => r.json())
     .then(items => {
-      const photos = (Array.isArray(items) ? items : []).filter(v => v.type === 'photo');
+      const photos = Array.isArray(items) ? items : [];
       const grid = document.getElementById('galerie-grid');
-      if (!photos.length) { grid.style.display = 'none'; document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
+      if (!photos.length) { document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
       grid.innerHTML = photos.map(p => {
         const url = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
         return `<div class="galerie-item reveal">

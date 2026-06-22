@@ -207,6 +207,12 @@
         <div class="page-card-desc">Membres de l'équipe BDE</div>
         <a href="communication.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
+      <div class="page-card" onclick="selectPage('galerie')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div class="page-card-name">Galerie</div>
+        <div class="page-card-desc">Photos de la galerie Communication</div>
+        <a href="communication.html#galerie-section" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <div class="page-card-name">Paramètres</div>
@@ -251,8 +257,8 @@ const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
 const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
-let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null };
-let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1 };
+let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null, galerie: [] };
+let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1, galerie: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
 // ============================================================
@@ -286,7 +292,7 @@ async function init() {
   loader.innerHTML = '<p style="text-align:center;padding:4rem 2rem;color:var(--gris-texte);font-size:15px;">Chargement des données…</p>';
   document.getElementById('screen-app').prepend(loader);
 
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config'), loadData('galerie')]);
 
   loader.remove();
   showStep('pages');
@@ -326,6 +332,8 @@ function selectPage(page) {
     openEditor('equipe', true, 'Communication', 'Équipe BDE');
   } else if (page === 'archives') {
     openEditor('archives', true, 'Archives', 'Événements passés');
+  } else if (page === 'galerie') {
+    openEditor('galerie', true, 'Galerie', 'Photos galerie');
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
@@ -645,6 +653,18 @@ function buildEditor(type) {
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} — ${item.lieu}`; }
 
+        // Galerie : carte photo
+        if (type === 'galerie') {
+          const rawUrl = item.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.url}` : item.url;
+          return `<div class="item-card">
+            <img src="${rawUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+            <div class="item-card-info"><div class="item-card-title">${item.titre || '(sans titre)'}</div><div class="item-card-sub" style="display:flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Photo</div></div>
+            <div class="item-card-actions">
+              <button class="btn-edit" onclick="editItem('galerie',${i})">Modifier</button>
+              <button class="btn-delete" onclick="deleteItem('galerie',${i})">Supprimer</button>
+            </div></div>`;
+        }
+
         // Médias : carte avec prévisualisation
         if (type === 'videos') {
           const rawUrl = item.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.url}` : item.url;
@@ -682,12 +702,14 @@ function buildEditor(type) {
     : type === 'annonces' ? formAnnonce()
     : type === 'equipe' ? formMembre()
     : type === 'archives' ? formArchive()
+    : type === 'galerie' ? formGalerie()
     : formMedia();
 
   const addLabel = type === 'evenements' ? 'Ajouter un événement'
     : type === 'annonces' ? 'Ajouter une annonce'
     : type === 'equipe' ? 'Ajouter un membre'
     : type === 'archives' ? 'Ajouter un événement passé'
+    : type === 'galerie' ? 'Ajouter une photo'
     : 'Ajouter un média';
 
   return `
@@ -886,6 +908,27 @@ function formArchive() {
   </div>`;
 }
 
+function formGalerie() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouvelle photo</h3>
+    <div class="form-row">
+      <label>Photo * (JPG, PNG, WebP)</label>
+      <input type="file" id="gl-file" accept="image/*" onchange="onGalerieSelected()">
+    </div>
+    <div class="media-preview-wrap" id="gl-preview-wrap">
+      <img id="gl-preview-img" style="display:none;">
+    </div>
+    <div class="form-row" style="margin-top:0.75rem;">
+      <label>Légende (optionnelle)</label>
+      <input type="text" id="gl-titre" placeholder="Ex: Soirée de rentrée 2025">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" id="btn-save-galerie" onclick="saveGalerie()">Ajouter</button>
+    </div>
+  </div>`;
+}
+
 function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
@@ -931,7 +974,7 @@ function onMembrePhotoSelected() {
 function showForm() {
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
-  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : 'video'] = -1;
+  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : currentType === 'galerie' ? 'galerie' : 'video'] = -1;
 }
 
 function cancelForm() {
@@ -962,6 +1005,13 @@ function resetForm() {
     const pw = document.getElementById('vi-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouveau média';
   }
+  if (currentType === 'galerie') {
+    const fi = document.getElementById('gl-file'); if(fi) fi.value = '';
+    const ti = document.getElementById('gl-titre'); if(ti) ti.value = '';
+    const pw = document.getElementById('gl-preview-wrap'); if(pw) pw.style.display = 'none';
+    const img = document.getElementById('gl-preview-img'); if(img) img.style.display = 'none';
+    document.getElementById('form-title').textContent = 'Nouvelle photo';
+  }
   if (currentType === 'equipe') {
     ['mb-nom','mb-initiales','mb-role'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const pole = document.getElementById('mb-pole'); if(pole) pole.value = 'bureau';
@@ -976,7 +1026,7 @@ function resetForm() {
 }
 
 function editItem(type, i) {
-  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre', archives: 'archive' };
+  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre', archives: 'archive', galerie: 'galerie' };
   editIndex[map[type]] = i;
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
@@ -1059,6 +1109,17 @@ function editItem(type, i) {
     document.getElementById('ar-tag').value = ar.tag || 'Soirée';
     document.getElementById('form-title').textContent = 'Modifier l\'événement passé';
   }
+  if (type === 'galerie') {
+    const gl = data.galerie[i];
+    document.getElementById('gl-titre').value = gl.titre || '';
+    if (gl.url) {
+      const rawUrl = gl.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${gl.url}` : gl.url;
+      const img = document.getElementById('gl-preview-img');
+      img.src = rawUrl; img.style.display = 'block';
+      document.getElementById('gl-preview-wrap').style.display = 'block';
+    }
+    document.getElementById('form-title').textContent = 'Modifier la photo';
+  }
 }
 
 async function saveArchive() {
@@ -1088,6 +1149,17 @@ async function deleteItem(type, i) {
   try {
     await persistData(type, `Suppression dans ${type}`);
     // Si c'est un média local (photo/vidéo uploadée), supprimer aussi le fichier
+    if (type === 'galerie' && item.url?.startsWith('/')) {
+      const path = item.url.replace(/^\//, '');
+      try {
+        const file = await getFile(path);
+        await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+          method: 'DELETE',
+          headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Suppression galerie : ${path}`, sha: file.sha, branch: BRANCH })
+        });
+      } catch(e) { /* pas bloquant */ }
+    }
     if (type === 'videos' && item.url?.startsWith('/')) {
       const path = item.url.replace(/^\//, '');
       try {
@@ -1430,6 +1502,40 @@ async function saveMedia() {
     openEditor('videos', false, 'Accueil', 'Médias (photos & vidéos)');
     cancelForm();
     showToast('Média ajouté !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+function onGalerieSelected() {
+  const file = document.getElementById('gl-file').files[0];
+  if (!file) return;
+  const img = document.getElementById('gl-preview-img');
+  img.src = URL.createObjectURL(file);
+  img.style.display = 'block';
+  document.getElementById('gl-preview-wrap').style.display = 'block';
+}
+
+async function saveGalerie() {
+  const titre = document.getElementById('gl-titre').value.trim();
+  const file = document.getElementById('gl-file')?.files[0];
+  const idx = editIndex.galerie;
+  if (!file && idx < 0) return showToast('Sélectionne une photo', 'error');
+  const btn = document.getElementById('btn-save-galerie');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+  try {
+    let url = idx >= 0 ? data.galerie[idx].url : '';
+    if (file) {
+      const uploaded = await uploadMedia(file);
+      url = uploaded.url;
+    }
+    const gl = { url, titre };
+    if (idx >= 0) data.galerie[idx] = gl; else data.galerie.push(gl);
+  } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
+  btn.textContent = 'Ajouter'; btn.disabled = false;
+  try {
+    await persistData('galerie', idx >= 0 ? 'Modification photo galerie' : 'Nouvelle photo galerie');
+    openEditor('galerie', false, 'Galerie', 'Photos galerie');
+    cancelForm();
+    showToast('Photo ajoutée !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
