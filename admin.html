@@ -688,9 +688,34 @@ function editItem(type, i) {
 
 async function deleteItem(type, i) {
   if (!confirm('Supprimer cet élément ?')) return;
+  const item = data[type][i];
   data[type].splice(i, 1);
   try {
     await persistData(type, `Suppression dans ${type}`);
+    // Si c'est un média local (photo/vidéo uploadée), supprimer aussi le fichier
+    if (type === 'videos' && item.url?.startsWith('/')) {
+      const path = item.url.replace(/^\//, '');
+      try {
+        const file = await getFile(path);
+        await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+          method: 'DELETE',
+          headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Suppression média : ${path}`, sha: file.sha, branch: BRANCH })
+        });
+      } catch(e) { /* fichier déjà absent, pas bloquant */ }
+    }
+    // Si c'est un membre avec photo uploadée
+    if (type === 'equipe' && item.photo?.startsWith('/')) {
+      const path = item.photo.replace(/^\//, '');
+      try {
+        const file = await getFile(path);
+        await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+          method: 'DELETE',
+          headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Suppression photo : ${path}`, sha: file.sha, branch: BRANCH })
+        });
+      } catch(e) { /* fichier déjà absent, pas bloquant */ }
+    }
     refreshList(type);
     showToast('Supprimé !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
