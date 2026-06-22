@@ -286,7 +286,7 @@ const CANAL_ICONS = {
   autre: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`
 };
 
-fetch('/_data/config.json')
+fetch(`/_data/config.json?t=${Date.now()}`)
   .then(r => r.json())
   .then(cfg => {
     // Chiffres
@@ -303,8 +303,7 @@ fetch('/_data/config.json')
     // Canaux de communication
     const canauxGrid = document.getElementById('canaux-grid');
     if (canauxGrid && cfg.canaux?.length) {
-      const delays = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
-      canauxGrid.innerHTML = cfg.canaux.map((c, i) => {
+      canauxGrid.innerHTML = cfg.canaux.map(c => {
         const gris = c.bientot ? 'color:var(--gris-moyen);' : '';
         const icon = (CANAL_ICONS[c.type] || CANAL_ICONS.autre).replace(
           /var\(--violet\)/g, c.bientot ? 'var(--gris-moyen)' : 'var(--violet)'
@@ -318,12 +317,11 @@ fetch('/_data/config.json')
           </div>
           <p class="comm-card-link" style="${gris}" aria-hidden="true">${c.lienLabel}</p>`;
         if (c.bientot || !c.lien) {
-          return `<div class="comm-card reveal ${delays[i] || ''}">${inner}</div>`;
+          return `<div class="comm-card">${inner}</div>`;
         }
         const isEmail = c.lien.startsWith('mailto:');
-        return `<a href="${c.lien}" ${isEmail ? '' : 'target="_blank" rel="noopener noreferrer"'} class="comm-card reveal ${delays[i] || ''}">${inner}</a>`;
+        return `<a href="${c.lien}" ${isEmail ? '' : 'target="_blank" rel="noopener noreferrer"'} class="comm-card">${inner}</a>`;
       }).join('');
-      canauxGrid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
     }
   })
   .catch(() => {});
