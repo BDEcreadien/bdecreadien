@@ -978,7 +978,6 @@ async function deleteItem(type, i) {
   const label = item.titre || item.nom || item.name || 'cet élément';
   const confirmed = await showConfirm(`Supprimer "${label}" ?`, 'Cette action est irréversible.');
   if (!confirmed) return;
-  const item = data[type][i];
   data[type].splice(i, 1);
   try {
     await persistData(type, `Suppression dans ${type}`);
