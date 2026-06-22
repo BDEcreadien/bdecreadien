@@ -5,8 +5,9 @@
 const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
-// Transitions entre pages — overlay dégradé BDE
+// Transitions entre pages — overlay dégradé BDE (exclu sur admin)
 (function () {
+  if (window.location.pathname.includes('admin')) return;
   const overlay = document.createElement('div');
   overlay.id = 'page-transition-overlay';
   overlay.innerHTML = `<img src="assets/Logo.png" alt="BDE CREAD" width="72" height="72" style="border-radius:50%;object-fit:cover;box-shadow:0 4px 24px rgba(0,0,0,0.25);">`;
