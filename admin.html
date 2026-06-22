@@ -782,33 +782,16 @@ function formArchive() {
 function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
-
-    <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;">
-      <button id="tab-file" onclick="switchMediaTab('file')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--violet);background:var(--violet);color:white;font-weight:700;font-size:13px;cursor:pointer;">📁 Fichier (photo/vidéo)</button>
-      <button id="tab-url" onclick="switchMediaTab('url')" style="flex:1;padding:8px;border-radius:8px;border:2px solid var(--gris-border);background:white;color:var(--noir);font-weight:700;font-size:13px;cursor:pointer;">🔗 Lien YouTube / Vimeo</button>
+    <div class="form-row">
+      <label>Fichier * (photo ou vidéo)</label>
+      <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
+      <p id="vi-size-warn" style="margin-top:0.5rem;font-size:12px;color:#c0392b;line-height:1.5;"></p>
+      <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Photos OK · Vidéos MP4 max 25 Mo.</p>
     </div>
-
-    <div id="vi-panel-file">
-      <div class="form-row">
-        <label>Fichier (photo ou vidéo depuis l'ordi)</label>
-        <input type="file" id="vi-file" accept="image/*,video/*" onchange="onMediaSelected()">
-        <p id="vi-size-warn" style="margin-top:0.5rem;font-size:12px;color:#c0392b;line-height:1.5;"></p>
-        <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Photos OK · Vidéos MP4 max 25 Mo.</p>
-      </div>
-      <div class="media-preview-wrap" id="vi-preview-wrap">
-        <img id="vi-preview-img" style="display:none;">
-        <video id="vi-preview-vid" controls style="display:none;"></video>
-      </div>
+    <div class="media-preview-wrap" id="vi-preview-wrap">
+      <img id="vi-preview-img" style="display:none;">
+      <video id="vi-preview-vid" controls style="display:none;"></video>
     </div>
-
-    <div id="vi-panel-url" style="display:none;">
-      <div class="form-row">
-        <label>Lien YouTube ou Vimeo *</label>
-        <input type="text" id="vi-url" placeholder="https://www.youtube.com/watch?v=...">
-        <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Colle le lien de ta vidéo YouTube (même en non-répertoriée) ou Vimeo. Aucune limite de taille !</p>
-      </div>
-    </div>
-
     <div class="form-row" style="margin-top:0.75rem;">
       <label>Titre (optionnel)</label>
       <input type="text" id="vi-titre" placeholder="Ex: Soirée de rentrée 2025">
@@ -818,18 +801,6 @@ function formMedia() {
       <button class="btn-save" id="btn-save-media" onclick="saveMedia()">Ajouter</button>
     </div>
   </div>`;
-}
-
-function switchMediaTab(tab) {
-  const isFile = tab === 'file';
-  document.getElementById('vi-panel-file').style.display = isFile ? '' : 'none';
-  document.getElementById('vi-panel-url').style.display = isFile ? 'none' : '';
-  document.getElementById('tab-file').style.cssText = isFile
-    ? 'flex:1;padding:8px;border-radius:8px;border:2px solid var(--violet);background:var(--violet);color:white;font-weight:700;font-size:13px;cursor:pointer;'
-    : 'flex:1;padding:8px;border-radius:8px;border:2px solid var(--gris-border);background:white;color:var(--noir);font-weight:700;font-size:13px;cursor:pointer;';
-  document.getElementById('tab-url').style.cssText = isFile
-    ? 'flex:1;padding:8px;border-radius:8px;border:2px solid var(--gris-border);background:white;color:var(--noir);font-weight:700;font-size:13px;cursor:pointer;'
-    : 'flex:1;padding:8px;border-radius:8px;border:2px solid var(--violet);background:var(--violet);color:white;font-weight:700;font-size:13px;cursor:pointer;';
 }
 
 // ============================================================
@@ -1246,27 +1217,18 @@ async function uploadMedia(file) {
 async function saveMedia() {
   const titre = document.getElementById('vi-titre').value.trim();
   const file = document.getElementById('vi-file')?.files[0];
-  const urlInput = document.getElementById('vi-url')?.value.trim();
   const idx = editIndex.video;
-  const urlPanelVisible = document.getElementById('vi-panel-url')?.style.display !== 'none';
-
-  if (urlPanelVisible) {
-    if (!urlInput) return showToast('Colle un lien YouTube ou Vimeo', 'error');
-    const vi = { type: 'embed', url: urlInput, titre };
+  if (!file && idx < 0) return showToast('Sélectionne un fichier', 'error');
+  const btn = document.getElementById('btn-save-media');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+  try {
+    let url = idx >= 0 ? data.videos[idx].url : '';
+    let type = idx >= 0 ? data.videos[idx].type : 'photo';
+    if (file) ({ url, type } = await uploadMedia(file));
+    const vi = { type, url, titre };
     if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
-  } else {
-    if (!file && idx < 0) return showToast('Sélectionne un fichier', 'error');
-    const btn = document.getElementById('btn-save-media');
-    btn.textContent = 'Envoi…'; btn.disabled = true;
-    try {
-      let url = idx >= 0 ? data.videos[idx].url : '';
-      let type = idx >= 0 ? data.videos[idx].type : 'photo';
-      if (file) ({ url, type } = await uploadMedia(file));
-      const vi = { type, url, titre };
-      if (idx >= 0) data.videos[idx] = vi; else data.videos.push(vi);
-    } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
-    btn.textContent = 'Ajouter'; btn.disabled = false;
-  }
+  } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
+  btn.textContent = 'Ajouter'; btn.disabled = false;
   try {
     await persistData('videos', idx >= 0 ? 'Modification média' : 'Nouveau média');
     openEditor('videos', false, 'Accueil', 'Médias (photos & vidéos)');
