@@ -244,6 +244,38 @@ if (document.getElementById('evenements-list')) {
 }
 
 // ===================================
+// ARCHIVES — Chargement & Rendu
+// ===================================
+
+function renderArchives(data) {
+  const grid = document.getElementById('archives-grid');
+  if (!grid) return;
+  if (!data.length) { grid.innerHTML = '<p style="color:var(--gris-texte);text-align:center;padding:2rem;">Aucun événement passé pour le moment.</p>'; return; }
+  const delays = ['reveal-delay-1','reveal-delay-2','reveal-delay-3','reveal-delay-4','','reveal-delay-1'];
+  grid.innerHTML = data.map((a, i) => `
+    <div class="archive-card reveal ${delays[i % delays.length]}">
+      <div class="archive-card-date">
+        <span class="day">${a.day}</span>
+        <span class="month">${a.month}</span>
+      </div>
+      <div class="archive-card-content">
+        <h3>${a.titre}</h3>
+        <p>${a.lieu}</p>
+        <span class="archive-tag">${a.tag}</span>
+      </div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+if (document.getElementById('archives-grid')) {
+  fetch('/_data/archives.json')
+    .then(r => r.json())
+    .then(data => renderArchives(Array.isArray(data) ? data : []))
+    .catch(() => renderArchives([]));
+}
+
+// ===================================
 // ANNONCES — Chargement & Filtres
 // ===================================
 

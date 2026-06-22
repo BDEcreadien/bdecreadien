@@ -189,6 +189,11 @@
         <div class="page-card-name">Communication</div>
         <div class="page-card-desc">Membres de l'équipe BDE</div>
       </div>
+      <div class="page-card" onclick="selectPage('archives')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+        <div class="page-card-name">Archives</div>
+        <div class="page-card-desc">Événements passés</div>
+      </div>
     </div>
   </div>
 
@@ -220,7 +225,7 @@ const BRANCH = 'main';
 const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
 let data = { evenements: [], annonces: [], videos: [], equipe: [] };
-let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1 };
+let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
 // ============================================================
@@ -244,7 +249,7 @@ async function init() {
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('btn-logout').style.display = 'block';
   showStep('pages');
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives')]);
 }
 
 // ============================================================
@@ -279,6 +284,8 @@ function selectPage(page) {
     openEditor('videos', true, 'Accueil', 'Médias (photos & vidéos)');
   } else if (page === 'communication') {
     openEditor('equipe', true, 'Communication', 'Équipe BDE');
+  } else if (page === 'archives') {
+    openEditor('archives', true, 'Archives', 'Événements passés');
   }
 }
 
@@ -350,6 +357,7 @@ function buildEditor(type) {
         if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
+        if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} — ${item.lieu}`; }
 
         // Médias : carte avec prévisualisation
         if (type === 'videos') {
@@ -393,11 +401,13 @@ function buildEditor(type) {
   const formHtml = type === 'evenements' ? formEvenement()
     : type === 'annonces' ? formAnnonce()
     : type === 'equipe' ? formMembre()
+    : type === 'archives' ? formArchive()
     : formMedia();
 
   const addLabel = type === 'evenements' ? 'Ajouter un événement'
     : type === 'annonces' ? 'Ajouter une annonce'
     : type === 'equipe' ? 'Ajouter un membre'
+    : type === 'archives' ? 'Ajouter un événement passé'
     : 'Ajouter un média';
 
   return `
@@ -544,6 +554,33 @@ function formMembre() {
   </div>`;
 }
 
+function formArchive() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouvel événement passé</h3>
+    <div class="form-row"><label>Titre *</label><input type="text" id="ar-titre" placeholder="Ex: Soirée Intégration L1"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Jour *</label><input type="text" id="ar-day" placeholder="Ex: 15" maxlength="2"></div>
+      <div class="form-row"><label>Mois *</label><input type="text" id="ar-month" placeholder="Ex: Mar"></div>
+    </div>
+    <div class="form-row"><label>Lieu / description</label><input type="text" id="ar-lieu" placeholder="Ex: Ninkasi Gerland · ~120 participants"></div>
+    <div class="form-row">
+      <label>Catégorie *</label>
+      <select id="ar-tag">
+        <option value="Soirée">Soirée</option>
+        <option value="Afterwork">Afterwork</option>
+        <option value="Culturel">Culturel</option>
+        <option value="BDE">BDE</option>
+        <option value="Sport">Sport</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" onclick="saveArchive()">Publier</button>
+    </div>
+  </div>`;
+}
+
 function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
@@ -587,7 +624,7 @@ function onMembrePhotoSelected() {
 function showForm() {
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
-  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : 'video'] = -1;
+  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : 'video'] = -1;
 }
 
 function cancelForm() {
@@ -622,10 +659,15 @@ function resetForm() {
     const pw = document.getElementById('mb-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouveau membre';
   }
+  if (currentType === 'archives') {
+    ['ar-titre','ar-day','ar-month','ar-lieu'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const tag = document.getElementById('ar-tag'); if(tag) tag.value = 'Soirée';
+    document.getElementById('form-title').textContent = 'Nouvel événement passé';
+  }
 }
 
 function editItem(type, i) {
-  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre' };
+  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre', archives: 'archive' };
   editIndex[map[type]] = i;
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
@@ -684,6 +726,33 @@ function editItem(type, i) {
     }
     document.getElementById('form-title').textContent = 'Modifier le média';
   }
+  if (type === 'archives') {
+    const ar = data.archives[i];
+    document.getElementById('ar-titre').value = ar.titre || '';
+    document.getElementById('ar-day').value = ar.day || '';
+    document.getElementById('ar-month').value = ar.month || '';
+    document.getElementById('ar-lieu').value = ar.lieu || '';
+    document.getElementById('ar-tag').value = ar.tag || 'Soirée';
+    document.getElementById('form-title').textContent = 'Modifier l\'événement passé';
+  }
+}
+
+async function saveArchive() {
+  const titre = document.getElementById('ar-titre').value.trim();
+  const day = document.getElementById('ar-day').value.trim();
+  const month = document.getElementById('ar-month').value.trim();
+  const lieu = document.getElementById('ar-lieu').value.trim();
+  const tag = document.getElementById('ar-tag').value;
+  if (!titre || !day || !month) return showToast('Remplis le titre, le jour et le mois', 'error');
+  const ar = { titre, day, month, lieu, tag };
+  const idx = editIndex.archive;
+  if (idx >= 0) data.archives[idx] = ar; else data.archives.push(ar);
+  try {
+    await persistData('archives', idx >= 0 ? `Modification archive : ${titre}` : `Nouvelle archive : ${titre}`);
+    openEditor('archives', false, 'Archives', 'Événements passés');
+    cancelForm();
+    showToast('Événement passé publié !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
 async function deleteItem(type, i) {

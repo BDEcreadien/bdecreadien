@@ -1,0 +1,44 @@
+[
+  {
+    "day": "15",
+    "month": "Mar",
+    "titre": "Soirée Intégration L1",
+    "lieu": "Ninkasi Gerland · ~120 participants",
+    "tag": "Soirée"
+  },
+  {
+    "day": "08",
+    "month": "Fév",
+    "titre": "Visite Musée des Arts Déco",
+    "lieu": "Musée des Arts Décoratifs, Lyon · ~40 étudiants",
+    "tag": "Culturel"
+  },
+  {
+    "day": "22",
+    "month": "Jan",
+    "titre": "Afterwork Semestre 1",
+    "lieu": "Bar du coin · Fin de semestre",
+    "tag": "Afterwork"
+  },
+  {
+    "day": "10",
+    "month": "Jan",
+    "titre": "Vœux BDE 2026",
+    "lieu": "CREAD Lyon · Galette des rois",
+    "tag": "BDE"
+  },
+  {
+    "day": "12",
+    "month": "Déc",
+    "titre": "Marché de Noël CREAD",
+    "lieu": "Hall CREAD Lyon",
+    "tag": "BDE"
+  },
+  {
+    "day": "05",
+    "month": "Nov",
+    "titre": "Sortie Biennale de Lyon",
+    "lieu": "Biennale d'art contemporain · ~30 étudiants",
+    "tag": "Culturel"
+  }
+]
