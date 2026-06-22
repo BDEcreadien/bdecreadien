@@ -17,11 +17,6 @@
       "label": "BDE au top"
     }
   ],
-  "poles": [
-    { "key": "bureau", "label": "Bureau exécutif" },
-    { "key": "evenements", "label": "Pôle Événements" },
-    { "key": "communication", "label": "Pôle Communication" }
-  ],
   "contact": {
     "email": "bdecreadien@gmail.com",
     "instagram": "bdecreadien"
@@ -44,12 +39,26 @@
       "bientot": false
     },
     {
-      "nom": "Groupe Teams",
-      "type": "autre",
-      "description": "Le groupe officiel de communication interne CREAD arrivera ici très prochainement.",
-      "lien": "",
-      "lienLabel": "À venir",
+      "nom": "WhatsApp Creadien",
+      "type": "WhatsApp",
+      "description": "Le groupe de communication générale du BDE Creadien.",
+      "lien": "https://chat.whatsapp.com/HQk8IjMs75L9B5f7qrq4KF?mode=gi_t",
+      "lienLabel": "WhatsApp Creadien",
       "bientot": true
+    }
+  ],
+  "poles": [
+    {
+      "key": "bureau",
+      "label": "Bureau exécutif"
+    },
+    {
+      "key": "evenements",
+      "label": "Pôle Événements"
+    },
+    {
+      "key": "communication",
+      "label": "Pôle Communication"
     }
   ]
 }
