@@ -384,8 +384,7 @@ function renderEvenements(allData) {
         </div>
       </div>
     </div>`;
-  }).join('');
-
+  }).join('') : '<p style="color:var(--gris-texte);font-size:13px;text-align:center;padding:1rem;">Aucun résultat.</p>';
   container.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   container.querySelectorAll('.btn-share[data-titre]').forEach(btn => {
     btn.addEventListener('click', () => partagerEvenement(btn.dataset.titre, btn.dataset.date));
