@@ -276,6 +276,53 @@ if (document.getElementById('archives-grid')) {
 }
 
 // ===================================
+// ÉQUIPE — Chargement & Rendu
+// ===================================
+
+function renderEquipe(data) {
+  const container = document.getElementById('equipe-container');
+  if (!container) return;
+  if (!data.length) { container.innerHTML = '<p style="color:var(--gris-texte);text-align:center;padding:2rem;">Aucun membre pour le moment.</p>'; return; }
+
+  const poles = [
+    { key: 'bureau', label: 'Bureau exécutif' },
+    { key: 'evenements', label: 'Pôle Événements' },
+    { key: 'communication', label: 'Pôle Communication' }
+  ];
+  const delays = ['reveal-delay-1','reveal-delay-2','reveal-delay-3','reveal-delay-4'];
+
+  container.innerHTML = poles.map(pole => {
+    const membres = data.filter(m => m.pole === pole.key);
+    if (!membres.length) return '';
+    return `<div class="pole-section reveal">
+      <p class="pole-label">${pole.label}</p>
+      <ul class="equipe-grid" role="list">
+        ${membres.map((m, i) => {
+          const photoUrl = m.photo?.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${m.photo}` : (m.photo || '');
+          return `<li class="equipe-card reveal ${delays[i] || ''}">
+            <div class="equipe-avatar">
+              ${photoUrl ? `<img src="${photoUrl}" alt="Photo de ${m.nom}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+              <span class="equipe-avatar-fallback" aria-hidden="true" style="${photoUrl ? '' : 'display:flex'}">${m.initiales || ''}</span>
+            </div>
+            <h3>${m.nom}</h3>
+            <p class="role">${m.role}</p>
+          </li>`;
+        }).join('')}
+      </ul>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+if (document.getElementById('equipe-container')) {
+  fetch('/_data/equipe.json')
+    .then(r => r.json())
+    .then(data => renderEquipe(Array.isArray(data) ? data : []))
+    .catch(() => renderEquipe([]));
+}
+
+// ===================================
 // ANNONCES — Chargement & Filtres
 // ===================================
 
