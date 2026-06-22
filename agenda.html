@@ -69,10 +69,10 @@
       <!-- SIDEBAR -->
       <aside class="agenda-sidebar" aria-label="Informations agenda">
 
-        <!-- INSCRIPTIONS & BILLETS -->
+        <!-- PROCHAINS ÉVÉNEMENTS -->
         <div class="sidebar-card reveal">
-          <p class="section-label" style="margin-bottom:1rem;">Inscriptions & billets</p>
-          <div id="evenements-list" style="display:flex; flex-direction:column; gap:1rem;"></div>
+          <p class="section-label" style="margin-bottom:1rem;">Prochains événements</p>
+          <div id="evenements-list" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
         </div>
 
         <!-- EXPORT -->
@@ -81,46 +81,7 @@
           <p style="font-size:14px; font-weight:300; color:var(--gris-texte); line-height:1.6; margin-bottom:1.5rem;">
             Synchronise les événements BDE directement dans ton application calendrier. Toutes les mises à jour apparaîtront automatiquement.
           </p>
-          <button class="btn btn-primary" onclick="openModal('modal-export')" aria-haspopup="dialog">
-            <span aria-hidden="true">📲</span> Comment synchroniser ?
-          </button>
-        </div>
-
-        <!-- PROCHAINS ÉVÉNEMENTS -->
-        <div class="sidebar-card reveal reveal-delay-3">
-          <h3>Prochains événements</h3>
-          <div class="actu-list" style="display:flex; flex-direction:column; gap:0.75rem;">
-            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
-              <time class="actu-item-date" datetime="2026-06-26" style="min-width:50px;">
-                <span class="day">26</span>
-                <span class="month">Juin</span>
-              </time>
-              <div class="actu-item-content">
-                <h4 style="font-size:14px;">Remise des projets S2</h4>
-                <p>Amphithéâtre CREAD</p>
-              </div>
-            </div>
-            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
-              <time class="actu-item-date" datetime="2026-07-04" style="min-width:50px;">
-                <span class="day">04</span>
-                <span class="month">Juil</span>
-              </time>
-              <div class="actu-item-content">
-                <h4 style="font-size:14px;">Afterwork BDE</h4>
-                <p>Ninkasi Gerland</p>
-              </div>
-            </div>
-            <div class="actu-item" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-clair);">
-              <time class="actu-item-date" datetime="2026-09-10" style="min-width:50px;">
-                <span class="day">10</span>
-                <span class="month">Sep</span>
-              </time>
-              <div class="actu-item-content">
-                <h4 style="font-size:14px;">Rentrée 2026</h4>
-                <p>Accueil des L1</p>
-              </div>
-            </div>
-          </div>
+          <button class="btn btn-primary" onclick="openModal('modal-export')" aria-haspopup="dialog">Comment synchroniser ?</button>
         </div>
 
       </aside>
