@@ -353,6 +353,7 @@ function renderAnnonces(filtre = 'tous') {
 
   grid.innerHTML = filtered.map(a => `
     <div class="annonce-card reveal">
+      ${a.photo ? `<img class="annonce-photo" src="${a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo}" alt="${a.titre}" loading="lazy">` : ''}
       <div class="annonce-header">
         <span class="annonce-badge badge-${a.categorie}">${badgeLabels[a.categorie]}</span>
         <span class="annonce-prix">${a.prix}</span>

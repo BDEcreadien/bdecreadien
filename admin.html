@@ -511,13 +511,21 @@ function formAnnonce() {
       <div class="form-row"><label>Prix *</label><input type="text" id="an-prix" placeholder="Ex: 80€ ou Gratuit"></div>
     </div>
     <div class="form-row"><label>Description *</label><textarea id="an-description" placeholder="Décris ce que tu vends ou proposes…"></textarea></div>
+    <div class="form-row">
+      <label>Photo <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel)</span></label>
+      <input type="file" id="an-photo" accept="image/*" onchange="previewAnPhoto(this)">
+      <div id="an-preview-wrap" style="display:none;margin-top:8px;">
+        <img id="an-preview-img" src="" alt="Aperçu" style="max-width:100%;max-height:180px;border-radius:8px;object-fit:cover;">
+        <button type="button" onclick="removeAnPhoto()" style="display:block;margin-top:6px;font-size:12px;color:var(--rouge,#c0392b);background:none;border:none;cursor:pointer;">Supprimer la photo</button>
+      </div>
+    </div>
     <div class="form-grid">
       <div class="form-row"><label>Ton prénom + initiale *</label><input type="text" id="an-auteur" placeholder="Ex: Léa M."></div>
       <div class="form-row"><label>Ton email de contact *</label><input type="email" id="an-contact" placeholder="prenom@cread.fr"></div>
     </div>
     <div class="form-actions">
       <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
-      <button class="btn-save" onclick="saveAnnonce()">Publier</button>
+      <button class="btn-save" id="btn-save-annonce" onclick="saveAnnonce()">Publier</button>
     </div>
   </div>`;
 }
@@ -645,6 +653,8 @@ function resetForm() {
   if (currentType === 'annonces') {
     ['an-titre','an-prix','an-description','an-auteur','an-contact'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const cat = document.getElementById('an-categorie'); if(cat) cat.value = 'materiel';
+    const fi = document.getElementById('an-photo'); if(fi) fi.value = '';
+    const pw = document.getElementById('an-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouvelle annonce';
   }
   if (currentType === 'videos') {
@@ -700,6 +710,13 @@ function editItem(type, i) {
     document.getElementById('an-description').value = an.description || '';
     document.getElementById('an-auteur').value = an.auteur || '';
     document.getElementById('an-contact').value = an.contact || '';
+    if (an.photo) {
+      const photoUrl = an.photo.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${an.photo}` : an.photo;
+      document.getElementById('an-preview-img').src = photoUrl;
+      document.getElementById('an-preview-wrap').style.display = 'block';
+    } else {
+      document.getElementById('an-preview-wrap').style.display = 'none';
+    }
     document.getElementById('form-title').textContent = 'Modifier l\'annonce';
   }
   if (type === 'equipe') {
@@ -838,6 +855,22 @@ async function saveEvenement() {
 // ============================================================
 // SAVE ANNONCE
 // ============================================================
+function previewAnPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('an-preview-img').src = e.target.result;
+    document.getElementById('an-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeAnPhoto() {
+  document.getElementById('an-photo').value = '';
+  document.getElementById('an-preview-wrap').style.display = 'none';
+  if (editIndex.annonce >= 0) data.annonces[editIndex.annonce]._removePhoto = true;
+}
+
 async function saveAnnonce() {
   const titre = document.getElementById('an-titre').value.trim();
   const prix = document.getElementById('an-prix').value.trim();
@@ -845,16 +878,39 @@ async function saveAnnonce() {
   const auteur = document.getElementById('an-auteur').value.trim();
   const contact = document.getElementById('an-contact').value.trim();
   if (!titre || !prix || !description || !auteur || !contact) return showToast('Remplis tous les champs obligatoires', 'error');
+
+  const btn = document.getElementById('btn-save-annonce');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+
+  const file = document.getElementById('an-photo').files[0];
+  const idx = editIndex.annonce;
+  let photo = idx >= 0 ? (data.annonces[idx].photo || '') : '';
+  if (idx >= 0 && data.annonces[idx]._removePhoto) photo = '';
+
+  if (file) {
+    try {
+      const result = await uploadMedia(file);
+      photo = result.url;
+    } catch(e) {
+      btn.textContent = 'Publier'; btn.disabled = false;
+      return showToast('Erreur upload photo : ' + e.message, 'error');
+    }
+  }
+
   const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   const an = { titre, categorie: document.getElementById('an-categorie').value, prix, description, auteur, contact, date: today };
-  const idx = editIndex.annonce;
+  if (photo) an.photo = photo;
+
   if (idx >= 0) data.annonces[idx] = an; else data.annonces.push(an);
   try {
     await persistData('annonces', idx >= 0 ? `Modification : ${titre}` : `Nouvelle annonce : ${titre}`);
     openEditor('annonces', false, 'Annonces', 'Annonces');
     cancelForm();
     showToast('Annonce publiée !', 'success');
-  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+  } catch(e) {
+    btn.textContent = 'Publier'; btn.disabled = false;
+    showToast('Erreur : ' + e.message, 'error');
+  }
 }
 
 // ============================================================

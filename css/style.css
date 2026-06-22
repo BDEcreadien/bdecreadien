@@ -1334,6 +1334,14 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow: hidden;
+}
+.annonce-photo {
+  width: calc(100% + 4rem);
+  margin: -2rem -2rem 0 -2rem;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px 20px 0 0;
 }
 
 .annonce-card:hover {
