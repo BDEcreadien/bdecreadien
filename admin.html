@@ -134,6 +134,30 @@
     .storage-item-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .storage-item-del:hover { background: #c0392b; }
 
+    /* GALERIE ADMIN */
+    .galerie-admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+    .galerie-admin-count { font-size:13px; color:var(--gris-texte); }
+    .galerie-admin-actions { display:flex; gap:0.75rem; align-items:center; }
+    .galerie-upload-btn { display:flex; align-items:center; gap:0.5rem; padding:9px 18px; background:var(--gradient); color:white; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .galerie-save-btn { padding:9px 18px; background:white; border:1.5px solid var(--violet); color:var(--violet); border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .galerie-save-btn:hover { background:rgba(70,58,144,0.06); }
+    .galerie-admin-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .galerie-admin-card { background:white; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.07); transition:box-shadow 0.2s; position:relative; }
+    .galerie-admin-card:hover { box-shadow:0 6px 20px rgba(70,58,144,0.12); }
+    .galerie-admin-card img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+    .galerie-admin-card-body { padding:0.75rem; }
+    .galerie-admin-caption { width:100%; border:1.5px solid var(--gris-border); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; color:var(--noir); transition:border-color 0.2s; resize:none; }
+    .galerie-admin-caption:focus { outline:none; border-color:var(--violet); }
+    .galerie-admin-card-footer { display:flex; align-items:center; justify-content:space-between; padding:0 0.75rem 0.75rem; gap:0.4rem; }
+    .galerie-move-btn { width:30px; height:30px; border:1.5px solid var(--gris-border); border-radius:8px; background:white; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:var(--gris-texte); transition:all 0.15s; }
+    .galerie-move-btn:hover:not(:disabled) { border-color:var(--violet); color:var(--violet); background:rgba(70,58,144,0.06); }
+    .galerie-move-btn:disabled { opacity:0.25; cursor:default; }
+    .galerie-del-btn { width:30px; height:30px; border:none; border-radius:8px; background:rgba(220,50,50,0.08); cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:#c0392b; margin-left:auto; transition:background 0.15s; }
+    .galerie-del-btn:hover { background:rgba(220,50,50,0.16); }
+    .galerie-admin-drop { border:2px dashed var(--gris-border); border-radius:14px; padding:2.5rem; text-align:center; color:var(--gris-texte); font-size:14px; transition:all 0.2s; cursor:pointer; }
+    .galerie-admin-drop:hover, .galerie-admin-drop.drag-over { border-color:var(--violet); color:var(--violet); background:rgba(70,58,144,0.04); }
+    .galerie-badge-new { position:absolute; top:8px; left:8px; background:var(--gradient); color:white; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; letter-spacing:0.5px; }
+
     /* TOAST */
     #toast { position: fixed; bottom: 2rem; right: 2rem; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; color: white; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; z-index: 999; }
     #toast.show { opacity: 1; transform: translateY(0); }
@@ -642,8 +666,50 @@ async function moveEquipe(i, dir) {
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
+function buildGalerieEditor() {
+  const items = data.galerie || [];
+  const cards = items.length ? items.map((item, i) => {
+    const rawUrl = item.url.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${item.url}` : item.url;
+    return `<div class="galerie-admin-card" id="gl-card-${i}">
+      <img src="${rawUrl}" alt="${item.titre || ''}" loading="lazy">
+      <div class="galerie-admin-card-body">
+        <textarea class="galerie-admin-caption" rows="2" placeholder="Légende (optionnelle)…" onchange="galerieCaption(${i},this.value)">${item.titre || ''}</textarea>
+      </div>
+      <div class="galerie-admin-card-footer">
+        <button class="galerie-move-btn" onclick="galerieMove(${i},'left')" title="Déplacer à gauche" ${i===0?'disabled':''}">◀</button>
+        <button class="galerie-move-btn" onclick="galerieMove(${i},'right')" title="Déplacer à droite" ${i===items.length-1?'disabled':''}">▶</button>
+        <button class="galerie-del-btn" onclick="galerieDelete(${i})" title="Supprimer">✕</button>
+      </div>
+    </div>`;
+  }).join('') : '';
+
+  return `
+    <div class="galerie-admin-header">
+      <div>
+        <span class="galerie-admin-count">${items.length} photo${items.length>1?'s':''}</span>
+      </div>
+      <div class="galerie-admin-actions">
+        <button class="galerie-save-btn" onclick="galerieSaveAll()">Enregistrer les légendes</button>
+        <button class="galerie-upload-btn" onclick="document.getElementById('gl-upload-input').click()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ajouter des photos
+        </button>
+        <input type="file" id="gl-upload-input" accept="image/*" multiple style="display:none" onchange="galerieUploadFiles(this.files)">
+      </div>
+    </div>
+    <div class="galerie-admin-grid" id="galerie-admin-grid">
+      ${cards}
+      <div class="galerie-admin-drop" id="galerie-drop-zone" onclick="document.getElementById('gl-upload-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');galerieUploadFiles(event.dataTransfer.files)">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 0.75rem;display:block;opacity:0.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p style="font-weight:600;margin-bottom:0.25rem;">Glisse tes photos ici</p>
+        <p style="font-size:12px;opacity:0.7;">ou clique pour sélectionner</p>
+      </div>
+    </div>`;
+}
+
 function buildEditor(type) {
   if (type === 'equipe') return buildEquipeEditor();
+  if (type === 'galerie') return buildGalerieEditor();
 
   const items = data[type] || [];
   const listHtml = items.length
@@ -1530,6 +1596,69 @@ async function saveMedia() {
     cancelForm();
     showToast(files.length > 1 ? `${files.length} médias ajoutés !` : 'Média ajouté !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+// ============================================================
+// GALERIE ADMIN (nouveau UI visuel)
+// ============================================================
+function galerieCaption(i, val) {
+  if (data.galerie[i]) data.galerie[i].titre = val;
+}
+
+function galerieMove(i, dir) {
+  const arr = data.galerie;
+  const j = dir === 'left' ? i - 1 : i + 1;
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  openEditor('galerie', false, 'Galerie', 'Photos galerie');
+  galerieSaveAll(true);
+}
+
+async function galerieDelete(i) {
+  const item = data.galerie[i];
+  const confirmed = await showConfirm('Supprimer cette photo ?', 'Cette action est irréversible.');
+  if (!confirmed) return;
+  data.galerie.splice(i, 1);
+  if (item.url?.startsWith('/')) {
+    const path = item.url.replace(/^\//, '');
+    try { const f = await getFile(path); await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { method:'DELETE', headers:{ Authorization:`token ${token}`, 'Content-Type':'application/json' }, body:JSON.stringify({ message:`Suppression galerie`, sha:f.sha, branch:BRANCH }) }); } catch(e) {}
+  }
+  try {
+    await persistData('galerie', 'Suppression photo galerie');
+    openEditor('galerie', false, 'Galerie', 'Photos galerie');
+    showToast('Photo supprimée !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function galerieSaveAll(silent = false) {
+  try {
+    await persistData('galerie', 'Mise à jour galerie');
+    if (!silent) showToast('Galerie enregistrée !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function galerieUploadFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  if (!files.length) return showToast('Aucune image valide', 'error');
+  const btn = document.querySelector('.galerie-upload-btn');
+  if (btn) { btn.textContent = `Envoi de ${files.length} photo(s)…`; btn.disabled = true; }
+  try {
+    let entries;
+    if (files.length === 1) {
+      const result = await uploadMedia(files[0]);
+      entries = [{ url: result.url }];
+    } else {
+      const raw = await uploadMediaBatch(files);
+      entries = raw.map(e => ({ url: e.url }));
+    }
+    entries.forEach(e => data.galerie.push({ url: e.url, titre: '' }));
+    await persistData('galerie', `Ajout de ${files.length} photo(s) à la galerie`);
+    openEditor('galerie', false, 'Galerie', 'Photos galerie');
+    showToast(`${files.length} photo${files.length>1?'s':''} ajoutée${files.length>1?'s':''} !`, 'success');
+  } catch(e) {
+    if (btn) { btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter des photos'; btn.disabled = false; }
+    showToast('Erreur upload : ' + e.message, 'error');
+  }
 }
 
 function onGalerieSelected() {
