@@ -47,7 +47,7 @@
       border: 2px solid transparent; transition: all 0.2s; text-align: center;
     }
     .page-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(70,58,144,0.12); }
-    .page-card-icon { font-size: 36px; margin-bottom: 0.75rem; }
+    .page-card-icon { margin-bottom: 0.75rem; display:flex; justify-content:center; } .page-card-icon svg { width:40px; height:40px; stroke:var(--violet); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
     .page-card-name { font-size: 16px; font-weight: 700; margin-bottom: 0.25rem; }
     .page-card-desc { font-size: 12px; color: var(--gris-texte); line-height: 1.4; }
 
@@ -170,22 +170,22 @@
     <h2>Quelle page veux-tu modifier ?</h2>
     <div class="pages-grid">
       <div class="page-card" onclick="selectPage('accueil')">
-        <div class="page-card-icon">🏠</div>
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
         <div class="page-card-name">Accueil</div>
         <div class="page-card-desc">Photos & vidéos de la page d'accueil</div>
       </div>
       <div class="page-card" onclick="selectPage('agenda')">
-        <div class="page-card-icon">📅</div>
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <div class="page-card-name">Agenda</div>
         <div class="page-card-desc">Événements à venir</div>
       </div>
       <div class="page-card" onclick="selectPage('annonces')">
-        <div class="page-card-icon">📌</div>
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
         <div class="page-card-name">Annonces</div>
         <div class="page-card-desc">Petites annonces des étudiants</div>
       </div>
       <div class="page-card" onclick="selectPage('communication')">
-        <div class="page-card-icon">👥</div>
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.85"/></svg></div>
         <div class="page-card-name">Communication</div>
         <div class="page-card-desc">Membres de l'équipe BDE</div>
       </div>
@@ -347,7 +347,7 @@ function buildEditor(type) {
   const listHtml = items.length
     ? items.map((item, i) => {
         let title = '', sub = '';
-        if (type === 'evenements') { title = (item.phare ? '⭐ ' : '') + item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
+        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'equipe') { title = item.nom; sub = `${item.role} — ${item.pole === 'bureau' ? 'Bureau exécutif' : item.pole === 'evenements' ? 'Pôle Événements' : 'Pôle Communication'}`; }
 
@@ -359,7 +359,7 @@ function buildEditor(type) {
             : `<video src="${rawUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" preload="metadata" muted></video>`;
           return `<div class="item-card">
             ${thumb}
-            <div class="item-card-info"><div class="item-card-title">${item.titre || '(sans titre)'}</div><div class="item-card-sub">${item.type === 'photo' ? '🖼 Photo' : '🎬 Vidéo'}</div></div>
+            <div class="item-card-info"><div class="item-card-title">${item.titre || '(sans titre)'}</div><div class="item-card-sub" style="display:flex;align-items:center;gap:4px;">${item.type === 'photo' ? `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Photo` : `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Vidéo`}</div></div>
             <div class="item-card-actions">
               <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
               <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
@@ -463,7 +463,7 @@ function formEvenement() {
     <div class="form-row">
       <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;">
         <input type="checkbox" id="ev-phare" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">
-        <span>⭐ Événement phare <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(affiché en grand sur l'accueil)</span></span>
+        <span style="display:flex;align-items:center;gap:0.4rem;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--orange)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Événement phare <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(affiché en grand sur l'accueil)</span></span>
       </label>
     </div>
     <div class="form-grid">
