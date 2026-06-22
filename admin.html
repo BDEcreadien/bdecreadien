@@ -294,11 +294,11 @@ function selectPage(page) {
   } else if (page === 'archives') {
     openEditor('archives', true, 'Archives', 'Événements passés');
   } else if (page === 'parametres') {
-    showStep('editor');
     navStack = ['pages'];
-    document.getElementById('editor-breadcrumb').innerHTML = '<span onclick="showStep(\'pages\')" style="cursor:pointer;color:var(--violet);">Pages</span> › Paramètres';
     document.getElementById('editor-title').textContent = 'Paramètres du site';
+    document.getElementById('editor-badge').textContent = 'Site';
     document.getElementById('editor-content').innerHTML = buildParametresEditor();
+    showStep('editor');
   }
 }
 
