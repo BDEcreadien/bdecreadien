@@ -1936,4 +1936,72 @@ footer {
     gap: 1rem;
     text-align: center;
   }
+
+  /* Annonces mobile */
+  .annonces-grid { grid-template-columns: 1fr; }
+  .annonces-filters { gap: 0.5rem; }
+  .filter-btn { padding: 8px 14px; font-size: 12px; }
+
+  /* Agenda mobile */
+  .evenements-list { gap: 0.75rem; }
+
+  /* Hero mobile */
+  .hero-cards { flex-direction: column; gap: 0.75rem; }
+  .hero-card { flex-direction: row; gap: 0.75rem; padding: 1rem 1.25rem; }
+  .hero-card-label { font-size: 14px; }
+
+  /* Actu mobile */
+  .actu-item { gap: 0.75rem; }
+  .actu-item-date { min-width: 38px; }
+  .actu-item-date .day { font-size: 22px; }
+}
+
+/* ===================================
+   TRANSITIONS ENTRE PAGES
+   =================================== */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
+  animation: pageIn 0.35s ease both;
+}
+
+/* ===================================
+   COMPTE À REBOURS
+   =================================== */
+.actu-countdown {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: rgba(70,58,144,0.12);
+  color: var(--violet);
+  margin-bottom: 0.75rem;
+}
+
+/* ===================================
+   BOUTON PARTAGE
+   =================================== */
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(70,58,144,0.25);
+  background: transparent;
+  color: var(--violet);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-share:hover {
+  background: rgba(70,58,144,0.08);
+  border-color: var(--violet);
 }

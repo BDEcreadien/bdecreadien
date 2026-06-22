@@ -5,6 +5,21 @@
 const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
+// Transitions entre pages
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.style.opacity = '1';
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http') || a.target === '_blank') return;
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.2s ease';
+      document.body.style.opacity = '0';
+      setTimeout(() => { window.location.href = href; }, 200);
+    });
+  });
+});
+
 // Navigation scroll
 const nav = document.querySelector('nav');
 if (nav) {
@@ -47,11 +62,35 @@ function renderActu(data) {
   const phareIdx = data.findIndex(e => e.phare);
   const first = phareIdx >= 0 ? data[phareIdx] : data[0];
   const rest = data.filter((_, i) => i !== (phareIdx >= 0 ? phareIdx : 0));
+
+  // Compte à rebours
+  let countdownHtml = '';
+  if (first.date) {
+    const eventDate = new Date(first.date);
+    const now = new Date();
+    const diff = eventDate - now;
+    if (diff > 0) {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      if (days === 0) countdownHtml = `<span class="actu-countdown">Aujourd'hui !</span>`;
+      else if (days === 1) countdownHtml = `<span class="actu-countdown">Demain</span>`;
+      else countdownHtml = `<span class="actu-countdown">Dans ${days} jour${days > 1 ? 's' : ''}</span>`;
+    } else if (diff > -86400000) {
+      countdownHtml = `<span class="actu-countdown" style="background:rgba(232,81,0,0.15);color:var(--orange);">C'est aujourd'hui !</span>`;
+    }
+  }
+
   featured.innerHTML = `
     <span class="actu-featured-tag">Événement phare</span>
+    ${countdownHtml}
     <h3 class="actu-featured-title">${first.titre}</h3>
     <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
-    ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top:1rem; width:auto; display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
+    <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
+      ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="width:auto;display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
+      <button onclick="partagerEvenement('${first.titre.replace(/'/g,"\\'")}','${first.date || ''}')" class="btn-share" aria-label="Partager cet événement">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Partager
+      </button>
+    </div>
   `;
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
@@ -67,6 +106,19 @@ function renderActu(data) {
   }).join('');
 
   list.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+function partagerEvenement(titre, date) {
+  const url = window.location.origin + '/agenda.html';
+  const text = `🗓 ${titre}${date ? ' — ' + new Date(date).toLocaleDateString('fr-FR', {day:'numeric',month:'long'}) : ''} · BDE CREAD Lyon`;
+  if (navigator.share) {
+    navigator.share({ title: titre, text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text}\n${url}`).then(() => {
+      const btn = document.querySelector('.btn-share');
+      if (btn) { btn.textContent = '✓ Copié !'; setTimeout(() => { btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Partager'; }, 2000); }
+    });
+  }
 }
 
 if (document.getElementById('actu-featured')) {
@@ -239,7 +291,12 @@ function renderEvenements(data) {
         ${ev.horaire ? `<p style="font-size:12px; color:var(--gris-texte); margin-top:1px;">${ev.horaire}</p>` : ''}
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; flex-wrap:wrap; gap:6px;">
           <span style="font-family:'Bebas Neue',sans-serif; font-size:16px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
-          ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien] || 'var(--violet)'}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien] || 'var(--violet)'}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
+            <button onclick="partagerEvenement('${ev.titre.replace(/'/g,"\\'")}','${ev.date || ''}')" class="btn-share" style="font-size:11px;padding:5px 10px;" aria-label="Partager">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -478,6 +535,16 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 if (document.getElementById('annonces-grid')) {
   fetch('/_data/annonces.json')
     .then(r => r.json())
-    .then(data => { annoncesData = Array.isArray(data) ? data : (data.annonces || []); renderAnnonces(); })
+    .then(data => {
+      annoncesData = Array.isArray(data) ? data : (data.annonces || []);
+      // Mettre à jour les compteurs sur les filtres
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const f = btn.dataset.filter;
+        const count = f === 'tous' ? annoncesData.length : annoncesData.filter(a => a.categorie === f).length;
+        const badge = count > 0 ? ` <span style="background:rgba(255,255,255,0.3);border-radius:99px;padding:1px 7px;font-size:11px;">${count}</span>` : '';
+        btn.innerHTML = btn.textContent.trim() + badge;
+      });
+      renderAnnonces();
+    })
     .catch(() => renderAnnonces());
 }
