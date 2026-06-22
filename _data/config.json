@@ -8,5 +8,31 @@
   "contact": {
     "email": "bdecreadien@gmail.com",
     "instagram": "bdecreadien"
-  }
+  },
+  "canaux": [
+    {
+      "nom": "Instagram",
+      "description": "Actu du BDE, photos d'événements, stories et annonces en direct. Notre canal principal.",
+      "lien": "https://www.instagram.com/bdecreadien",
+      "lienLabel": "@bdecreadien",
+      "type": "instagram",
+      "bientot": false
+    },
+    {
+      "nom": "Email",
+      "description": "Pour contacter le BDE directement : annonces, partenariats, questions ou suggestions.",
+      "lien": "mailto:bdecreadien@gmail.com",
+      "lienLabel": "bdecreadien@gmail.com",
+      "type": "email",
+      "bientot": false
+    },
+    {
+      "nom": "Groupe Teams",
+      "description": "Le groupe officiel de communication interne CREAD arrivera ici très prochainement.",
+      "lien": "",
+      "lienLabel": "À venir",
+      "type": "teams",
+      "bientot": true
+    }
+  ]
 }

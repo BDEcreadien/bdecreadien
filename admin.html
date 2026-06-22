@@ -408,11 +408,38 @@ function buildEquipeEditor() {
 }
 
 function buildParametresEditor() {
-  const cfg = data.config || { chiffres: [{number:'',label:''},{number:'',label:''},{number:'',label:''},{number:'',label:''}], contact: { email:'', instagram:'' } };
+  const cfg = data.config || { chiffres: [{number:'',label:''},{number:'',label:''},{number:'',label:''},{number:'',label:''}], contact: { email:'', instagram:'' }, canaux: [] };
   const chiffresHtml = (cfg.chiffres || []).map((c, i) => `
     <div class="form-grid" style="margin-bottom:0.75rem;">
       <div class="form-row"><label>Nombre ${i+1}</label><input type="text" id="cfg-num-${i}" value="${c.number || ''}" placeholder="Ex: 350+"></div>
       <div class="form-row"><label>Libellé ${i+1}</label><input type="text" id="cfg-lbl-${i}" value="${c.label || ''}" placeholder="Ex: Étudiants CREAD"></div>
+    </div>`).join('');
+  const canauxHtml = (cfg.canaux || []).map((c, i) => `
+    <div style="border:1px solid var(--gris-border);border-radius:10px;padding:1rem;margin-bottom:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <strong style="font-size:13px;">Canal ${i+1}</strong>
+        <button type="button" onclick="removeCanalRow(${i})" style="background:none;border:none;cursor:pointer;color:var(--rouge,#c0392b);font-size:12px;">Supprimer</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Nom</label><input type="text" id="cn-nom-${i}" value="${c.nom || ''}" placeholder="Ex: Instagram"></div>
+        <div class="form-row"><label>Type</label>
+          <select id="cn-type-${i}">
+            <option value="instagram" ${c.type==='instagram'?'selected':''}>Instagram</option>
+            <option value="email" ${c.type==='email'?'selected':''}>Email</option>
+            <option value="teams" ${c.type==='teams'?'selected':''}>Teams</option>
+            <option value="autre" ${c.type==='autre'?'selected':''}>Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><label>Description</label><input type="text" id="cn-desc-${i}" value="${c.description || ''}" placeholder="Ex: Notre canal principal"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Lien <span style="font-weight:400;color:var(--gris-texte);font-size:11px;">(URL ou mailto:)</span></label><input type="text" id="cn-lien-${i}" value="${c.lien || ''}" placeholder="https://... ou mailto:..."></div>
+        <div class="form-row"><label>Label du lien</label><input type="text" id="cn-label-${i}" value="${c.lienLabel || ''}" placeholder="Ex: @bdecreadien"></div>
+      </div>
+      <div class="form-row" style="flex-direction:row;align-items:center;gap:0.5rem;">
+        <input type="checkbox" id="cn-bientot-${i}" ${c.bientot?'checked':''} style="width:auto;">
+        <label for="cn-bientot-${i}" style="margin:0;font-weight:400;">Afficher comme "Bientôt" (pas encore actif)</label>
+      </div>
     </div>`).join('');
   return `
     <div class="params-card">
@@ -424,9 +451,28 @@ function buildParametresEditor() {
       <div class="form-row"><label>Email de contact</label><input type="email" id="cfg-email" value="${cfg.contact?.email || ''}" placeholder="bdecreadien@gmail.com"></div>
       <div class="form-row"><label>Instagram <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(sans le @)</span></label><input type="text" id="cfg-insta" value="${cfg.contact?.instagram || ''}" placeholder="bdecreadien"></div>
     </div>
+    <div class="params-card" id="canaux-editor">
+      <h3>Canaux de communication <span style="font-size:12px;font-weight:400;color:var(--gris-texte);">(page Communication)</span></h3>
+      <div id="canaux-rows">${canauxHtml}</div>
+      <button type="button" class="btn-add" onclick="addCanalRow()" style="margin-top:0.5rem;">+ Ajouter un canal</button>
+    </div>
     <div class="form-actions" style="justify-content:flex-end;">
       <button class="btn-save" onclick="saveParametres()">Enregistrer les paramètres</button>
     </div>`;
+}
+
+function addCanalRow() {
+  const cfg = data.config || {};
+  cfg.canaux = cfg.canaux || [];
+  cfg.canaux.push({ nom:'', type:'autre', description:'', lien:'', lienLabel:'', bientot:false });
+  data.config = cfg;
+  document.getElementById('editor-content').innerHTML = buildParametresEditor();
+}
+
+function removeCanalRow(i) {
+  if (!data.config?.canaux) return;
+  data.config.canaux.splice(i, 1);
+  document.getElementById('editor-content').innerHTML = buildParametresEditor();
 }
 
 async function saveParametres() {
@@ -436,7 +482,16 @@ async function saveParametres() {
   }));
   const email = document.getElementById('cfg-email').value.trim();
   const instagram = document.getElementById('cfg-insta').value.trim();
-  data.config = { chiffres, contact: { email, instagram } };
+  const nbCanaux = (data.config?.canaux || []).length;
+  const canaux = Array.from({length: nbCanaux}, (_, i) => ({
+    nom: document.getElementById(`cn-nom-${i}`)?.value.trim() || '',
+    type: document.getElementById(`cn-type-${i}`)?.value || 'autre',
+    description: document.getElementById(`cn-desc-${i}`)?.value.trim() || '',
+    lien: document.getElementById(`cn-lien-${i}`)?.value.trim() || '',
+    lienLabel: document.getElementById(`cn-label-${i}`)?.value.trim() || '',
+    bientot: document.getElementById(`cn-bientot-${i}`)?.checked || false
+  }));
+  data.config = { chiffres, contact: { email, instagram }, canaux };
   try {
     await persistData('config', 'Mise à jour paramètres site');
     showToast('Paramètres enregistrés !', 'success');
