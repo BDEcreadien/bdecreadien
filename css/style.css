@@ -1802,6 +1802,11 @@ footer {
   background: rgba(255,255,255,0.05);
 }
 
+.video-wrapper--native {
+  padding-bottom: 0;
+  height: auto;
+}
+
 .video-wrapper iframe {
   position: absolute;
   inset: 0;

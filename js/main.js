@@ -101,7 +101,7 @@ function renderVideos(data) {
     if (v.type === 'photo') {
       media = `<div class="video-wrapper"><img src="${v.url}" alt="${v.titre || 'Photo BDE'}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy"></div>`;
     } else if (v.type === 'video') {
-      media = `<div class="video-wrapper"><video src="${v.url}" controls style="position:absolute;inset:0;width:100%;height:100%;" preload="metadata"></video></div>`;
+      media = `<div class="video-wrapper video-wrapper--native"><video src="${v.url}" autoplay muted loop playsinline controls style="width:100%;height:100%;display:block;border-radius:14px;" preload="auto"></video></div>`;
     } else {
       media = `<div class="video-wrapper"><iframe src="${getEmbedUrl(v.url)}" title="${v.titre || 'Vidéo BDE'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
     }
