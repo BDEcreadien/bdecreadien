@@ -101,6 +101,16 @@ function renderActu(data) {
     }
   }
 
+  // Photo de couverture
+  if (first.imageUrl) {
+    const coverUrl = first.imageUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${first.imageUrl}` : first.imageUrl;
+    featured.style.backgroundImage = `url('${coverUrl}')`;
+    featured.style.backgroundSize = 'cover';
+    featured.style.backgroundPosition = 'center';
+  } else {
+    featured.style.backgroundImage = '';
+  }
+
   featured.innerHTML = `
     <span class="actu-featured-tag">Événement phare</span>
     ${countdownHtml}
@@ -295,11 +305,62 @@ function copyIcal() {
 // ÉVÉNEMENTS — Chargement & Rendu
 // ===================================
 
-function renderEvenements(data) {
-  const container = document.getElementById('evenements-list');
-  if (!container || !data.length) return;
+const CAT_LABELS = { soiree: 'Soirée', sortie: 'Sortie', atelier: 'Atelier', autre: 'Autre' };
 
-  container.innerHTML = data.map(ev => {
+function renderEvenements(allData) {
+  const container = document.getElementById('evenements-list');
+  if (!container) return;
+
+  if (!allData.length) { container.innerHTML = '<p style="color:var(--gris-texte);font-size:13px;text-align:center;padding:1rem;">Aucun événement à venir.</p>'; return; }
+
+  // Injecter barre de recherche + filtres au-dessus de la liste
+  const controlsId = 'agenda-search-controls';
+  if (!document.getElementById(controlsId)) {
+    const ctrl = document.createElement('div');
+    ctrl.id = controlsId;
+    ctrl.style.cssText = 'margin-bottom:1rem;';
+    container.parentNode.insertBefore(ctrl, container);
+  }
+
+  const cats = ['tous', ...new Set(allData.map(e => e.categorie).filter(Boolean))];
+  document.getElementById(controlsId).innerHTML = `
+    <input id="agenda-search" type="search" placeholder="Rechercher un événement…"
+      style="width:100%;padding:9px 12px;border:1.5px solid var(--gris-border);border-radius:10px;font-size:13px;margin-bottom:0.6rem;outline:none;">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${cats.map(c => `<button class="agenda-filter-btn ${c==='tous'?'active':''}" data-cat="${c}"
+        style="padding:5px 12px;border-radius:20px;border:1.5px solid ${c==='tous'?'var(--violet)':'var(--gris-border)'};background:${c==='tous'?'var(--violet)':'white'};color:${c==='tous'?'white':'var(--gris-texte)'};font-size:12px;font-weight:600;cursor:pointer;">
+        ${c==='tous'?'Tout voir':CAT_LABELS[c]||c}
+      </button>`).join('')}
+    </div>`;
+
+  let currentCat = 'tous';
+  let currentSearch = '';
+
+  function applyFilter() {
+    const filtered = allData.filter(ev => {
+      const matchCat = currentCat === 'tous' || ev.categorie === currentCat;
+      const matchSearch = !currentSearch || ev.titre.toLowerCase().includes(currentSearch) || (ev.lieu||'').toLowerCase().includes(currentSearch);
+      return matchCat && matchSearch;
+    });
+    drawList(filtered);
+  }
+
+  document.getElementById('agenda-search').addEventListener('input', e => { currentSearch = e.target.value.toLowerCase().trim(); applyFilter(); });
+  document.getElementById(controlsId).querySelectorAll('.agenda-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCat = btn.dataset.cat;
+      document.getElementById(controlsId).querySelectorAll('.agenda-filter-btn').forEach(b => {
+        const on = b.dataset.cat === currentCat;
+        b.style.background = on ? 'var(--violet)' : 'white';
+        b.style.borderColor = on ? 'var(--violet)' : 'var(--gris-border)';
+        b.style.color = on ? 'white' : 'var(--gris-texte)';
+      });
+      applyFilter();
+    });
+  });
+
+  function drawList(data) {
+  container.innerHTML = data.length ? data.map(ev => {
     const d = new Date(ev.date);
     const day = d.getDate().toString().padStart(2,'0');
     const month = d.toLocaleString('fr-FR', { month: 'short' });
@@ -329,6 +390,9 @@ function renderEvenements(data) {
   container.querySelectorAll('.btn-share[data-titre]').forEach(btn => {
     btn.addEventListener('click', () => partagerEvenement(btn.dataset.titre, btn.dataset.date));
   });
+  }  // end drawList
+
+  applyFilter();
 }
 
 if (document.getElementById('evenements-list')) {
@@ -501,6 +565,28 @@ if (document.getElementById('equipe-container')) {
     .then(r => r.json())
     .then(data => renderEquipe(Array.isArray(data) ? data : []))
     .catch(() => renderEquipe([]));
+}
+
+// ===================================
+// GALERIE PHOTOS — Communication
+// ===================================
+if (document.getElementById('galerie-grid')) {
+  fetch(`/_data/videos.json?t=${Date.now()}`)
+    .then(r => r.json())
+    .then(items => {
+      const photos = (Array.isArray(items) ? items : []).filter(v => v.type === 'photo');
+      const grid = document.getElementById('galerie-grid');
+      if (!photos.length) { grid.style.display = 'none'; document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
+      grid.innerHTML = photos.map(p => {
+        const url = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
+        return `<div class="galerie-item reveal">
+          <img src="${url}" alt="${p.titre || 'Photo BDE'}" loading="lazy" onerror="this.parentElement.style.display='none'">
+          ${p.titre ? `<span class="galerie-caption">${p.titre}</span>` : ''}
+        </div>`;
+      }).join('');
+      grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    })
+    .catch(() => {});
 }
 
 // ===================================

@@ -52,6 +52,8 @@
     .page-card-icon { margin-bottom: 0.75rem; display:flex; justify-content:center; } .page-card-icon svg { width:40px; height:40px; stroke:var(--violet); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
     .page-card-name { font-size: 16px; font-weight: 700; margin-bottom: 0.25rem; }
     .page-card-desc { font-size: 12px; color: var(--gris-texte); line-height: 1.4; }
+    .page-card-preview { display:inline-block; margin-top:0.6rem; font-size:11px; font-weight:600; color:var(--violet); text-decoration:none; opacity:0.7; }
+    .page-card-preview:hover { opacity:1; }
 
     /* ÉTAPE 2 : SECTIONS */
     #step-sections { display: none; }
@@ -179,26 +181,31 @@
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
         <div class="page-card-name">Accueil</div>
         <div class="page-card-desc">Photos & vidéos de la page d'accueil</div>
+        <a href="index.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
       <div class="page-card" onclick="selectPage('agenda')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <div class="page-card-name">Agenda</div>
         <div class="page-card-desc">Événements à venir</div>
+        <a href="agenda.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
       <div class="page-card" onclick="selectPage('archives')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
         <div class="page-card-name">Archives</div>
         <div class="page-card-desc">Événements passés</div>
+        <a href="agenda.html#archives" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
       <div class="page-card" onclick="selectPage('annonces')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
         <div class="page-card-name">Annonces</div>
         <div class="page-card-desc">Petites annonces des étudiants</div>
+        <a href="annonces.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
       <div class="page-card" onclick="selectPage('communication')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.85"/></svg></div>
         <div class="page-card-name">Communication</div>
         <div class="page-card-desc">Membres de l'équipe BDE</div>
+        <a href="communication.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
@@ -656,9 +663,15 @@ function buildEditor(type) {
         // Équipe : géré séparément par buildEquipeEditor()
         if (type === 'equipe') return '';
 
+        const archiveBtn = type === 'evenements' ? `<button class="btn-edit" onclick="archiveEvenement(${i})" style="background:#f5f0ff;color:var(--violet);border-color:#d4c4f5;" title="Déplacer en archives">Archiver</button>` : '';
         return `<div class="item-card">
           <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
           <div class="item-card-actions">
+            <div style="display:flex;flex-direction:column;gap:2px;margin-right:4px;">
+              <button onclick="moveItem('${type}',${i},'up')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Monter">↑</button>
+              <button onclick="moveItem('${type}',${i},'down')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Descendre">↓</button>
+            </div>
+            ${archiveBtn}
             <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
             <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
           </div></div>`;
@@ -737,11 +750,30 @@ function formEvenement() {
       </div>
     </div>
     <div class="form-row"><label>Description *</label><textarea id="ev-description" placeholder="Décris l'événement…"></textarea></div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Catégorie</label>
+        <select id="ev-categorie">
+          <option value="soiree">Soirée</option>
+          <option value="sortie">Sortie</option>
+          <option value="atelier">Atelier</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;margin-top:1.5rem;">
+          <input type="checkbox" id="ev-phare" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">
+          <span style="display:flex;align-items:center;gap:0.4rem;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--orange)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Événement phare</span>
+        </label>
+      </div>
+    </div>
     <div class="form-row">
-      <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;">
-        <input type="checkbox" id="ev-phare" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">
-        <span style="display:flex;align-items:center;gap:0.4rem;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--orange)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Événement phare <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(affiché en grand sur l'accueil)</span></span>
-      </label>
+      <label>Photo de couverture <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel — s'affiche sur la carte phare de l'accueil)</span></label>
+      <input type="file" id="ev-cover" accept="image/*" onchange="previewEvCover(this)">
+      <div id="ev-cover-preview-wrap" style="display:none;margin-top:8px;">
+        <img id="ev-cover-preview-img" src="" alt="Aperçu" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:cover;">
+        <button type="button" onclick="removeEvCover()" style="display:block;margin-top:6px;font-size:12px;color:var(--rouge,#c0392b);background:none;border:none;cursor:pointer;">Supprimer la photo</button>
+      </div>
     </div>
     <div class="form-grid">
       <div class="form-row"><label>Lien billetterie (optionnel)</label><input type="url" id="ev-lien" placeholder="https://shotgun.live/…"></div>
@@ -967,6 +999,14 @@ function editItem(type, i) {
     document.getElementById('ev-lien').value = ev.lien || '';
     document.getElementById('ev-typeLien').value = ev.typeLien || '';
     document.getElementById('ev-phare').checked = !!ev.phare;
+    document.getElementById('ev-categorie').value = ev.categorie || 'soiree';
+    const coverWrap = document.getElementById('ev-cover-preview-wrap');
+    const coverImg = document.getElementById('ev-cover-preview-img');
+    if (ev.imageUrl) {
+      const coverUrl = ev.imageUrl.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${ev.imageUrl}` : ev.imageUrl;
+      coverImg.src = coverUrl;
+      coverWrap.style.display = 'block';
+    } else { coverWrap.style.display = 'none'; }
     document.getElementById('form-title').textContent = 'Modifier l\'événement';
   }
   if (type === 'annonces') {
@@ -1097,6 +1137,57 @@ function autoDateAffichage() {
   const s = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   document.getElementById('ev-dateAffichage').value = s.charAt(0).toUpperCase() + s.slice(1);
 }
+function previewEvCover(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('ev-cover-preview-img').src = e.target.result;
+    document.getElementById('ev-cover-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeEvCover() {
+  document.getElementById('ev-cover').value = '';
+  document.getElementById('ev-cover-preview-wrap').style.display = 'none';
+  if (editIndex.evenement >= 0) data.evenements[editIndex.evenement]._removeCover = true;
+}
+
+async function moveItem(type, i, dir) {
+  const arr = data[type];
+  const j = dir === 'up' ? i - 1 : i + 1;
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  try {
+    await persistData(type, `Réorganisation ${type}`);
+    openEditor(type, false);
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function archiveEvenement(i) {
+  const ev = data.evenements[i];
+  const confirmed = await showConfirm(`Archiver "${ev.titre}" ?`, 'L\'événement sera déplacé dans les archives.');
+  if (!confirmed) return;
+  const d = new Date(ev.date);
+  const archived = {
+    titre: ev.titre,
+    day: d.getDate().toString().padStart(2, '0'),
+    month: d.toLocaleString('fr-FR', { month: 'short' }).toUpperCase(),
+    lieu: ev.lieu,
+    tag: ev.categorie ? ({ soiree:'Soirée', sortie:'Sortie', atelier:'Atelier', autre:'Autre' }[ev.categorie] || 'Soirée') : 'Soirée',
+    description: ev.description || ''
+  };
+  data.evenements.splice(i, 1);
+  if (!data.archives) data.archives = [];
+  data.archives.unshift(archived);
+  try {
+    await persistData('evenements', `Archive : ${ev.titre}`);
+    await persistData('archives', `Archive : ${ev.titre}`);
+    openEditor('evenements', false, 'Agenda', 'Événements');
+    showToast('Événement archivé !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
 async function saveEvenement() {
   const titre = document.getElementById('ev-titre').value.trim();
   const date = document.getElementById('ev-date').value;
@@ -1109,8 +1200,20 @@ async function saveEvenement() {
   if (!titre || !date || !debut || !fin || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
   const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
   const phare = document.getElementById('ev-phare').checked;
-  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare };
+  const categorie = document.getElementById('ev-categorie').value;
   const idx = editIndex.evenement;
+
+  // Upload cover photo if selected
+  const coverFile = document.getElementById('ev-cover').files[0];
+  let imageUrl = idx >= 0 ? (data.evenements[idx].imageUrl || '') : '';
+  if (idx >= 0 && data.evenements[idx]._removeCover) imageUrl = '';
+  if (coverFile) {
+    try {
+      imageUrl = await uploadMedia(coverFile, 'cover');
+    } catch(e) { return showToast('Erreur upload couverture : ' + e.message, 'error'); }
+  }
+
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, categorie, imageUrl, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare };
   if (phare) data.evenements.forEach((e, i) => { if (i !== idx) e.phare = false; });
   if (idx >= 0) data.evenements[idx] = ev; else data.evenements.push(ev);
   try {

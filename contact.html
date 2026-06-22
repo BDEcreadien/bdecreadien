@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — BDE CREAD Lyon</title>
+  <meta name="description" content="Contacte le BDE CREAD Lyon pour toute question, suggestion ou partenariat.">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html">Annonces</a></li>
+      <li><a href="contact.html" aria-current="page" class="nav-active">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="agenda-hero">
+    <div class="page-title-block">
+      <p class="eyebrow">BDE CREAD Lyon</p>
+      <h1>CONTACT</h1>
+    </div>
+  </div>
+
+  <main id="main-content">
+    <section class="contact-section">
+      <div class="contact-grid">
+
+        <!-- FORMULAIRE -->
+        <div class="contact-form-card reveal">
+          <h2 class="contact-form-title">Envoie-nous un message</h2>
+          <p class="contact-form-sub">On répond généralement sous 24–48h.</p>
+
+          <form id="contact-form" novalidate>
+            <div class="form-contact-row">
+              <label for="c-nom">Ton prénom *</label>
+              <input type="text" id="c-nom" placeholder="Ex : Léa" required>
+            </div>
+            <div class="form-contact-row">
+              <label for="c-email">Ton email *</label>
+              <input type="email" id="c-email" placeholder="prenom@cread.fr" required>
+            </div>
+            <div class="form-contact-row">
+              <label for="c-sujet">Sujet *</label>
+              <select id="c-sujet" required>
+                <option value="">— Choisir —</option>
+                <option value="Question générale">Question générale</option>
+                <option value="Événement">Événement</option>
+                <option value="Annonce">Petite annonce</option>
+                <option value="Partenariat">Partenariat</option>
+                <option value="Suggestion">Suggestion</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-contact-row">
+              <label for="c-message">Message *</label>
+              <textarea id="c-message" rows="5" placeholder="Écris ton message ici…" required></textarea>
+            </div>
+            <p id="contact-error" style="color:#c0392b;font-size:13px;display:none;margin-bottom:0.5rem;"></p>
+            <button type="submit" class="btn btn-primary contact-submit">Envoyer le message</button>
+          </form>
+        </div>
+
+        <!-- INFOS CONTACT -->
+        <div class="contact-infos reveal reveal-delay-1">
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">Email</p>
+              <a href="mailto:bdecreadien@gmail.com" class="contact-info-value">bdecreadien@gmail.com</a>
+            </div>
+          </div>
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--violet)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">Instagram</p>
+              <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="contact-info-value">@bdecreadien</a>
+            </div>
+          </div>
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 018 8c0 6-8 14-8 14S4 16 4 10a8 8 0 018-8z"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">École</p>
+              <p class="contact-info-value" style="color:var(--gris-texte);">CREAD Lyon<br>École d'Architecture Intérieure</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+          <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+          <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
+        </a>
+        <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon. Architecture intérieure & design.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="communication.html">Communication</a></li>
+          <li><a href="annonces.html">Annonces</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer">@bdecreadien</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 <span>BDE CREAD Lyon</span> — Tous droits réservés</p>
+      <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="footer-insta" aria-label="Instagram BDE CREAD">@bdecreadien</a>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nom = document.getElementById('c-nom').value.trim();
+      const email = document.getElementById('c-email').value.trim();
+      const sujet = document.getElementById('c-sujet').value;
+      const message = document.getElementById('c-message').value.trim();
+      const err = document.getElementById('contact-error');
+      if (!nom || !email || !sujet || !message) {
+        err.textContent = 'Merci de remplir tous les champs.';
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      const body = encodeURIComponent(`Bonjour,\n\nMessage de ${nom} (${email}) :\n\n${message}\n\n---\nEnvoyé depuis le site BDE CREAD Lyon`);
+      const mailtoUrl = `mailto:bdecreadien@gmail.com?subject=${encodeURIComponent('[BDE Site] ' + sujet + ' — ' + nom)}&body=${body}`;
+      window.location.href = mailtoUrl;
+    });
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>
