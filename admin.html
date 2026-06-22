@@ -1186,31 +1186,39 @@ async function uploadMedia(file) {
   if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`Blob : ${b.message}`); }
   const { sha: blobSha } = await blobRes.json();
 
-  // Étape 2 : récupérer le commit courant
-  const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/ref/heads/${BRANCH}`, { headers: { Authorization: `token ${token}` } });
-  const { object: { sha: commitSha } } = await refRes.json();
-  const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${commitSha}`, { headers: { Authorization: `token ${token}` } });
-  const { tree: { sha: treeSha } } = await commitRes.json();
+  // Étapes 2-5 : commit du fichier avec retry sur conflit 409
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/ref/heads/${BRANCH}`, { headers: { Authorization: `token ${token}` } });
+    if (!refRes.ok) throw new Error('Impossible de lire la branche');
+    const { object: { sha: commitSha } } = await refRes.json();
 
-  // Étape 3 : créer un nouveau tree
-  const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
-    method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ base_tree: treeSha, tree: [{ path, mode: '100644', type: 'blob', sha: blobSha }] })
-  });
-  const { sha: newTreeSha } = await treeRes.json();
+    const commitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits/${commitSha}`, { headers: { Authorization: `token ${token}` } });
+    if (!commitRes.ok) throw new Error('Impossible de lire le commit');
+    const { tree: { sha: treeSha } } = await commitRes.json();
 
-  // Étape 4 : créer le commit
-  const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
-    method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: `Média : ${filename}`, tree: newTreeSha, parents: [commitSha] })
-  });
-  const { sha: newCommitSha } = await newCommitRes.json();
+    const treeRes = await fetch(`https://api.github.com/repos/${REPO}/git/trees`, {
+      method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_tree: treeSha, tree: [{ path, mode: '100644', type: 'blob', sha: blobSha }] })
+    });
+    if (!treeRes.ok) throw new Error('Impossible de créer le tree');
+    const { sha: newTreeSha } = await treeRes.json();
 
-  // Étape 5 : mettre à jour la branche
-  await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
-    method: 'PATCH', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sha: newCommitSha })
-  });
+    const newCommitRes = await fetch(`https://api.github.com/repos/${REPO}/git/commits`, {
+      method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Média : ${filename}`, tree: newTreeSha, parents: [commitSha] })
+    });
+    if (!newCommitRes.ok) throw new Error('Impossible de créer le commit');
+    const { sha: newCommitSha } = await newCommitRes.json();
+
+    const patchRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
+      method: 'PATCH', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sha: newCommitSha })
+    });
+    if (patchRes.ok) break;
+    const patchBody = await patchRes.json();
+    if (patchRes.status === 422 && attempt < 2) { await new Promise(r => setTimeout(r, 800)); continue; }
+    throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
+  }
 
   return { url: `/${path}`, type };
 }
