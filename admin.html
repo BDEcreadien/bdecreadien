@@ -365,12 +365,12 @@ async function persistData(type, message) {
 // BUILDER ÉDITEURS
 // ============================================================
 function buildEquipeEditor() {
-  const poles = [
+  const poles = (data.config?.poles || [
     { key: 'bureau', label: 'Bureau exécutif' },
     { key: 'evenements', label: 'Pôle Événements' },
     { key: 'communication', label: 'Pôle Communication' }
-  ];
-  const poleLabels = { bureau: 'Bureau exécutif', evenements: 'Pôle Événements', communication: 'Pôle Communication' };
+  ]);
+  const poleLabels = Object.fromEntries(poles.map(p => [p.key, p.label]));
 
   const groupHtml = poles.map(pole => {
     const membres = data.equipe
@@ -401,7 +401,24 @@ function buildEquipeEditor() {
     return `<div class="pole-group"><p class="pole-group-label">${pole.label}</p>${cards}</div>`;
   }).join('');
 
+  const polesHtml = poles.map((p, i) => `
+    <div class="item-card" style="padding:0.75rem 1rem;">
+      <div class="item-card-info"><div class="item-card-title">${p.label}</div><div class="item-card-sub">clé : ${p.key}</div></div>
+      <div class="item-card-actions">
+        <button class="btn-delete" onclick="removePole(${i})">Supprimer</button>
+      </div>
+    </div>`).join('');
+
   return `
+    <div class="params-card" style="margin-bottom:1rem;">
+      <h3>Pôles <span style="font-size:12px;font-weight:400;color:var(--gris-texte);">Gérer les pôles de l'équipe</span></h3>
+      <div id="poles-list" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem;">${polesHtml}</div>
+      <div style="display:flex;gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+        <div class="form-row" style="margin:0;flex:1;min-width:140px;"><label>Nom du pôle *</label><input type="text" id="new-pole-label" placeholder="Ex: Pôle Sport"></div>
+        <div class="form-row" style="margin:0;flex:1;min-width:120px;"><label>Clé (sans accent, minuscule) *</label><input type="text" id="new-pole-key" placeholder="Ex: sport"></div>
+        <button class="btn-save" style="margin-bottom:0;height:40px;" onclick="addPole()">+ Ajouter</button>
+      </div>
+    </div>
     <div class="items-list" id="items-list">${groupHtml}</div>
     ${formMembre()}
     <button class="btn-add" id="btn-add" onclick="showForm()">+ Ajouter un membre</button>`;
@@ -484,10 +501,40 @@ async function saveParametres() {
     lienLabel: document.getElementById(`cn-label-${i}`)?.value.trim() || '',
     bientot: document.getElementById(`cn-bientot-${i}`)?.checked || false
   }));
-  data.config = { chiffres, contact: { email, instagram }, canaux };
+  const poles = data.config?.poles || [];
+  data.config = { chiffres, contact: { email, instagram }, canaux, poles };
   try {
     await persistData('config', 'Mise à jour paramètres site');
     showToast('Paramètres enregistrés !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function addPole() {
+  const label = document.getElementById('new-pole-label').value.trim();
+  const key = document.getElementById('new-pole-key').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!label || !key) return showToast('Nom et clé requis', 'error');
+  if (!data.config) data.config = {};
+  if (!data.config.poles) data.config.poles = [];
+  if (data.config.poles.find(p => p.key === key)) return showToast('Cette clé existe déjà', 'error');
+  data.config.poles.push({ key, label });
+  try {
+    await persistData('config', 'Ajout pôle : ' + label);
+    showToast('Pôle ajouté !', 'success');
+    document.getElementById('editor-content').innerHTML = buildEquipeEditor();
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function removePole(i) {
+  const poles = data.config?.poles || [];
+  const pole = poles[i];
+  if (!pole) return;
+  if (data.equipe.some(m => m.pole === pole.key)) return showToast('Impossible : des membres sont dans ce pôle', 'error');
+  poles.splice(i, 1);
+  data.config.poles = poles;
+  try {
+    await persistData('config', 'Suppression pôle : ' + pole.label);
+    showToast('Pôle supprimé', 'success');
+    document.getElementById('editor-content').innerHTML = buildEquipeEditor();
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
@@ -687,9 +734,7 @@ function formMembre() {
       <div class="form-row">
         <label>Pôle *</label>
         <select id="mb-pole">
-          <option value="bureau">Bureau exécutif</option>
-          <option value="evenements">Pôle Événements</option>
-          <option value="communication">Pôle Communication</option>
+          ${(data.config?.poles || [{key:'bureau',label:'Bureau exécutif'},{key:'evenements',label:'Pôle Événements'},{key:'communication',label:'Pôle Communication'}]).map(p => `<option value="${p.key}">${p.label}</option>`).join('')}
         </select>
       </div>
     </div>

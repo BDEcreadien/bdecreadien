@@ -17,6 +17,11 @@
       "label": "BDE au top"
     }
   ],
+  "poles": [
+    { "key": "bureau", "label": "Bureau exécutif" },
+    { "key": "evenements", "label": "Pôle Événements" },
+    { "key": "communication", "label": "Pôle Communication" }
+  ],
   "contact": {
     "email": "bdecreadien@gmail.com",
     "instagram": "bdecreadien"
