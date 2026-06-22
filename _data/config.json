@@ -24,6 +24,7 @@
   "canaux": [
     {
       "nom": "Instagram",
+      "picto": "instagram",
       "type": "instagram",
       "description": "Actu du BDE, photos d'événements, stories et annonces en direct. Notre canal principal.",
       "lien": "https://www.instagram.com/bdecreadien",
@@ -32,6 +33,7 @@
     },
     {
       "nom": "Email",
+      "picto": "email",
       "type": "email",
       "description": "Pour contacter le BDE directement : annonces, partenariats, questions ou suggestions.",
       "lien": "mailto:bdecreadien@gmail.com",
@@ -40,7 +42,8 @@
     },
     {
       "nom": "WhatsApp Creadien",
-      "type": "WhatsApp",
+      "picto": "whatsapp",
+      "type": "whatsapp",
       "description": "Le groupe de communication générale du BDE Creadien.",
       "lien": "https://chat.whatsapp.com/HQk8IjMs75L9B5f7qrq4KF?mode=gi_t",
       "lienLabel": "WhatsApp Creadien",
