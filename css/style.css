@@ -434,6 +434,16 @@ nav.scrolled .nav-burger-line {
 
 .hero-card-icon {
   font-size: 28px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-card-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: white;
 }
 
 .hero-card-label {
