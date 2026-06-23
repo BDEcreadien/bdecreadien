@@ -48,7 +48,7 @@ if (nav) {
   const handleScroll = () => {
     if (window.scrollY > 40) {
       nav.classList.add('scrolled');
-    } else {
+    } else if (!nav.dataset.light) {
       nav.classList.remove('scrolled');
     }
   };
