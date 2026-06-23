@@ -1512,39 +1512,49 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 2rem;
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .footer-copy {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 300;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.5px;
 }
 
 .footer-copy span {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
 }
+
+.footer-mentions {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.25);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+.footer-mentions:hover { color: rgba(255,255,255,0.6); }
 
 .footer-insta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   text-decoration: none;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  transition: var(--transition);
+  color: rgba(255,255,255,0.25);
+  transition: color 0.2s;
 }
-
-.footer-insta:hover {
-  color: white;
-}
+.footer-insta:hover { color: rgba(255,255,255,0.6); }
 
 /* ===================================
    ANIMATIONS
