@@ -335,7 +335,7 @@ nav.scrolled .nav-burger-line {
   position: relative;
   z-index: 1;
   text-align: center;
-  padding: 0 2rem;
+  padding: 72px 2rem 0;
 }
 
 .hero-eyebrow {
