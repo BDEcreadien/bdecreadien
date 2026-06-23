@@ -727,8 +727,7 @@ section {
 .comm-hero,
 .annonces-hero,
 .partenaires-hero {
-  height: 33vh;
-  min-height: 260px;
+  height: clamp(180px, 33vh, 420px);
   background: var(--gradient);
   display: flex;
   align-items: flex-end;
