@@ -169,6 +169,46 @@
       #screen-app { padding: 1rem; }
       .pages-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* STATS */
+    #step-stats { display:none; }
+    .stats-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; }
+    .stats-header h2 { font-size:20px; font-weight:700; }
+    .stats-actions { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .stats-connect-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600; border:none; background:#4285F4; color:white; cursor:pointer; transition:background 0.15s; }
+    .stats-connect-btn:hover { background:#3367D6; }
+    .stats-connect-btn.connected { background:#1a9e5c; }
+    .stats-range { display:flex; gap:0.5rem; margin-bottom:1.75rem; flex-wrap:wrap; }
+    .stats-range-btn { padding:7px 16px; border-radius:8px; border:1.5px solid var(--gris-border); background:white; font-size:13px; font-weight:600; cursor:pointer; color:var(--gris-texte); transition:all 0.15s; }
+    .stats-range-btn.active { background:var(--violet); color:white; border-color:var(--violet); }
+    .stats-kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .stats-kpi { background:white; border-radius:14px; padding:1.25rem 1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+    .stats-kpi-icon { font-size:20px; margin-bottom:0.4rem; }
+    .stats-kpi-label { font-size:11px; font-weight:600; color:var(--gris-texte); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.35rem; }
+    .stats-kpi-value { font-size:26px; font-weight:700; color:var(--noir); line-height:1; margin-bottom:0.2rem; }
+    .stats-kpi-sub { font-size:11px; color:var(--gris-texte); }
+    .stats-tables { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    @media(max-width:640px){.stats-tables{grid-template-columns:1fr;}}
+    .stats-table-card { background:white; border-radius:14px; padding:1.25rem 1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+    .stats-table-title { font-size:13px; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; color:var(--noir); }
+    .stats-bar-row { display:flex; align-items:center; gap:0.75rem; padding:5px 0; }
+    .stats-bar-row:not(:last-child) { border-bottom:1px solid var(--gris-border); }
+    .stats-bar-label { font-size:12px; width:100px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--noir); }
+    .stats-bar-track { flex:1; height:6px; background:var(--gris-border); border-radius:99px; overflow:hidden; }
+    .stats-bar-fill { height:100%; background:var(--gradient); border-radius:99px; transition:width 0.6s ease; }
+    .stats-bar-val { font-size:12px; font-weight:600; color:var(--violet); width:38px; text-align:right; flex-shrink:0; }
+    .stats-links { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .stats-ext-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; border:1.5px solid var(--gris-border); color:var(--noir); background:white; transition:all 0.15s; }
+    .stats-ext-btn:hover { border-color:var(--violet); color:var(--violet); }
+    .stats-setup { background:white; border-radius:16px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); max-width:540px; }
+    .stats-setup h3 { font-size:18px; font-weight:700; margin-bottom:0.5rem; }
+    .stats-setup p { font-size:14px; color:var(--gris-texte); margin-bottom:1.5rem; line-height:1.6; }
+    .stats-howto { background:var(--gris-bg); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; font-size:13px; color:var(--gris-texte); line-height:1.7; }
+    .stats-howto summary { font-weight:700; color:var(--noir); cursor:pointer; }
+    .stats-loading { text-align:center; padding:3rem 2rem; color:var(--gris-texte); font-size:14px; }
+    .stats-error { background:#fff3f3; border:1.5px solid #fcc; border-radius:12px; padding:1rem 1.25rem; font-size:13px; color:#c0392b; margin-bottom:1rem; }
+    .stats-empty { text-align:center; padding:3rem 2rem; color:var(--gris-texte); font-size:14px; background:white; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+
   </style>
 </head>
 <body>
@@ -243,6 +283,11 @@
         <div class="page-card-desc">Sponsors & partenaires du BDE</div>
         <a href="partenaires.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
+      <div class="page-card" onclick="selectPage('stats')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="page-card-name">Stats</div>
+        <div class="page-card-desc">Statistiques de fréquentation</div>
+      </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <div class="page-card-name">Paramètres</div>
@@ -258,6 +303,70 @@
       <span class="page-badge" id="page-badge"></span>
     </div>
     <div class="sections-list" id="sections-list"></div>
+  </div>
+
+
+  <!-- STATS -->
+  <div id="step-stats">
+    <div class="stats-header">
+      <h2>Statistiques du site</h2>
+      <div class="stats-actions">
+        <button class="stats-connect-btn" id="stats-connect-btn" onclick="connectGA4()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Se connecter avec Google
+        </button>
+        <button class="stats-range-btn active" id="stats-btn-7" onclick="setStatsRange(7)">7 jours</button>
+        <button class="stats-range-btn" id="stats-btn-30" onclick="setStatsRange(30)">30 jours</button>
+        <button class="stats-range-btn" id="stats-btn-90" onclick="setStatsRange(90)">90 jours</button>
+      </div>
+    </div>
+
+    <!-- Setup (masqué une fois configuré) -->
+    <div id="stats-setup" style="display:none;">
+      <div class="stats-setup">
+        <h3>Configuration Google Analytics</h3>
+        <p>Entre ton <strong>ID de propriété GA4</strong> (un nombre, ex: 123456789) et ton <strong>Client ID OAuth2</strong> pour afficher les statistiques directement ici.</p>
+        <details class="stats-howto">
+          <summary>Comment obtenir ces informations ?</summary>
+          <br>
+          <strong>ID de propriété GA4 :</strong><br>
+          1. Va sur <a href="https://analytics.google.com" target="_blank" style="color:var(--violet)">analytics.google.com</a><br>
+          2. En haut à gauche clique sur la propriété → l'ID est affiché (un nombre)<br>
+          3. Ou : Admin → Paramètres de la propriété → ID de propriété<br><br>
+          <strong>Client ID OAuth2 :</strong><br>
+          1. <a href="https://console.cloud.google.com" target="_blank" style="color:var(--violet)">console.cloud.google.com</a> → Nouveau projet → Activer <em>Google Analytics Data API</em><br>
+          2. API et services → Identifiants → Créer → ID client OAuth 2.0 → Application Web<br>
+          3. Origines JS autorisées : ajoute <code>https://bdecreadien.fr</code> et <code>https://bdecreadien.pages.dev</code><br>
+          4. Copie l'ID client (se termine par .apps.googleusercontent.com)
+        </details>
+        <div class="form-row">
+          <label>ID de propriété GA4</label>
+          <input type="text" id="stats-property-id" placeholder="ex: 123456789">
+        </div>
+        <div class="form-row">
+          <label>Client ID OAuth2 Google</label>
+          <input type="text" id="stats-client-id" placeholder="xxxx.apps.googleusercontent.com">
+        </div>
+        <button class="btn-save" onclick="saveStatsConfig()">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="stats-dashboard" style="display:none;">
+      <div class="stats-links">
+        <a href="https://analytics.google.com" target="_blank" rel="noopener" class="stats-ext-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google Analytics complet
+        </a>
+        <a href="https://dash.cloudflare.com" target="_blank" rel="noopener" class="stats-ext-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          Cloudflare Analytics
+        </a>
+        <button class="stats-ext-btn" onclick="statsSetupMode()">⚙ Reconfigurer</button>
+        <button class="stats-ext-btn" onclick="refreshStats()" id="stats-refresh-btn">↻ Actualiser</button>
+      </div>
+      <div id="stats-body"></div>
+    </div>
   </div>
 
   <!-- ÉTAPE 3 : ÉDITEUR -->
@@ -335,6 +444,7 @@ function showStep(step, opts = {}) {
   document.getElementById('step-pages').style.display = 'none';
   document.getElementById('step-sections').style.display = 'none';
   document.getElementById('step-editor').style.display = 'none';
+  document.getElementById('step-stats').style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
 }
@@ -366,6 +476,11 @@ function selectPage(page) {
     openEditor('galerie', true, 'Galerie', 'Photos galerie');
   } else if (page === 'partenaires') {
     openEditor('partenaires', true, 'Partenaires', 'Sponsors & partenaires');
+  } else if (page === 'stats') {
+    navStack.push('stats');
+    document.getElementById('editor-title').textContent = '';
+    showStep('stats');
+    initStatsPage();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
@@ -1905,6 +2020,251 @@ function showConfirm(title, subtitle = '') {
     overlay.querySelector('#confirm-cancel').onclick = () => { overlay.remove(); resolve(false); };
     overlay.querySelector('#confirm-ok').onclick = () => { overlay.remove(); resolve(true); };
   });
+}
+
+
+// ============================================================
+// STATS — Google Analytics 4 Data API
+// ============================================================
+let statsRange = 7;
+let gaAccessToken = null;
+let gaTokenExpiry = 0;
+let gaTokenClient = null;
+let gaScriptLoaded = false;
+
+function initStatsPage() {
+  const propId = localStorage.getItem('bde_ga_property_id');
+  const clientId = localStorage.getItem('bde_ga_client_id');
+  if (!propId || !clientId) {
+    statsSetupMode();
+  } else {
+    document.getElementById('stats-property-id').value = propId;
+    document.getElementById('stats-client-id').value = clientId;
+    document.getElementById('stats-setup').style.display = 'none';
+    document.getElementById('stats-dashboard').style.display = 'block';
+    loadGaScript(clientId).then(() => {
+      if (gaAccessToken && Date.now() < gaTokenExpiry) {
+        loadStats(statsRange);
+      } else {
+        renderStatsConnectPrompt();
+      }
+    });
+  }
+}
+
+function statsSetupMode() {
+  document.getElementById('stats-setup').style.display = 'block';
+  document.getElementById('stats-dashboard').style.display = 'none';
+  const propId = localStorage.getItem('bde_ga_property_id') || '';
+  const clientId = localStorage.getItem('bde_ga_client_id') || '';
+  document.getElementById('stats-property-id').value = propId;
+  document.getElementById('stats-client-id').value = clientId;
+}
+
+function saveStatsConfig() {
+  const propId = document.getElementById('stats-property-id').value.trim();
+  const clientId = document.getElementById('stats-client-id').value.trim();
+  if (!propId || !clientId) { showToast('Remplis les deux champs', 'error'); return; }
+  localStorage.setItem('bde_ga_property_id', propId);
+  localStorage.setItem('bde_ga_client_id', clientId);
+  showToast('Configuration enregistrée', 'success');
+  document.getElementById('stats-setup').style.display = 'none';
+  document.getElementById('stats-dashboard').style.display = 'block';
+  loadGaScript(clientId).then(() => connectGA4());
+}
+
+function loadGaScript(clientId) {
+  return new Promise(resolve => {
+    if (gaScriptLoaded) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.onload = () => {
+      gaScriptLoaded = true;
+      gaTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/analytics.readonly',
+        callback: (resp) => {
+          if (resp.error) { showToast('Erreur connexion Google: ' + resp.error, 'error'); return; }
+          gaAccessToken = resp.access_token;
+          gaTokenExpiry = Date.now() + (resp.expires_in - 60) * 1000;
+          const btn = document.getElementById('stats-connect-btn');
+          if (btn) { btn.textContent = '✓ Connecté à Google'; btn.classList.add('connected'); }
+          loadStats(statsRange);
+        }
+      });
+      resolve();
+    };
+    document.head.appendChild(s);
+  });
+}
+
+function connectGA4() {
+  const clientId = localStorage.getItem('bde_ga_client_id');
+  if (!clientId) { statsSetupMode(); return; }
+  loadGaScript(clientId).then(() => {
+    if (gaTokenClient) gaTokenClient.requestAccessToken({ prompt: '' });
+    else showToast('Script Google non chargé, réessaie', 'error');
+  });
+}
+
+function setStatsRange(days) {
+  statsRange = days;
+  document.querySelectorAll('.stats-range-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('stats-btn-' + days);
+  if (btn) btn.classList.add('active');
+  if (gaAccessToken && Date.now() < gaTokenExpiry) loadStats(days);
+  else renderStatsConnectPrompt();
+}
+
+function refreshStats() {
+  if (gaAccessToken && Date.now() < gaTokenExpiry) loadStats(statsRange);
+  else connectGA4();
+}
+
+function renderStatsConnectPrompt() {
+  document.getElementById('stats-body').innerHTML = `
+    <div class="stats-empty">
+      <div style="font-size:36px;margin-bottom:1rem;">📊</div>
+      <p style="font-weight:700;font-size:15px;margin-bottom:0.5rem;">Connecte Google Analytics</p>
+      <p style="font-size:13px;margin-bottom:1.5rem;">Clique sur "Se connecter avec Google" en haut pour afficher les statistiques.</p>
+      <button class="stats-connect-btn" onclick="connectGA4()">Se connecter avec Google</button>
+    </div>`;
+}
+
+async function loadStats(days) {
+  const propId = localStorage.getItem('bde_ga_property_id');
+  if (!propId || !gaAccessToken) { renderStatsConnectPrompt(); return; }
+  document.getElementById('stats-body').innerHTML = '<div class="stats-loading">Chargement des statistiques…</div>';
+
+  const startDate = days + 'daysAgo';
+  const headers = { 'Authorization': 'Bearer ' + gaAccessToken, 'Content-Type': 'application/json' };
+  const base = `https://analyticsdata.googleapis.com/v1beta/properties/${propId}:runReport`;
+
+  const makeReq = (body) => fetch(base, { method: 'POST', headers, body: JSON.stringify({ dateRanges: [{ startDate, endDate: 'today' }], ...body }) }).then(r => r.json());
+
+  try {
+    const [overview, pages, devices, countries, sources, browsers] = await Promise.all([
+      makeReq({ metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }, { name: 'sessions' }, { name: 'averageSessionDuration' }, { name: 'bounceRate' }, { name: 'newUsers' }] }),
+      makeReq({ dimensions: [{ name: 'pagePath' }], metrics: [{ name: 'screenPageViews' }], orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 7 }),
+      makeReq({ dimensions: [{ name: 'deviceCategory' }], metrics: [{ name: 'sessions' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }] }),
+      makeReq({ dimensions: [{ name: 'country' }], metrics: [{ name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 7 }),
+      makeReq({ dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 6 }),
+      makeReq({ dimensions: [{ name: 'browser' }], metrics: [{ name: 'sessions' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 5 })
+    ]);
+
+    if (overview.error) {
+      document.getElementById('stats-body').innerHTML = `<div class="stats-error">Erreur GA4 : ${overview.error.message || 'Vérfie l\'ID de propriété et les permissions.'}</div>`;
+      return;
+    }
+
+    renderStats({ overview, pages, devices, countries, sources, browsers }, days);
+  } catch(e) {
+    document.getElementById('stats-body').innerHTML = `<div class="stats-error">Erreur réseau. Réessaie.</div>`;
+  }
+}
+
+function fmt(n) {
+  n = parseFloat(n) || 0;
+  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+  return Math.round(n).toString();
+}
+function fmtDur(secs) {
+  secs = Math.round(parseFloat(secs) || 0);
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return m + 'min ' + s + 's';
+}
+function fmtPct(v) { return (parseFloat(v)*100).toFixed(1) + '%'; }
+
+function barRows(rows, labelFn, valFn) {
+  if (!rows || !rows.length) return '<p style="font-size:13px;color:var(--gris-texte);">Aucune donnée</p>';
+  const maxVal = Math.max(...rows.map(r => parseFloat(valFn(r))));
+  return rows.map(r => {
+    const val = parseFloat(valFn(r));
+    const pct = maxVal ? (val / maxVal * 100) : 0;
+    return `<div class="stats-bar-row">
+      <span class="stats-bar-label" title="${labelFn(r)}">${labelFn(r)}</span>
+      <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pct}%"></div></div>
+      <span class="stats-bar-val">${fmt(val)}</span>
+    </div>`;
+  }).join('');
+}
+
+function deviceIcon(d) {
+  if (!d) return '📱';
+  d = d.toLowerCase();
+  if (d.includes('desktop') || d.includes('ordinateur')) return '💻';
+  if (d.includes('tablet')) return '📱';
+  return '📱';
+}
+function sourceIcon(s) {
+  if (!s) return '🔗';
+  s = s.toLowerCase();
+  if (s.includes('organic') || s.includes('search')) return '🔍';
+  if (s.includes('social')) return '📲';
+  if (s.includes('direct')) return '🔗';
+  if (s.includes('email')) return '✉️';
+  if (s.includes('referral')) return '↗️';
+  return '🔗';
+}
+
+function renderStats(d, days) {
+  const ov = d.overview.rows ? d.overview.rows[0] : null;
+  const mv = ov ? ov.metricValues : null;
+
+  const pageViews = mv ? mv[0].value : '0';
+  const activeUsers = mv ? mv[1].value : '0';
+  const sessions = mv ? mv[2].value : '0';
+  const avgDur = mv ? mv[3].value : '0';
+  const bounceRate = mv ? mv[4].value : '0';
+  const newUsers = mv ? mv[5].value : '0';
+  const newPct = activeUsers > 0 ? (parseFloat(newUsers) / parseFloat(activeUsers) * 100).toFixed(0) : 0;
+
+  const kpis = [
+    { icon: '👁', label: 'Pages vues', value: fmt(pageViews), sub: 'en ' + days + ' jours' },
+    { icon: '👤', label: 'Visiteurs uniques', value: fmt(activeUsers), sub: 'utilisateurs actifs' },
+    { icon: '📊', label: 'Sessions', value: fmt(sessions), sub: 'visites totales' },
+    { icon: '⏱', label: 'Durée moy. session', value: fmtDur(avgDur), sub: 'par visite' },
+    { icon: '↩️', label: 'Taux de rebond', value: fmtPct(bounceRate), sub: '1 page puis départ' },
+    { icon: '✨', label: 'Nouveaux visiteurs', value: newPct + '%', sub: 'des visiteurs' },
+  ];
+
+  const pagesRows = (d.pages.rows || []).map(r => ({ label: r.dimensionValues[0].value, val: r.metricValues[0].value }));
+  const deviceRows = (d.devices.rows || []).map(r => ({ label: deviceIcon(r.dimensionValues[0].value) + ' ' + r.dimensionValues[0].value, val: r.metricValues[0].value }));
+  const countryRows = (d.countries.rows || []).map(r => ({ label: r.dimensionValues[0].value, val: r.metricValues[0].value }));
+  const sourceRows = (d.sources.rows || []).map(r => ({ label: sourceIcon(r.dimensionValues[0].value) + ' ' + r.dimensionValues[0].value, val: r.metricValues[0].value }));
+  const browserRows = (d.browsers.rows || []).map(r => ({ label: r.dimensionValues[0].value, val: r.metricValues[0].value }));
+
+  document.getElementById('stats-body').innerHTML = `
+    <div class="stats-kpi-grid">
+      ${kpis.map(k => `<div class="stats-kpi">
+        <div class="stats-kpi-icon">${k.icon}</div>
+        <div class="stats-kpi-label">${k.label}</div>
+        <div class="stats-kpi-value">${k.value}</div>
+        <div class="stats-kpi-sub">${k.sub}</div>
+      </div>`).join('')}
+    </div>
+    <div class="stats-tables">
+      <div class="stats-table-card">
+        <div class="stats-table-title"><span>📄</span> Pages les plus vues</div>
+        ${barRows(pagesRows, r => r.label, r => r.val)}
+      </div>
+      <div class="stats-table-card">
+        <div class="stats-table-title"><span>🌍</span> Top pays</div>
+        ${barRows(countryRows, r => r.label, r => r.val)}
+      </div>
+      <div class="stats-table-card">
+        <div class="stats-table-title"><span>📲</span> Sources de trafic</div>
+        ${barRows(sourceRows, r => r.label, r => r.val)}
+      </div>
+      <div class="stats-table-card">
+        <div class="stats-table-title"><span>💻</span> Appareils</div>
+        ${barRows(deviceRows, r => r.label, r => r.val)}
+      </div>
+      <div class="stats-table-card">
+        <div class="stats-table-title"><span>🌐</span> Navigateurs</div>
+        ${barRows(browserRows, r => r.label, r => r.val)}
+      </div>
+    </div>`;
 }
 
 function showToast(msg, type) {
