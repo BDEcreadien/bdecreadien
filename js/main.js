@@ -102,8 +102,9 @@ function renderActu(data) {
   }
 
   // Photo de couverture
-  if (first.imageUrl) {
-    const coverUrl = first.imageUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${first.imageUrl}` : first.imageUrl;
+  const imgUrl = typeof first.imageUrl === 'object' ? first.imageUrl?.url : first.imageUrl;
+  if (imgUrl) {
+    const coverUrl = imgUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${imgUrl}` : imgUrl;
     featured.style.backgroundImage = `url('${coverUrl}')`;
     featured.style.backgroundSize = 'cover';
     featured.style.backgroundPosition = 'center';

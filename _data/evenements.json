@@ -22,10 +22,7 @@
     "description": "Les prix de bar de 23h à 2h seront les suivants :\n> Verre d’alcool fort à 3 €\n> Shooter : 1€\n> Pinte : 2 €\n> Soft : 1 €\nLes prix de bar de 2h à 3h30 seront les suivants :\n> Verre d’alcool fort à 4 €\n> Shooter : 2 €\n> Pinte : 3 €\n> Soft : 2 €\nFin du service au bar à 3h30 du matin",
     "prix": "15€",
     "categorie": "soiree",
-    "imageUrl": {
-      "url": "/assets/uploads/1782208420652_mmns_470944192_18139858825367878_7721243372732316369_n.jpg",
-      "type": "photo"
-    },
+    "imageUrl": "/assets/uploads/1782208420652_mmns_470944192_18139858825367878_7721243372732316369_n.jpg",
     "lien": "bdecreadien.fr",
     "typeLien": "",
     "phare": true,

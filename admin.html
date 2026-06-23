@@ -1270,8 +1270,9 @@ function editItem(type, i) {
     document.getElementById('ev-categorie').value = ev.categorie || 'soiree';
     const coverWrap = document.getElementById('ev-cover-preview-wrap');
     const coverImg = document.getElementById('ev-cover-preview-img');
-    if (ev.imageUrl) {
-      const coverUrl = ev.imageUrl.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${ev.imageUrl}` : ev.imageUrl;
+    const evImgUrl = typeof ev.imageUrl === 'object' ? ev.imageUrl?.url : ev.imageUrl;
+    if (evImgUrl) {
+      const coverUrl = evImgUrl.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${evImgUrl}` : evImgUrl;
       coverImg.src = coverUrl;
       coverWrap.style.display = 'block';
     } else { coverWrap.style.display = 'none'; }
@@ -1513,7 +1514,7 @@ async function saveEvenement() {
   if (idx >= 0 && data.evenements[idx]._removeCover) imageUrl = '';
   if (coverFile) {
     try {
-      imageUrl = await uploadMedia(coverFile, 'cover');
+      imageUrl = (await uploadMedia(coverFile, 'cover')).url;
     } catch(e) { return showToast('Erreur upload couverture : ' + e.message, 'error'); }
   }
 
