@@ -1839,15 +1839,15 @@ footer {
 
 @media (max-width: 768px) {
   nav {
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
     flex-wrap: wrap;
     height: auto;
-    min-height: 64px;
+    min-height: 60px;
   }
   .nav-links {
     display: none;
     position: absolute;
-    top: 64px;
+    top: 60px;
     left: 0;
     right: 0;
     background: rgba(255,255,255,0.98);
@@ -1865,7 +1865,7 @@ footer {
   }
   .nav-links li a {
     display: block;
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1.25rem;
     font-size: 15px;
     color: var(--noir) !important;
     -webkit-text-fill-color: var(--noir) !important;
@@ -1877,7 +1877,7 @@ footer {
     background: none !important;
     color: var(--violet) !important;
     -webkit-text-fill-color: var(--violet) !important;
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1.25rem;
     border-radius: 0;
     box-shadow: none;
     font-weight: 700;
@@ -1885,54 +1885,56 @@ footer {
   .nav-burger {
     display: flex;
   }
-  .pole-bureau .equipe-grid {
-    grid-template-columns: 1fr;
+
+  /* Sections */
+  section { padding: 3.5rem 1.25rem; }
+  .section-header { margin-bottom: 2rem; }
+  .section-title { font-size: clamp(28px, 7vw, 40px); }
+
+  /* Inner page heroes */
+  .agenda-hero, .comm-hero, .annonces-hero, .partenaires-hero {
+    padding: 4.5rem 1.25rem 2rem;
   }
-  section {
-    padding: 70px 1.5rem;
-  }
-  .agenda-hero, .comm-hero, .annonces-hero {
-    padding: 5rem 1.5rem 2.5rem;
-  }
-  .agenda-layout, .comm-section, .annonces-section, .section-equipe {
-    padding: 3rem 1.5rem;
-  }
-  .actu-grid {
-    grid-template-columns: 1fr;
-  }
-  .comm-grid {
-    grid-template-columns: 1fr;
-  }
-  .chiffres-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .footer-bottom {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+  .agenda-layout, .comm-section, .annonces-section, .partenaires-section, .section-equipe {
+    padding: 2.5rem 1.25rem;
   }
 
-  /* Annonces mobile */
+  /* Grids */
+  .actu-grid { grid-template-columns: 1fr; }
+  .comm-grid { grid-template-columns: 1fr; }
+  .chiffres-grid { grid-template-columns: repeat(2, 1fr); }
+  .pole-bureau .equipe-grid { grid-template-columns: 1fr; }
+
+  /* Footer */
+  .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
+
+  /* Annonces */
   .annonces-grid { grid-template-columns: 1fr; }
-  .annonces-filters { gap: 0.5rem; }
-  .filter-btn { padding: 8px 14px; font-size: 12px; }
+  .annonces-filters { gap: 0.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 7px 12px; font-size: 12px; }
 
-  /* Agenda mobile */
+  /* Agenda */
   .evenements-list { gap: 0.75rem; }
 
-  /* Hero mobile */
-  .hero-cards { flex-direction: column; gap: 0.75rem; }
-  .hero-card { flex-direction: row; gap: 0.75rem; padding: 1rem 1.25rem; }
-  .hero-card-label { font-size: 14px; }
+  /* Hero accueil — cartes sur une ligne, plus compactes */
+  .hero-content { padding: 60px 1.25rem 0; }
+  .hero-cards { gap: 0.5rem; flex-wrap: nowrap; }
+  .hero-card { padding: 0.75rem 0.5rem; min-width: 0; }
+  .hero-card-icon { width: 28px; height: 28px; margin-bottom: 0.4rem; }
+  .hero-card-label { font-size: 11px; letter-spacing: 0.02em; }
 
-  /* Actu mobile */
+  /* Actu */
   .actu-item { gap: 0.75rem; }
   .actu-item-date { min-width: 38px; }
   .actu-item-date .day { font-size: 22px; }
+
+  /* Contact */
+  .contact-section { padding: 2rem 1.25rem 4rem; }
+
+  /* Partenaires */
+  .partenaires-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .partenaires-cta { padding: 4rem 1.25rem; }
 }
 
 /* ===================================
