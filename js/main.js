@@ -374,9 +374,15 @@ function renderEvenements(allData) {
         <p style="font-size:12px; color:var(--gris-texte); margin-top:3px;">${ev.lieu}</p>
         ${ev.horaire ? `<p style="font-size:12px; color:var(--gris-texte); margin-top:1px;">${ev.horaire}</p>` : ''}
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; flex-wrap:wrap; gap:6px;">
-          <span style="font-family:'Bebas Neue',sans-serif; font-size:16px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-family:'Bebas Neue',sans-serif; font-size:16px; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">${ev.prix}</span>
+            ${ev.inscrits ? `<span class="ev-inscrits"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${ev.inscrits} inscrits</span>` : ''}
+          </div>
           <div style="display:flex;gap:6px;align-items:center;">
             ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:${couleurLien[ev.typeLien] || 'var(--violet)'}; color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
+            <button class="btn-ics" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" data-horaire="${(ev.horaire||'').replace(/"/g,'&quot;')}" data-lieu="${(ev.lieu||'').replace(/"/g,'&quot;')}" data-desc="${(ev.description||'').replace(/"/g,'&quot;')}" aria-label="Ajouter au calendrier">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </button>
             <button class="btn-share" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date || ''}" style="font-size:11px;padding:5px 10px;" aria-label="Partager">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>
@@ -666,4 +672,209 @@ if (document.getElementById('annonces-grid')) {
       renderAnnonces();
     })
     .catch(() => renderAnnonces());
+}
+
+// ===================================
+// ICS — Télécharger événement
+// ===================================
+function downloadICS(titre, date, horaire, lieu, description) {
+  if (!date) return;
+  // Parse date et heure de début
+  const d = new Date(date);
+  const [hDebut, hFin] = (horaire || '').split(/\s*[–—-]\s*/);
+  function parseHeure(h) {
+    if (!h) return null;
+    const clean = h.trim().replace('h', ':').replace('H', ':');
+    const [hh, mm] = clean.split(':');
+    return { h: parseInt(hh) || 0, m: parseInt(mm) || 0 };
+  }
+  function toICSDate(dateObj, heure) {
+    const y = dateObj.getFullYear();
+    const mo = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const da = String(dateObj.getDate()).padStart(2, '0');
+    if (!heure) return `${y}${mo}${da}`;
+    const hh = String(heure.h).padStart(2, '0');
+    const mm = String(heure.m).padStart(2, '0');
+    return `${y}${mo}${da}T${hh}${mm}00`;
+  }
+  const debut = parseHeure(hDebut);
+  const fin = parseHeure(hFin);
+  const dtstart = debut ? toICSDate(d, debut) : toICSDate(d, null);
+  const dtend = fin ? toICSDate(d, fin) : (debut ? toICSDate(d, { h: debut.h + 2, m: debut.m }) : toICSDate(d, null));
+  const allDay = !debut;
+  const dtProp = allDay ? `DTSTART;VALUE=DATE:${dtstart}\nDTEND;VALUE=DATE:${dtend}` : `DTSTART:${dtstart}\nDTEND:${dtend}`;
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//BDE CREAD Lyon//FR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${Date.now()}@bdecreadien.fr`,
+    dtProp,
+    `SUMMARY:${titre}`,
+    lieu ? `LOCATION:${lieu}` : '',
+    description ? `DESCRIPTION:${description.replace(/\n/g, '\\n')}` : '',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(Boolean).join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${titre.replace(/[^a-zA-Z0-9À-ž ]/g, '').trim().replace(/\s+/g, '_')}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Délégation d'événement pour boutons .ics
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-ics');
+  if (!btn) return;
+  downloadICS(
+    btn.dataset.titre || '',
+    btn.dataset.date || '',
+    btn.dataset.horaire || '',
+    btn.dataset.lieu || '',
+    btn.dataset.desc || ''
+  );
+});
+
+// ===================================
+// GALERIE — Lightbox avec swipe
+// ===================================
+let galeriePhotos = [];
+let lightboxIndex = 0;
+
+function openLightbox(index) {
+  lightboxIndex = index;
+  const overlay = document.getElementById('lightbox-overlay');
+  if (!overlay) return;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderLightbox();
+}
+
+function closeLightbox() {
+  const overlay = document.getElementById('lightbox-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lightboxNav(dir) {
+  const next = lightboxIndex + dir;
+  if (next < 0 || next >= galeriePhotos.length) return;
+  lightboxIndex = next;
+  renderLightbox();
+}
+
+function renderLightbox() {
+  const p = galeriePhotos[lightboxIndex];
+  if (!p) return;
+  const rawUrl = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
+  document.getElementById('lightbox-img').src = rawUrl;
+  document.getElementById('lightbox-caption').textContent = p.titre || '';
+  document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galeriePhotos.length}`;
+  document.getElementById('lightbox-prev').disabled = lightboxIndex === 0;
+  document.getElementById('lightbox-next').disabled = lightboxIndex === galeriePhotos.length - 1;
+}
+
+// Injection du DOM lightbox
+if (document.getElementById('galerie-grid')) {
+  const lb = document.createElement('div');
+  lb.id = 'lightbox-overlay';
+  lb.className = 'lightbox-overlay';
+  lb.innerHTML = `
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Fermer">✕</button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" onclick="lightboxNav(-1)" aria-label="Précédent">‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightbox-next" onclick="lightboxNav(1)" aria-label="Suivant">›</button>
+    <div class="lightbox-inner">
+      <div class="lightbox-counter" id="lightbox-counter"></div>
+      <img class="lightbox-img" id="lightbox-img" alt="Photo BDE CREAD">
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+    </div>`;
+  document.body.appendChild(lb);
+
+  // Fermer en cliquant sur l'overlay
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+  // Clavier
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) lightboxNav(dx < 0 ? 1 : -1);
+  });
+}
+
+// Patch renderGalerie pour ouvrir la lightbox au clic
+const _origGalerieBlock = document.getElementById('galerie-grid');
+if (_origGalerieBlock) {
+  // On surcharge le fetch galerie pour stocker les photos ET attacher les clics
+  fetch(`/_data/galerie.json?t=${Date.now()}`)
+    .then(r => r.json())
+    .then(items => {
+      galeriePhotos = Array.isArray(items) ? items : [];
+      const grid = document.getElementById('galerie-grid');
+      if (!galeriePhotos.length) { document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
+      grid.innerHTML = galeriePhotos.map((p, i) => {
+        const url = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
+        return `<div class="galerie-item reveal" data-index="${i}" onclick="openLightbox(${i})" role="button" tabindex="0" aria-label="Voir la photo${p.titre ? ' : ' + p.titre : ''}">
+          <img src="${url}" alt="${p.titre || 'Photo BDE'}" loading="lazy" onerror="this.parentElement.style.display='none'">
+          ${p.titre ? `<span class="galerie-caption">${p.titre}</span>` : ''}
+        </div>`;
+      }).join('');
+      grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+      grid.querySelectorAll('.galerie-item').forEach(el => {
+        el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openLightbox(parseInt(el.dataset.index)); });
+      });
+    })
+    .catch(() => {});
+}
+
+// ===================================
+// PARTENAIRES — Chargement & Rendu
+// ===================================
+function renderPartenaires(items) {
+  const grid = document.getElementById('partenaires-grid');
+  const empty = document.getElementById('partenaires-empty');
+  if (!grid) return;
+  if (!items.length) {
+    grid.style.display = 'none';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  grid.innerHTML = items.map((p, i) => {
+    const logoHtml = p.logo
+      ? `<img class="partenaire-logo" src="${p.logo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + p.logo : p.logo}" alt="Logo ${p.nom}" loading="lazy">`
+      : `<div class="partenaire-logo-placeholder">${(p.nom || '?').slice(0, 2).toUpperCase()}</div>`;
+    const inner = `${logoHtml}
+      <p class="partenaire-nom">${p.nom}</p>
+      ${p.description ? `<p class="partenaire-desc">${p.description}</p>` : ''}
+      ${p.lien ? `<span class="partenaire-lien">Voir le site →</span>` : ''}`;
+    return p.lien
+      ? `<a href="${p.lien}" target="_blank" rel="noopener noreferrer" class="partenaire-card reveal">${inner}</a>`
+      : `<div class="partenaire-card reveal">${inner}</div>`;
+  }).join('');
+  grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+if (document.getElementById('partenaires-grid')) {
+  fetch('/_data/partenaires.json')
+    .then(r => r.json())
+    .then(data => renderPartenaires(Array.isArray(data) ? data : []))
+    .catch(() => renderPartenaires([]));
 }

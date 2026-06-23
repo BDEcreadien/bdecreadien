@@ -237,6 +237,12 @@
         <div class="page-card-desc">Photos de la galerie Communication</div>
         <a href="communication.html#galerie-section" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
       </div>
+      <div class="page-card" onclick="selectPage('partenaires')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="page-card-name">Partenaires</div>
+        <div class="page-card-desc">Sponsors & partenaires du BDE</div>
+        <a href="partenaires.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <div class="page-card-name">Paramètres</div>
@@ -281,8 +287,8 @@ const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
 const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
-let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null, galerie: [] };
-let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1, galerie: -1 };
+let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null, galerie: [], partenaires: [] };
+let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1, galerie: -1, partenaire: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
 // ============================================================
@@ -316,7 +322,7 @@ async function init() {
   loader.innerHTML = '<p style="text-align:center;padding:4rem 2rem;color:var(--gris-texte);font-size:15px;">Chargement des données…</p>';
   document.getElementById('screen-app').prepend(loader);
 
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config'), loadData('galerie')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config'), loadData('galerie'), loadData('partenaires')]);
 
   loader.remove();
   showStep('pages');
@@ -358,6 +364,8 @@ function selectPage(page) {
     openEditor('archives', true, 'Archives', 'Événements passés');
   } else if (page === 'galerie') {
     openEditor('galerie', true, 'Galerie', 'Photos galerie');
+  } else if (page === 'partenaires') {
+    openEditor('partenaires', true, 'Partenaires', 'Sponsors & partenaires');
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
@@ -715,9 +723,10 @@ function buildEditor(type) {
   const listHtml = items.length
     ? items.map((item, i) => {
         let title = '', sub = '';
-        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}`; }
+        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}${item.inscrits ? ` · ${item.inscrits} inscrits` : ''}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
         if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} — ${item.lieu}`; }
+        if (type === 'partenaires') { title = item.nom; sub = item.description || item.lien || ''; }
 
         // Galerie : carte photo
         if (type === 'galerie') {
@@ -769,6 +778,7 @@ function buildEditor(type) {
     : type === 'equipe' ? formMembre()
     : type === 'archives' ? formArchive()
     : type === 'galerie' ? formGalerie()
+    : type === 'partenaires' ? formPartenaire()
     : formMedia();
 
   const addLabel = type === 'evenements' ? 'Ajouter un événement'
@@ -776,6 +786,7 @@ function buildEditor(type) {
     : type === 'equipe' ? 'Ajouter un membre'
     : type === 'archives' ? 'Ajouter un événement passé'
     : type === 'galerie' ? 'Ajouter une photo'
+    : type === 'partenaires' ? 'Ajouter un partenaire'
     : 'Ajouter un média';
 
   return `
@@ -873,6 +884,10 @@ function formEvenement() {
           <option value="helloasso">HelloAsso</option>
         </select>
       </div>
+    </div>
+    <div class="form-row">
+      <label>Nombre d'inscrits (optionnel)</label>
+      <input type="number" id="ev-inscrits" placeholder="Ex: 42" min="0">
     </div>
     <div class="form-actions">
       <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
@@ -993,6 +1008,26 @@ function formGalerie() {
   </div>`;
 }
 
+function formPartenaire() {
+  return `<div class="form-card" id="the-form">
+    <h3 id="form-title">Nouveau partenaire</h3>
+    <div class="form-row"><label>Nom *</label><input type="text" id="pt-nom" placeholder="Ex: Ninkasi"></div>
+    <div class="form-row"><label>Description</label><input type="text" id="pt-desc" placeholder="Ex: Bar partenaire des soirées BDE"></div>
+    <div class="form-row"><label>Lien du site</label><input type="url" id="pt-lien" placeholder="https://…"></div>
+    <div class="form-row">
+      <label>Logo (optionnel)</label>
+      <input type="file" id="pt-logo" accept="image/*" onchange="onPartenaireLogoSelected()">
+    </div>
+    <div class="media-preview-wrap" id="pt-preview-wrap">
+      <img id="pt-preview-img" style="display:none;max-height:80px;object-fit:contain;">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="cancelForm()">Annuler</button>
+      <button class="btn-save" id="btn-save-partenaire" onclick="savePartenaire()">Ajouter</button>
+    </div>
+  </div>`;
+}
+
 function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
@@ -1035,7 +1070,7 @@ function onMembrePhotoSelected() {
 function showForm() {
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
-  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : currentType === 'galerie' ? 'galerie' : 'video'] = -1;
+  editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : currentType === 'galerie' ? 'galerie' : currentType === 'partenaires' ? 'partenaire' : 'video'] = -1;
 }
 
 function cancelForm() {
@@ -1046,7 +1081,7 @@ function cancelForm() {
 
 function resetForm() {
   if (currentType === 'evenements') {
-    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    ['ev-titre','ev-date','ev-dateAffichage','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien','ev-inscrits'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const ph = document.getElementById('ev-phare'); if(ph) ph.checked = false;
     const sel = document.getElementById('ev-prix-select'); if(sel) sel.value = '';
     const autre = document.getElementById('ev-prix-autre'); if(autre) autre.style.display = 'none';
@@ -1072,6 +1107,13 @@ function resetForm() {
     const pw = document.getElementById('gl-preview-wrap'); if(pw) { pw.innerHTML = ''; pw.style.display = 'none'; }
     document.getElementById('form-title').textContent = 'Nouvelle photo';
   }
+  if (currentType === 'partenaires') {
+    ['pt-nom','pt-desc','pt-lien'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const fi = document.getElementById('pt-logo'); if(fi) fi.value = '';
+    const pw = document.getElementById('pt-preview-wrap'); if(pw) pw.style.display = 'none';
+    const img = document.getElementById('pt-preview-img'); if(img) { img.src=''; img.style.display='none'; }
+    document.getElementById('form-title').textContent = 'Nouveau partenaire';
+  }
   if (currentType === 'equipe') {
     ['mb-nom','mb-initiales','mb-role'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const pole = document.getElementById('mb-pole'); if(pole) pole.value = 'bureau';
@@ -1086,7 +1128,7 @@ function resetForm() {
 }
 
 function editItem(type, i) {
-  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre', archives: 'archive', galerie: 'galerie' };
+  const map = { evenements: 'evenement', annonces: 'annonce', videos: 'video', equipe: 'membre', archives: 'archive', galerie: 'galerie', partenaires: 'partenaire' };
   editIndex[map[type]] = i;
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
@@ -1109,6 +1151,7 @@ function editItem(type, i) {
     document.getElementById('ev-lien').value = ev.lien || '';
     document.getElementById('ev-typeLien').value = ev.typeLien || '';
     document.getElementById('ev-phare').checked = !!ev.phare;
+    document.getElementById('ev-inscrits').value = ev.inscrits || '';
     document.getElementById('ev-categorie').value = ev.categorie || 'soiree';
     const coverWrap = document.getElementById('ev-cover-preview-wrap');
     const coverImg = document.getElementById('ev-cover-preview-img');
@@ -1180,6 +1223,19 @@ function editItem(type, i) {
       document.getElementById('gl-preview-wrap').style.display = 'block';
     }
     document.getElementById('form-title').textContent = 'Modifier la photo';
+  }
+  if (type === 'partenaires') {
+    const pt = data.partenaires[i];
+    document.getElementById('pt-nom').value = pt.nom || '';
+    document.getElementById('pt-desc').value = pt.description || '';
+    document.getElementById('pt-lien').value = pt.lien || '';
+    if (pt.logo) {
+      const rawUrl = pt.logo.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${pt.logo}` : pt.logo;
+      const img = document.getElementById('pt-preview-img');
+      img.src = rawUrl; img.style.display = 'block';
+      document.getElementById('pt-preview-wrap').style.display = 'block';
+    }
+    document.getElementById('form-title').textContent = 'Modifier le partenaire';
   }
 }
 
@@ -1346,7 +1402,8 @@ async function saveEvenement() {
     } catch(e) { return showToast('Erreur upload couverture : ' + e.message, 'error'); }
   }
 
-  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, categorie, imageUrl, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare };
+  const inscrits = parseInt(document.getElementById('ev-inscrits').value) || 0;
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, categorie, imageUrl, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare, ...(inscrits > 0 ? { inscrits } : {}) };
   if (phare) data.evenements.forEach((e, i) => { if (i !== idx) e.phare = false; });
   if (idx >= 0) data.evenements[idx] = ev; else data.evenements.push(ev);
   try {
@@ -1701,6 +1758,39 @@ async function saveGalerie() {
     openEditor('galerie', false, 'Galerie', 'Photos galerie');
     cancelForm();
     showToast(files.length > 1 ? `${files.length} photos ajoutées !` : 'Photo ajoutée !', 'success');
+  } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
+}
+
+function onPartenaireLogoSelected() {
+  const file = document.getElementById('pt-logo').files[0];
+  if (!file) return;
+  const img = document.getElementById('pt-preview-img');
+  img.src = URL.createObjectURL(file);
+  img.style.display = 'block';
+  document.getElementById('pt-preview-wrap').style.display = 'block';
+}
+
+async function savePartenaire() {
+  const nom = document.getElementById('pt-nom').value.trim();
+  if (!nom) return showToast('Le nom est obligatoire', 'error');
+  const description = document.getElementById('pt-desc').value.trim();
+  const lien = document.getElementById('pt-lien').value.trim();
+  const file = document.getElementById('pt-logo')?.files[0];
+  const idx = editIndex.partenaire;
+  const btn = document.getElementById('btn-save-partenaire');
+  btn.textContent = 'Envoi…'; btn.disabled = true;
+  try {
+    let logo = idx >= 0 ? (data.partenaires[idx].logo || '') : '';
+    if (file) { const up = await uploadMedia(file); logo = up.url; }
+    const pt = { nom, description, lien, logo };
+    if (idx >= 0) data.partenaires[idx] = pt; else data.partenaires.push(pt);
+  } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
+  btn.textContent = 'Ajouter'; btn.disabled = false;
+  try {
+    await persistData('partenaires', idx >= 0 ? `Modification partenaire : ${nom}` : `Nouveau partenaire : ${nom}`);
+    openEditor('partenaires', false, 'Partenaires', 'Sponsors & partenaires');
+    cancelForm();
+    showToast('Partenaire enregistré !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
 
