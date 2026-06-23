@@ -1291,7 +1291,7 @@ section {
 .annonces-hero {
   height: 45vh;
   min-height: 320px;
-  background: var(--gris-clair);
+  background: var(--gradient);
   display: flex;
   align-items: flex-end;
   padding: 4rem 3rem;
@@ -2236,7 +2236,7 @@ a.contact-info-value:hover { color: var(--violet); }
    =================================== */
 .partenaires-hero {
   padding: 7rem 2rem 3.5rem;
-  background: white;
+  background: var(--gradient);
   text-align: center;
 }
 .partenaires-section {
