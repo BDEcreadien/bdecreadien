@@ -105,11 +105,11 @@ function renderActu(data) {
   const imgUrl = typeof first.imageUrl === 'object' ? first.imageUrl?.url : first.imageUrl;
   if (imgUrl) {
     const coverUrl = imgUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${imgUrl}` : imgUrl;
-    featured.style.backgroundImage = `url('${coverUrl}')`;
-    featured.style.backgroundSize = 'cover';
-    featured.style.backgroundPosition = 'center';
+    featured.style.setProperty('--cover-url', `url('${coverUrl}')`);
+    featured.classList.add('has-cover');
   } else {
-    featured.style.backgroundImage = '';
+    featured.style.removeProperty('--cover-url');
+    featured.classList.remove('has-cover');
   }
 
   featured.innerHTML = `
