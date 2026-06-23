@@ -1057,12 +1057,6 @@ section {
   opacity: 0.4;
 }
 
-.comm-hero .page-title-block h1 {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
 .comm-section {
   padding: 5rem 3rem;
