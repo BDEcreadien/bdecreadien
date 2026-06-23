@@ -2023,6 +2023,18 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
   background: rgba(70,58,144,0.08);
   border-color: var(--violet);
 }
+.actu-featured .btn-share {
+  color: white;
+  border-color: rgba(255,255,255,0.5);
+}
+.actu-featured .btn-share:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: white;
+}
+.actu-featured .btn {
+  background: white;
+  color: var(--violet);
+}
 
 /* ===================================
    GALERIE PHOTOS — Communication
