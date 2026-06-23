@@ -2034,6 +2034,10 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
 .actu-featured .btn {
   background: white;
   color: var(--violet);
+  width: auto;
+  display: inline-flex;
+  padding: 8px 16px;
+  font-size: 13px;
 }
 
 /* ===================================
