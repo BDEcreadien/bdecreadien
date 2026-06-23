@@ -30,4 +30,9 @@
     <priority>0.6</priority>
     <changefreq>yearly</changefreq>
   </url>
+  <url>
+    <loc>https://bdecreadien.fr/mentions-legales.html</loc>
+    <priority>0.3</priority>
+    <changefreq>yearly</changefreq>
+  </url>
 </urlset>

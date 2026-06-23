@@ -54,6 +54,10 @@
           <p class="contact-form-sub">On répond généralement sous 24–48h.</p>
 
           <form id="contact-form" novalidate>
+            <input type="hidden" name="access_key" value="REMPLACER_PAR_CLE_WEB3FORMS">
+            <input type="hidden" name="subject" value="[BDE CREAD] Message depuis le site">
+            <input type="hidden" name="from_name" value="Site BDE CREAD Lyon">
+            <input type="hidden" name="redirect" value="false">
             <div class="form-contact-row">
               <label for="c-nom">Ton prénom *</label>
               <input type="text" id="c-nom" placeholder="Ex : Léa" required>
@@ -147,12 +151,14 @@
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 <span>BDE CREAD Lyon</span> — Tous droits réservés</p>
+      <a href="mentions-legales.html" class="footer-mentions">Mentions légales</a>
       <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="footer-insta" aria-label="Instagram BDE CREAD">@bdecreadien</a>
     </div>
   </footer>
 
+  <!-- WEB3FORMS : va sur https://web3forms.com → entre bdecreadien@gmail.com → copie la clé → remplace REMPLACER_PAR_CLE_WEB3FORMS ci-dessus -->
   <script>
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const nom = document.getElementById('c-nom').value.trim();
       const email = document.getElementById('c-email').value.trim();
@@ -165,12 +171,48 @@
         return;
       }
       err.style.display = 'none';
-      const body = encodeURIComponent(`Bonjour,\n\nMessage de ${nom} (${email}) :\n\n${message}\n\n---\nEnvoyé depuis le site BDE CREAD Lyon`);
-      const mailtoUrl = `mailto:bdecreadien@gmail.com?subject=${encodeURIComponent('[BDE Site] ' + sujet + ' — ' + nom)}&body=${body}`;
-      window.location.href = mailtoUrl;
+      const btn = this.querySelector('.contact-submit');
+      btn.textContent = 'Envoi en cours…';
+      btn.disabled = true;
+
+      const formData = new FormData(this);
+      formData.append('name', nom);
+      formData.append('email', email);
+      formData.append('message', `Sujet: ${sujet}\n\n${message}`);
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+          this.innerHTML = `<div style="text-align:center;padding:2rem 0;">
+            <div style="font-size:48px;margin-bottom:1rem;">✅</div>
+            <p style="font-size:18px;font-weight:700;color:var(--violet);margin-bottom:0.5rem;">Message envoyé !</p>
+            <p style="font-size:14px;color:var(--gris-texte);">On te répond dans les 24–48h.</p>
+          </div>`;
+        } else {
+          throw new Error(data.message);
+        }
+      } catch(e) {
+        btn.textContent = 'Envoyer le message';
+        btn.disabled = false;
+        err.textContent = 'Erreur lors de l\'envoi. Réessaie ou écris-nous directement.';
+        err.style.display = 'block';
+      }
     });
   </script>
   <script src="js/main.js"></script>
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "868cda79a5844d4a842363b412470415"}'></script>
+
+  <!-- PUSH NOTIFICATIONS OneSignal — désactivé jusqu'à configuration du domaine
+       Pour activer : 1) Créer compte sur onesignal.com 2) New App > Web > bdecreadien.fr
+       3) Remplacer YOUR_ONESIGNAL_APP_ID ci-dessous 4) Décommenter le script
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
+    });
+  </script>
+  -->
 </body>
 </html>

@@ -367,6 +367,26 @@
       </div>
       <div id="stats-body"></div>
     </div>
+
+    <!-- Encart notifications push -->
+    <div class="stats-setup" style="margin-top:2rem;">
+      <h3 style="display:flex;align-items:center;gap:0.5rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Notifications push
+      </h3>
+      <p style="font-size:13px;color:var(--gris-texte);line-height:1.7;margin-bottom:1rem;">
+        Les notifications push permettent d'alerter les étudiants des nouveaux événements directement sur leur téléphone ou navigateur.<br><br>
+        <strong>Pour activer :</strong><br>
+        1. Crée un compte sur <a href="https://onesignal.com" target="_blank" rel="noopener" style="color:var(--violet);">onesignal.com</a><br>
+        2. New App → Web → entre <code>bdecreadien.fr</code><br>
+        3. Copie ton App ID et remplace <code>YOUR_ONESIGNAL_APP_ID</code> dans les fichiers HTML du site<br>
+        4. Décommente le bloc OneSignal dans chaque page HTML publique
+      </p>
+      <a href="https://app.onesignal.com" target="_blank" rel="noopener" class="btn-save" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Gérer les notifications push
+      </a>
+    </div>
   </div>
 
   <!-- ÉTAPE 3 : ÉDITEUR -->
@@ -525,9 +545,37 @@ async function saveFile(path, content, sha, message) {
   });
   if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(`${res.status} — ${b.message || ''}`); }
 }
+function showAuthError() {
+  const app = document.getElementById('screen-app');
+  const existing = document.getElementById('auth-error-banner');
+  if (existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'auth-error-banner';
+  banner.style.cssText = 'background:#c0392b;color:#fff;padding:1.2rem 1.5rem;border-radius:10px;margin:1.5rem;text-align:center;font-size:14px;';
+  banner.innerHTML = `<strong>Token GitHub invalide ou expiré.</strong> Reconnecte-toi pour continuer.<br><br>
+    <button onclick="document.getElementById('auth-error-banner').remove();localStorage.removeItem('bde_gh_token');token=null;document.getElementById('screen-login').style.display='flex';document.getElementById('screen-app').style.display='none';document.getElementById('btn-logout').style.display='none';" style="margin-top:0.5rem;padding:8px 20px;background:#fff;color:#c0392b;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Se reconnecter</button>`;
+  app.prepend(banner);
+}
 async function loadData(type) {
   try {
-    const file = await getFile(`_data/${type}.json`);
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/${type}.json?t=${Date.now()}`, {
+      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 401 || res.status === 403) {
+      showAuthError();
+      data[type] = type === 'config' ? null : [];
+      return;
+    }
+    if (res.status === 404) {
+      data[type] = type === 'config' ? null : [];
+      return;
+    }
+    if (!res.ok) {
+      console.warn(`Erreur réseau (${res.status}) pour ${type}`);
+      data[type] = type === 'config' ? null : [];
+      return;
+    }
+    const file = await res.json();
     const bytes = Uint8Array.from(atob(file.content.replace(/\n/g, '')), c => c.charCodeAt(0));
     const raw = JSON.parse(new TextDecoder().decode(bytes));
     data[type] = type === 'config' ? raw : (Array.isArray(raw) ? raw : (raw[type] || []));
