@@ -127,21 +127,27 @@ function renderActu(data) {
       </div>
     </div>
   `;
-  featured.querySelector('.btn-share-featured')?.addEventListener('click', () => partagerEvenement(first.titre, first.date || ''));
+  featured.querySelector('.btn-share-featured')?.addEventListener('click', (e) => { e.stopPropagation(); partagerEvenement(first.titre, first.date || ''); });
+  featured.querySelector('.btn')?.addEventListener('click', (e) => e.stopPropagation());
+  featured.style.cursor = 'pointer';
+  featured.addEventListener('click', () => openEvModal(first));
 
   const delays = ['reveal-delay-2', 'reveal-delay-3', 'reveal-delay-4'];
   list.innerHTML = rest.slice(0, 3).map((ev, i) => {
     const d = new Date(ev.date);
     const day = d.getDate().toString().padStart(2, '0');
     const month = d.toLocaleString('fr-FR', { month: 'short' });
-    return `<div class="actu-item reveal ${delays[i] || ''}">
+    return `<div class="actu-item reveal ${delays[i] || ''}" style="cursor:pointer;" data-idx="${i}">
       <div class="actu-item-date"><span class="day">${day}</span><span class="month">${month}</span></div>
       <div class="actu-item-content"><h3>${ev.titre}</h3><p>${ev.lieu}${ev.horaire ? ' · ' + ev.horaire : ''}</p></div>
-      ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="actu-item-link" style="flex-shrink:0; font-size:11px; font-weight:700; color:var(--violet); text-decoration:none; white-space:nowrap;">Billetterie</a>` : ''}
+      ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="actu-item-link" style="flex-shrink:0; font-size:11px; font-weight:700; color:var(--violet); text-decoration:none; white-space:nowrap;" onclick="event.stopPropagation()">Billetterie</a>` : ''}
     </div>`;
   }).join('');
 
   list.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  list.querySelectorAll('.actu-item[data-idx]').forEach((el, i) => {
+    el.addEventListener('click', () => openEvModal(rest[i]));
+  });
 }
 
 function partagerEvenement(titre, date) {
@@ -307,10 +313,12 @@ function copyIcal() {
 // ===================================
 // ÉVÉNEMENTS — Chargement & Rendu
 // ===================================
+let _eventsCache = [];
 
 const CAT_LABELS = { soiree: 'Soirée', sortie: 'Sortie', atelier: 'Atelier', autre: 'Autre' };
 
 function renderEvenements(allData) {
+  _eventsCache = allData;
   const container = document.getElementById('evenements-list');
   if (!container) return;
 
@@ -367,7 +375,7 @@ function renderEvenements(allData) {
     const d = new Date(ev.date);
     const day = d.getDate().toString().padStart(2,'0');
     const month = d.toLocaleString('fr-FR', { month: 'short' });
-    return `<div class="actu-item reveal" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-border); background:white; gap:1rem;">
+    return `<div class="actu-item reveal" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-border); background:white; gap:1rem; cursor:pointer;" data-evid="${allData.indexOf(ev)}">
       <div class="actu-item-date" style="min-width:46px;">
         <span class="day">${day}</span>
         <span class="month">${month}</span>
@@ -396,7 +404,11 @@ function renderEvenements(allData) {
   }).join('') : '<p style="color:var(--gris-texte);font-size:13px;text-align:center;padding:1rem;">Aucun résultat.</p>';
   container.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   container.querySelectorAll('.btn-share[data-titre]').forEach(btn => {
-    btn.addEventListener('click', () => partagerEvenement(btn.dataset.titre, btn.dataset.date));
+    btn.addEventListener('click', (e) => { e.stopPropagation(); partagerEvenement(btn.dataset.titre, btn.dataset.date); });
+  });
+  container.querySelectorAll('.actu-item[data-evid]').forEach(el => {
+    const ev = _eventsCache[+el.dataset.evid];
+    if (ev) el.addEventListener('click', (e) => { if (!e.target.closest('a,button')) openEvModal(ev); });
   });
   }  // end drawList
 
@@ -881,3 +893,124 @@ if (document.getElementById('partenaires-grid')) {
     .then(data => renderPartenaires(Array.isArray(data) ? data : []))
     .catch(() => renderPartenaires([]));
 }
+
+// ===================================
+// MODALE ÉVÉNEMENT
+// ===================================
+
+(function () {
+  // Inject modal HTML once
+  const tpl = document.createElement('div');
+  tpl.innerHTML = `<div class="ev-modal-overlay" id="ev-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ev-modal-title-el">
+    <div class="ev-modal" id="ev-modal">
+      <button class="ev-modal-close" id="ev-modal-close" aria-label="Fermer">✕</button>
+      <div id="ev-modal-media"></div>
+      <div class="ev-modal-body">
+        <div id="ev-modal-tag" class="ev-modal-tag" style="display:none;">⭐ Événement phare</div>
+        <h2 class="ev-modal-title" id="ev-modal-title-el"></h2>
+        <div id="ev-modal-inscrits" class="ev-modal-inscrits" style="display:none;"></div>
+        <div class="ev-modal-infos" id="ev-modal-infos"></div>
+        <div id="ev-modal-desc" class="ev-modal-desc" style="display:none;"></div>
+        <div class="ev-modal-actions" id="ev-modal-actions"></div>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(tpl.firstChild);
+
+  const overlay = document.getElementById('ev-modal-overlay');
+  document.getElementById('ev-modal-close').addEventListener('click', closeEvModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeEvModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEvModal(); });
+
+  function closeEvModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  window.openEvModal = function (ev) {
+    if (!ev) return;
+    const imgUrl = typeof ev.imageUrl === 'object' ? ev.imageUrl?.url : (ev.imageUrl || '');
+    const rawUrl = imgUrl && imgUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${imgUrl}` : imgUrl;
+
+    // Cover
+    const media = document.getElementById('ev-modal-media');
+    if (rawUrl) {
+      media.innerHTML = `<img class="ev-modal-cover" src="${rawUrl}" alt="${ev.titre}" onerror="this.parentNode.innerHTML='<div class=ev-modal-cover-placeholder></div>'">`;
+    } else {
+      media.innerHTML = `<div class="ev-modal-cover-placeholder"></div>`;
+    }
+
+    // Tag phare
+    const tag = document.getElementById('ev-modal-tag');
+    tag.style.display = ev.phare ? 'block' : 'none';
+
+    // Titre
+    document.getElementById('ev-modal-title-el').textContent = ev.titre || '';
+
+    // Inscrits
+    const inscEl = document.getElementById('ev-modal-inscrits');
+    if (ev.inscrits) {
+      inscEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg> ${ev.inscrits} inscrits`;
+      inscEl.style.display = 'inline-flex';
+    } else {
+      inscEl.style.display = 'none';
+    }
+
+    // Infos
+    const iconSvg = (d) => ({ 
+      cal: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`,
+      clock: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
+      pin: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+      tag: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.5"/></svg>`,
+    })[d];
+
+    const rows = [];
+    if (ev.dateAffichage || ev.date) {
+      const label = ev.dateAffichage || new Date(ev.date).toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+      rows.push({ icon: 'cal', val: label });
+    }
+    if (ev.horaire) rows.push({ icon: 'clock', val: ev.horaire });
+    if (ev.lieu) rows.push({ icon: 'pin', val: ev.lieu + (ev.adresse ? `<br><span style="font-size:12px;color:var(--gris-texte);">${ev.adresse}</span>` : '') });
+    if (ev.prix) rows.push({ icon: 'tag', val: ev.prix });
+
+    document.getElementById('ev-modal-infos').innerHTML = rows.map(r =>
+      `<div class="ev-modal-info-row">${iconSvg(r.icon)}<span>${r.val}</span></div>`
+    ).join('');
+
+    // Description
+    const descEl = document.getElementById('ev-modal-desc');
+    if (ev.description) {
+      descEl.textContent = ev.description;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    // Actions
+    const lblLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
+    let actions = '';
+    if (ev.lien) {
+      actions += `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="ev-modal-btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ${lblLien[ev.typeLien] || 'Billetterie'}
+      </a>`;
+    }
+    actions += `<button class="ev-modal-btn-secondary" id="ev-modal-ics-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Calendrier
+    </button>
+    <button class="ev-modal-btn-secondary" id="ev-modal-share-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Partager
+    </button>`;
+    document.getElementById('ev-modal-actions').innerHTML = actions;
+
+    document.getElementById('ev-modal-ics-btn')?.addEventListener('click', () =>
+      downloadICS(ev.titre, ev.date, ev.horaire, ev.lieu, ev.description));
+    document.getElementById('ev-modal-share-btn')?.addEventListener('click', () =>
+      partagerEvenement(ev.titre, ev.date || ''));
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+})();

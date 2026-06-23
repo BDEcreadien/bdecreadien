@@ -2357,3 +2357,145 @@ a.contact-info-value:hover { color: var(--violet); }
   .partenaires-grid { grid-template-columns: 1fr 1fr; }
   .partenaires-hero { padding: 5rem 1.5rem 2.5rem; }
 }
+
+/* ===== MODALE ÉVÉNEMENT ===== */
+.ev-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+.ev-modal-overlay.open { display: flex; }
+.ev-modal {
+  background: white;
+  border-radius: 24px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  position: relative;
+  animation: evModalIn 0.25s ease;
+}
+@keyframes evModalIn {
+  from { opacity:0; transform: scale(0.95) translateY(12px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.ev-modal-cover {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 24px 24px 0 0;
+  display: block;
+}
+.ev-modal-cover-placeholder {
+  height: 10px;
+  background: var(--gradient);
+  border-radius: 24px 24px 0 0;
+}
+.ev-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  line-height: 1;
+}
+.ev-modal-close:hover { background: rgba(0,0,0,0.65); }
+.ev-modal-body { padding: 1.75rem 2rem 2rem; }
+.ev-modal-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 0.5rem;
+}
+.ev-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 1.5px;
+  line-height: 1.05;
+  color: var(--noir);
+  margin-bottom: 1.25rem;
+}
+.ev-modal-infos { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem; }
+.ev-modal-info-row { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 14px; color: var(--noir); }
+.ev-modal-info-row svg { flex-shrink: 0; margin-top: 2px; stroke: var(--violet); }
+.ev-modal-info-label { font-weight: 600; }
+.ev-modal-info-val { color: var(--gris-texte); }
+.ev-modal-desc {
+  font-size: 14px;
+  color: var(--gris-texte);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+  white-space: pre-line;
+  border-top: 1px solid var(--gris-border);
+  padding-top: 1.25rem;
+}
+.ev-modal-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.ev-modal-btn-primary {
+  flex: 1;
+  min-width: 120px;
+  padding: 11px 20px;
+  border-radius: 12px;
+  background: var(--gradient);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.ev-modal-btn-secondary {
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: white;
+  border: 1.5px solid var(--gris-border);
+  color: var(--noir);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.15s;
+}
+.ev-modal-btn-secondary:hover { border-color: var(--violet); color: var(--violet); }
+.ev-modal-inscrits {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(26,158,92,0.1);
+  color: #1a9e5c;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 99px;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 500px) {
+  .ev-modal-body { padding: 1.25rem 1.25rem 1.5rem; }
+  .ev-modal-title { font-size: 26px; }
+  .ev-modal-cover { height: 160px; }
+}
