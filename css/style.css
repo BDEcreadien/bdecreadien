@@ -723,7 +723,10 @@ section {
    PAGE AGENDA
    =================================== */
 
-.agenda-hero {
+.agenda-hero,
+.comm-hero,
+.annonces-hero,
+.partenaires-hero {
   height: 45vh;
   min-height: 320px;
   background: var(--gradient);
@@ -732,16 +735,23 @@ section {
   padding: 4rem 3rem;
   position: relative;
   overflow: hidden;
+  text-align: left;
 }
 
-.agenda-hero::before {
+.agenda-hero::after,
+.comm-hero::after,
+.annonces-hero::after,
+.partenaires-hero::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  background: var(--gradient);
+  clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+  opacity: 0.08;
+  pointer-events: none;
 }
 
 .page-title-block {
@@ -1024,38 +1034,7 @@ section {
    PAGE COMMUNICATION
    =================================== */
 
-.comm-hero {
-  height: 45vh;
-  min-height: 320px;
-  background: var(--gradient);
-  display: flex;
-  align-items: flex-end;
-  padding: 4rem 3rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.comm-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-.comm-hero-gradient {
-  position: absolute;
-  right: -100px;
-  top: -100px;
-  width: 500px;
-  height: 500px;
-  background: var(--gradient);
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.4;
-}
+.comm-hero-gradient { display: none; }
 
 
 .comm-section {
@@ -1282,28 +1261,6 @@ section {
    PAGE ANNONCES
    =================================== */
 
-.annonces-hero {
-  height: 45vh;
-  min-height: 320px;
-  background: var(--gradient);
-  display: flex;
-  align-items: flex-end;
-  padding: 4rem 3rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.annonces-hero::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 50%;
-  height: 100%;
-  background: var(--gradient);
-  clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
-  opacity: 0.08;
-}
 
 .annonces-section {
   padding: 5rem 3rem;
@@ -2228,11 +2185,6 @@ a.contact-info-value:hover { color: var(--violet); }
 /* ===================================
    PAGE PARTENAIRES
    =================================== */
-.partenaires-hero {
-  padding: 7rem 2rem 3.5rem;
-  background: var(--gradient);
-  text-align: center;
-}
 .partenaires-section {
   padding: 5rem 2rem;
   max-width: 1200px;
