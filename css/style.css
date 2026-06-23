@@ -727,12 +727,12 @@ section {
 .comm-hero,
 .annonces-hero,
 .partenaires-hero {
-  height: 45vh;
-  min-height: 320px;
+  height: 33vh;
+  min-height: 260px;
   background: var(--gradient);
   display: flex;
   align-items: flex-end;
-  padding: 4rem 3rem;
+  padding: 3rem 3rem;
   position: relative;
   overflow: hidden;
   text-align: left;
