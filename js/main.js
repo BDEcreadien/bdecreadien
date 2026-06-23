@@ -113,16 +113,18 @@ function renderActu(data) {
   }
 
   featured.innerHTML = `
-    <span class="actu-featured-tag">Événement phare</span>
-    ${countdownHtml}
-    <h3 class="actu-featured-title">${first.titre}</h3>
-    <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
-    <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
-      ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="width:auto;display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
-      <button class="btn-share btn-share-featured" aria-label="Partager cet événement">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Partager
-      </button>
+    <div style="position:relative;z-index:3;display:flex;flex-direction:column;height:100%;">
+      <span class="actu-featured-tag">Événement phare</span>
+      ${countdownHtml}
+      <h3 class="actu-featured-title">${first.titre}</h3>
+      <p class="actu-featured-desc">${first.lieu}${first.horaire ? ' · ' + first.horaire : ''}${first.prix ? ' · ' + first.prix : ''}</p>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center;">
+        ${first.lien ? `<a href="${first.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="width:auto;display:inline-block;">${labelLien[first.typeLien] || 'Billetterie'}</a>` : ''}
+        <button class="btn-share btn-share-featured" aria-label="Partager cet événement">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Partager
+        </button>
+      </div>
     </div>
   `;
   featured.querySelector('.btn-share-featured')?.addEventListener('click', () => partagerEvenement(first.titre, first.date || ''));

@@ -558,6 +558,16 @@ section {
     linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
+  z-index: 1;
+}
+
+.actu-featured::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.15) 100%);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .actu-featured-tag {
@@ -572,6 +582,7 @@ section {
   border-radius: 100px;
   margin-bottom: 1rem;
   position: relative;
+  z-index: 3;
 }
 
 .actu-featured-title {
@@ -580,6 +591,7 @@ section {
   letter-spacing: 2px;
   line-height: 1;
   position: relative;
+  z-index: 3;
 }
 
 .actu-featured-desc {
@@ -588,6 +600,7 @@ section {
   opacity: 0.8;
   margin-top: 0.75rem;
   position: relative;
+  z-index: 3;
   line-height: 1.6;
 }
 
