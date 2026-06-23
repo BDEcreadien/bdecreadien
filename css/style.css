@@ -1027,7 +1027,7 @@ section {
 .comm-hero {
   height: 45vh;
   min-height: 320px;
-  background: var(--noir);
+  background: var(--gradient);
   display: flex;
   align-items: flex-end;
   padding: 4rem 3rem;
