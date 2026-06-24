@@ -175,11 +175,12 @@
   </div>
   <script>
     (function() {
-      if (localStorage.getItem('notif-dismissed') || sessionStorage.getItem('notif-shown') || (typeof Notification !== 'undefined' && Notification.permission === 'granted')) return; sessionStorage.setItem('notif-shown', '1');
+      if (localStorage.getItem('notif-dismissed') || sessionStorage.getItem('notif-shown')) return;
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') return;
       setTimeout(function() {
         var b = document.getElementById('notif-banner');
-        if (b) b.classList.add('show');
-      }, 10000);
+        if (b) { b.classList.add('show'); sessionStorage.setItem('notif-shown', '1'); }
+      }, 3000);
     })();
     function dismissNotifBanner() {
       document.getElementById('notif-banner').classList.remove('show');
