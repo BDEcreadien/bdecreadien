@@ -160,6 +160,39 @@
       navigator.serviceWorker.register('/service-worker.js');
     }
   </script>
+
+  <!-- NOTIF BANNER -->
+  <div id="notif-banner" role="dialog" aria-label="Notifications BDE CREAD">
+    <div class="nb-icon">🔔</div>
+    <div class="nb-text">
+      <p class="nb-title">BDE CREAD Lyon</p>
+      <p class="nb-sub">Reçois les notifs des soirées et actus !</p>
+    </div>
+    <div class="nb-actions">
+      <button class="nb-later" onclick="dismissNotifBanner()">Plus tard</button>
+      <button class="nb-subscribe" onclick="subscribeNotif()">Activer 🔔</button>
+    </div>
+  </div>
+  <script>
+    (function() {
+      if (localStorage.getItem('notif-dismissed') || Notification.permission === 'granted') return;
+      setTimeout(function() {
+        var b = document.getElementById('notif-banner');
+        if (b) b.classList.add('show');
+      }, 30000);
+    })();
+    function dismissNotifBanner() {
+      document.getElementById('notif-banner').classList.remove('show');
+      localStorage.setItem('notif-dismissed', '1');
+    }
+    function subscribeNotif() {
+      document.getElementById('notif-banner').classList.remove('show');
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.Notifications.requestPermission();
+      });
+    }
+  </script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];

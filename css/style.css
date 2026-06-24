@@ -2576,3 +2576,97 @@ a.contact-info-value:hover { color: var(--violet); }
   .ev-modal-title { font-size: 26px; }
   .ev-modal-cover { height: 160px; }
 }
+
+/* ===== NOTIF BANNER ===== */
+#notif-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  z-index: 9999;
+  background: #1a1728;
+  border: 1px solid rgba(70,58,144,0.4);
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 480px;
+  width: calc(100vw - 48px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+  pointer-events: none;
+}
+#notif-banner.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+#notif-banner .nb-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 20px;
+}
+#notif-banner .nb-text {
+  flex: 1;
+  min-width: 0;
+}
+#notif-banner .nb-title {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  margin: 0 0 2px;
+}
+#notif-banner .nb-sub {
+  font-family: 'Barlow', sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#notif-banner .nb-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+#notif-banner .nb-later {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+#notif-banner .nb-later:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+#notif-banner .nb-subscribe {
+  background: var(--gradient);
+  border: none;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+#notif-banner .nb-subscribe:hover { opacity: 0.88; }
+@media (max-width: 480px) {
+  #notif-banner { flex-wrap: wrap; bottom: 80px; }
+  #notif-banner .nb-actions { width: 100%; justify-content: flex-end; }
+}
