@@ -416,7 +416,7 @@ const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
 const FSQ_KEY = '5IXV1B22BJ4NNZTLB0B4BWEZYIFO50AZ5A12K3NHSWHWSFJA';
 let token = '';
-let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null, galerie: [], partenaires: [] };
+let data = { evenements: [], annonces: [], videos: [], equipe: [], config: null, galerie: [], partenaires: [], 'annonces-categories': [] };
 let editIndex = { evenement: -1, annonce: -1, video: -1, membre: -1, archive: -1, galerie: -1, partenaire: -1 };
 let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','editor','evenements']
 
@@ -451,7 +451,15 @@ async function init() {
   loader.innerHTML = '<p style="text-align:center;padding:4rem 2rem;color:var(--gris-texte);font-size:15px;">Chargement des données…</p>';
   document.getElementById('screen-app').prepend(loader);
 
-  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config'), loadData('galerie'), loadData('partenaires')]);
+  await Promise.all([loadData('evenements'), loadData('annonces'), loadData('videos'), loadData('equipe'), loadData('archives'), loadData('config'), loadData('galerie'), loadData('partenaires'), loadData('annonces-categories')]);
+  if (!data['annonces-categories'] || data['annonces-categories'].length === 0) {
+    data['annonces-categories'] = [
+      { key: 'materiel', label: 'Matériel' },
+      { key: 'place', label: 'Places' },
+      { key: 'logement', label: 'Logement' },
+      { key: 'autre', label: 'Autre' }
+    ];
+  }
 
   loader.remove();
   showStep('pages');
@@ -598,6 +606,74 @@ async function persistData(type, message) {
 // ============================================================
 // BUILDER ÉDITEURS
 // ============================================================
+function buildAnCategoriesPanel() {
+  const cats = data['annonces-categories'] || [];
+  const rows = cats.map((c, i) => `
+    <div class="item-card" id="an-cat-row-${i}" style="padding:10px 14px;gap:10px;">
+      <div class="item-card-info" id="an-cat-label-wrap-${i}" style="flex:1;">
+        <span id="an-cat-label-${i}" style="font-weight:600;font-size:14px;">${c.label}</span>
+        <span style="font-size:11px;color:var(--gris-texte);margin-left:6px;">(${c.key})</span>
+      </div>
+      <div id="an-cat-edit-wrap-${i}" style="display:none;flex:1;gap:6px;align-items:center;">
+        <input id="an-cat-input-${i}" type="text" value="${c.label}" style="flex:1;font-size:13px;padding:4px 8px;border:1px solid var(--gris-border);border-radius:6px;">
+        <button onclick="saveAnCat(${i})" style="background:var(--violet);color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">OK</button>
+        <button onclick="cancelAnCatEdit(${i})" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">✕</button>
+      </div>
+      <div class="item-card-actions">
+        <button class="btn-edit" onclick="startAnCatEdit(${i})">Renommer</button>
+        <button class="btn-delete" onclick="deleteAnCat(${i})" ${cats.length <= 1 ? 'disabled title="Gardez au moins une catégorie"' : ''}>Supprimer</button>
+      </div>
+    </div>`).join('');
+
+  return `<div class="form-card" style="margin-bottom:1.5rem;">
+    <h3 style="margin-bottom:1rem;font-size:15px;">Catégories</h3>
+    <div id="an-cats-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;">${rows || '<p style="color:var(--gris-texte);font-size:13px;">Aucune catégorie.</p>'}</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input id="an-cat-new-input" type="text" placeholder="Nom de la nouvelle catégorie…" style="flex:1;font-size:13px;padding:6px 10px;border:1px solid var(--gris-border);border-radius:6px;" onkeydown="if(event.key==='Enter')addAnCat()">
+      <button onclick="addAnCat()" style="background:var(--gradient);color:white;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap;">+ Ajouter</button>
+    </div>
+  </div>`;
+}
+
+function startAnCatEdit(i) {
+  document.getElementById(`an-cat-label-wrap-${i}`).style.display = 'none';
+  document.getElementById(`an-cat-edit-wrap-${i}`).style.display = 'flex';
+  document.getElementById(`an-cat-input-${i}`).focus();
+}
+function cancelAnCatEdit(i) {
+  document.getElementById(`an-cat-label-wrap-${i}`).style.display = '';
+  document.getElementById(`an-cat-edit-wrap-${i}`).style.display = 'none';
+}
+async function saveAnCat(i) {
+  const newLabel = document.getElementById(`an-cat-input-${i}`).value.trim();
+  if (!newLabel) return;
+  data['annonces-categories'][i].label = newLabel;
+  data['annonces-categories'][i].key = newLabel.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  await persistData('annonces-categories', `Renommage catégorie : ${newLabel}`);
+  openEditor('annonces', false, 'Annonces', 'Annonces');
+  showToast('Catégorie mise à jour !', 'success');
+}
+async function addAnCat() {
+  const label = document.getElementById('an-cat-new-input').value.trim();
+  if (!label) return showToast('Saisis un nom de catégorie', 'error');
+  const key = label.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  if (data['annonces-categories'].some(c => c.key === key)) return showToast('Cette catégorie existe déjà', 'error');
+  data['annonces-categories'].push({ key, label });
+  await persistData('annonces-categories', `Nouvelle catégorie : ${label}`);
+  openEditor('annonces', false, 'Annonces', 'Annonces');
+  showToast('Catégorie ajoutée !', 'success');
+}
+async function deleteAnCat(i) {
+  const cat = data['annonces-categories'][i];
+  const used = (data.annonces || []).some(a => a.categorie === cat.key);
+  if (used) return showToast(`"${cat.label}" est utilisée par des annonces existantes`, 'error');
+  if (!confirm(`Supprimer la catégorie "${cat.label}" ?`)) return;
+  data['annonces-categories'].splice(i, 1);
+  await persistData('annonces-categories', `Suppression catégorie : ${cat.label}`);
+  openEditor('annonces', false, 'Annonces', 'Annonces');
+  showToast('Catégorie supprimée', 'success');
+}
+
 function buildEquipeEditor() {
   const poles = (data.config?.poles || [
     { key: 'bureau', label: 'Bureau exécutif' },
@@ -952,7 +1028,10 @@ function buildEditor(type) {
     : type === 'partenaires' ? 'Ajouter un partenaire'
     : 'Ajouter un média';
 
+  const categoriesPanel = type === 'annonces' ? buildAnCategoriesPanel() : '';
+
   return `
+    ${categoriesPanel}
     <div class="items-list" id="items-list">${listHtml}</div>
     ${formHtml}
     <button class="btn-add" id="btn-add" onclick="showForm()">+ ${addLabel}</button>`;
@@ -1066,16 +1145,9 @@ function formAnnonce() {
     <div class="form-grid">
       <div class="form-row">
         <label>Catégorie *</label>
-        <select id="an-categorie" onchange="toggleAnCatCustom(this)">
-          <option value="materiel">Matériel</option>
-          <option value="place">Places</option>
-          <option value="logement">Logement</option>
-          <option value="autre">Autre</option>
-          <option value="__custom__">➕ Nouvelle catégorie…</option>
+        <select id="an-categorie">
+          ${(data['annonces-categories'] || [{ key:'materiel', label:'Matériel' }, { key:'place', label:'Places' }, { key:'logement', label:'Logement' }, { key:'autre', label:'Autre' }]).map(c => `<option value="${c.key}">${c.label}</option>`).join('')}
         </select>
-        <div id="an-cat-custom-wrap" style="display:none;margin-top:6px;">
-          <input type="text" id="an-categorie-custom" placeholder="Nom de la catégorie (ex: Livres)" style="width:100%;box-sizing:border-box;">
-        </div>
       </div>
       <div class="form-row"><label>Prix *</label><input type="text" id="an-prix" placeholder="Ex: 80€ ou Gratuit"></div>
     </div>
@@ -1256,9 +1328,9 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Nouvel événement';
   }
   if (currentType === 'annonces') {
-    ['an-titre','an-prix','an-description','an-auteur','an-contact','an-categorie-custom'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    const cat = document.getElementById('an-categorie'); if(cat) cat.value = 'materiel';
-    const ccw = document.getElementById('an-cat-custom-wrap'); if(ccw) ccw.style.display = 'none';
+    ['an-titre','an-prix','an-description','an-auteur','an-contact'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const cat = document.getElementById('an-categorie');
+    if (cat) cat.value = data['annonces-categories']?.[0]?.key || 'materiel';
     const fi = document.getElementById('an-photo'); if(fi) fi.value = '';
     const pw = document.getElementById('an-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouvelle annonce';
@@ -1334,17 +1406,7 @@ function editItem(type, i) {
   if (type === 'annonces') {
     const an = data.annonces[i];
     document.getElementById('an-titre').value = an.titre || '';
-    const knownCats = ['materiel', 'place', 'logement', 'autre'];
-    const anCatSel = document.getElementById('an-categorie');
-    const anCatCustomWrap = document.getElementById('an-cat-custom-wrap');
-    if (knownCats.includes(an.categorie)) {
-      anCatSel.value = an.categorie || 'materiel';
-      if (anCatCustomWrap) anCatCustomWrap.style.display = 'none';
-    } else {
-      anCatSel.value = '__custom__';
-      if (anCatCustomWrap) anCatCustomWrap.style.display = 'block';
-      document.getElementById('an-categorie-custom').value = an.categorie || '';
-    }
+    document.getElementById('an-categorie').value = an.categorie || (data['annonces-categories']?.[0]?.key || 'materiel');
     document.getElementById('an-prix').value = an.prix || '';
     document.getElementById('an-description').value = an.description || '';
     document.getElementById('an-auteur').value = an.auteur || '';
@@ -1612,11 +1674,6 @@ function removeAnPhoto() {
   if (editIndex.annonce >= 0) data.annonces[editIndex.annonce]._removePhoto = true;
 }
 
-function toggleAnCatCustom(sel) {
-  const wrap = document.getElementById('an-cat-custom-wrap');
-  if (wrap) wrap.style.display = sel.value === '__custom__' ? 'block' : 'none';
-}
-
 async function saveAnnonce() {
   const titre = document.getElementById('an-titre').value.trim();
   const prix = document.getElementById('an-prix').value.trim();
@@ -1644,10 +1701,7 @@ async function saveAnnonce() {
   }
 
   const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  const catSel = document.getElementById('an-categorie').value;
-  const categorie = catSel === '__custom__'
-    ? (document.getElementById('an-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '-') || 'autre')
-    : catSel;
+  const categorie = document.getElementById('an-categorie').value;
   const an = { titre, categorie, prix, description, auteur, contact, date: today };
   if (photo) an.photo = photo;
 

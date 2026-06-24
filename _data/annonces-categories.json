@@ -1,0 +1,6 @@
+[
+  { "key": "materiel", "label": "Matériel" },
+  { "key": "place", "label": "Places" },
+  { "key": "logement", "label": "Logement" },
+  { "key": "autre", "label": "Autre" }
+]

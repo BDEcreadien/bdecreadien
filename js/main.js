@@ -613,7 +613,7 @@ if (document.getElementById('galerie-grid')) {
 // ANNONCES — Chargement & Filtres
 // ===================================
 
-const badgeLabels = {
+let badgeLabels = {
   materiel: 'Matériel',
   place: 'Places',
   logement: 'Logement',
@@ -623,6 +623,14 @@ const badgeLabels = {
 function getBadgeLabel(cat) {
   return badgeLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
 }
+
+fetch('/_data/annonces-categories.json')
+  .then(r => r.ok ? r.json() : null)
+  .then(cats => {
+    if (Array.isArray(cats)) {
+      cats.forEach(c => { badgeLabels[c.key] = c.label; });
+    }
+  }).catch(() => {});
 
 function formatPrix(prix) {
   if (!prix) return '';
@@ -688,7 +696,7 @@ function openAnnonceModal(a) {
     : `<div class="an-modal-cover-bar"></div>`;
   document.getElementById('an-modal-badge').className = `annonce-badge badge-${a.categorie}`;
   document.getElementById('an-modal-badge').textContent = getBadgeLabel(a.categorie);
-  document.getElementById('an-modal-prix').innerHTML = formatPrix(a.prix);
+  document.getElementById('an-modal-prix').textContent = a.prix;
   document.getElementById('an-modal-title').textContent = a.titre;
   document.getElementById('an-modal-desc').textContent = a.description;
   document.getElementById('an-modal-auteur').textContent = a.auteur;
