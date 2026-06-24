@@ -14,5 +14,9 @@
   {
     "key": "autre",
     "label": "Autre"
+  },
+  {
+    "key": "stage--alternance",
+    "label": "Stage / Alternance"
   }
 ]
