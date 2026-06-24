@@ -168,7 +168,37 @@
     </div>
   </footer>
 
+  <!-- MODAL ANNONCE -->
+  <div class="an-modal-overlay" id="an-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="an-modal-title">
+    <div class="an-modal" id="an-modal">
+      <button class="an-modal-close" id="an-modal-close" aria-label="Fermer">✕</button>
+      <div id="an-modal-media"></div>
+      <div class="an-modal-body">
+        <div class="an-modal-head">
+          <span id="an-modal-badge" class="annonce-badge"></span>
+          <span id="an-modal-prix" class="an-modal-prix"></span>
+        </div>
+        <h2 class="an-modal-title" id="an-modal-title"></h2>
+        <div id="an-modal-photos" class="an-modal-photos" style="display:none;"></div>
+        <p class="an-modal-desc" id="an-modal-desc"></p>
+        <div class="an-modal-meta">
+          <div><strong>Publié par</strong><br><span id="an-modal-auteur"></span></div>
+          <div><strong>Date</strong><br><span id="an-modal-date"></span></div>
+        </div>
+        <a href="#" id="an-modal-cta" class="an-modal-cta">✉ Contacter</a>
+      </div>
+    </div>
+  </div>
+
   <script src="js/main.js"></script>
+  <script>
+    const anOverlay = document.getElementById('an-modal-overlay');
+    const anClose = document.getElementById('an-modal-close');
+    function closeAnModal() { anOverlay.classList.remove('open'); document.body.style.overflow = ''; }
+    anClose.addEventListener('click', closeAnModal);
+    anOverlay.addEventListener('click', e => { if (e.target === anOverlay) closeAnModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAnModal(); });
+  </script>
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "868cda79a5844d4a842363b412470415"}'></script>
 
   <!-- PUSH NOTIFICATIONS OneSignal — désactivé jusqu'à configuration du domaine

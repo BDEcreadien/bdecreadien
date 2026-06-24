@@ -638,8 +638,8 @@ function renderAnnonces(filtre = 'tous') {
   }
   if (empty) empty.style.display = 'none';
 
-  grid.innerHTML = filtered.map(a => `
-    <div class="annonce-card reveal">
+  grid.innerHTML = filtered.map((a, i) => `
+    <li class="annonce-card reveal" data-an-index="${i}" role="button" tabindex="0" aria-label="Voir l'annonce : ${a.titre}">
       ${a.photo ? `<img class="annonce-photo" src="${a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo}" alt="${a.titre}" loading="lazy">` : ''}
       <div class="annonce-header">
         <span class="annonce-badge badge-${a.categorie}">${badgeLabels[a.categorie]}</span>
@@ -652,12 +652,40 @@ function renderAnnonces(filtre = 'tous') {
           <span class="annonce-auteur">${a.auteur}</span>
           <span class="annonce-date">${a.date}</span>
         </div>
-        <a href="mailto:${a.contact}" class="annonce-contact">Contacter</a>
+        <span class="annonce-contact">Voir →</span>
       </div>
-    </div>
+    </li>
   `).join('');
 
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  grid.querySelectorAll('.annonce-card').forEach(card => {
+    card.addEventListener('click', () => openAnnonceModal(annoncesData[+card.dataset.anIndex]));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openAnnonceModal(annoncesData[+card.dataset.anIndex]); });
+  });
+}
+
+function openAnnonceModal(a) {
+  const overlay = document.getElementById('an-modal-overlay');
+  if (!overlay) return;
+  const photoSrc = a.photo ? (a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo) : null;
+  const photos = a.photos ? a.photos.map(p => p.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + p : p) : (photoSrc ? [photoSrc] : []);
+
+  document.getElementById('an-modal-media').innerHTML = photoSrc
+    ? `<img class="an-modal-cover" src="${photoSrc}" alt="${a.titre}">`
+    : `<div class="an-modal-cover-bar"></div>`;
+  document.getElementById('an-modal-badge').className = `annonce-badge badge-${a.categorie}`;
+  document.getElementById('an-modal-badge').textContent = badgeLabels[a.categorie];
+  document.getElementById('an-modal-prix').textContent = a.prix;
+  document.getElementById('an-modal-title').textContent = a.titre;
+  document.getElementById('an-modal-desc').textContent = a.description;
+  document.getElementById('an-modal-auteur').textContent = a.auteur;
+  document.getElementById('an-modal-date').textContent = a.date;
+  const photosEl = document.getElementById('an-modal-photos');
+  photosEl.innerHTML = photos.length > 1 ? photos.map(p => `<img src="${p}" alt="${a.titre}" loading="lazy">`).join('') : '';
+  photosEl.style.display = photos.length > 1 ? 'grid' : 'none';
+  document.getElementById('an-modal-cta').href = `mailto:${a.contact}`;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
