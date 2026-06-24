@@ -16,5 +16,14 @@
     "auteur": "Emma R.",
     "contact": "emma.r@cread.fr",
     "date": "22 juin 2026"
+  },
+  {
+    "titre": "Alternance Geneve",
+    "categorie": "stage--alternance",
+    "prix": "/",
+    "description": "L'archi ... vous propose une alternance",
+    "auteur": "ARCHI ?.",
+    "contact": "archi@jesaisplus.com",
+    "date": "24 juin 2026"
   }
 ]
