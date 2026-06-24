@@ -28,6 +28,12 @@
   <meta name="twitter:image" content="https://bdecreadien.fr/assets/Logo.png">
 
   <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BDE CREAD">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
   <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
@@ -208,5 +214,11 @@
     });
   </script>
   -->
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
 </body>
 </html>
