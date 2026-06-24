@@ -1355,12 +1355,13 @@ section {
 
 .annonce-prix {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
+  font-size: clamp(15px, 4.5vw, 22px);
   background: var(--gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  white-space: nowrap;
+  text-align: right;
+  line-height: 1.1;
 }
 
 .annonce-title {
@@ -1495,15 +1496,16 @@ section {
 }
 .an-modal-close:hover { background: rgba(0,0,0,0.25); }
 .an-modal-body { padding: 1.5rem 1.5rem 2rem; }
-.an-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+.an-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; padding-right: 44px; }
 .an-modal-prix {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
+  font-size: 26px;
   background: var(--gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .an-modal-title {
   font-family: 'Barlow Condensed', sans-serif;
