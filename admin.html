@@ -1066,12 +1066,16 @@ function formAnnonce() {
     <div class="form-grid">
       <div class="form-row">
         <label>Catégorie *</label>
-        <select id="an-categorie">
+        <select id="an-categorie" onchange="toggleAnCatCustom(this)">
           <option value="materiel">Matériel</option>
           <option value="place">Places</option>
           <option value="logement">Logement</option>
           <option value="autre">Autre</option>
+          <option value="__custom__">➕ Nouvelle catégorie…</option>
         </select>
+        <div id="an-cat-custom-wrap" style="display:none;margin-top:6px;">
+          <input type="text" id="an-categorie-custom" placeholder="Nom de la catégorie (ex: Livres)" style="width:100%;box-sizing:border-box;">
+        </div>
       </div>
       <div class="form-row"><label>Prix *</label><input type="text" id="an-prix" placeholder="Ex: 80€ ou Gratuit"></div>
     </div>
@@ -1252,8 +1256,9 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Nouvel événement';
   }
   if (currentType === 'annonces') {
-    ['an-titre','an-prix','an-description','an-auteur','an-contact'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    ['an-titre','an-prix','an-description','an-auteur','an-contact','an-categorie-custom'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const cat = document.getElementById('an-categorie'); if(cat) cat.value = 'materiel';
+    const ccw = document.getElementById('an-cat-custom-wrap'); if(ccw) ccw.style.display = 'none';
     const fi = document.getElementById('an-photo'); if(fi) fi.value = '';
     const pw = document.getElementById('an-preview-wrap'); if(pw) pw.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouvelle annonce';
@@ -1329,7 +1334,17 @@ function editItem(type, i) {
   if (type === 'annonces') {
     const an = data.annonces[i];
     document.getElementById('an-titre').value = an.titre || '';
-    document.getElementById('an-categorie').value = an.categorie || 'materiel';
+    const knownCats = ['materiel', 'place', 'logement', 'autre'];
+    const anCatSel = document.getElementById('an-categorie');
+    const anCatCustomWrap = document.getElementById('an-cat-custom-wrap');
+    if (knownCats.includes(an.categorie)) {
+      anCatSel.value = an.categorie || 'materiel';
+      if (anCatCustomWrap) anCatCustomWrap.style.display = 'none';
+    } else {
+      anCatSel.value = '__custom__';
+      if (anCatCustomWrap) anCatCustomWrap.style.display = 'block';
+      document.getElementById('an-categorie-custom').value = an.categorie || '';
+    }
     document.getElementById('an-prix').value = an.prix || '';
     document.getElementById('an-description').value = an.description || '';
     document.getElementById('an-auteur').value = an.auteur || '';
@@ -1597,6 +1612,11 @@ function removeAnPhoto() {
   if (editIndex.annonce >= 0) data.annonces[editIndex.annonce]._removePhoto = true;
 }
 
+function toggleAnCatCustom(sel) {
+  const wrap = document.getElementById('an-cat-custom-wrap');
+  if (wrap) wrap.style.display = sel.value === '__custom__' ? 'block' : 'none';
+}
+
 async function saveAnnonce() {
   const titre = document.getElementById('an-titre').value.trim();
   const prix = document.getElementById('an-prix').value.trim();
@@ -1624,7 +1644,11 @@ async function saveAnnonce() {
   }
 
   const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  const an = { titre, categorie: document.getElementById('an-categorie').value, prix, description, auteur, contact, date: today };
+  const catSel = document.getElementById('an-categorie').value;
+  const categorie = catSel === '__custom__'
+    ? (document.getElementById('an-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '-') || 'autre')
+    : catSel;
+  const an = { titre, categorie, prix, description, auteur, contact, date: today };
   if (photo) an.photo = photo;
 
   if (idx >= 0) data.annonces[idx] = an; else data.annonces.push(an);

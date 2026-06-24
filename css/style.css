@@ -1363,6 +1363,12 @@ section {
   text-align: right;
   line-height: 1.1;
 }
+.annonce-prix-unit {
+  display: block;
+  font-size: 0.65em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
 
 .annonce-title {
   font-family: 'Barlow Condensed', sans-serif;
@@ -1504,7 +1510,8 @@ section {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  white-space: nowrap;
+  text-align: right;
+  line-height: 1.1;
   flex-shrink: 0;
 }
 .an-modal-title {

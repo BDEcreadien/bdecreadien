@@ -620,6 +620,19 @@ const badgeLabels = {
   autre: 'Autre'
 };
 
+function getBadgeLabel(cat) {
+  return badgeLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+function formatPrix(prix) {
+  if (!prix) return '';
+  const slash = prix.indexOf('/');
+  if (slash === -1) return `<span class="annonce-prix">${prix}</span>`;
+  const montant = prix.slice(0, slash).trim();
+  const unite = prix.slice(slash).trim();
+  return `<span class="annonce-prix">${montant}<small class="annonce-prix-unit">${unite}</small></span>`;
+}
+
 let annoncesData = [];
 
 function renderAnnonces(filtre = 'tous') {
@@ -642,8 +655,8 @@ function renderAnnonces(filtre = 'tous') {
     <li class="annonce-card reveal" data-an-index="${i}" role="button" tabindex="0" aria-label="Voir l'annonce : ${a.titre}">
       ${a.photo ? `<img class="annonce-photo" src="${a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo}" alt="${a.titre}" loading="lazy">` : ''}
       <div class="annonce-header">
-        <span class="annonce-badge badge-${a.categorie}">${badgeLabels[a.categorie]}</span>
-        <span class="annonce-prix">${a.prix}</span>
+        <span class="annonce-badge badge-${a.categorie}">${getBadgeLabel(a.categorie)}</span>
+        ${formatPrix(a.prix)}
       </div>
       <h3 class="annonce-title">${a.titre}</h3>
       <p class="annonce-desc">${a.description}</p>
@@ -674,8 +687,8 @@ function openAnnonceModal(a) {
     ? `<img class="an-modal-cover" src="${photoSrc}" alt="${a.titre}">`
     : `<div class="an-modal-cover-bar"></div>`;
   document.getElementById('an-modal-badge').className = `annonce-badge badge-${a.categorie}`;
-  document.getElementById('an-modal-badge').textContent = badgeLabels[a.categorie];
-  document.getElementById('an-modal-prix').textContent = a.prix;
+  document.getElementById('an-modal-badge').textContent = getBadgeLabel(a.categorie);
+  document.getElementById('an-modal-prix').innerHTML = formatPrix(a.prix);
   document.getElementById('an-modal-title').textContent = a.titre;
   document.getElementById('an-modal-desc').textContent = a.description;
   document.getElementById('an-modal-auteur').textContent = a.auteur;
@@ -688,24 +701,45 @@ function openAnnonceModal(a) {
   document.body.style.overflow = 'hidden';
 }
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed', 'false');
+function attachFilterListeners() {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      renderAnnonces(btn.dataset.filter);
     });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-    renderAnnonces(btn.dataset.filter);
   });
-});
+}
 
 if (document.getElementById('annonces-grid')) {
   fetch('/_data/annonces.json')
     .then(r => r.json())
     .then(data => {
       annoncesData = Array.isArray(data) ? data : (data.annonces || []);
-      // Mettre à jour les compteurs sur les filtres
+
+      // Construire les boutons de filtre depuis les catégories réelles
+      const filtersEl = document.querySelector('.annonces-filters');
+      if (filtersEl) {
+        const categories = [...new Set(annoncesData.map(a => a.categorie))];
+        categories.forEach(cat => {
+          if (!filtersEl.querySelector(`[data-filter="${cat}"]`)) {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.dataset.filter = cat;
+            btn.setAttribute('aria-pressed', 'false');
+            btn.textContent = getBadgeLabel(cat);
+            filtersEl.appendChild(btn);
+          }
+        });
+      }
+
+      attachFilterListeners();
+
+      // Compteurs sur les filtres
       document.querySelectorAll('.filter-btn').forEach(btn => {
         const f = btn.dataset.filter;
         const count = f === 'tous' ? annoncesData.length : annoncesData.filter(a => a.categorie === f).length;
@@ -714,7 +748,7 @@ if (document.getElementById('annonces-grid')) {
       });
       renderAnnonces();
     })
-    .catch(() => renderAnnonces());
+    .catch(() => { attachFilterListeners(); renderAnnonces(); });
 }
 
 // ===================================
