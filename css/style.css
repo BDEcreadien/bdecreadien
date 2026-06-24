@@ -1917,12 +1917,12 @@ footer {
   /* Agenda */
   .evenements-list { gap: 0.75rem; }
 
-  /* Hero accueil — cartes sur une ligne, plus compactes */
+  /* Hero accueil — icônes seules sur mobile, 4 sur une ligne */
   .hero-content { padding: 60px 1.25rem 0; }
   .hero-cards { gap: 0.5rem; flex-wrap: nowrap; }
-  .hero-card { padding: 0.75rem 0.5rem; min-width: 0; }
-  .hero-card-icon { width: 28px; height: 28px; margin-bottom: 0.4rem; }
-  .hero-card-label { font-size: 11px; letter-spacing: 0.02em; }
+  .hero-card { padding: 0.9rem 0.5rem; min-width: 0; }
+  .hero-card-icon { width: 30px; height: 30px; margin-bottom: 0; }
+  .hero-card-label { display: none; }
 
   /* Actu */
   .actu-item { gap: 0.75rem; }
