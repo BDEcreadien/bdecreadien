@@ -638,7 +638,7 @@ function formatPrix(prix) {
   if (slash === -1) return `<span class="annonce-prix">${prix}</span>`;
   const montant = prix.slice(0, slash).trim();
   const unite = prix.slice(slash).trim();
-  return `<span class="annonce-prix">${montant}<small class="annonce-prix-unit">${unite}</small></span>`;
+  return `<span class="annonce-prix"><span style="white-space:nowrap">${montant}</span><small class="annonce-prix-unit">${unite}</small></span>`;
 }
 
 let annoncesData = [];
