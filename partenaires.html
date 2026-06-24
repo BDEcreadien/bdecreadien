@@ -133,22 +133,25 @@
   <script src="js/main.js"></script>
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "868cda79a5844d4a842363b412470415"}'></script>
 
-  <!-- PUSH NOTIFICATIONS OneSignal — désactivé jusqu'à configuration du domaine
-       Pour activer : 1) Créer compte sur onesignal.com 2) New App > Web > bdecreadien.fr
-       3) Remplacer YOUR_ONESIGNAL_APP_ID ci-dessous 4) Décommenter le script
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
-    });
-  </script>
-  -->
 
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
+  </script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "8c4f2a28-64eb-4417-85c9-20bda4365e45",
+        notifyButton: { enable: true, size: 'small', position: 'bottom-left' },
+        welcomeNotification: {
+          title: "BDE CREAD Lyon",
+          message: "Tu recevras les notifs des soirées, annonces et actus du BDE !"
+        }
+      });
+    });
   </script>
 </body>
 </html>
