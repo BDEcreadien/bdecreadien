@@ -620,15 +620,37 @@ let badgeLabels = {
   autre: 'Autre'
 };
 
+const BADGE_PALETTE = [
+  { bg: 'rgba(70,58,144,0.1)',  color: '#463A90' },
+  { bg: 'rgba(232,81,0,0.1)',   color: '#E85100' },
+  { bg: 'rgba(0,160,120,0.1)', color: '#00A078' },
+  { bg: 'rgba(100,100,100,0.1)', color: '#555'  },
+  { bg: 'rgba(220,50,90,0.12)', color: '#C0284A' },
+  { bg: 'rgba(30,130,200,0.12)', color: '#1A6FAA' },
+  { bg: 'rgba(150,80,0,0.12)',  color: '#8C4C00' },
+  { bg: 'rgba(0,130,80,0.12)', color: '#007A4A'  },
+];
+let badgeColors = {};
+
 function getBadgeLabel(cat) {
-  return badgeLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+  return badgeLabels[cat] || cat.replace(/-/g,' ');
+}
+
+function getBadgeStyle(cat) {
+  const known = { materiel: 0, place: 1, logement: 2, autre: 3 };
+  const idx = cat in known ? known[cat] : (badgeColors[cat] ?? 4);
+  const p = BADGE_PALETTE[idx % BADGE_PALETTE.length];
+  return `background:${p.bg};color:${p.color};`;
 }
 
 fetch('/_data/annonces-categories.json')
   .then(r => r.ok ? r.json() : null)
   .then(cats => {
     if (Array.isArray(cats)) {
-      cats.forEach(c => { badgeLabels[c.key] = c.label; });
+      cats.forEach((c, i) => {
+        badgeLabels[c.key] = c.label;
+        badgeColors[c.key] = i;
+      });
     }
   }).catch(() => {});
 
@@ -638,6 +660,7 @@ function formatPrix(prix) {
   if (slash === -1) return `<span class="annonce-prix">${prix}</span>`;
   const montant = prix.slice(0, slash).trim();
   const unite = prix.slice(slash).trim();
+  if (!montant) return `<span class="annonce-prix">${unite}</span>`;
   return `<span class="annonce-prix"><span style="white-space:nowrap">${montant}</span><small class="annonce-prix-unit">${unite}</small></span>`;
 }
 
@@ -663,7 +686,7 @@ function renderAnnonces(filtre = 'tous') {
     <li class="annonce-card reveal" data-an-index="${i}" role="button" tabindex="0" aria-label="Voir l'annonce : ${a.titre}">
       ${a.photo ? `<img class="annonce-photo" src="${a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo}" alt="${a.titre}" loading="lazy">` : ''}
       <div class="annonce-header">
-        <span class="annonce-badge badge-${a.categorie}">${getBadgeLabel(a.categorie)}</span>
+        <span class="annonce-badge" style="${getBadgeStyle(a.categorie)}">${getBadgeLabel(a.categorie)}</span>
         ${formatPrix(a.prix)}
       </div>
       <h3 class="annonce-title">${a.titre}</h3>
@@ -694,8 +717,10 @@ function openAnnonceModal(a) {
   document.getElementById('an-modal-media').innerHTML = photoSrc
     ? `<img class="an-modal-cover" src="${photoSrc}" alt="${a.titre}">`
     : `<div class="an-modal-cover-bar"></div>`;
-  document.getElementById('an-modal-badge').className = `annonce-badge badge-${a.categorie}`;
-  document.getElementById('an-modal-badge').textContent = getBadgeLabel(a.categorie);
+  const modalBadge = document.getElementById('an-modal-badge');
+  modalBadge.className = 'annonce-badge';
+  modalBadge.style.cssText = getBadgeStyle(a.categorie);
+  modalBadge.textContent = getBadgeLabel(a.categorie);
   document.getElementById('an-modal-prix').textContent = a.prix;
   document.getElementById('an-modal-title').textContent = a.titre;
   document.getElementById('an-modal-desc').textContent = a.description;
