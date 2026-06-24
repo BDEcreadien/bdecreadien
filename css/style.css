@@ -1910,7 +1910,7 @@ footer {
   .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
 
   /* Annonces */
-  .annonces-grid { grid-template-columns: 1fr; }
+  .annonces-grid { grid-template-columns: 1fr 1fr; }
   .annonces-filters { gap: 0.5rem; flex-wrap: wrap; }
   .filter-btn { padding: 7px 12px; font-size: 12px; }
 
