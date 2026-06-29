@@ -2,7 +2,7 @@
 // BDE CREAD — Script principal
 // ===================================
 
-const labelLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
+const labelLien = { shotgun: 'Billetterie', helloasso: 'Billetterie' };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
 // Transitions entre pages — overlay dégradé BDE (exclu sur admin)
@@ -1082,7 +1082,7 @@ if (document.getElementById('partenaires-grid')) {
     }
 
     // Actions
-    const lblLien = { shotgun: 'Prendre sa place', helloasso: "S'inscrire" };
+    const lblLien = { shotgun: 'Billetterie', helloasso: 'Billetterie' };
     let actions = '';
     if (ev.lien) {
       actions += `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="ev-modal-btn-primary">
