@@ -390,7 +390,7 @@ function renderEvenements(allData) {
             ${ev.inscrits ? `<span class="ev-inscrits"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${ev.inscrits} inscrits</span>` : ''}
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
-            ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:var(--gradient-h); color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
+            ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%); color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
             <button class="btn-ics" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" data-horaire="${(ev.horaire||'').replace(/"/g,'&quot;')}" data-lieu="${(ev.lieu||'').replace(/"/g,'&quot;')}" data-desc="${(ev.description||'').replace(/"/g,'&quot;')}" aria-label="Ajouter au calendrier">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </button>
