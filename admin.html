@@ -414,6 +414,9 @@
       </div>
     </div>
 
+    <div style="margin-bottom:1rem;">
+      <input type="search" id="fid-search" placeholder="Rechercher une carte…" oninput="renderFideliteList()" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;">
+    </div>
     <div id="fid-list" class="items-list"></div>
     <div id="fid-empty" class="empty-state" style="display:none;">Aucune carte créée pour l'instant.</div>
   </div>
@@ -2512,25 +2515,34 @@ async function initFidelite() {
 function renderFideliteList() {
   const list = document.getElementById('fid-list');
   const empty = document.getElementById('fid-empty');
-  const cartes = fideliteData.cartes || [];
+  const query = (document.getElementById('fid-search')?.value || '').toLowerCase().trim();
+  const cartes = (fideliteData.cartes || []).filter(c =>
+    !query || (c.prenom + ' ' + c.nom + ' ' + (c.email || '')).toLowerCase().includes(query)
+  );
   if (!cartes.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  list.innerHTML = cartes.map((c, i) => {
+
+  list.innerHTML = cartes.map((c) => {
+    const i = fideliteData.cartes.indexOf(c);
     const pct = Math.round((c.tampons / (c.total || 10)) * 100);
     const lien = `https://bdecreadien.fr/carte.html?id=${c.id}`;
     const historique = (c.historique || []).slice().reverse();
     const historiqueHtml = historique.length ? `
-      <div id="hist-${i}" style="display:none;margin-top:10px;border-top:1px solid var(--gris-border);padding-top:10px;">
+      <div id="hist-${i}" style="display:none;margin-top:12px;border-top:1px solid var(--gris-border);padding-top:12px;">
         <div style="font-size:11px;font-weight:700;color:var(--gris-texte);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${historique.length} passage${historique.length > 1 ? 's' : ''}</div>
-        ${historique.map(h => `<div style="font-size:12px;color:var(--gris-texte);padding:5px 0;border-bottom:1px solid var(--gris-border);display:flex;gap:10px;align-items:baseline;">
-          <span style="color:var(--violet);font-weight:600;white-space:nowrap;flex-shrink:0;">${h.date}${h.heure ? ' ' + h.heure : ''}</span>
-          <span>validé par <strong>${h.validateur || h.event || '—'}</strong></span>
-        </div>`).join('')}
+        ${historique.map((h, hi) => {
+          const realIndex = (c.historique.length - 1) - hi;
+          return `<div style="font-size:12px;color:var(--gris-texte);padding:6px 0;border-bottom:1px solid var(--gris-border);display:flex;gap:8px;align-items:center;">
+            <span style="color:var(--violet);font-weight:600;white-space:nowrap;flex-shrink:0;">${h.date}${h.heure ? ' ' + h.heure : ''}</span>
+            <span style="flex:1;">validé par <strong>${h.validateur || '—'}</strong>${h.event ? ' · ' + h.event : ''}</span>
+            <button onclick="supprimerPassage(${i},${realIndex})" style="background:none;border:none;cursor:pointer;color:rgba(220,50,50,0.5);font-size:16px;line-height:1;padding:0 4px;" title="Supprimer ce passage">×</button>
+          </div>`;
+        }).join('')}
       </div>` : '';
 
     return `<div class="item-card" style="flex-direction:column;align-items:stretch;">
       <div style="display:flex;align-items:flex-start;gap:1rem;">
-        <div class="item-card-info" style="flex:1;">
+        <div class="item-card-info" style="flex:1;min-width:0;">
           <div class="item-card-title">${c.prenom} ${c.nom}</div>
           <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
             <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
@@ -2541,11 +2553,11 @@ function renderFideliteList() {
           </div>
           <div style="font-size:11px;color:var(--gris-texte);margin-top:4px;">${c.email || ''}</div>
         </div>
-        <div class="item-card-actions" style="flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;flex-shrink:0;justify-content:flex-end;">
           <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
-          <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Copier lien</button>
+          <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Lien</button>
           ${historique.length ? `<button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
-          ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Réinitialiser</button>` : ''}
+          ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Reset</button>` : ''}
           <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
         </div>
       </div>
@@ -2559,6 +2571,22 @@ function toggleHist(i, btn) {
   const open = el.style.display !== 'none';
   el.style.display = open ? 'none' : 'block';
   btn.textContent = open ? 'Passages ↓' : 'Passages ↑';
+}
+
+async function supprimerPassage(carteIndex, passageIndex) {
+  const c = fideliteData.cartes[carteIndex];
+  if (!confirm(`Supprimer le passage du ${c.historique[passageIndex].date} ?`)) return;
+  c.historique.splice(passageIndex, 1);
+  c.tampons = Math.max(0, c.tampons - 1);
+  try {
+    await saveFidelite(`Fidélité : suppression passage — ${c.prenom} ${c.nom}`);
+    renderFideliteList();
+    showToast('Passage supprimé', 'success');
+  } catch(e) {
+    c.historique.splice(passageIndex, 0, c.historique[passageIndex]);
+    c.tampons++;
+    showToast('Erreur : ' + e.message, 'error');
+  }
 }
 
 function showFormFidelite() {
