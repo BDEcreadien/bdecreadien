@@ -167,18 +167,17 @@
     }
 
     .carte-qr {
-      background: rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      padding: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 84px;
-      height: 84px;
     }
 
     .carte-qr canvas, .carte-qr img {
       display: block;
+      border-radius: 4px;
     }
 
     .carte-offert {
@@ -262,7 +261,7 @@
             <p class="carte-sous" id="carte-sous">événements validés</p>
           </div>
           <div class="carte-qr">
-            <canvas id="qr-canvas" width="64" height="64"></canvas>
+            <canvas id="qr-canvas" width="120" height="120"></canvas>
           </div>
         </div>
       </div>
@@ -329,17 +328,17 @@
       try {
         const canvas = document.getElementById('qr-canvas');
         QRCode.toCanvas(canvas, text, {
-          width: 64,
+          width: 120,
           margin: 1,
-          color: { dark: '#ffffff', light: '#00000000' }
+          color: { dark: '#000000', light: '#ffffff' }
         }, function(err) {
           if (err) {
-            canvas.parentElement.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=${encodeURIComponent(text)}&color=ffffff&bgcolor=00000000&format=png" width="64" height="64" style="border-radius:4px;">`;
+            canvas.parentElement.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
           }
         });
       } catch(e) {
         const wrap = document.getElementById('qr-canvas').parentElement;
-        wrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=${encodeURIComponent(text)}&color=ffffff&bgcolor=0f0d1a&format=png" width="64" height="64" style="border-radius:4px;">`;
+        wrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
       }
     }
 
