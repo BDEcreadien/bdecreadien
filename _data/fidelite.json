@@ -1,29 +1,6 @@
 {
   "cartes": [
     {
-      "id": "h9zjmmo8mr0l1gq1",
-      "prenom": "Tom",
-      "nom": "Maradan",
-      "email": "maradantom@gmail.com",
-      "tampons": 4,
-      "total": 10,
-      "createdAt": "2026-06-30",
-      "historique": [
-        {
-          "date": "30/06/2026",
-          "heure": "13:50",
-          "validateur": "Tom",
-          "event": "Crêpe"
-        },
-        {
-          "date": "30/06/2026",
-          "heure": "13:59",
-          "validateur": "TOMAS",
-          "event": "EVENT"
-        }
-      ]
-    },
-    {
       "id": "n1xksyhomr0nw4oz",
       "prenom": "ANTO",
       "nom": "BOURILL",
