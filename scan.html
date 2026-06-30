@@ -64,7 +64,6 @@
       width: 100%;
       margin-top: 4px;
     }
-    .btn-ghost:hover { color: rgba(255,255,255,0.5); }
     input {
       width: 100%;
       padding: 12px 14px;
@@ -76,13 +75,14 @@
       margin-bottom: 12px;
       outline: none;
       font-family: inherit;
+      text-align: center;
+      letter-spacing: 3px;
     }
     input:focus { border-color: #463A90; }
-    input#token-input { font-family: monospace; }
+    input.field-normal { text-align: left; letter-spacing: normal; }
     .badge { display: inline-block; padding: 4px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
     .badge-offert { background: linear-gradient(135deg, #463A90, #E85100); color: white; }
     .icon { font-size: 44px; margin-bottom: 10px; }
-    .connected-hint { font-size: 11px; color: rgba(255,255,255,0.2); margin-bottom: 16px; }
     #screen-login, #screen-carte, #screen-success, #screen-error, #screen-loading { display: none; }
   </style>
 </head>
@@ -96,12 +96,14 @@
     <h1>Chargement…</h1>
   </div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN — code court uniquement -->
   <div id="screen-login">
-    <h1>Admin requis</h1>
-    <p class="sub">Entre ton token GitHub une seule fois, il sera mémorisé.</p>
-    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn" onclick="doLogin()">Se connecter</button>
+    <h1>Code de scan</h1>
+    <p class="sub">Entre le code BDE pour valider les passages. Il sera mémorisé 30 jours.</p>
+    <input type="text" id="pin-input" placeholder="••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')doLogin()" autofocus>
+    <button class="btn" onclick="doLogin()">Accéder</button>
+    <p id="login-error" style="color:#e85100;font-size:13px;margin-top:-4px;display:none;">Code incorrect, réessaie.</p>
   </div>
 
   <!-- CARTE -->
@@ -113,12 +115,12 @@
       <span class="badge badge-offert">Carte complète — 1 accès offert</span>
     </div>
     <div style="margin-bottom:12px; display:flex; gap:8px;">
-      <input type="text" id="sc-validateur" placeholder="Ton prénom *" style="margin-bottom:0; flex:1;">
-      <input type="text" id="sc-event" placeholder="Événement *" style="margin-bottom:0; flex:1;">
+      <input type="text" id="sc-validateur" class="field-normal" placeholder="Ton prénom *" style="margin-bottom:0; flex:1;">
+      <input type="text" id="sc-event" class="field-normal" placeholder="Événement *" style="margin-bottom:0; flex:1;">
     </div>
     <button class="btn" id="btn-tampon" onclick="ajouterTampon()">+ Valider ce passage</button>
     <button class="btn btn-secondary" onclick="history.back()">Annuler</button>
-    <button class="btn-ghost" onclick="deconnecter()">Se déconnecter</button>
+    <button class="btn-ghost" onclick="deconnecter()">Changer de code</button>
   </div>
 
   <!-- SUCCESS -->
@@ -143,34 +145,26 @@
 </div>
 
 <script>
-  const REPO = 'BDEcreadien/bdecreadien';
-  const BRANCH = 'main';
   const params = new URLSearchParams(window.location.search);
   const carteId = params.get('id');
-  let fideliteData = null;
-  let fideliteSha = null;
-  let carteIndex = -1;
 
-  // Stockage du token : cookie 24h (fonctionne même sur iOS via caméra) + localStorage
-  function saveToken(t) {
-    try { localStorage.setItem('bde_admin_token', t); } catch(e) {}
-    try { sessionStorage.setItem('bde_admin_token', t); } catch(e) {}
+  // PIN stocké en cookie 30 jours + localStorage
+  function savePin(p) {
+    try { localStorage.setItem('bde_scan_pin', p); } catch(e) {}
     const exp = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-    document.cookie = `bde_scan_token=${encodeURIComponent(t)};expires=${exp};path=/;Secure;SameSite=None`;
+    document.cookie = `bde_scan_pin=${encodeURIComponent(p)};expires=${exp};path=/;Secure;SameSite=Lax`;
   }
-  function readToken() {
-    try { const ls = localStorage.getItem('bde_admin_token'); if (ls) return ls; } catch(e) {}
-    try { const ss = sessionStorage.getItem('bde_admin_token'); if (ss) return ss; } catch(e) {}
-    const m = document.cookie.match(/(?:^|;\s*)bde_scan_token=([^;]*)/);
+  function readPin() {
+    try { const ls = localStorage.getItem('bde_scan_pin'); if (ls) return ls; } catch(e) {}
+    const m = document.cookie.match(/(?:^|;\s*)bde_scan_pin=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
   }
-  function clearToken() {
-    try { localStorage.removeItem('bde_admin_token'); } catch(e) {}
-    try { sessionStorage.removeItem('bde_admin_token'); } catch(e) {}
-    document.cookie = 'bde_scan_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;Secure;SameSite=None';
+  function clearPin() {
+    try { localStorage.removeItem('bde_scan_pin'); } catch(e) {}
+    document.cookie = 'bde_scan_pin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax';
   }
 
-  let token = readToken();
+  let pin = readPin();
 
   function show(screen) {
     ['login','carte','success','error','loading'].forEach(s => {
@@ -179,46 +173,74 @@
   }
 
   function deconnecter() {
-    clearToken();
-    token = '';
+    clearPin();
+    pin = '';
     show('login');
+    setTimeout(() => document.getElementById('pin-input').focus(), 50);
   }
 
-  function doLogin() {
-    const t = document.getElementById('token-input').value.trim();
-    if (!t) return;
-    saveToken(t);
-    token = t;
-    loadCarte();
+  async function doLogin() {
+    const p = document.getElementById('pin-input').value.trim();
+    if (!p) return;
+    // Vérification via l'API : si le code est bon, on charge la carte
+    document.getElementById('login-error').style.display = 'none';
+    show('loading');
+    const res = await callApi(p);
+    if (res === null) {
+      // Erreur réseau
+      show('login');
+      document.getElementById('login-error').textContent = 'Erreur réseau, réessaie.';
+      document.getElementById('login-error').style.display = 'block';
+      return;
+    }
+    if (res.error === 'Code incorrect') {
+      show('login');
+      document.getElementById('login-error').style.display = 'block';
+      return;
+    }
+    savePin(p);
+    pin = p;
+    handleApiResult(res);
+  }
+
+  async function callApi(pinToUse, validateur, event) {
+    try {
+      const body = { carteId, pin: pinToUse };
+      if (validateur !== undefined) { body.validateur = validateur; body.event = event; }
+      const res = await fetch('/api/tampon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      return await res.json();
+    } catch(e) { return null; }
   }
 
   async function loadCarte() {
     if (!carteId) { showError('ID de carte manquant.'); return; }
-    if (!token) { show('login'); return; }
+    if (!pin) { show('login'); return; }
     show('loading');
-    try {
-      const res = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json?t=${Date.now()}`, {
-        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-      });
-      if (res.status === 401 || res.status === 403) {
-        localStorage.removeItem('bde_admin_token');
-        token = '';
-        show('login');
-        return;
-      }
-      if (!res.ok) throw new Error('Impossible de charger les données.');
-      const file = await res.json();
-      fideliteSha = file.sha;
-      const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
-      fideliteData = JSON.parse(new TextDecoder().decode(bytes));
-      carteIndex = (fideliteData.cartes || []).findIndex(c => c.id === carteId);
-      if (carteIndex === -1) { showError('Carte introuvable.'); return; }
-      renderCarte();
-    } catch(e) { showError(e.message); }
+    const res = await callApi(pin);
+    if (res === null) { showError('Erreur réseau.'); return; }
+    if (res.error === 'Code incorrect') { clearPin(); pin = ''; show('login'); return; }
+    handleApiResult(res);
   }
 
-  function renderCarte() {
-    const c = fideliteData.cartes[carteIndex];
+  function handleApiResult(res) {
+    if (res.error && res.error !== 'Code incorrect') {
+      // Erreur autre (carte introuvable, GitHub down…)
+      showError(res.error);
+      return;
+    }
+    if (res.carte) renderCarte(res.carte);
+    else if (res.ok) showSuccess(res.carte);
+    else show('login');
+  }
+
+  let carteData = null;
+
+  function renderCarte(c) {
+    carteData = c;
     const total = c.total || 10;
     document.getElementById('sc-nom').textContent = c.prenom + ' ' + c.nom;
     document.getElementById('sc-tampons').textContent = `${c.tampons} / ${total} tampons`;
@@ -243,8 +265,6 @@
   }
 
   async function ajouterTampon() {
-    const c = fideliteData.cartes[carteIndex];
-    const total = c.total || 10;
     const validateur = document.getElementById('sc-validateur').value.trim();
     const eventName = document.getElementById('sc-event').value.trim();
     let ok = true;
@@ -253,47 +273,32 @@
     if (!eventName) { document.getElementById('sc-event').style.borderColor = '#c0392b'; if (ok) document.getElementById('sc-event').focus(); ok = false; }
     else document.getElementById('sc-event').style.borderColor = '';
     if (!ok) return;
+
     document.getElementById('btn-tampon').disabled = true;
     document.getElementById('btn-tampon').textContent = 'Validation…';
 
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
-    const heureStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-
-    c.tampons++;
-    if (!Array.isArray(c.historique)) c.historique = [];
-    c.historique.push({ date: dateStr, heure: heureStr, validateur, event: eventName });
-
-    try {
-      const fresh = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json?t=${Date.now()}`, {
-        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
-      });
-      if (fresh.ok) { const f = await fresh.json(); fideliteSha = f.sha; }
-
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(fideliteData, null, 2))));
-      const res = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json`, {
-        method: 'PUT',
-        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: `Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom}${eventName ? ' (' + eventName + ')' : ''}`,
-          content, sha: fideliteSha, branch: BRANCH
-        })
-      });
-      if (!res.ok) throw new Error('Erreur lors de la sauvegarde.');
-
-      const complete = c.tampons >= total;
-      document.getElementById('sc-success-msg').textContent = complete ? 'Carte complète !' : 'Passage validé !';
-      document.getElementById('sc-success-sub').textContent = `${c.prenom} ${c.nom} — ${c.tampons}/${total} tampons${eventName ? ' · ' + eventName : ''}`;
-      renderProgress('sc-progress-after', c.tampons, total);
-      if (complete) document.getElementById('sc-offert-after').style.display = 'block';
-      show('success');
-    } catch(e) {
-      c.tampons--;
-      c.historique.pop();
+    const res = await callApi(pin, validateur, eventName);
+    if (res === null || (res.error && res.error !== 'Carte déjà complète')) {
       document.getElementById('btn-tampon').disabled = false;
       document.getElementById('btn-tampon').textContent = '+ Valider ce passage';
-      showError(e.message);
+      showError(res ? res.error : 'Erreur réseau.');
+      return;
     }
+    showSuccess(res.carte, eventName);
+  }
+
+  function showSuccess(c, eventName) {
+    const carte = c || carteData;
+    const total = (carte && carte.total) || 10;
+    const tampons = (carte && carte.tampons) || 0;
+    const complete = tampons >= total;
+    document.getElementById('sc-success-msg').textContent = complete ? 'Carte complète !' : 'Passage validé !';
+    document.getElementById('sc-success-sub').textContent = carte
+      ? `${carte.prenom} ${carte.nom} — ${tampons}/${total} tampons${eventName ? ' · ' + eventName : ''}`
+      : '';
+    renderProgress('sc-progress-after', tampons, total);
+    if (complete) document.getElementById('sc-offert-after').style.display = 'block';
+    show('success');
   }
 
   function showError(msg) {
@@ -301,6 +306,8 @@
     show('error');
   }
 
+  // L'API /api/tampon sans validateur/event = juste lire la carte (GET-like via POST)
+  // On modifie la fonction pour séparer lecture et écriture
   loadCarte();
 </script>
 </body>
