@@ -511,6 +511,8 @@ function goBack() {
   navStack.pop();
   const prev = navStack[navStack.length - 1];
   if (!prev || prev === 'pages') { navStack = ['pages']; showStep('pages'); }
+  else if (prev === 'stats') showStep('stats');
+  else if (prev === 'fidelite') { showStep('fidelite'); initFidelite(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
     const type = prev.split(':')[1];
@@ -2555,6 +2557,10 @@ function genId() {
 
 async function saveFidelite(message) {
   const path = '_data/fidelite.json';
+  try {
+    const fresh = await getFile(path);
+    fideliteSha = fresh.sha;
+  } catch(e) { fideliteSha = null; }
   const content = btoa(unescape(encodeURIComponent(JSON.stringify(fideliteData, null, 2))));
   const body = { message, content, branch: BRANCH };
   if (fideliteSha) body.sha = fideliteSha;
