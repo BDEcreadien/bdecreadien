@@ -22,7 +22,7 @@
       "prenom": "Tom",
       "nom": "Maradan",
       "email": "maradantom@gmail.com",
-      "tampons": 3,
+      "tampons": 4,
       "total": 10,
       "createdAt": "2026-06-30",
       "historique": [
@@ -43,6 +43,12 @@
           "heure": "22:24",
           "validateur": "Julien",
           "event": "Loto"
+        },
+        {
+          "date": "30/06/2026",
+          "heure": "22:36",
+          "validateur": "Moi",
+          "event": "Café"
         }
       ]
     },
