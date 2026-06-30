@@ -37,7 +37,8 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
   <style>
     body {
-      background: #0a0812;
+      background: linear-gradient(135deg, #8070cc 0%, #ff8040 100%);
+      min-height: 100vh;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -170,9 +171,14 @@
       background: rgba(255,255,255,0.06);
       border-radius: 12px;
       padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 84px;
+      height: 84px;
     }
 
-    .carte-qr canvas {
+    .carte-qr canvas, .carte-qr img {
       display: block;
     }
 
