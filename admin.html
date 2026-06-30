@@ -2518,24 +2518,37 @@ function renderFideliteList() {
   list.innerHTML = cartes.map((c, i) => {
     const pct = Math.round((c.tampons / (c.total || 10)) * 100);
     const lien = `https://bdecreadien.fr/carte.html?id=${c.id}`;
-    return `<div class="item-card">
-      <div class="item-card-info">
-        <div class="item-card-title">${c.prenom} ${c.nom}</div>
-        <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-          <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
-            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;"></div>
+    const historique = (c.historique || []).slice().reverse().slice(0, 5);
+    const historiqueHtml = historique.length ? `
+      <div style="margin-top:10px;border-top:1px solid var(--gris-border);padding-top:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gris-texte);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Historique</div>
+        ${historique.map(h => `<div style="font-size:12px;color:var(--gris-texte);padding:3px 0;display:flex;gap:8px;">
+          <span style="color:var(--violet);font-weight:600;">${h.date} ${h.heure||''}</span>
+          <span>${h.event || 'Passage validé'}</span>
+        </div>`).join('')}
+      </div>` : '';
+
+    return `<div class="item-card" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:flex-start;gap:1rem;">
+        <div class="item-card-info" style="flex:1;">
+          <div class="item-card-title">${c.prenom} ${c.nom}</div>
+          <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+            <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
+            ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
           </div>
-          <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
-          ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
+          <div style="font-size:11px;color:var(--gris-texte);margin-top:4px;">${c.email || ''}</div>
         </div>
-        <div style="font-size:11px;color:var(--gris-texte);margin-top:4px;">${c.email || ''}</div>
+        <div class="item-card-actions" style="flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+          <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
+          <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Copier lien</button>
+          ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Réinitialiser</button>` : ''}
+          <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
+        </div>
       </div>
-      <div class="item-card-actions" style="flex-direction:column;gap:6px;align-items:flex-end;">
-        <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
-        <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Copier lien</button>
-        ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Réinitialiser</button>` : ''}
-        <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
-      </div>
+      ${historiqueHtml}
     </div>`;
   }).join('');
 }
