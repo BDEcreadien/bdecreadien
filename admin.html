@@ -2518,13 +2518,13 @@ function renderFideliteList() {
   list.innerHTML = cartes.map((c, i) => {
     const pct = Math.round((c.tampons / (c.total || 10)) * 100);
     const lien = `https://bdecreadien.fr/carte.html?id=${c.id}`;
-    const historique = (c.historique || []).slice().reverse().slice(0, 5);
+    const historique = (c.historique || []).slice().reverse();
     const historiqueHtml = historique.length ? `
-      <div style="margin-top:10px;border-top:1px solid var(--gris-border);padding-top:10px;">
-        <div style="font-size:11px;font-weight:700;color:var(--gris-texte);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Historique</div>
-        ${historique.map(h => `<div style="font-size:12px;color:var(--gris-texte);padding:3px 0;display:flex;gap:8px;">
-          <span style="color:var(--violet);font-weight:600;">${h.date} ${h.heure||''}</span>
-          <span>${h.event || 'Passage validé'}</span>
+      <div id="hist-${i}" style="display:none;margin-top:10px;border-top:1px solid var(--gris-border);padding-top:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gris-texte);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${historique.length} passage${historique.length > 1 ? 's' : ''}</div>
+        ${historique.map(h => `<div style="font-size:12px;color:var(--gris-texte);padding:5px 0;border-bottom:1px solid var(--gris-border);display:flex;gap:10px;align-items:baseline;">
+          <span style="color:var(--violet);font-weight:600;white-space:nowrap;flex-shrink:0;">${h.date}${h.heure ? ' ' + h.heure : ''}</span>
+          <span>${h.event || '—'}</span>
         </div>`).join('')}
       </div>` : '';
 
@@ -2544,6 +2544,7 @@ function renderFideliteList() {
         <div class="item-card-actions" style="flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
           <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
           <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Copier lien</button>
+          ${historique.length ? `<button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
           ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Réinitialiser</button>` : ''}
           <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
         </div>
@@ -2551,6 +2552,13 @@ function renderFideliteList() {
       ${historiqueHtml}
     </div>`;
   }).join('');
+}
+
+function toggleHist(i, btn) {
+  const el = document.getElementById('hist-' + i);
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? 'Passages ↓' : 'Passages ↑';
 }
 
 function showFormFidelite() {

@@ -113,7 +113,7 @@
       <span class="badge badge-offert">Carte complète — 1 accès offert</span>
     </div>
     <div style="margin-bottom:12px;">
-      <input type="text" id="sc-event" placeholder="Nom de l'événement (optionnel)" style="margin-bottom:0;">
+      <input type="text" id="sc-event" placeholder="Nom de l'événement *" style="margin-bottom:0;">
     </div>
     <button class="btn" id="btn-tampon" onclick="ajouterTampon()">+ Valider ce passage</button>
     <button class="btn btn-secondary" onclick="history.back()">Annuler</button>
@@ -225,6 +225,8 @@
     const c = fideliteData.cartes[carteIndex];
     const total = c.total || 10;
     const eventName = document.getElementById('sc-event').value.trim();
+    if (!eventName) { document.getElementById('sc-event').focus(); document.getElementById('sc-event').style.borderColor = '#c0392b'; return; }
+    document.getElementById('sc-event').style.borderColor = '';
     document.getElementById('btn-tampon').disabled = true;
     document.getElementById('btn-tampon').textContent = 'Validation…';
 
