@@ -22,9 +22,17 @@
       "prenom": "Tom",
       "nom": "Maradan",
       "email": "maradantom@gmail.com",
-      "tampons": 0,
+      "tampons": 1,
       "total": 10,
-      "createdAt": "2026-06-30"
+      "createdAt": "2026-06-30",
+      "historique": [
+        {
+          "date": "30/06/2026",
+          "heure": "19:39",
+          "validateur": "Tom",
+          "event": "Crêpes"
+        }
+      ]
     },
     {
       "id": "k8jx4mtpmr0p5q3i",
