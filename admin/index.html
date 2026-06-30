@@ -1,11 +1,474 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — BDE CREAD Lyon</title>
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --violet: #463A90; --orange: #E85100;
+      --gradient: linear-gradient(135deg, #463A90, #7B3FA0, #E85100);
+      --noir: #0f0f10; --gris-bg: #f5f5f7;
+      --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--noir); min-height: 100vh; }
+
+    /* HEADER */
+    header { background: var(--noir); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+    .header-logo { display: flex; align-items: center; gap: 0.75rem; }
+    .header-logo img { width: 36px; height: 36px; border-radius: 50%; }
+    .header-logo span { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; color: white; letter-spacing: 2px; text-transform: uppercase; }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-back { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; display: none; }
+    .btn-back:hover { background: rgba(255,255,255,0.14); color: white; }
+    #btn-logout { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    #btn-logout:hover { background: rgba(255,255,255,0.14); color: white; }
+
+    /* LOGIN */
+    #screen-login { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 2rem; }
+    .login-card { background: white; border-radius: 20px; padding: 2.5rem; max-width: 420px; width: 100%; box-shadow: 0 4px 40px rgba(70,58,144,0.10); }
+    .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 0.5rem; }
+    .login-card p { font-size: 14px; color: var(--gris-texte); margin-bottom: 1.5rem; line-height: 1.6; }
+    .login-card input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gris-border); border-radius: 10px; font-size: 14px; font-family: monospace; margin-bottom: 1rem; transition: border-color 0.2s; }
+    .login-card input:focus { outline: none; border-color: var(--violet); }
+    .btn-primary { width: 100%; padding: 13px; background: var(--gradient); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+    /* APP */
+    #screen-app { display: none; padding: 2rem; max-width: 900px; margin: 0 auto; }
+
+    /* ÉTAPE 1 : CHOIX DE PAGE */
+    #step-pages h2 { font-size: 20px; font-weight: 700; margin-bottom: 1.5rem; color: var(--noir); }
+    .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .page-card {
+      background: white; border-radius: 16px; padding: 1.75rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); cursor: pointer;
+      border: 2px solid transparent; transition: all 0.2s; text-align: center;
+    }
+    .page-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(70,58,144,0.12); }
+    .page-card-icon { margin-bottom: 0.75rem; display:flex; justify-content:center; } .page-card-icon svg { width:40px; height:40px; stroke:var(--violet); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+    .page-card-name { font-size: 16px; font-weight: 700; margin-bottom: 0.25rem; }
+    .page-card-desc { font-size: 12px; color: var(--gris-texte); line-height: 1.4; }
+    .page-card-preview { display:inline-block; margin-top:0.6rem; font-size:11px; font-weight:600; color:var(--violet); text-decoration:none; opacity:0.7; }
+    .page-card-preview:hover { opacity:1; }
+
+    /* ÉTAPE 2 : SECTIONS */
+    #step-sections { display: none; }
+    .step-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+    .step-header h2 { font-size: 20px; font-weight: 700; }
+    .step-header .page-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: rgba(70,58,144,0.1); color: var(--violet); }
+
+    .sections-list { display: flex; flex-direction: column; gap: 1rem; }
+    .section-card {
+      background: white; border-radius: 14px; padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer;
+      display: flex; align-items: center; gap: 1.25rem;
+      border: 2px solid transparent; transition: all 0.2s;
+    }
+    .section-card:hover { border-color: var(--violet); }
+    .section-card-icon { font-size: 28px; flex-shrink: 0; }
+    .section-card-info { flex: 1; }
+    .section-card-name { font-size: 15px; font-weight: 700; }
+    .section-card-desc { font-size: 13px; color: var(--gris-texte); margin-top: 2px; }
+    .section-card-arrow { color: var(--gris-texte); font-size: 18px; }
+
+    /* ÉTAPE 3 : ÉDITEUR */
+    #step-editor { display: none; }
+    .editor-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+    .editor-header h2 { font-size: 20px; font-weight: 700; }
+
+    /* LISTE ITEMS */
+    .items-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .pole-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+    .pole-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet); padding: 0.25rem 0; border-bottom: 1px solid var(--gris-border); margin-bottom: 0.25rem; }
+    .item-card { background: white; border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); gap: 1rem; }
+    .item-card-info { flex: 1; }
+    .item-card-title { font-weight: 600; font-size: 14px; }
+    .item-card-sub { font-size: 12px; color: var(--gris-texte); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
+    .item-card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .btn-edit, .btn-delete { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-edit { background: rgba(70,58,144,0.08); color: var(--violet); }
+    .btn-edit:hover { background: rgba(70,58,144,0.15); }
+    .btn-delete { background: rgba(220,50,50,0.08); color: #c0392b; }
+    .btn-delete:hover { background: rgba(220,50,50,0.15); }
+
+    /* FORMULAIRES */
+    .form-card { background: white; border-radius: var(--radius); padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; display: none; }
+    .params-card { background: white; border-radius: var(--radius); padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem; }
+    .params-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--gris-border); }
+    .form-card.visible { display: block; }
+    .form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--gris-border); }
+    .form-row { margin-bottom: 1rem; }
+    .form-row label { display: block; font-size: 12px; font-weight: 600; color: var(--gris-texte); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-row input, .form-row textarea, .form-row select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gris-border); border-radius: 10px; font-size: 14px; font-family: inherit; background: white; transition: border-color 0.2s; }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--violet); }
+    .form-row textarea { resize: vertical; min-height: 80px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
+    .btn-cancel { padding: 10px 20px; border-radius: 10px; border: 1.5px solid var(--gris-border); background: white; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gris-texte); }
+    .btn-save { padding: 10px 24px; border-radius: 10px; border: none; background: var(--gradient); color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-add { display: flex; align-items: center; gap: 0.5rem; padding: 11px 20px; background: white; border: 2px dashed var(--gris-border); border-radius: var(--radius); font-size: 14px; font-weight: 600; color: var(--violet); cursor: pointer; width: 100%; justify-content: center; transition: all 0.2s; }
+    .btn-add:hover { border-color: var(--violet); background: rgba(70,58,144,0.04); }
+    .empty-state { text-align: center; padding: 2rem; color: var(--gris-texte); font-size: 14px; background: white; border-radius: var(--radius); }
+
+    /* AUTOCOMPLETE */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1.5px solid var(--violet); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; max-height: 200px; overflow-y: auto; }
+    .autocomplete-item { padding: 9px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--gris-border); line-height: 1.4; }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: rgba(70,58,144,0.06); }
+    .autocomplete-item strong { color: var(--violet); }
+
+    /* MÉDIAS */
+    .media-preview-wrap { display: none; margin-top: 0.75rem; }
+    .media-preview-wrap img, .media-preview-wrap video { max-width: 100%; max-height: 200px; border-radius: 10px; object-fit: cover; }
+
+    /* STOCKAGE */
+    .storage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .storage-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; }
+    .storage-item img, .storage-item video { width: 100%; height: 110px; object-fit: cover; display: block; }
+    .storage-item-info { padding: 6px 8px; font-size: 11px; color: var(--gris-texte); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .storage-item-del { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .storage-item-del:hover { background: #c0392b; }
+
+    /* GALERIE ADMIN */
+    .galerie-admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+    .galerie-admin-count { font-size:13px; color:var(--gris-texte); }
+    .galerie-admin-actions { display:flex; gap:0.75rem; align-items:center; }
+    .galerie-upload-btn { display:flex; align-items:center; gap:0.5rem; padding:9px 18px; background:var(--gradient); color:white; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .galerie-save-btn { padding:9px 18px; background:white; border:1.5px solid var(--violet); color:var(--violet); border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .galerie-save-btn:hover { background:rgba(70,58,144,0.06); }
+    .galerie-admin-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+    .galerie-admin-card { background:white; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.07); transition:box-shadow 0.2s; position:relative; }
+    .galerie-admin-card:hover { box-shadow:0 6px 20px rgba(70,58,144,0.12); }
+    .galerie-admin-card img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+    .galerie-admin-card-body { padding:0.75rem; }
+    .galerie-admin-caption { width:100%; border:1.5px solid var(--gris-border); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; color:var(--noir); transition:border-color 0.2s; resize:none; }
+    .galerie-admin-caption:focus { outline:none; border-color:var(--violet); }
+    .galerie-admin-card-footer { display:flex; align-items:center; justify-content:space-between; padding:0 0.75rem 0.75rem; gap:0.4rem; }
+    .galerie-move-btn { width:30px; height:30px; border:1.5px solid var(--gris-border); border-radius:8px; background:white; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:var(--gris-texte); transition:all 0.15s; }
+    .galerie-move-btn:hover:not(:disabled) { border-color:var(--violet); color:var(--violet); background:rgba(70,58,144,0.06); }
+    .galerie-move-btn:disabled { opacity:0.25; cursor:default; }
+    .galerie-del-btn { width:30px; height:30px; border:none; border-radius:8px; background:rgba(220,50,50,0.08); cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:#c0392b; margin-left:auto; transition:background 0.15s; }
+    .galerie-del-btn:hover { background:rgba(220,50,50,0.16); }
+    .galerie-admin-drop { border:2px dashed var(--gris-border); border-radius:14px; padding:2.5rem; text-align:center; color:var(--gris-texte); font-size:14px; transition:all 0.2s; cursor:pointer; }
+    .galerie-admin-drop:hover, .galerie-admin-drop.drag-over { border-color:var(--violet); color:var(--violet); background:rgba(70,58,144,0.04); }
+    .galerie-badge-new { position:absolute; top:8px; left:8px; background:var(--gradient); color:white; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; letter-spacing:0.5px; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 2rem; right: 2rem; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; color: white; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; z-index: 999; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { background: #1a9e5c; }
+    #toast.error { background: #c0392b; }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      #screen-app { padding: 1rem; }
+      .pages-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* STATS */
+    #step-stats { display:none; }
+    .stats-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem; }
+    .stats-header h2 { font-size:20px; font-weight:700; }
+    .stats-actions { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; }
+    .stats-connect-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600; border:none; background:#4285F4; color:white; cursor:pointer; transition:background 0.15s; }
+    .stats-connect-btn:hover { background:#3367D6; }
+    .stats-connect-btn.connected { background:#1a9e5c; }
+    .stats-range { display:flex; gap:0.5rem; margin-bottom:1.75rem; flex-wrap:wrap; }
+    .stats-range-btn { padding:7px 16px; border-radius:8px; border:1.5px solid var(--gris-border); background:white; font-size:13px; font-weight:600; cursor:pointer; color:var(--gris-texte); transition:all 0.15s; }
+    .stats-range-btn.active { background:var(--violet); color:white; border-color:var(--violet); }
+    .stats-kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+    .stats-kpi { background:white; border-radius:14px; padding:1.25rem 1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+    .stats-kpi-icon { font-size:20px; margin-bottom:0.4rem; }
+    .stats-kpi-label { font-size:11px; font-weight:600; color:var(--gris-texte); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.35rem; }
+    .stats-kpi-value { font-size:26px; font-weight:700; color:var(--noir); line-height:1; margin-bottom:0.2rem; }
+    .stats-kpi-sub { font-size:11px; color:var(--gris-texte); }
+    .stats-tables { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    @media(max-width:640px){.stats-tables{grid-template-columns:1fr;}}
+    .stats-table-card { background:white; border-radius:14px; padding:1.25rem 1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+    .stats-table-title { font-size:13px; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; color:var(--noir); }
+    .stats-bar-row { display:flex; align-items:center; gap:0.75rem; padding:5px 0; }
+    .stats-bar-row:not(:last-child) { border-bottom:1px solid var(--gris-border); }
+    .stats-bar-label { font-size:12px; width:100px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--noir); }
+    .stats-bar-track { flex:1; height:6px; background:var(--gris-border); border-radius:99px; overflow:hidden; }
+    .stats-bar-fill { height:100%; background:var(--gradient); border-radius:99px; transition:width 0.6s ease; }
+    .stats-bar-val { font-size:12px; font-weight:600; color:var(--violet); width:38px; text-align:right; flex-shrink:0; }
+    .stats-links { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .stats-ext-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none; border:1.5px solid var(--gris-border); color:var(--noir); background:white; transition:all 0.15s; }
+    .stats-ext-btn:hover { border-color:var(--violet); color:var(--violet); }
+    .stats-setup { background:white; border-radius:16px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); max-width:540px; }
+    .stats-setup h3 { font-size:18px; font-weight:700; margin-bottom:0.5rem; }
+    .stats-setup p { font-size:14px; color:var(--gris-texte); margin-bottom:1.5rem; line-height:1.6; }
+    .stats-howto { background:var(--gris-bg); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; font-size:13px; color:var(--gris-texte); line-height:1.7; }
+    .stats-howto summary { font-weight:700; color:var(--noir); cursor:pointer; }
+    .stats-loading { text-align:center; padding:3rem 2rem; color:var(--gris-texte); font-size:14px; }
+    .stats-error { background:#fff3f3; border:1.5px solid #fcc; border-radius:12px; padding:1rem 1.25rem; font-size:13px; color:#c0392b; margin-bottom:1rem; }
+    .stats-empty { text-align:center; padding:3rem 2rem; color:var(--gris-texte); font-size:14px; background:white; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+
+  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+
+<header>
+  <div class="header-logo">
+    <img src="assets/Logo.png" alt="BDE CREAD">
+    <span>ADMIN — BDE CREAD</span>
+  </div>
+  <div class="header-right">
+    <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
+    <button id="btn-logout" onclick="logout()">Se déconnecter</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-card">
+    <h1>Connexion admin</h1>
+    <p>Entre le token GitHub pour accéder au tableau de bord. Il sera mémorisé dans le navigateur.</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <button class="btn-primary" onclick="login()">Se connecter</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+
+  <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
+  <div id="step-pages">
+    <h2>Quelle page veux-tu modifier ?</h2>
+    <div class="pages-grid">
+      <div class="page-card" onclick="selectPage('accueil')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
+        <div class="page-card-name">Accueil</div>
+        <div class="page-card-desc">Photos & vidéos de la page d'accueil</div>
+        <a href="index.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('agenda')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="page-card-name">Agenda</div>
+        <div class="page-card-desc">Événements à venir</div>
+        <a href="agenda.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('archives')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+        <div class="page-card-name">Archives</div>
+        <div class="page-card-desc">Événements passés</div>
+        <a href="agenda.html#archives" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('annonces')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+        <div class="page-card-name">Annonces</div>
+        <div class="page-card-desc">Petites annonces des étudiants</div>
+        <a href="annonces.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('communication')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.85"/></svg></div>
+        <div class="page-card-name">Communication</div>
+        <div class="page-card-desc">Membres de l'équipe BDE</div>
+        <a href="communication.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('galerie')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div class="page-card-name">Galerie</div>
+        <div class="page-card-desc">Photos de la galerie Communication</div>
+        <a href="communication.html#galerie-section" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('partenaires')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="page-card-name">Partenaires</div>
+        <div class="page-card-desc">Sponsors & partenaires du BDE</div>
+        <a href="partenaires.html" target="_blank" rel="noopener" class="page-card-preview" onclick="event.stopPropagation()">↗ Voir</a>
+      </div>
+      <div class="page-card" onclick="selectPage('stats')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="page-card-name">Stats</div>
+        <div class="page-card-desc">Statistiques de fréquentation</div>
+      </div>
+      <div class="page-card" onclick="selectPage('fidelite')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/><path d="M14 15h4"/></svg></div>
+        <div class="page-card-name">Fidélité</div>
+        <div class="page-card-desc">Cartes étudiants & tampons</div>
+      </div>
+      <div class="page-card" onclick="selectPage('parametres')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+        <div class="page-card-name">Paramètres</div>
+        <div class="page-card-desc">Chiffres clés, contact, Instagram</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 : CHOISIR UNE SECTION (pour pages multi-sections) -->
+  <div id="step-sections">
+    <div class="step-header">
+      <h2 id="sections-title">Que veux-tu modifier ?</h2>
+      <span class="page-badge" id="page-badge"></span>
+    </div>
+    <div class="sections-list" id="sections-list"></div>
+  </div>
+
+
+  <!-- STATS -->
+  <div id="step-stats">
+    <div class="stats-header">
+      <h2>Statistiques du site</h2>
+      <div class="stats-actions">
+        <button class="stats-connect-btn" id="stats-connect-btn" onclick="connectGA4()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Se connecter avec Google
+        </button>
+        <button class="stats-range-btn active" id="stats-btn-7" onclick="setStatsRange(7)">7 jours</button>
+        <button class="stats-range-btn" id="stats-btn-30" onclick="setStatsRange(30)">30 jours</button>
+        <button class="stats-range-btn" id="stats-btn-90" onclick="setStatsRange(90)">90 jours</button>
+      </div>
+    </div>
+
+    <!-- Setup (masqué une fois configuré) -->
+    <div id="stats-setup" style="display:none;">
+      <div class="stats-setup">
+        <h3>Configuration Google Analytics</h3>
+        <p>Entre ton <strong>ID de propriété GA4</strong> (un nombre, ex: 123456789) et ton <strong>Client ID OAuth2</strong> pour afficher les statistiques directement ici.</p>
+        <details class="stats-howto">
+          <summary>Comment obtenir ces informations ?</summary>
+          <br>
+          <strong>ID de propriété GA4 :</strong><br>
+          1. Va sur <a href="https://analytics.google.com" target="_blank" style="color:var(--violet)">analytics.google.com</a><br>
+          2. En haut à gauche clique sur la propriété → l'ID est affiché (un nombre)<br>
+          3. Ou : Admin → Paramètres de la propriété → ID de propriété<br><br>
+          <strong>Client ID OAuth2 :</strong><br>
+          1. <a href="https://console.cloud.google.com" target="_blank" style="color:var(--violet)">console.cloud.google.com</a> → Nouveau projet → Activer <em>Google Analytics Data API</em><br>
+          2. API et services → Identifiants → Créer → ID client OAuth 2.0 → Application Web<br>
+          3. Origines JS autorisées : ajoute <code>https://bdecreadien.fr</code> et <code>https://bdecreadien.pages.dev</code><br>
+          4. Copie l'ID client (se termine par .apps.googleusercontent.com)
+        </details>
+        <div class="form-row">
+          <label>ID de propriété GA4</label>
+          <input type="text" id="stats-property-id" placeholder="ex: 123456789">
+        </div>
+        <div class="form-row">
+          <label>Client ID OAuth2 Google</label>
+          <input type="text" id="stats-client-id" placeholder="xxxx.apps.googleusercontent.com">
+        </div>
+        <button class="btn-save" onclick="saveStatsConfig()">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="stats-dashboard" style="display:none;">
+      <div class="stats-links">
+        <a href="https://analytics.google.com" target="_blank" rel="noopener" class="stats-ext-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google Analytics complet
+        </a>
+        <a href="https://dash.cloudflare.com" target="_blank" rel="noopener" class="stats-ext-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+          Cloudflare Analytics
+        </a>
+        <button class="stats-ext-btn" onclick="statsSetupMode()">⚙ Reconfigurer</button>
+        <button class="stats-ext-btn" onclick="refreshStats()" id="stats-refresh-btn">↻ Actualiser</button>
+      </div>
+      <div id="stats-body"></div>
+    </div>
+
+    <!-- Encart notifications push -->
+    <div class="stats-setup" style="margin-top:2rem;">
+      <h3 style="display:flex;align-items:center;gap:0.5rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Notifications push
+      </h3>
+      <p style="font-size:13px;color:var(--gris-texte);line-height:1.7;margin-bottom:1rem;">
+        Les notifications push permettent d'alerter les étudiants des nouveaux événements directement sur leur téléphone ou navigateur.<br><br>
+        <strong>Pour activer :</strong><br>
+        1. Crée un compte sur <a href="https://onesignal.com" target="_blank" rel="noopener" style="color:var(--violet);">onesignal.com</a><br>
+        2. New App → Web → entre <code>bdecreadien.fr</code><br>
+        3. Copie ton App ID et remplace <code>YOUR_ONESIGNAL_APP_ID</code> dans les fichiers HTML du site<br>
+        4. Décommente le bloc OneSignal dans chaque page HTML publique
+      </p>
+      <a href="https://app.onesignal.com" target="_blank" rel="noopener" class="btn-save" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Gérer les notifications push
+      </a>
+    </div>
+  </div>
+
+  <!-- FIDÉLITÉ -->
+  <div id="step-fidelite" style="display:none;">
+    <div class="stats-header">
+      <h2>Cartes fidélité</h2>
+      <button class="btn-save" onclick="showFormFidelite()" id="btn-nouvelle-carte" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;font-size:13px;">+ Nouvelle carte</button>
+    </div>
+
+    <div id="form-fidelite" class="form-card" style="margin-bottom:1.5rem;">
+      <h3>Créer une carte</h3>
+      <div class="form-grid">
+        <div class="form-row"><label>Prénom</label><input type="text" id="fid-prenom" placeholder="Thomas"></div>
+        <div class="form-row"><label>Nom</label><input type="text" id="fid-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="form-row"><label>Email (pour envoyer le lien)</label><input type="email" id="fid-email" placeholder="thomas@example.com"></div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="hideFormFidelite()">Annuler</button>
+        <button class="btn-save" onclick="creerCarte()">Créer la carte</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <input type="search" id="fid-search" placeholder="Rechercher une carte…" oninput="renderFideliteList()" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;">
+    </div>
+    <div id="fid-list" class="items-list"></div>
+    <div id="fid-empty" class="empty-state" style="display:none;">Aucune carte créée pour l'instant.</div>
+  </div>
+
+  <!-- ÉTAPE 3 : ÉDITEUR -->
+  <div id="step-editor">
+    <div class="editor-header">
+      <h2 id="editor-title"></h2>
+      <span class="page-badge" id="editor-badge"></span>
+    </div>
+    <div id="editor-content"></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
+    <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;transition:width 0.3s;"></div>
+    </div>
+    <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/github.js"></script>
+<script src="js/editor-builder.js"></script>
+<script src="js/forms-html.js"></script>
+<script src="js/form-actions.js"></script>
+<script src="js/medias.js"></script>
+<script src="js/stockage.js"></script>
+<script src="js/autocomplete.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/fidelite.js"></script>
+<script src="js/boot.js"></script>
+
+<!-- MODAL + TAMPON ADMIN -->
+<div id="modal-tampon" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:white;border-radius:16px;padding:28px;max-width:380px;width:100%;">
+    <h3 style="margin:0 0 6px;font-size:17px;font-weight:700;">Ajouter un tampon</h3>
+    <p style="font-size:13px;color:#888;margin:0 0 18px;">La date et l'heure sont enregistrées automatiquement.</p>
+    <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Ton prénom *</label>
+    <input id="mt-validateur" type="text" placeholder="Thomas" onkeydown="if(event.key==='Enter')document.getElementById('mt-event').focus()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px;font-family:inherit;box-sizing:border-box;">
+    <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Événement *</label>
+    <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
+    <div style="display:flex;gap:10px;">
+      <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#463A90,#E85100);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
