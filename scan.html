@@ -72,7 +72,7 @@
       border: 1.5px solid rgba(255,255,255,0.1);
       background: rgba(255,255,255,0.05);
       color: white;
-      font-size: 14px;
+      font-size: 16px;
       margin-bottom: 12px;
       outline: none;
       font-family: inherit;
@@ -153,19 +153,21 @@
 
   // Stockage du token : cookie 24h (fonctionne même sur iOS via caméra) + localStorage
   function saveToken(t) {
-    localStorage.setItem('bde_admin_token', t);
-    const exp = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString();
-    document.cookie = `bde_scan_token=${encodeURIComponent(t)};expires=${exp};path=/;SameSite=Lax`;
+    try { localStorage.setItem('bde_admin_token', t); } catch(e) {}
+    try { sessionStorage.setItem('bde_admin_token', t); } catch(e) {}
+    const exp = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `bde_scan_token=${encodeURIComponent(t)};expires=${exp};path=/;Secure;SameSite=None`;
   }
   function readToken() {
-    const ls = localStorage.getItem('bde_admin_token');
-    if (ls) return ls;
+    try { const ls = localStorage.getItem('bde_admin_token'); if (ls) return ls; } catch(e) {}
+    try { const ss = sessionStorage.getItem('bde_admin_token'); if (ss) return ss; } catch(e) {}
     const m = document.cookie.match(/(?:^|;\s*)bde_scan_token=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
   }
   function clearToken() {
-    localStorage.removeItem('bde_admin_token');
-    document.cookie = 'bde_scan_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax';
+    try { localStorage.removeItem('bde_admin_token'); } catch(e) {}
+    try { sessionStorage.removeItem('bde_admin_token'); } catch(e) {}
+    document.cookie = 'bde_scan_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;Secure;SameSite=None';
   }
 
   let token = readToken();
