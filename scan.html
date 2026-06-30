@@ -147,10 +147,28 @@
   const BRANCH = 'main';
   const params = new URLSearchParams(window.location.search);
   const carteId = params.get('id');
-  let token = localStorage.getItem('bde_admin_token') || '';
   let fideliteData = null;
   let fideliteSha = null;
   let carteIndex = -1;
+
+  // Stockage du token : cookie 24h (fonctionne même sur iOS via caméra) + localStorage
+  function saveToken(t) {
+    localStorage.setItem('bde_admin_token', t);
+    const exp = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `bde_scan_token=${encodeURIComponent(t)};expires=${exp};path=/;SameSite=Lax`;
+  }
+  function readToken() {
+    const ls = localStorage.getItem('bde_admin_token');
+    if (ls) return ls;
+    const m = document.cookie.match(/(?:^|;\s*)bde_scan_token=([^;]*)/);
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function clearToken() {
+    localStorage.removeItem('bde_admin_token');
+    document.cookie = 'bde_scan_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax';
+  }
+
+  let token = readToken();
 
   function show(screen) {
     ['login','carte','success','error','loading'].forEach(s => {
@@ -159,7 +177,7 @@
   }
 
   function deconnecter() {
-    localStorage.removeItem('bde_admin_token');
+    clearToken();
     token = '';
     show('login');
   }
@@ -167,7 +185,7 @@
   function doLogin() {
     const t = document.getElementById('token-input').value.trim();
     if (!t) return;
-    localStorage.setItem('bde_admin_token', t);
+    saveToken(t);
     token = t;
     loadCarte();
   }

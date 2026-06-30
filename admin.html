@@ -2516,10 +2516,12 @@ function renderFideliteList() {
   const list = document.getElementById('fid-list');
   const empty = document.getElementById('fid-empty');
   const query = (document.getElementById('fid-search')?.value || '').toLowerCase().trim();
-  const cartes = (fideliteData.cartes || []).filter(c =>
+  const toutes = fideliteData.cartes || [];
+  const cartes = toutes.filter(c =>
     !query || (c.prenom + ' ' + c.nom + ' ' + (c.email || '')).toLowerCase().includes(query)
   );
-  if (!cartes.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  if (!toutes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte créée pour l\'instant.'; empty.style.display = 'block'; return; }
+  if (!cartes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte ne correspond à la recherche.'; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
   list.innerHTML = cartes.map((c) => {
@@ -2638,15 +2640,46 @@ async function creerCarte() {
   } catch(e) { fideliteData.cartes.pop(); showToast('Erreur : ' + e.message, 'error'); }
 }
 
-async function ajouterTampon(i) {
+function ajouterTampon(i) {
   const c = fideliteData.cartes[i];
   if (c.tampons >= (c.total || 10)) return showToast('Carte déjà complète', 'error');
+  const modal = document.getElementById('modal-tampon');
+  modal.style.display = 'flex';
+  document.getElementById('mt-validateur').value = '';
+  document.getElementById('mt-event').value = '';
+  document.getElementById('mt-validateur').focus();
+  modal.dataset.carteIndex = i;
+}
+
+async function confirmerTampon() {
+  const modal = document.getElementById('modal-tampon');
+  const i = parseInt(modal.dataset.carteIndex);
+  const validateur = document.getElementById('mt-validateur').value.trim();
+  const event = document.getElementById('mt-event').value.trim();
+  let ok = true;
+  if (!validateur) { document.getElementById('mt-validateur').style.borderColor='#c0392b'; ok=false; }
+  else document.getElementById('mt-validateur').style.borderColor='';
+  if (!event) { document.getElementById('mt-event').style.borderColor='#c0392b'; ok=false; }
+  else document.getElementById('mt-event').style.borderColor='';
+  if (!ok) return;
+
+  modal.style.display = 'none';
+  const c = fideliteData.cartes[i];
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const heureStr = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
   c.tampons++;
+  if (!Array.isArray(c.historique)) c.historique = [];
+  c.historique.push({ date: dateStr, heure: heureStr, validateur, event });
   try {
-    await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom}`);
+    await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom} (${event})`);
     renderFideliteList();
-    showToast(`Tampon ${c.tampons}/${c.total} ajouté !`, 'success');
-  } catch(e) { c.tampons--; showToast('Erreur : ' + e.message, 'error'); }
+    showToast(`Tampon ${c.tampons}/${c.total||10} ajouté !`, 'success');
+  } catch(e) { c.tampons--; c.historique.pop(); showToast('Erreur : ' + e.message, 'error'); }
+}
+
+function fermerModalTampon() {
+  document.getElementById('modal-tampon').style.display = 'none';
 }
 
 async function reinitialiserCarte(i) {
@@ -2683,5 +2716,21 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token) init();
 });
 </script>
+
+<!-- MODAL + TAMPON ADMIN -->
+<div id="modal-tampon" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:white;border-radius:16px;padding:28px;max-width:380px;width:100%;">
+    <h3 style="margin:0 0 6px;font-size:17px;font-weight:700;">Ajouter un tampon</h3>
+    <p style="font-size:13px;color:#888;margin:0 0 18px;">La date et l'heure sont enregistrées automatiquement.</p>
+    <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Ton prénom *</label>
+    <input id="mt-validateur" type="text" placeholder="Thomas" onkeydown="if(event.key==='Enter')document.getElementById('mt-event').focus()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:12px;font-family:inherit;box-sizing:border-box;">
+    <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Événement *</label>
+    <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
+    <div style="display:flex;gap:10px;">
+      <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#463A90,#E85100);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
