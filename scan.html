@@ -113,7 +113,7 @@
       <span class="badge badge-offert">Carte complète — 1 accès offert</span>
     </div>
     <div style="margin-bottom:12px;">
-      <input type="text" id="sc-event" placeholder="Nom de l'événement *" style="margin-bottom:0;">
+      <input type="text" id="sc-event" placeholder="Ton prénom *" style="margin-bottom:0;">
     </div>
     <button class="btn" id="btn-tampon" onclick="ajouterTampon()">+ Valider ce passage</button>
     <button class="btn btn-secondary" onclick="history.back()">Annuler</button>
@@ -236,7 +236,7 @@
 
     c.tampons++;
     if (!Array.isArray(c.historique)) c.historique = [];
-    c.historique.push({ date: dateStr, heure: heureStr, event: eventName || null });
+    c.historique.push({ date: dateStr, heure: heureStr, validateur: eventName });
 
     try {
       const fresh = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json?t=${Date.now()}`, {
