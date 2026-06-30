@@ -2517,9 +2517,12 @@ function renderFideliteList() {
   const empty = document.getElementById('fid-empty');
   const query = (document.getElementById('fid-search')?.value || '').toLowerCase().trim();
   const toutes = fideliteData.cartes || [];
-  const cartes = toutes.filter(c =>
-    !query || (c.prenom + ' ' + c.nom + ' ' + (c.email || '')).toLowerCase().includes(query)
-  );
+  const cartes = toutes.filter(c => {
+    if (!query) return true;
+    const mots = query.split(/\s+/);
+    const cibles = [c.prenom, c.nom].map(s => (s || '').toLowerCase());
+    return mots.every(mot => cibles.some(cib => cib.startsWith(mot) || cib.includes(' ' + mot)));
+  });
   if (!toutes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte créée pour l\'instant.'; empty.style.display = 'block'; return; }
   if (!cartes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte ne correspond à la recherche.'; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
@@ -2625,9 +2628,13 @@ async function saveFidelite(message) {
   fideliteSha = j.content.sha;
 }
 
+function capitalize(s) {
+  return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
 async function creerCarte() {
-  const prenom = document.getElementById('fid-prenom').value.trim();
-  const nom = document.getElementById('fid-nom').value.trim();
+  const prenom = capitalize(document.getElementById('fid-prenom').value.trim());
+  const nom = capitalize(document.getElementById('fid-nom').value.trim());
   const email = document.getElementById('fid-email').value.trim();
   if (!prenom || !nom) return showToast('Prénom et nom requis', 'error');
   const carte = { id: genId(), prenom, nom, email, tampons: 0, total: 10, createdAt: new Date().toISOString().split('T')[0] };
