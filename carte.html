@@ -270,12 +270,21 @@
     }
 
     function drawQR(text) {
-      const canvas = document.getElementById('qr-canvas');
-      QRCode.toCanvas(canvas, text, {
-        width: 64,
-        margin: 1,
-        color: { dark: '#ffffff', light: '#00000000' }
-      });
+      try {
+        const canvas = document.getElementById('qr-canvas');
+        QRCode.toCanvas(canvas, text, {
+          width: 64,
+          margin: 1,
+          color: { dark: '#ffffff', light: '#00000000' }
+        }, function(err) {
+          if (err) {
+            canvas.parentElement.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=${encodeURIComponent(text)}&color=ffffff&bgcolor=00000000&format=png" width="64" height="64" style="border-radius:4px;">`;
+          }
+        });
+      } catch(e) {
+        const wrap = document.getElementById('qr-canvas').parentElement;
+        wrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=${encodeURIComponent(text)}&color=ffffff&bgcolor=0f0d1a&format=png" width="64" height="64" style="border-radius:4px;">`;
+      }
     }
 
     async function init() {
