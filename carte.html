@@ -5,9 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carte fidélité — BDE CREAD Lyon</title>
   <link rel="stylesheet" href="css/style.css?v=7">
-  <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ma carte BDE">
   <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <script>
+    // Manifest dynamique : start_url = URL exacte de cette carte (avec l'id)
+    (function() {
+      const manifest = {
+        name: 'Carte fidélité BDE CREAD',
+        short_name: 'Carte BDE',
+        start_url: window.location.href,
+        display: 'standalone',
+        background_color: '#0a0812',
+        theme_color: '#463A90',
+        icons: [
+          { src: '/assets/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png' }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = url;
+      document.head.appendChild(link);
+    })();
+  </script>
   <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
@@ -244,6 +268,33 @@
       </div>
     </div>
 
+    <div id="btn-install-wrap" style="display:none;margin-top:16px;text-align:center;">
+      <button id="btn-install" onclick="installApp()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);padding:10px 20px;border-radius:12px;font-size:13px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v13M7 9l5 6 5-6"/><path d="M5 20h14"/></svg>
+        Ajouter à l'écran d'accueil
+      </button>
+    </div>
+
+    <!-- Modal instructions iOS -->
+    <div id="modal-ios" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:flex-end;justify-content:center;padding:0;">
+      <div style="background:#1c1a2e;border-radius:20px 20px 0 0;padding:28px 24px 40px;max-width:480px;width:100%;text-align:center;">
+        <div style="width:40px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 24px;"></div>
+        <p style="font-size:16px;font-weight:600;color:white;margin:0 0 8px;">Ajouter à l'écran d'accueil</p>
+        <p style="font-size:13px;color:rgba(255,255,255,0.45);margin:0 0 24px;line-height:1.6;">Sauvegarde ta carte comme une app sur ton téléphone pour y accéder en un tap.</p>
+        <div style="background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;text-align:left;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <span style="background:rgba(70,58,144,0.3);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white;font-weight:700;">1</span>
+            <span style="font-size:13px;color:rgba(255,255,255,0.7);">Appuie sur <strong style="color:white;">Partager</strong> <svg style="vertical-align:middle" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg> en bas de Safari</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="background:rgba(70,58,144,0.3);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white;font-weight:700;">2</span>
+            <span style="font-size:13px;color:rgba(255,255,255,0.7);">Sélectionne <strong style="color:white;">« Sur l'écran d'accueil »</strong></span>
+          </div>
+        </div>
+        <button onclick="document.getElementById('modal-ios').style.display='none'" style="width:100%;padding:14px;background:rgba(255,255,255,0.08);border:none;border-radius:12px;color:rgba(255,255,255,0.6);font-size:14px;font-family:inherit;cursor:pointer;">Fermer</button>
+      </div>
+    </div>
+
     <a href="/" class="back-link">← Retour au site</a>
   </div>
 
@@ -329,6 +380,35 @@
     }
 
     init();
+
+    // Bouton "Ajouter à l'écran d'accueil"
+    let deferredPrompt = null;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+    if (!isStandalone) {
+      if (isIOS) {
+        document.getElementById('btn-install-wrap').style.display = 'block';
+      } else {
+        window.addEventListener('beforeinstallprompt', e => {
+          e.preventDefault();
+          deferredPrompt = e;
+          document.getElementById('btn-install-wrap').style.display = 'block';
+        });
+      }
+    }
+
+    function installApp() {
+      if (isIOS) {
+        document.getElementById('modal-ios').style.display = 'flex';
+      } else if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+          document.getElementById('btn-install-wrap').style.display = 'none';
+        });
+      }
+    }
   </script>
 </body>
 </html>
