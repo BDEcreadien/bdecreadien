@@ -28,9 +28,17 @@
       "prenom": "ANTO",
       "nom": "BOURILL",
       "email": "bdecreadien@gmail.com",
-      "tampons": 0,
+      "tampons": 1,
       "total": 10,
-      "createdAt": "2026-06-30"
+      "createdAt": "2026-06-30",
+      "historique": [
+        {
+          "date": "30/06/2026",
+          "heure": "15:42",
+          "validateur": "Essai",
+          "event": "gala"
+        }
+      ]
     }
   ]
 }
