@@ -5,16 +5,10 @@
       "prenom": "Tom",
       "nom": "Maradan",
       "email": "maradantom@gmail.com",
-      "tampons": 3,
+      "tampons": 2,
       "total": 10,
       "createdAt": "2026-06-30",
-      "historique": [
-        {
-          "date": "30/06/2026",
-          "heure": "13:40",
-          "validateur": "Tom"
-        }
-      ]
+      "historique": []
     }
   ]
 }
