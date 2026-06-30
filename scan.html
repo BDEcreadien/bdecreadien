@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan fidélité — BDE CREAD</title>
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0812;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #0f0d1a;
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .logo { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 16px; display: block; }
+    h1 { font-size: 20px; font-weight: 600; color: white; margin-bottom: 6px; }
+    .sub { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 28px; line-height: 1.5; }
+    .nom { font-size: 26px; font-weight: 600; color: white; margin-bottom: 4px; }
+    .tampons { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+    .progress { display: flex; gap: 5px; margin-bottom: 28px; }
+    .bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); }
+    .bar.active { background: linear-gradient(90deg, #463A90, #E85100); }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #463A90, #7B3FA0, #E85100);
+      color: white;
+      margin-bottom: 12px;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+    .btn-secondary {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      padding: 12px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 14px;
+      font-family: monospace;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    input:focus { border-color: #463A90; }
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .badge-offert { background: linear-gradient(135deg, #463A90, #E85100); color: white; }
+    .badge-ok { background: #1a9e5c; color: white; }
+    .badge-err { background: #c0392b; color: white; }
+    .icon { font-size: 48px; margin-bottom: 12px; }
+    #screen-login, #screen-carte, #screen-success, #screen-error, #screen-loading { display: none; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <img src="/assets/Logo.png" class="logo" alt="BDE CREAD">
+
+  <!-- LOADING -->
+  <div id="screen-loading">
+    <div class="icon">⏳</div>
+    <h1>Chargement…</h1>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="screen-login">
+    <h1>Admin requis</h1>
+    <p class="sub">Entre ton token GitHub pour valider ce passage.</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx">
+    <button class="btn" onclick="doLogin()">Se connecter</button>
+  </div>
+
+  <!-- CARTE -->
+  <div id="screen-carte">
+    <p class="nom" id="sc-nom">—</p>
+    <p class="tampons" id="sc-tampons">— / 10 tampons</p>
+    <div class="progress" id="sc-progress"></div>
+    <div id="sc-offert" style="display:none;margin-bottom:16px;">
+      <span class="badge badge-offert">Carte complète — 1 accès offert</span>
+    </div>
+    <button class="btn" id="btn-tampon" onclick="ajouterTampon()">+ Valider ce passage</button>
+    <a href="javascript:history.back()"><button class="btn btn-secondary">Annuler</button></a>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="screen-success">
+    <div class="icon">✅</div>
+    <h1 id="sc-success-msg">Tampon ajouté !</h1>
+    <p class="sub" id="sc-success-sub"></p>
+    <div class="progress" id="sc-progress-after" style="margin-bottom:20px;"></div>
+    <div id="sc-offert-after" style="display:none;margin-bottom:20px;">
+      <span class="badge badge-offert">🎉 Carte complète — 1 accès offert !</span>
+    </div>
+    <button class="btn" onclick="window.close() || history.back()">Fermer</button>
+  </div>
+
+  <!-- ERROR -->
+  <div id="screen-error">
+    <div class="icon">❌</div>
+    <h1>Erreur</h1>
+    <p class="sub" id="sc-error-msg"></p>
+    <button class="btn" onclick="location.reload()">Réessayer</button>
+  </div>
+</div>
+
+<script>
+  const REPO = 'BDEcreadien/bdecreadien';
+  const BRANCH = 'main';
+  const params = new URLSearchParams(window.location.search);
+  const carteId = params.get('id');
+  let token = localStorage.getItem('bde_admin_token') || '';
+  let fideliteData = null;
+  let fideliteSha = null;
+  let carteIndex = -1;
+
+  function show(screen) {
+    ['login','carte','success','error','loading'].forEach(s => {
+      document.getElementById('screen-' + s).style.display = s === screen ? 'block' : 'none';
+    });
+  }
+
+  function doLogin() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) return;
+    localStorage.setItem('bde_admin_token', t);
+    token = t;
+    loadCarte();
+  }
+
+  async function loadCarte() {
+    if (!carteId) { showError('ID de carte manquant.'); return; }
+    if (!token) { show('login'); return; }
+    show('loading');
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json?t=${Date.now()}`, {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      });
+      if (res.status === 401 || res.status === 403) { token = ''; localStorage.removeItem('bde_admin_token'); show('login'); return; }
+      if (!res.ok) throw new Error('Impossible de charger les données.');
+      const file = await res.json();
+      fideliteSha = file.sha;
+      const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+      fideliteData = JSON.parse(new TextDecoder().decode(bytes));
+      carteIndex = (fideliteData.cartes || []).findIndex(c => c.id === carteId);
+      if (carteIndex === -1) { showError('Carte introuvable.'); return; }
+      renderCarte();
+    } catch(e) { showError(e.message); }
+  }
+
+  function renderCarte() {
+    const c = fideliteData.cartes[carteIndex];
+    const total = c.total || 10;
+    document.getElementById('sc-nom').textContent = c.prenom + ' ' + c.nom;
+    document.getElementById('sc-tampons').textContent = `${c.tampons} / ${total} tampons`;
+    renderProgress('sc-progress', c.tampons, total);
+    if (c.tampons >= total) {
+      document.getElementById('sc-offert').style.display = 'block';
+      document.getElementById('btn-tampon').disabled = true;
+      document.getElementById('btn-tampon').textContent = 'Carte déjà complète';
+    }
+    show('carte');
+  }
+
+  function renderProgress(id, tampons, total) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar' + (i < tampons ? ' active' : '');
+      el.appendChild(bar);
+    }
+  }
+
+  async function ajouterTampon() {
+    const c = fideliteData.cartes[carteIndex];
+    const total = c.total || 10;
+    document.getElementById('btn-tampon').disabled = true;
+    document.getElementById('btn-tampon').textContent = 'Validation…';
+    c.tampons++;
+    try {
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(fideliteData, null, 2))));
+      const res = await fetch(`https://api.github.com/repos/${REPO}/contents/_data/fidelite.json`, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom}`, content, sha: fideliteSha, branch: BRANCH })
+      });
+      if (!res.ok) throw new Error('Erreur lors de la sauvegarde.');
+      const complete = c.tampons >= total;
+      document.getElementById('sc-success-msg').textContent = complete ? '🎉 Carte complète !' : 'Passage validé !';
+      document.getElementById('sc-success-sub').textContent = `${c.prenom} ${c.nom} — ${c.tampons}/${total} tampons`;
+      renderProgress('sc-progress-after', c.tampons, total);
+      if (complete) document.getElementById('sc-offert-after').style.display = 'block';
+      show('success');
+    } catch(e) { c.tampons--; showError(e.message); }
+  }
+
+  function showError(msg) {
+    document.getElementById('sc-error-msg').textContent = msg;
+    show('error');
+  }
+
+  loadCarte();
+</script>
+</body>
+</html>

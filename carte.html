@@ -322,7 +322,8 @@
       }
 
       renderProgress(tampons, total);
-      drawQR(window.location.href);
+      const scanUrl = `https://bdecreadien.fr/scan.html?id=${carte.id}`;
+      drawQR(scanUrl);
 
       document.getElementById('carte-content').style.display = 'block';
     }
