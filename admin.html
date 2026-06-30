@@ -288,6 +288,11 @@
         <div class="page-card-name">Stats</div>
         <div class="page-card-desc">Statistiques de fréquentation</div>
       </div>
+      <div class="page-card" onclick="selectPage('fidelite')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/><path d="M14 15h4"/></svg></div>
+        <div class="page-card-name">Fidélité</div>
+        <div class="page-card-desc">Cartes étudiants & tampons</div>
+      </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <div class="page-card-name">Paramètres</div>
@@ -389,6 +394,30 @@
     </div>
   </div>
 
+  <!-- FIDÉLITÉ -->
+  <div id="step-fidelite" style="display:none;">
+    <div class="stats-header">
+      <h2>Cartes fidélité</h2>
+      <button class="btn-save" onclick="showFormFidelite()" id="btn-nouvelle-carte" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;font-size:13px;">+ Nouvelle carte</button>
+    </div>
+
+    <div id="form-fidelite" class="form-card" style="margin-bottom:1.5rem;">
+      <h3>Créer une carte</h3>
+      <div class="form-grid">
+        <div class="form-row"><label>Prénom</label><input type="text" id="fid-prenom" placeholder="Thomas"></div>
+        <div class="form-row"><label>Nom</label><input type="text" id="fid-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="form-row"><label>Email (pour envoyer le lien)</label><input type="email" id="fid-email" placeholder="thomas@example.com"></div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="hideFormFidelite()">Annuler</button>
+        <button class="btn-save" onclick="creerCarte()">Créer la carte</button>
+      </div>
+    </div>
+
+    <div id="fid-list" class="items-list"></div>
+    <div id="fid-empty" class="empty-state" style="display:none;">Aucune carte créée pour l'instant.</div>
+  </div>
+
   <!-- ÉTAPE 3 : ÉDITEUR -->
   <div id="step-editor">
     <div class="editor-header">
@@ -473,6 +502,7 @@ function showStep(step, opts = {}) {
   document.getElementById('step-sections').style.display = 'none';
   document.getElementById('step-editor').style.display = 'none';
   document.getElementById('step-stats').style.display = 'none';
+  document.getElementById('step-fidelite').style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
 }
@@ -509,6 +539,10 @@ function selectPage(page) {
     document.getElementById('editor-title').textContent = '';
     showStep('stats');
     initStatsPage();
+  } else if (page === 'fidelite') {
+    navStack.push('fidelite');
+    showStep('fidelite');
+    initFidelite();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
@@ -2447,6 +2481,140 @@ function renderStats(d, days) {
         ${barRows(browserRows, r => r.label, r => r.val)}
       </div>
     </div>`;
+}
+
+// ============================================================
+// FIDÉLITÉ
+// ============================================================
+let fideliteData = { cartes: [] };
+let fideliteSha = null;
+
+async function initFidelite() {
+  document.getElementById('fid-list').innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gris-texte);font-size:14px;">Chargement…</p>';
+  document.getElementById('fid-empty').style.display = 'none';
+  document.getElementById('form-fidelite').classList.remove('visible');
+
+  try {
+    const file = await getFile('_data/fidelite.json');
+    fideliteSha = file.sha;
+    const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+    fideliteData = JSON.parse(new TextDecoder().decode(bytes));
+    if (!Array.isArray(fideliteData.cartes)) fideliteData.cartes = [];
+  } catch(e) {
+    fideliteData = { cartes: [] };
+    fideliteSha = null;
+  }
+  renderFideliteList();
+}
+
+function renderFideliteList() {
+  const list = document.getElementById('fid-list');
+  const empty = document.getElementById('fid-empty');
+  const cartes = fideliteData.cartes || [];
+  if (!cartes.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = cartes.map((c, i) => {
+    const pct = Math.round((c.tampons / (c.total || 10)) * 100);
+    const lien = `https://bdecreadien.fr/carte.html?id=${c.id}`;
+    return `<div class="item-card">
+      <div class="item-card-info">
+        <div class="item-card-title">${c.prenom} ${c.nom}</div>
+        <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+          <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;"></div>
+          </div>
+          <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
+          ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
+        </div>
+        <div style="font-size:11px;color:var(--gris-texte);margin-top:4px;">${c.email || ''}</div>
+      </div>
+      <div class="item-card-actions" style="flex-direction:column;gap:6px;align-items:flex-end;">
+        <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
+        <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Copier lien</button>
+        ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Réinitialiser</button>` : ''}
+        <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showFormFidelite() {
+  document.getElementById('form-fidelite').classList.add('visible');
+  document.getElementById('fid-prenom').focus();
+}
+function hideFormFidelite() {
+  document.getElementById('form-fidelite').classList.remove('visible');
+  document.getElementById('fid-prenom').value = '';
+  document.getElementById('fid-nom').value = '';
+  document.getElementById('fid-email').value = '';
+}
+
+function genId() {
+  return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+}
+
+async function saveFidelite(message) {
+  const path = '_data/fidelite.json';
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(fideliteData, null, 2))));
+  const body = { message, content, branch: BRANCH };
+  if (fideliteSha) body.sha = fideliteSha;
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) { const b = await res.json().catch(()=>({})); throw new Error(b.message || res.status); }
+  const j = await res.json();
+  fideliteSha = j.content.sha;
+}
+
+async function creerCarte() {
+  const prenom = document.getElementById('fid-prenom').value.trim();
+  const nom = document.getElementById('fid-nom').value.trim();
+  const email = document.getElementById('fid-email').value.trim();
+  if (!prenom || !nom) return showToast('Prénom et nom requis', 'error');
+  const carte = { id: genId(), prenom, nom, email, tampons: 0, total: 10, createdAt: new Date().toISOString().split('T')[0] };
+  fideliteData.cartes.push(carte);
+  try {
+    await saveFidelite(`Fidélité : nouvelle carte — ${prenom} ${nom}`);
+    hideFormFidelite();
+    renderFideliteList();
+    showToast('Carte créée !', 'success');
+  } catch(e) { fideliteData.cartes.pop(); showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function ajouterTampon(i) {
+  const c = fideliteData.cartes[i];
+  if (c.tampons >= (c.total || 10)) return showToast('Carte déjà complète', 'error');
+  c.tampons++;
+  try {
+    await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom}`);
+    renderFideliteList();
+    showToast(`Tampon ${c.tampons}/${c.total} ajouté !`, 'success');
+  } catch(e) { c.tampons--; showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function reinitialiserCarte(i) {
+  const c = fideliteData.cartes[i];
+  if (!confirm(`Réinitialiser la carte de ${c.prenom} ${c.nom} ? (les tampons seront remis à 0)`)) return;
+  const old = c.tampons;
+  c.tampons = 0;
+  try {
+    await saveFidelite(`Fidélité : réinitialisation carte — ${c.prenom} ${c.nom}`);
+    renderFideliteList();
+    showToast('Carte réinitialisée', 'success');
+  } catch(e) { c.tampons = old; showToast('Erreur : ' + e.message, 'error'); }
+}
+
+async function supprimerCarte(i) {
+  const c = fideliteData.cartes[i];
+  if (!confirm(`Supprimer la carte de ${c.prenom} ${c.nom} ?`)) return;
+  fideliteData.cartes.splice(i, 1);
+  try {
+    await saveFidelite(`Fidélité : suppression carte — ${c.prenom} ${c.nom}`);
+    renderFideliteList();
+    showToast('Carte supprimée', 'success');
+  } catch(e) { fideliteData.cartes.splice(i, 0, c); showToast('Erreur : ' + e.message, 'error'); }
 }
 
 function showToast(msg, type) {

@@ -1,0 +1,13 @@
+{
+  "cartes": [
+    {
+      "id": "test",
+      "prenom": "Thomas",
+      "nom": "Dupont",
+      "email": "thomas@example.com",
+      "tampons": 3,
+      "total": 10,
+      "createdAt": "2026-06-30"
+    }
+  ]
+}

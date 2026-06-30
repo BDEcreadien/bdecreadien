@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte fidélité — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <style>
+    body {
+      background: #0a0812;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow', sans-serif;
+      padding: 24px;
+    }
+
+    .carte-wrap {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .carte {
+      background: #0f0d1a;
+      border-radius: 24px;
+      padding: 28px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .carte::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(70,58,144,0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .carte::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: -30px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(232,81,0,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .carte-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .carte-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    .carte-nom {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 0;
+      color: white;
+      letter-spacing: -0.3px;
+    }
+
+    .carte-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .carte-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .carte-progress-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .carte-progress-bar.active {
+      background: var(--gradient-h);
+    }
+
+    .carte-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .carte-count {
+      font-size: 42px;
+      font-weight: 500;
+      margin: 0;
+      color: white;
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+
+    .carte-count span {
+      font-size: 18px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .carte-sous {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      margin: 6px 0 0;
+      letter-spacing: 0.5px;
+    }
+
+    .carte-qr {
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .carte-qr canvas {
+      display: block;
+    }
+
+    .carte-offert {
+      display: none;
+      background: linear-gradient(135deg, #463A90, #E85100);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .carte-offert p {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 0;
+      color: white;
+    }
+
+    .carte-offert small {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      display: block;
+      margin-top: 4px;
+    }
+
+    .carte-offert.visible {
+      display: block;
+    }
+
+    .carte-not-found {
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      padding: 40px 0;
+    }
+
+    .carte-not-found p {
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
+
+    .back-link:hover {
+      color: rgba(255,255,255,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carte-wrap">
+    <div class="carte" id="carte">
+      <div id="carte-content" style="display:none">
+        <div class="carte-header">
+          <div>
+            <p class="carte-label">BDE CREAD Lyon</p>
+            <p class="carte-nom" id="carte-nom">—</p>
+          </div>
+          <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+        </div>
+
+        <div id="carte-offert" class="carte-offert">
+          <p>1 accès offert</p>
+          <small>Montre cette carte à l'entrée</small>
+        </div>
+
+        <div class="carte-progress" id="carte-progress"></div>
+
+        <div class="carte-footer">
+          <div>
+            <p class="carte-count"><span id="carte-num">0</span><span id="carte-den">/10</span></p>
+            <p class="carte-sous" id="carte-sous">événements validés</p>
+          </div>
+          <div class="carte-qr">
+            <canvas id="qr-canvas" width="64" height="64"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div id="carte-error" style="display:none" class="carte-not-found">
+        <p style="font-size:32px">✕</p>
+        <p>Carte introuvable</p>
+      </div>
+    </div>
+
+    <a href="/" class="back-link">← Retour au site</a>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const GITHUB_OWNER = 'BDEcreadien';
+    const GITHUB_REPO = 'bdecreadien';
+    const DATA_FILE = '_data/fidelite.json';
+
+    async function fetchFidelite() {
+      const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/${DATA_FILE}?t=${Date.now()}`);
+      if (!res.ok) return null;
+      return res.json();
+    }
+
+    function renderProgress(tampons, total) {
+      const container = document.getElementById('carte-progress');
+      container.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'carte-progress-bar' + (i < tampons ? ' active' : '');
+        container.appendChild(bar);
+      }
+    }
+
+    function drawQR(text) {
+      const canvas = document.getElementById('qr-canvas');
+      new QRCode(canvas, {
+        text: text,
+        width: 64,
+        height: 64,
+        colorDark: '#ffffff',
+        colorLight: 'transparent',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id') || window.location.pathname.split('/carte/')[1];
+
+      if (!id) {
+        document.getElementById('carte-error').style.display = 'block';
+        return;
+      }
+
+      const data = await fetchFidelite();
+      if (!data) {
+        document.getElementById('carte-error').style.display = 'block';
+        return;
+      }
+
+      const carte = data.cartes && data.cartes.find(c => c.id === id);
+      if (!carte) {
+        document.getElementById('carte-error').style.display = 'block';
+        return;
+      }
+
+      const tampons = carte.tampons || 0;
+      const total = carte.total || 10;
+      const complete = tampons >= total;
+
+      document.getElementById('carte-nom').textContent = carte.prenom + ' ' + carte.nom;
+      document.getElementById('carte-num').textContent = tampons;
+      document.getElementById('carte-den').textContent = '/' + total;
+      document.getElementById('carte-sous').textContent = complete ? '1 accès offert au prochain événement' : 'événements validés';
+
+      if (complete) {
+        document.getElementById('carte-offert').classList.add('visible');
+      }
+
+      renderProgress(tampons, total);
+      drawQR(window.location.href);
+
+      document.getElementById('carte-content').style.display = 'block';
+    }
+
+    init();
+  </script>
+</body>
+</html>
