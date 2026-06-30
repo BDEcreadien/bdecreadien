@@ -5,7 +5,7 @@
       "prenom": "Thomas",
       "nom": "Dupont",
       "email": "thomas@example.com",
-      "tampons": 3,
+      "tampons": 4,
       "total": 10,
       "createdAt": "2026-06-30"
     }
