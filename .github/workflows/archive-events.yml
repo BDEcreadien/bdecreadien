@@ -1,0 +1,33 @@
+name: Archiver les événements passés
+
+on:
+  schedule:
+    - cron: '0 22 * * *'  # Chaque nuit à minuit (heure de Paris UTC+2)
+  workflow_dispatch:        # Déclenchement manuel depuis GitHub si besoin
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Archiver les événements passés
+        run: node scripts/archive-past-events.js
+
+      - name: Commit si des événements ont été archivés
+        run: |
+          git config user.name "BDE Bot"
+          git config user.email "bdecreadien@gmail.com"
+          git add _data/evenements.json _data/archives.json
+          git diff --staged --quiet || git commit -m "Auto : archivage des événements passés"
+          git push
