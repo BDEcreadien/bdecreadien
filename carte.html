@@ -147,39 +147,45 @@
     .carte-footer {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       position: relative;
       z-index: 1;
     }
 
+    .carte-footer-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
     .carte-count {
-      font-size: 52px;
+      font-size: 40px;
       font-weight: 500;
-      margin: 0;
+      margin: 4px 0 0;
       color: white;
       letter-spacing: -2px;
-      line-height: 0.9;
+      line-height: 1;
     }
 
     .carte-count span {
-      font-size: 18px;
+      font-size: 16px;
       color: rgba(255,255,255,0.3);
       font-weight: 400;
       letter-spacing: 0;
     }
 
     .carte-sous {
-      font-size: 14px;
+      font-size: 13px;
       color: rgba(255,255,255,0.35);
-      margin: 1px 0 0;
-      letter-spacing: 0.5px;
+      margin: 2px 0 0;
+      letter-spacing: 0.3px;
     }
 
     .carte-last {
-      font-size: 12px;
+      font-size: 11px;
       color: rgba(255,255,255,0.22);
       margin: 1px 0 0;
-      max-width: 150px;
+      max-width: 180px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -204,8 +210,8 @@
 
     .carte-qr canvas, .carte-qr img {
       display: block;
-      width: 90px;
-      height: 90px;
+      width: 80px;
+      height: 80px;
       border-radius: 3px;
     }
 
@@ -291,10 +297,9 @@
           <small>Montre cette carte à l'entrée</small>
         </div>
 
-        <div class="carte-progress" id="carte-progress"></div>
-
         <div class="carte-footer">
-          <div>
+          <div class="carte-footer-left">
+            <div class="carte-progress" id="carte-progress"></div>
             <p class="carte-count"><span id="carte-num">0</span><span id="carte-den">/10</span></p>
             <p class="carte-sous" id="carte-sous">événements validés</p>
             <p class="carte-last" id="carte-last"></p>
