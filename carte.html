@@ -84,17 +84,8 @@
       pointer-events: none;
     }
 
-    .carte-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 6px;
-      position: relative;
-      z-index: 1;
-    }
-
     .carte-label {
-      font-size: 10px;
+      font-size: 9px;
       color: rgba(255,255,255,0.35);
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -102,38 +93,67 @@
     }
 
     .carte-nom {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 500;
       margin: 0;
       color: white;
       letter-spacing: -0.3px;
     }
 
+    .carte-since {
+      font-size: 11px;
+      color: rgba(255,255,255,0.28);
+      margin: 1px 0 8px;
+    }
+
+    .carte-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
+      gap: 12px;
+    }
+
+    .carte-body-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .carte-body-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
     .carte-logo {
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
     }
 
     .carte-progress {
       display: grid;
-      grid-template-columns: repeat(5, 22px);
-      gap: 7px;
+      grid-template-columns: repeat(5, 20px);
+      gap: 6px;
       margin-bottom: 6px;
       position: relative;
       z-index: 1;
     }
 
     .carte-stamp {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       border: 1.5px solid rgba(255,255,255,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 10px;
       color: transparent;
       flex-shrink: 0;
     }
@@ -144,79 +164,59 @@
       color: white;
     }
 
-    .carte-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    .carte-footer-left {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+    .carte-count-row { margin-top: auto; }
 
     .carte-count {
-      font-size: 40px;
+      font-size: 36px;
       font-weight: 500;
-      margin: 4px 0 0;
+      margin: 0;
       color: white;
       letter-spacing: -2px;
       line-height: 1;
     }
 
     .carte-count span {
-      font-size: 16px;
+      font-size: 15px;
       color: rgba(255,255,255,0.3);
       font-weight: 400;
       letter-spacing: 0;
     }
 
     .carte-sous {
-      font-size: 13px;
+      font-size: 12px;
       color: rgba(255,255,255,0.35);
       margin: 2px 0 0;
-      letter-spacing: 0.3px;
     }
 
     .carte-last {
-      font-size: 11px;
+      font-size: 10px;
       color: rgba(255,255,255,0.22);
       margin: 1px 0 0;
-      max-width: 180px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .carte-since {
-      font-size: 12px;
-      color: rgba(255,255,255,0.28);
-      margin: 1px 0 0;
-    }
-
     .carte-qr {
       background: white;
-      border-radius: 10px;
-      padding: 6px 6px 4px;
+      border-radius: 8px;
+      padding: 5px 5px 3px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       flex-shrink: 0;
     }
 
     .carte-qr canvas, .carte-qr img {
       display: block;
-      width: 80px;
-      height: 80px;
-      border-radius: 3px;
+      width: 72px;
+      height: 72px;
+      border-radius: 2px;
     }
 
     .carte-qr-label {
-      font-size: 8px;
+      font-size: 7px;
       color: rgba(0,0,0,0.3);
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -283,32 +283,33 @@
   <div class="carte-wrap">
     <div class="carte" id="carte">
       <div id="carte-content" style="display:none">
-        <div class="carte-header">
-          <div>
-            <p class="carte-label">BDE CREAD Lyon</p>
-            <p class="carte-nom" id="carte-nom">—</p>
-            <p class="carte-since" id="carte-since"></p>
-          </div>
-          <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
-        </div>
 
         <div id="carte-offert" class="carte-offert">
           <p>1 accès offert</p>
           <small>Montre cette carte à l'entrée</small>
         </div>
 
-        <div class="carte-footer">
-          <div class="carte-footer-left">
+        <div class="carte-body">
+          <div class="carte-body-left">
+            <p class="carte-label">BDE CREAD Lyon</p>
+            <p class="carte-nom" id="carte-nom">—</p>
+            <p class="carte-since" id="carte-since"></p>
             <div class="carte-progress" id="carte-progress"></div>
-            <p class="carte-count"><span id="carte-num">0</span><span id="carte-den">/10</span></p>
-            <p class="carte-sous" id="carte-sous">événements validés</p>
-            <p class="carte-last" id="carte-last"></p>
+            <div class="carte-count-row">
+              <p class="carte-count"><span id="carte-num">0</span><span id="carte-den">/10</span></p>
+              <p class="carte-sous" id="carte-sous">événements validés</p>
+              <p class="carte-last" id="carte-last"></p>
+            </div>
           </div>
-          <div class="carte-qr">
-            <canvas id="qr-canvas" width="120" height="120"></canvas>
-            <span class="carte-qr-label">scanner</span>
+          <div class="carte-body-right">
+            <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+            <div class="carte-qr">
+              <canvas id="qr-canvas" width="120" height="120"></canvas>
+              <span class="carte-qr-label">scanner</span>
+            </div>
           </div>
         </div>
+
       </div>
 
       <div id="carte-error" style="display:none" class="carte-not-found">
