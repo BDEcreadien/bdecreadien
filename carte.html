@@ -109,30 +109,28 @@
     .carte-body {
       display: flex;
       justify-content: space-between;
-      align-items: stretch;
+      align-items: flex-end;
       position: relative;
       z-index: 1;
-      gap: 12px;
+      gap: 14px;
     }
 
     .carte-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .carte-body-left {
       display: flex;
       flex-direction: column;
       flex: 1;
+      min-width: 0;
     }
 
     .carte-body-right {
-      display: flex;
-      flex-direction: column;
       flex-shrink: 0;
-      width: 90px;
     }
 
     .carte-logo {
@@ -145,16 +143,14 @@
 
     .carte-progress {
       display: grid;
-      grid-template-columns: repeat(5, 22px);
-      gap: 6px;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
+      grid-template-columns: repeat(5, 24px);
+      gap: 7px;
+      margin-bottom: 10px;
     }
 
     .carte-stamp {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 1.5px solid rgba(255,255,255,0.2);
       display: flex;
@@ -170,10 +166,10 @@
       color: white;
     }
 
-    .carte-count-row { margin-top: 4px; }
+    .carte-count-row { margin-top: 2px; }
 
     .carte-count {
-      font-size: 36px;
+      font-size: 38px;
       font-weight: 500;
       margin: 0;
       color: white;
@@ -182,7 +178,7 @@
     }
 
     .carte-count span {
-      font-size: 15px;
+      font-size: 16px;
       color: rgba(255,255,255,0.3);
       font-weight: 400;
       letter-spacing: 0;
@@ -191,13 +187,13 @@
     .carte-sous {
       font-size: 12px;
       color: rgba(255,255,255,0.35);
-      margin: 2px 0 0;
+      margin: 3px 0 0;
     }
 
     .carte-last {
-      font-size: 10px;
+      font-size: 11px;
       color: rgba(255,255,255,0.22);
-      margin: 1px 0 0;
+      margin: 2px 0 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -210,16 +206,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 3px;
-      flex: 1;
-      width: 100%;
     }
 
     .carte-qr canvas, .carte-qr img {
       display: block;
-      width: 100%;
-      height: auto;
+      width: 86px;
+      height: 86px;
       border-radius: 2px;
     }
 
