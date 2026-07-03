@@ -109,10 +109,10 @@
     .carte-body {
       display: flex;
       justify-content: space-between;
-      align-items: stretch;
+      align-items: center;
       position: relative;
       z-index: 1;
-      gap: 14px;
+      gap: 16px;
     }
 
     .carte-body-left {
@@ -124,18 +124,20 @@
 
     .carte-body-right {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
     .carte-logo {
+      position: absolute;
+      top: 14px;
+      right: 20px;
       width: 34px;
       height: 34px;
       border-radius: 50%;
       object-fit: cover;
-      flex-shrink: 0;
+      z-index: 2;
     }
 
     .carte-progress {
@@ -208,8 +210,8 @@
 
     .carte-qr canvas, .carte-qr img {
       display: block;
-      width: 86px;
-      height: 86px;
+      width: 108px;
+      height: 108px;
       border-radius: 2px;
     }
 
@@ -287,6 +289,8 @@
           <small>Montre cette carte à l'entrée</small>
         </div>
 
+        <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+
         <div class="carte-body">
           <div class="carte-body-left">
             <div>
@@ -302,7 +306,6 @@
             </div>
           </div>
           <div class="carte-body-right">
-            <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
             <div class="carte-qr">
               <canvas id="qr-canvas" width="120" height="120"></canvas>
               <span class="carte-qr-label">scanner</span>
