@@ -115,6 +115,13 @@
       gap: 12px;
     }
 
+    .carte-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
     .carte-body-left {
       display: flex;
       flex-direction: column;
@@ -124,18 +131,16 @@
     .carte-body-right {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
       flex-shrink: 0;
-      width: 100px;
-      gap: 8px;
+      width: 90px;
     }
 
     .carte-logo {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       object-fit: cover;
+      flex-shrink: 0;
     }
 
     .carte-progress {
@@ -205,14 +210,16 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
-      flex-shrink: 0;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      width: 100%;
     }
 
     .carte-qr canvas, .carte-qr img {
       display: block;
-      width: 88px;
-      height: 88px;
+      width: 100%;
+      height: auto;
       border-radius: 2px;
     }
 
@@ -292,9 +299,14 @@
 
         <div class="carte-body">
           <div class="carte-body-left">
-            <p class="carte-label">BDE CREAD Lyon</p>
-            <p class="carte-nom" id="carte-nom">—</p>
-            <p class="carte-since" id="carte-since"></p>
+            <div class="carte-header-row">
+              <div>
+                <p class="carte-label">BDE CREAD Lyon</p>
+                <p class="carte-nom" id="carte-nom">—</p>
+                <p class="carte-since" id="carte-since"></p>
+              </div>
+              <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+            </div>
             <div class="carte-progress" id="carte-progress"></div>
             <div class="carte-count-row">
               <p class="carte-count"><span id="carte-num">0</span><span id="carte-den">/10</span></p>
@@ -303,7 +315,6 @@
             </div>
           </div>
           <div class="carte-body-right">
-            <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
             <div class="carte-qr">
               <canvas id="qr-canvas" width="120" height="120"></canvas>
               <span class="carte-qr-label">scanner</span>
