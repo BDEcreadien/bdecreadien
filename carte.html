@@ -109,17 +109,10 @@
     .carte-body {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: stretch;
       position: relative;
       z-index: 1;
       gap: 14px;
-    }
-
-    .carte-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
     }
 
     .carte-body-left {
@@ -130,12 +123,16 @@
     }
 
     .carte-body-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
       flex-shrink: 0;
     }
 
     .carte-logo {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       object-fit: cover;
       flex-shrink: 0;
@@ -292,13 +289,10 @@
 
         <div class="carte-body">
           <div class="carte-body-left">
-            <div class="carte-header-row">
-              <div>
-                <p class="carte-label">BDE CREAD Lyon</p>
-                <p class="carte-nom" id="carte-nom">—</p>
-                <p class="carte-since" id="carte-since"></p>
-              </div>
-              <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+            <div>
+              <p class="carte-label">BDE CREAD Lyon</p>
+              <p class="carte-nom" id="carte-nom">—</p>
+              <p class="carte-since" id="carte-since"></p>
             </div>
             <div class="carte-progress" id="carte-progress"></div>
             <div class="carte-count-row">
@@ -308,6 +302,7 @@
             </div>
           </div>
           <div class="carte-body-right">
+            <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
             <div class="carte-qr">
               <canvas id="qr-canvas" width="120" height="120"></canvas>
               <span class="carte-qr-label">scanner</span>
