@@ -22,7 +22,7 @@
       "prenom": "Tom",
       "nom": "Maradan",
       "email": "maradantom@gmail.com",
-      "tampons": 4,
+      "tampons": 5,
       "total": 10,
       "createdAt": "2026-06-30",
       "historique": [
@@ -30,13 +30,13 @@
           "date": "30/06/2026",
           "heure": "19:39",
           "validateur": "Tom",
-          "event": "Crêpes"
+          "event": "CrÃªpes"
         },
         {
           "date": "30/06/2026",
           "heure": "19:40",
           "validateur": "Coco",
-          "event": "Soirée"
+          "event": "SoirÃ©e"
         },
         {
           "date": "30/06/2026",
@@ -48,7 +48,13 @@
           "date": "30/06/2026",
           "heure": "22:36",
           "validateur": "Moi",
-          "event": "Café"
+          "event": "CafÃ©"
+        },
+        {
+          "date": "03/07/2026",
+          "heure": "15:22",
+          "validateur": "Tom",
+          "event": "Piscine"
         }
       ]
     },
