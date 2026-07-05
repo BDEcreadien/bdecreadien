@@ -87,7 +87,6 @@
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="showTab('connexion')">Connexion</button>
       <button class="auth-tab" onclick="showTab('inscription')">Inscription</button>
-      <button class="auth-tab" onclick="showTab('reset')">Mot de passe</button>
     </div>
 
     <!-- CONNEXION -->
@@ -140,7 +139,7 @@
           </select>
         </div>
         <div class="auth-field">
-          <label>Téléphone (optionnel)</label>
+          <label>Téléphone *</label>
           <input type="tel" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel">
         </div>
       </div>
@@ -235,7 +234,7 @@
       const annee  = document.getElementById('reg-annee').value;
       const tel    = document.getElementById('reg-tel').value.trim();
 
-      if (!prenom || !nom || !email || !pwd || !annee) {
+      if (!prenom || !nom || !email || !pwd || !annee || !tel) {
         showMsg('reg-msg', 'Remplis tous les champs obligatoires (*).', 'error');
         return;
       }
