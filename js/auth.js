@@ -48,26 +48,23 @@
   }
 
   async function initNavChip() {
-    const nav = document.querySelector('nav');
-    if (!nav) return;
+    const navLinks = document.querySelector('.nav-links');
+    if (!navLinks) return;
 
+    const li = document.createElement('li');
     const profil = await getProfil();
+
     if (!profil) {
-      const a = document.createElement('a');
-      a.href = '/connexion.html';
-      a.className = 'nav-auth-chip';
-      a.textContent = 'Connexion';
-      nav.appendChild(a);
-      return;
+      li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
+    } else {
+      li.className = 'nav-auth-li';
+      li.innerHTML = `
+        <span class="nav-auth-name">${profil.prenom}</span>
+        <button class="nav-auth-logout" onclick="Auth.logout()">Déconnexion</button>
+      `;
     }
 
-    const chip = document.createElement('div');
-    chip.className = 'nav-auth-chip nav-auth-chip--connected';
-    chip.innerHTML = `
-      <span class="nav-auth-name">${profil.prenom} <span class="nav-auth-role">${LABELS[profil.role] ?? profil.role}</span></span>
-      <button class="nav-auth-logout" onclick="Auth.logout()">Déconnexion</button>
-    `;
-    nav.appendChild(chip);
+    navLinks.appendChild(li);
   }
 
   async function syncOneSignalId() {
