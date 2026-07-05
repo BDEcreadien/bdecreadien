@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des membres — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <style>
+    body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
+
+    .admin-wrap { max-width: 900px; margin: 0 auto; padding: 100px 24px 48px; }
+
+    .admin-header { margin-bottom: 28px; }
+    .admin-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--violet); letter-spacing: 1px; }
+    .admin-header p { font-size: 14px; color: var(--gris-texte); margin-top: 4px; }
+
+    .admin-toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .admin-search {
+      flex: 1; min-width: 200px; padding: 9px 14px;
+      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; outline: none;
+    }
+    .admin-search:focus { border-color: var(--violet); }
+    .admin-filter {
+      padding: 9px 14px; border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
+      background: white; outline: none; cursor: pointer;
+    }
+    .admin-filter:focus { border-color: var(--violet); }
+
+    .admin-table-wrap { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(70,58,144,0.07); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--gris-clair); }
+    th {
+      padding: 12px 16px; text-align: left;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--gris-texte); font-weight: 600;
+    }
+    td { padding: 12px 16px; border-top: 1px solid var(--gris-clair); font-size: 14px; }
+
+    .user-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      object-fit: cover; border: 1.5px solid var(--gris-moyen);
+      vertical-align: middle; margin-right: 10px;
+    }
+
+    .role-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .role-badge.etudiant    { background: #EEF0FF; color: var(--violet); }
+    .role-badge.membre      { background: #FFF0E8; color: var(--orange); }
+    .role-badge.responsable { background: #E8F4E8; color: #2A7A3A; }
+    .role-badge.admin       { background: #1A1A2E; color: white; }
+
+    .role-select {
+      padding: 5px 10px; border: 1.5px solid var(--gris-moyen); border-radius: 8px;
+      font-family: 'Barlow', sans-serif; font-size: 13px; cursor: pointer; outline: none;
+    }
+    .role-select:focus { border-color: var(--violet); }
+
+    .save-btn {
+      padding: 5px 14px; background: var(--violet); color: white;
+      border: none; border-radius: 8px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 0.5px;
+      cursor: pointer; transition: var(--transition);
+    }
+    .save-btn:hover { opacity: 0.85; }
+    .save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .admin-empty { text-align: center; padding: 40px; color: var(--gris-texte); font-size: 14px; }
+    .admin-count { font-size: 13px; color: var(--gris-texte); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="admin-utilisateurs.html" aria-current="page">Membres</a></li>
+    </ul>
+  </nav>
+
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <h1>Gestion des membres</h1>
+      <p>Modifie le rôle d'un utilisateur. Les changements prennent effet à la prochaine connexion.</p>
+    </div>
+
+    <div class="admin-toolbar">
+      <input class="admin-search" id="search" type="search" placeholder="Rechercher par nom, email…" oninput="filterTable()">
+      <select class="admin-filter" id="filter-role" onchange="filterTable()">
+        <option value="">Tous les rôles</option>
+        <option value="etudiant">Étudiant</option>
+        <option value="membre">Membre BDE</option>
+        <option value="responsable">Responsable</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+
+    <p class="admin-count" id="count"></p>
+
+    <div class="admin-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Année</th>
+            <th>Rôle actuel</th>
+            <th>Nouveau rôle</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="5" class="admin-empty">Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    let allUsers = [];
+
+    async function init() {
+      const ok = await Auth.requireRole('admin');
+      if (!ok) return;
+
+      const { data, error } = await Auth.sb
+        .from('profils')
+        .select('id, prenom, nom, email, annee, role, avatar_url')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        document.getElementById('tbody').innerHTML =
+          '<tr><td colspan="5" class="admin-empty">Erreur de chargement.</td></tr>';
+        return;
+      }
+
+      allUsers = data;
+      renderTable(allUsers);
+    }
+
+    function labelRole(r) {
+      return { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' }[r] ?? r;
+    }
+
+    function renderTable(users) {
+      document.getElementById('count').textContent = users.length + ' utilisateur(s)';
+      const tbody = document.getElementById('tbody');
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">Aucun résultat.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map(u => `
+        <tr data-id="${u.id}">
+          <td>
+            <img class="user-avatar" src="${u.avatar_url || 'assets/Logo.png'}" alt="">
+            <strong>${u.prenom} ${u.nom}</strong><br>
+            <span style="font-size:12px;color:var(--gris-texte)">${u.email}</span>
+          </td>
+          <td>${u.annee || '—'}</td>
+          <td><span class="role-badge ${u.role}">${labelRole(u.role)}</span></td>
+          <td>
+            <select class="role-select" data-original="${u.role}" onchange="markDirty(this)">
+              <option value="etudiant"    ${u.role==='etudiant'   ?'selected':''}>Étudiant</option>
+              <option value="membre"      ${u.role==='membre'     ?'selected':''}>Membre BDE</option>
+              <option value="responsable" ${u.role==='responsable'?'selected':''}>Responsable</option>
+              <option value="admin"       ${u.role==='admin'      ?'selected':''}>Admin</option>
+            </select>
+          </td>
+          <td>
+            <button class="save-btn" data-id="${u.id}" onclick="saveRole(this)" disabled>Sauvegarder</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function markDirty(sel) {
+      const btn = sel.closest('tr').querySelector('.save-btn');
+      btn.disabled = sel.value === sel.dataset.original;
+    }
+
+    async function saveRole(btn) {
+      const id   = btn.dataset.id;
+      const row  = btn.closest('tr');
+      const sel  = row.querySelector('.role-select');
+      const role = sel.value;
+      btn.disabled = true; btn.textContent = '…';
+
+      const { error } = await Auth.sb.from('profils').update({ role }).eq('id', id);
+
+      if (error) {
+        btn.textContent = 'Erreur';
+        setTimeout(() => { btn.textContent = 'Sauvegarder'; btn.disabled = false; }, 2000);
+        return;
+      }
+
+      sel.dataset.original = role;
+      btn.textContent = '✓';
+      row.querySelector('.role-badge').className = 'role-badge ' + role;
+      row.querySelector('.role-badge').textContent = labelRole(role);
+      setTimeout(() => { btn.textContent = 'Sauvegarder'; }, 1500);
+
+      const u = allUsers.find(x => x.id === id);
+      if (u) u.role = role;
+    }
+
+    function filterTable() {
+      const q    = document.getElementById('search').value.toLowerCase();
+      const role = document.getElementById('filter-role').value;
+      const filtered = allUsers.filter(u => {
+        const matchQ    = !q || (u.prenom + ' ' + u.nom + ' ' + u.email).toLowerCase().includes(q);
+        const matchRole = !role || u.role === role;
+        return matchQ && matchRole;
+      });
+      renderTable(filtered);
+    }
+
+    init();
+  </script>
+</body>
+</html>

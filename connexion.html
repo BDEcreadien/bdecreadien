@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <style>
+    body { background: var(--gris-clair); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 4px 32px rgba(70,58,144,0.08);
+    }
+
+    .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .auth-logo img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .auth-logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; color: var(--violet); }
+
+    .auth-tabs { display: flex; border-bottom: 2px solid var(--gris-clair); margin-bottom: 28px; }
+    .auth-tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 0.5px;
+      color: var(--gris-texte); cursor: pointer; border: none; background: none;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      transition: var(--transition); text-transform: uppercase;
+    }
+    .auth-tab.active { color: var(--violet); border-bottom-color: var(--violet); font-weight: 600; }
+
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+
+    .auth-field { margin-bottom: 16px; }
+    .auth-field label { display: block; font-size: 12px; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-texte); margin-bottom: 6px; }
+    .auth-field input,
+    .auth-field select {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
+      background: white; transition: var(--transition); outline: none; box-sizing: border-box;
+    }
+    .auth-field input:focus,
+    .auth-field select:focus { border-color: var(--violet); }
+
+    .auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .auth-btn {
+      width: 100%; padding: 12px; background: var(--gradient);
+      border: none; border-radius: 12px; color: white;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: var(--transition); margin-top: 4px;
+    }
+    .auth-btn:hover { opacity: 0.9; }
+    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .auth-msg {
+      margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; display: none;
+    }
+    .auth-msg.error   { background: #FFF0F0; color: #C0392B; border: 1px solid #F5C0C0; }
+    .auth-msg.success { background: #F0FFF4; color: #1A7A40; border: 1px solid #B0E8C4; }
+    .auth-msg.visible { display: block; }
+
+    .auth-divider { text-align: center; font-size: 12px; color: var(--gris-moyen); margin: 8px 0 14px; }
+    .auth-link { font-size: 13px; color: var(--violet); cursor: pointer; background: none; border: none; text-decoration: underline; padding: 0; }
+
+    .auth-success-screen { text-align: center; padding: 20px 0; }
+    .auth-success-screen .big-check { font-size: 48px; margin-bottom: 12px; }
+    .auth-success-screen h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; color: var(--violet); margin-bottom: 8px; }
+    .auth-success-screen p { font-size: 14px; color: var(--gris-texte); line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="assets/Logo.png" alt="BDE CREAD">
+      <span class="auth-logo-text">BDE CREAD Lyon</span>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showTab('connexion')">Connexion</button>
+      <button class="auth-tab" onclick="showTab('inscription')">Inscription</button>
+      <button class="auth-tab" onclick="showTab('reset')">Mot de passe</button>
+    </div>
+
+    <!-- CONNEXION -->
+    <div id="panel-connexion" class="auth-panel active">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+      <div class="auth-divider">ou</div>
+      <div style="text-align:center;">
+        <button class="auth-link" onclick="showTab('reset')">Mot de passe oublié ?</button>
+      </div>
+      <div id="login-msg" class="auth-msg"></div>
+    </div>
+
+    <!-- INSCRIPTION -->
+    <div id="panel-inscription" class="auth-panel">
+      <div class="auth-row">
+        <div class="auth-field">
+          <label>Prénom *</label>
+          <input type="text" id="reg-prenom" placeholder="Marie" autocomplete="given-name">
+        </div>
+        <div class="auth-field">
+          <label>Nom *</label>
+          <input type="text" id="reg-nom" placeholder="Dupont" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Email *</label>
+        <input type="email" id="reg-email" placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Mot de passe * (min. 8 caractères)</label>
+        <input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="auth-row">
+        <div class="auth-field">
+          <label>Année d'étude *</label>
+          <select id="reg-annee">
+            <option value="1ère">1ère année</option>
+            <option value="2ème">2ème année</option>
+            <option value="3ème">3ème année</option>
+            <option value="4ème">4ème année</option>
+            <option value="5ème">5ème année</option>
+          </select>
+        </div>
+        <div class="auth-field">
+          <label>Téléphone (optionnel)</label>
+          <input type="tel" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel">
+        </div>
+      </div>
+      <button class="auth-btn" onclick="doSignup()">Créer mon compte</button>
+      <div id="reg-msg" class="auth-msg"></div>
+    </div>
+
+    <!-- SUCCÈS après inscription -->
+    <div id="panel-success" class="auth-panel">
+      <div class="auth-success-screen">
+        <div class="big-check">✅</div>
+        <h2>Compte créé !</h2>
+        <p>Un email de confirmation a été envoyé à <strong id="reg-email-confirm"></strong>.<br>Clique sur le lien dans l'email pour activer ton compte.</p>
+        <p style="margin-top:14px;font-size:12px;color:var(--gris-moyen);">Tu peux fermer cette page.</p>
+      </div>
+    </div>
+
+    <!-- RESET MOT DE PASSE -->
+    <div id="panel-reset" class="auth-panel">
+      <div class="auth-field">
+        <label>Ton email</label>
+        <input type="email" id="reset-email" placeholder="ton@email.com" autocomplete="email">
+      </div>
+      <button class="auth-btn" onclick="doReset()">Envoyer le lien de réinitialisation</button>
+      <div id="reset-msg" class="auth-msg"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    sb.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const next = new URLSearchParams(window.location.search).get('next') || '/';
+        window.location.href = next;
+      }
+    });
+
+    function showTab(name) {
+      ['connexion','inscription','reset','success'].forEach(t => {
+        const panel = document.getElementById('panel-' + t);
+        if (panel) panel.classList.remove('active');
+      });
+      document.querySelectorAll('.auth-tab').forEach((tab, i) => {
+        tab.classList.remove('active');
+        if (['connexion','inscription','reset'][i] === name) tab.classList.add('active');
+      });
+      const target = document.getElementById('panel-' + name);
+      if (target) target.classList.add('active');
+    }
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'auth-msg ' + type + ' visible';
+    }
+    function hideMsg(id) {
+      document.getElementById(id).className = 'auth-msg';
+    }
+
+    async function doLogin() {
+      hideMsg('login-msg');
+      const email = document.getElementById('login-email').value.trim();
+      const pwd   = document.getElementById('login-pwd').value;
+      if (!email || !pwd) { showMsg('login-msg', 'Remplis tous les champs.', 'error'); return; }
+
+      const btn = document.querySelector('#panel-connexion .auth-btn');
+      btn.disabled = true; btn.textContent = 'Connexion…';
+
+      const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+      btn.disabled = false; btn.textContent = 'Se connecter';
+
+      if (error) {
+        showMsg('login-msg', error.message === 'Invalid login credentials'
+          ? 'Email ou mot de passe incorrect.'
+          : error.message, 'error');
+        return;
+      }
+      const next = new URLSearchParams(window.location.search).get('next') || '/';
+      window.location.href = next;
+    }
+
+    async function doSignup() {
+      hideMsg('reg-msg');
+      const prenom = document.getElementById('reg-prenom').value.trim();
+      const nom    = document.getElementById('reg-nom').value.trim();
+      const email  = document.getElementById('reg-email').value.trim();
+      const pwd    = document.getElementById('reg-pwd').value;
+      const annee  = document.getElementById('reg-annee').value;
+      const tel    = document.getElementById('reg-tel').value.trim();
+
+      if (!prenom || !nom || !email || !pwd || !annee) {
+        showMsg('reg-msg', 'Remplis tous les champs obligatoires (*).', 'error');
+        return;
+      }
+
+      const btn = document.querySelector('#panel-inscription .auth-btn');
+      btn.disabled = true; btn.textContent = 'Création…';
+
+      const { error } = await sb.auth.signUp({
+        email,
+        password: pwd,
+        options: { data: { prenom, nom, annee, telephone: tel || null } }
+      });
+
+      btn.disabled = false; btn.textContent = 'Créer mon compte';
+
+      if (error) { showMsg('reg-msg', error.message, 'error'); return; }
+
+      document.getElementById('reg-email-confirm').textContent = email;
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-success').classList.add('active');
+
+      if (window.OneSignalDeferred) {
+        OneSignalDeferred.push(async (OS) => { await OS.User.PushSubscription.optIn(); });
+      }
+    }
+
+    async function doReset() {
+      hideMsg('reset-msg');
+      const email = document.getElementById('reset-email').value.trim();
+      if (!email) { showMsg('reset-msg', 'Saisis ton email.', 'error'); return; }
+
+      const btn = document.querySelector('#panel-reset .auth-btn');
+      btn.disabled = true; btn.textContent = 'Envoi…';
+
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://bdecreadien.fr/connexion.html'
+      });
+
+      btn.disabled = false; btn.textContent = 'Envoyer le lien de réinitialisation';
+      if (error) { showMsg('reset-msg', error.message, 'error'); return; }
+      showMsg('reset-msg', 'Email envoyé ! Vérifie ta boîte de réception.', 'success');
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const active = document.querySelector('.auth-panel.active');
+      if (!active) return;
+      if (active.id === 'panel-connexion') doLogin();
+      else if (active.id === 'panel-inscription') doSignup();
+      else if (active.id === 'panel-reset') doReset();
+    });
+  </script>
+</body>
+</html>

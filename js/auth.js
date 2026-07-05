@@ -1,0 +1,90 @@
+(() => {
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+  window._sb = sb;
+
+  const RANG   = { etudiant: 1, membre: 2, responsable: 3, admin: 4 };
+  const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' };
+
+  let _profil = null;
+
+  async function getUser() {
+    const { data: { user } } = await sb.auth.getUser();
+    return user;
+  }
+
+  async function getProfil(forceRefresh = false) {
+    if (_profil && !forceRefresh) return _profil;
+    const user = await getUser();
+    if (!user) { _profil = null; return null; }
+    const { data } = await sb.from('profils').select('*').eq('id', user.id).single();
+    _profil = data;
+    return _profil;
+  }
+
+  async function getRole() {
+    const p = await getProfil();
+    return p?.role ?? null;
+  }
+
+  function hasRole(role, min) {
+    return (RANG[role] ?? 0) >= (RANG[min] ?? 0);
+  }
+
+  async function requireRole(min) {
+    const role = await getRole();
+    if (!role || !hasRole(role, min)) {
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = '/connexion.html?next=' + next;
+      return false;
+    }
+    return true;
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    _profil = null;
+    window.location.href = '/connexion.html';
+  }
+
+  async function initNavChip() {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+
+    const profil = await getProfil();
+    if (!profil) {
+      const a = document.createElement('a');
+      a.href = '/connexion.html';
+      a.className = 'nav-auth-chip';
+      a.textContent = 'Connexion';
+      nav.appendChild(a);
+      return;
+    }
+
+    const chip = document.createElement('div');
+    chip.className = 'nav-auth-chip nav-auth-chip--connected';
+    chip.innerHTML = `
+      <span class="nav-auth-name">${profil.prenom} <span class="nav-auth-role">${LABELS[profil.role] ?? profil.role}</span></span>
+      <button class="nav-auth-logout" onclick="Auth.logout()">Déconnexion</button>
+    `;
+    nav.appendChild(chip);
+  }
+
+  async function syncOneSignalId() {
+    if (!window.OneSignalDeferred) return;
+    const user = await getUser();
+    if (!user) return;
+    OneSignalDeferred.push(async (OS) => {
+      const playerId = await OS.User.PushSubscription.id;
+      if (!playerId) return;
+      await sb.from('profils').update({ onesignal_id: playerId }).eq('id', user.id);
+    });
+  }
+
+  window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initNavChip();
+    syncOneSignalId();
+  });
+})();

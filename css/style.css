@@ -2670,3 +2670,75 @@ a.contact-info-value:hover { color: var(--violet); }
   #notif-banner { flex-wrap: wrap; bottom: 80px; }
   #notif-banner .nb-actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ===================================
+   AUTH — nav chip
+   =================================== */
+.nav-auth-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.nav-auth-chip:not(.nav-auth-chip--connected) {
+  color: white;
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+}
+.nav-auth-chip:not(.nav-auth-chip--connected):hover {
+  background: rgba(255,255,255,0.1);
+}
+
+nav.scrolled .nav-auth-chip:not(.nav-auth-chip--connected) {
+  color: var(--gris-texte);
+  border-color: var(--gris-moyen);
+}
+nav.scrolled .nav-auth-chip:not(.nav-auth-chip--connected):hover {
+  background: var(--gris-clair);
+}
+
+.nav-auth-name {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+nav.scrolled .nav-auth-name {
+  color: var(--gris-texte);
+}
+
+.nav-auth-role {
+  font-weight: 300;
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+.nav-auth-logout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.nav-auth-logout:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+nav.scrolled .nav-auth-logout {
+  border-color: var(--gris-moyen);
+  color: var(--gris-texte);
+}
+nav.scrolled .nav-auth-logout:hover {
+  background: var(--gris-clair);
+}
