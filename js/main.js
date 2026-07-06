@@ -375,6 +375,14 @@ function renderEvenements(allData) {
     const d = new Date(ev.date);
     const day = d.getDate().toString().padStart(2,'0');
     const month = d.toLocaleString('fr-FR', { month: 'short' });
+    const slug = eventSlug(ev);
+    const jeViens = _mesInscriptions.has(slug);
+    const jvBg = jeViens ? 'linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%)' : 'white';
+    const jvColor = jeViens ? 'white' : 'var(--violet)';
+    const jvBorder = jeViens ? 'transparent' : 'var(--violet)';
+    const jvLabel = jeViens
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"/></svg>J\'y vais'
+      : 'Je viens';
     return `<div class="actu-item reveal" style="padding:1rem; border-radius:12px; border:1px solid var(--gris-border); background:white; gap:1rem; cursor:pointer;" data-evid="${allData.indexOf(ev)}">
       <div class="actu-item-date" style="min-width:46px;">
         <span class="day">${day}</span>
@@ -390,6 +398,7 @@ function renderEvenements(allData) {
             ${ev.inscrits ? `<span class="ev-inscrits"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>${ev.inscrits} inscrits</span>` : ''}
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
+            <button class="btn-je-viens" data-slug="${slug}" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:6px 12px;border-radius:20px;border:1.5px solid ${jvBorder};background:${jvBg};color:${jvColor};cursor:pointer;display:inline-flex;align-items:center;">${jvLabel}</button>
             ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%); color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
             <button class="btn-ics" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" data-horaire="${(ev.horaire||'').replace(/"/g,'&quot;')}" data-lieu="${(ev.lieu||'').replace(/"/g,'&quot;')}" data-desc="${(ev.description||'').replace(/"/g,'&quot;')}" aria-label="Ajouter au calendrier">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
@@ -406,6 +415,9 @@ function renderEvenements(allData) {
   container.querySelectorAll('.btn-share[data-titre]').forEach(btn => {
     btn.addEventListener('click', (e) => { e.stopPropagation(); partagerEvenement(btn.dataset.titre, btn.dataset.date); });
   });
+  container.querySelectorAll('.btn-je-viens').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleJeViens(btn); });
+  });
   container.querySelectorAll('.actu-item[data-evid]').forEach(el => {
     const ev = _eventsCache[+el.dataset.evid];
     if (ev) el.addEventListener('click', (e) => { if (!e.target.closest('a,button')) openEvModal(ev); });
@@ -415,11 +427,70 @@ function renderEvenements(allData) {
   applyFilter();
 }
 
+let _mesInscriptions = new Set();
+
+function eventSlug(ev) {
+  const t = String(ev.titre || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  return t + (ev.date ? '-' + ev.date : '');
+}
+
+async function loadMesInscriptions() {
+  const ok = await waitForSupabase();
+  if (!ok) return;
+  const { data: { user } } = await window._sb.auth.getUser();
+  if (!user) return;
+  const { data } = await window._sb.from('inscriptions_evenements')
+    .select('evenement_slug').eq('user_id', user.id);
+  (data || []).forEach(r => _mesInscriptions.add(r.evenement_slug));
+}
+
+function setJeViensStyle(btn, on) {
+  btn.innerHTML = on
+    ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"/></svg>J\'y vais'
+    : 'Je viens';
+  btn.style.background   = on ? 'linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%)' : 'white';
+  btn.style.color        = on ? 'white' : 'var(--violet)';
+  btn.style.borderColor  = on ? 'transparent' : 'var(--violet)';
+}
+
+async function toggleJeViens(btn) {
+  const slug  = btn.dataset.slug;
+  const titre = btn.dataset.titre;
+  const date  = btn.dataset.date || null;
+
+  const ok = await waitForSupabase();
+  if (!ok) { window.location.href = '/connexion.html?next=/agenda.html'; return; }
+  const { data: { user } } = await window._sb.auth.getUser();
+  if (!user) { window.location.href = '/connexion.html?next=/agenda.html'; return; }
+
+  btn.disabled = true;
+  if (_mesInscriptions.has(slug)) {
+    const { error } = await window._sb.from('inscriptions_evenements')
+      .delete().eq('user_id', user.id).eq('evenement_slug', slug);
+    btn.disabled = false;
+    if (error) { alert(error.message); return; }
+    _mesInscriptions.delete(slug);
+    setJeViensStyle(btn, false);
+  } else {
+    const { error } = await window._sb.from('inscriptions_evenements').insert({
+      user_id: user.id, evenement_slug: slug, evenement_titre: titre, evenement_date: date
+    });
+    btn.disabled = false;
+    if (error) { alert(error.message); return; }
+    _mesInscriptions.add(slug);
+    setJeViensStyle(btn, true);
+  }
+}
+
 if (document.getElementById('evenements-list')) {
-  fetch('/_data/evenements.json')
-    .then(r => r.json())
-    .then(data => renderEvenements(Array.isArray(data) ? data : (data.evenements || [])))
-    .catch(() => renderEvenements([]));
+  Promise.all([
+    fetch('/_data/evenements.json').then(r => r.json()).catch(() => []),
+    loadMesInscriptions()
+  ]).then(([data]) => {
+    renderEvenements(Array.isArray(data) ? data : (data.evenements || []));
+  });
 }
 
 // ===================================
