@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace BDE — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <style>
+    body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
+
+    .bde-wrap { max-width: 900px; margin: 0 auto; padding: 100px 24px 60px; }
+
+    .bde-header { margin-bottom: 24px; }
+    .bde-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--violet); letter-spacing: 1px; }
+    .bde-header p  { font-size: 14px; color: var(--gris-texte); margin-top: 4px; }
+
+    .role-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 20px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      background: var(--gris-clair); color: var(--gris-texte);
+    }
+    .role-badge.membre { background: #EEF0FF; color: var(--violet); }
+    .role-badge.admin  { background: #FDE8E8; color: #C0392B; }
+
+    /* Stats */
+    .bde-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;
+      margin-bottom: 24px;
+    }
+    .bde-stat {
+      background: white; border-radius: 16px; padding: 20px;
+      box-shadow: 0 4px 24px rgba(70,58,144,0.06);
+    }
+    .bde-stat-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .bde-stat-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--gris-texte);
+      margin-top: 6px;
+    }
+
+    /* Card générique */
+    .bde-card {
+      background: white; border-radius: 20px;
+      padding: 26px; box-shadow: 0 4px 24px rgba(70,58,144,0.08);
+      margin-bottom: 20px;
+    }
+    .bde-card h2 {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 16px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--violet);
+      margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1.5px solid var(--gris-clair);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .bde-card h2 .badge-count {
+      background: var(--gradient); color: white;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+      padding: 2px 10px; border-radius: 20px; letter-spacing: 0.5px;
+    }
+
+    .bde-btn {
+      padding: 10px 24px; background: var(--gradient);
+      border: none; border-radius: 12px; color: white;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: var(--transition); text-decoration: none; display: inline-block;
+    }
+    .bde-btn:hover { opacity: 0.9; }
+    .bde-btn.ghost {
+      background: none; color: var(--violet); border: 1.5px solid var(--violet);
+    }
+    .bde-btn.ghost:hover { background: var(--violet); color: white; opacity: 1; }
+    .bde-btn.small { padding: 6px 14px; font-size: 12px; }
+
+    /* List items */
+    .bde-list { display: flex; flex-direction: column; gap: 10px; }
+    .bde-item {
+      background: var(--gris-clair); border-radius: 12px; padding: 14px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .bde-item-body { flex: 1; min-width: 0; }
+    .bde-item-title { font-weight: 700; color: var(--noir); font-size: 14px; margin-bottom: 4px; }
+    .bde-item-meta { font-size: 12px; color: var(--gris-texte); }
+    .bde-item-msg  { font-size: 13px; color: var(--noir); margin-top: 8px; line-height: 1.5; white-space: pre-wrap; }
+    .bde-item-actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+
+    .status-chip {
+      display: inline-block; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+    }
+    .status-chip.nouveau  { background: #FFF3E0; color: #E67E22; }
+    .status-chip.vu       { background: #EEF0FF; color: var(--violet); }
+    .status-chip.traite   { background: #F0FFF4; color: #1A7A40; }
+    .status-chip.pending  { background: #FFF3E0; color: #E67E22; }
+    .status-chip.accepted { background: #F0FFF4; color: #1A7A40; }
+    .status-chip.rejected { background: #FFF0F0; color: #C0392B; }
+
+    .bde-empty {
+      text-align: center; padding: 30px 12px;
+      color: var(--gris-texte); font-size: 13px;
+    }
+
+    .bde-quick-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    @media (max-width: 600px) {
+      .bde-item { flex-direction: column; }
+      .bde-item-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html">Annonces</a></li>
+      <li><a href="partenaires.html">Partenaires</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+    </button>
+  </nav>
+
+  <div class="bde-wrap">
+
+    <div class="bde-header">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-moyen);margin-bottom:4px;">BDE CREAD Lyon</p>
+      <h1>Espace BDE</h1>
+      <p id="bde-role-line">Chargement…</p>
+    </div>
+
+    <div class="bde-stats" id="bde-stats"></div>
+
+    <!-- ANNONCES À MODÉRER -->
+    <div class="bde-card">
+      <h2>Annonces à modérer <span class="badge-count" id="c-annonces">0</span></h2>
+      <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
+        Valider ou refuser les annonces publiées par les étudiants.
+      </p>
+      <a href="/admin-annonces.html" class="bde-btn">Ouvrir la modération</a>
+    </div>
+
+    <!-- FEEDBACKS -->
+    <div class="bde-card">
+      <h2>Feedbacks des étudiants <span class="badge-count" id="c-feedbacks">0</span></h2>
+      <div id="feedbacks-list" class="bde-list">
+        <div class="bde-empty">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- DEMANDES ADHÉSION (admin only) -->
+    <div class="bde-card" id="card-demandes" style="display:none;">
+      <h2>Demandes d'adhésion au BDE <span class="badge-count" id="c-demandes">0</span></h2>
+      <div id="demandes-list" class="bde-list">
+        <div class="bde-empty">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- GESTION UTILISATEURS (admin only) -->
+    <div class="bde-card" id="card-users" style="display:none;">
+      <h2>Gestion des utilisateurs</h2>
+      <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
+        Voir tous les comptes, changer les rôles, promouvoir des membres.
+      </p>
+      <div class="bde-quick-actions">
+        <a href="/admin-utilisateurs.html" class="bde-btn">Ouvrir la gestion</a>
+        <a href="/profil.html" class="bde-btn ghost">Mon profil</a>
+      </div>
+    </div>
+
+    <!-- RETOUR PROFIL -->
+    <div style="text-align:center;padding:8px 0 20px;">
+      <a href="/profil.html" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gris-moyen);text-decoration:underline;">← Retour au profil</a>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js?v=4"></script>
+  <script src="js/main.js?v=4"></script>
+  <script>
+    const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
+
+    let currentUser = null;
+    let currentProfil = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const ok = await Auth.requireRole('membre');
+      if (!ok) return;
+      currentProfil = await Auth.getProfil();
+      currentUser = await Auth.getUser();
+
+      renderHeader();
+      if (currentProfil.role === 'admin') {
+        document.getElementById('card-demandes').style.display = '';
+        document.getElementById('card-users').style.display = '';
+      }
+      loadStats();
+      loadFeedbacks();
+      if (currentProfil.role === 'admin') loadDemandes();
+    });
+
+    function renderHeader() {
+      const r = currentProfil.role;
+      document.getElementById('bde-role-line').innerHTML =
+        `Connecté en tant que <strong>${currentProfil.prenom}</strong> — <span class="role-badge ${r}">${LABELS[r]}</span>`;
+    }
+
+    async function loadStats() {
+      const [annonces, feedbacks, demandes] = await Promise.all([
+        Auth.sb.from('annonces').select('id', { count: 'exact', head: true }).eq('statut','pending'),
+        Auth.sb.from('feedbacks').select('id', { count: 'exact', head: true }).eq('statut','nouveau'),
+        currentProfil.role === 'admin'
+          ? Auth.sb.from('demandes_membre_bde').select('id', { count: 'exact', head: true }).eq('statut','pending')
+          : Promise.resolve({ count: 0 })
+      ]);
+
+      const stats = document.getElementById('bde-stats');
+      const items = [
+        { label: 'Annonces à valider', value: annonces.count || 0 },
+        { label: 'Nouveaux feedbacks', value: feedbacks.count || 0 }
+      ];
+      if (currentProfil.role === 'admin') items.push({ label: 'Demandes d\'adhésion', value: demandes.count || 0 });
+
+      stats.innerHTML = items.map(s => `
+        <div class="bde-stat">
+          <div class="bde-stat-value">${s.value}</div>
+          <div class="bde-stat-label">${s.label}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('c-annonces').textContent = annonces.count || 0;
+      document.getElementById('c-feedbacks').textContent = feedbacks.count || 0;
+      if (currentProfil.role === 'admin') {
+        document.getElementById('c-demandes').textContent = demandes.count || 0;
+      }
+    }
+
+    // ============ FEEDBACKS ============
+    async function loadFeedbacks() {
+      const { data, error } = await Auth.sb.from('feedbacks')
+        .select('*, profils!feedbacks_auteur_id_fkey(prenom, nom)')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      const wrap = document.getElementById('feedbacks-list');
+      if (error) { wrap.innerHTML = `<div class="bde-empty">Erreur : ${error.message}</div>`; return; }
+      if (!data.length) { wrap.innerHTML = `<div class="bde-empty">Aucun feedback pour le moment.</div>`; return; }
+
+      wrap.innerHTML = data.map(f => {
+        const auteur = f.profils ? `${f.profils.prenom} ${f.profils.nom}` : 'Étudiant';
+        const date = new Date(f.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+        const nextStatut = f.statut === 'nouveau' ? 'vu' : f.statut === 'vu' ? 'traite' : 'nouveau';
+        const nextLabel  = f.statut === 'nouveau' ? 'Marquer vu' : f.statut === 'vu' ? 'Marquer traité' : 'Rouvrir';
+        return `
+          <div class="bde-item">
+            <div class="bde-item-body">
+              <div class="bde-item-title">${escapeHtml(f.sujet)}<span class="status-chip ${f.statut}">${f.statut}</span></div>
+              <div class="bde-item-meta">Par ${escapeHtml(auteur)} · ${date}</div>
+              <div class="bde-item-msg">${escapeHtml(f.message)}</div>
+            </div>
+            <div class="bde-item-actions">
+              <button class="bde-btn ghost small" onclick="setFeedbackStatut('${f.id}','${nextStatut}')">${nextLabel}</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function setFeedbackStatut(id, statut) {
+      const { error } = await Auth.sb.from('feedbacks').update({ statut }).eq('id', id);
+      if (error) { alert(error.message); return; }
+      loadFeedbacks(); loadStats();
+    }
+
+    // ============ DEMANDES ADHÉSION (admin) ============
+    async function loadDemandes() {
+      const { data, error } = await Auth.sb.from('demandes_membre_bde')
+        .select('*, profils!demandes_membre_bde_user_id_fkey(prenom, nom, email, annee)')
+        .order('created_at', { ascending: false });
+
+      const wrap = document.getElementById('demandes-list');
+      if (error) { wrap.innerHTML = `<div class="bde-empty">Erreur : ${error.message}</div>`; return; }
+      if (!data.length) { wrap.innerHTML = `<div class="bde-empty">Aucune demande pour le moment.</div>`; return; }
+
+      wrap.innerHTML = data.map(d => {
+        const p = d.profils;
+        const auteur = p ? `${p.prenom} ${p.nom}` : 'Étudiant';
+        const details = p ? `${p.email || ''} · ${p.annee || ''}` : '';
+        const date = new Date(d.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+        const actions = d.statut === 'pending'
+          ? `<button class="bde-btn small" onclick="acceptDemande('${d.id}','${d.user_id}')">✓ Accepter</button>
+             <button class="bde-btn ghost small" onclick="rejectDemande('${d.id}')">✕ Refuser</button>`
+          : `<span style="font-size:12px;color:var(--gris-texte);">Traitée</span>`;
+        return `
+          <div class="bde-item">
+            <div class="bde-item-body">
+              <div class="bde-item-title">${escapeHtml(auteur)}<span class="status-chip ${d.statut}">${d.statut}</span></div>
+              <div class="bde-item-meta">${escapeHtml(details)} · ${date}</div>
+              <div class="bde-item-msg">${escapeHtml(d.motivation)}</div>
+            </div>
+            <div class="bde-item-actions">${actions}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function acceptDemande(demandeId, userId) {
+      if (!confirm('Accepter cet étudiant comme Membre BDE ?')) return;
+      // 1) marquer la demande acceptée
+      const { error: e1 } = await Auth.sb.from('demandes_membre_bde')
+        .update({ statut: 'accepted', traite_par: currentUser.id, updated_at: new Date().toISOString() })
+        .eq('id', demandeId);
+      if (e1) { alert(e1.message); return; }
+      // 2) promouvoir le profil
+      const { error: e2 } = await Auth.sb.from('profils').update({ role: 'membre' }).eq('id', userId);
+      if (e2) { alert('Demande acceptée mais échec du changement de rôle : ' + e2.message); return; }
+      loadDemandes(); loadStats();
+    }
+
+    async function rejectDemande(demandeId) {
+      if (!confirm('Refuser cette demande ?')) return;
+      const { error } = await Auth.sb.from('demandes_membre_bde')
+        .update({ statut: 'rejected', traite_par: currentUser.id, updated_at: new Date().toISOString() })
+        .eq('id', demandeId);
+      if (error) { alert(error.message); return; }
+      loadDemandes(); loadStats();
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+  </script>
+</body>
+</html>

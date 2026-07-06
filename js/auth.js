@@ -64,7 +64,9 @@
       li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
     } else {
       li.className = 'nav-auth-li';
-      li.innerHTML = `<a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>`;
+      const isBde = profil.role === 'membre' || profil.role === 'admin';
+      const bdeLink = isBde ? `<a href="/bde.html" class="nav-auth-bde" title="Espace BDE">BDE</a>` : '';
+      li.innerHTML = `${bdeLink}<a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>`;
     }
 
     navLinks.appendChild(li);

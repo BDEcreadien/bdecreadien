@@ -2707,6 +2707,20 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
   transition: var(--transition);
   position: relative;
 }
+.nav-auth-bde {
+  text-decoration: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--gradient);
+  color: white !important;
+  margin-right: 4px;
+  transition: var(--transition);
+}
+.nav-auth-bde:hover { opacity: 0.85; }
 nav:not(.scrolled) .nav-auth-name { color: rgba(255,255,255,0.85); }
 nav.scrolled .nav-auth-name       { color: var(--gris-texte); }
 .nav-auth-name:hover               { opacity: 0.7; }

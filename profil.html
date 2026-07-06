@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon profil — BDE CREAD Lyon</title>
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
   <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
@@ -289,6 +289,21 @@
       <div id="infos-msg" class="profil-msg"></div>
     </div>
 
+    <!-- ESPACE BDE (membre+) -->
+    <div class="profil-card" id="card-espace-bde" style="display:none;">
+      <h2>Espace BDE</h2>
+      <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
+        Modération des annonces, feedbacks, gestion des membres.
+      </p>
+      <a href="/bde.html" class="profil-btn" style="text-decoration:none;display:inline-block;">Ouvrir l'espace BDE →</a>
+    </div>
+
+    <!-- REJOINDRE LE BDE (étudiant) -->
+    <div class="profil-card" id="card-rejoindre" style="display:none;">
+      <h2>Rejoindre le BDE</h2>
+      <div id="rejoindre-content"></div>
+    </div>
+
     <!-- MES ANNONCES -->
     <div class="profil-card">
       <h2>Mes annonces <a href="/annonces-nouvelle.html">+ Nouvelle</a></h2>
@@ -349,7 +364,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js?v=3"></script>
+  <script src="js/auth.js?v=4"></script>
   <script src="js/main.js?v=4"></script>
   <script>
     const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
@@ -363,10 +378,76 @@
       if (!currentProfil) { window.location.href = '/connexion.html?next=/profil.html'; return; }
       currentUser = await Auth.getUser();
       renderHeader();
+      renderRoleSections();
       fillInfos();
       loadAnnonces();
       loadEvents();
     });
+
+    function renderRoleSections() {
+      const role = currentProfil.role;
+      if (role === 'membre' || role === 'admin') {
+        document.getElementById('card-espace-bde').style.display = '';
+      }
+      if (role === 'etudiant') {
+        document.getElementById('card-rejoindre').style.display = '';
+        loadDemandeBde();
+      }
+    }
+
+    async function loadDemandeBde() {
+      const { data } = await Auth.sb.from('demandes_membre_bde')
+        .select('*').eq('user_id', currentUser.id).maybeSingle();
+
+      const wrap = document.getElementById('rejoindre-content');
+      if (!data) {
+        wrap.innerHTML = `
+          <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
+            Envie de t'impliquer dans le BDE ? Explique-nous pourquoi et les admins te contacteront.
+          </p>
+          <div class="profil-field">
+            <label>Ta motivation</label>
+            <textarea id="rej-motivation" placeholder="Pourquoi tu veux rejoindre le BDE, ce que tu peux apporter…"></textarea>
+          </div>
+          <button class="profil-btn" onclick="sendDemandeBde()">Envoyer ma demande</button>
+          <div id="rej-msg" class="profil-msg"></div>
+        `;
+      } else if (data.statut === 'pending') {
+        wrap.innerHTML = `
+          <div style="padding:14px;border-radius:10px;background:#FFF3E0;color:#E67E22;font-size:14px;">
+            ⏳ Ta demande est en attente. Les admins te répondront bientôt.
+          </div>
+          <p style="font-size:12px;color:var(--gris-texte);margin-top:10px;">Envoyée le ${new Date(data.created_at).toLocaleDateString('fr-FR')}</p>
+          <button class="profil-btn ghost" style="margin-top:10px;" onclick="cancelDemandeBde('${data.id}')">Annuler ma demande</button>
+        `;
+      } else if (data.statut === 'rejected') {
+        wrap.innerHTML = `
+          <div style="padding:14px;border-radius:10px;background:#FFF0F0;color:#C0392B;font-size:14px;">
+            Ta demande a été refusée. Tu peux en soumettre une nouvelle après discussion avec le BDE.
+          </div>
+        `;
+      }
+    }
+
+    async function sendDemandeBde() {
+      const motivation = document.getElementById('rej-motivation').value.trim();
+      if (!motivation || motivation.length < 20) {
+        showMsg('rej-msg', 'Décris ta motivation en au moins 20 caractères.', 'error');
+        return;
+      }
+      const { error } = await Auth.sb.from('demandes_membre_bde').insert({
+        user_id: currentUser.id, motivation
+      });
+      if (error) { showMsg('rej-msg', error.message, 'error'); return; }
+      loadDemandeBde();
+    }
+
+    async function cancelDemandeBde(id) {
+      if (!confirm('Annuler ta demande ?')) return;
+      const { error } = await Auth.sb.from('demandes_membre_bde').delete().eq('id', id);
+      if (error) { alert(error.message); return; }
+      loadDemandeBde();
+    }
 
     function renderHeader() {
       const p = currentProfil;
