@@ -99,7 +99,6 @@
         <option value="">Tous les rôles</option>
         <option value="etudiant">Étudiant</option>
         <option value="membre">Membre BDE</option>
-        <option value="responsable">Responsable</option>
         <option value="admin">Admin</option>
       </select>
     </div>
@@ -126,7 +125,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js?v=2"></script>
+  <script src="js/auth.js?v=3"></script>
   <script>
     let allUsers = [];
 
@@ -150,7 +149,7 @@
     }
 
     function labelRole(r) {
-      return { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' }[r] ?? r;
+      return { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' }[r] ?? r;
     }
 
     function renderTable(users) {
@@ -171,10 +170,9 @@
           <td><span class="role-badge ${u.role}">${labelRole(u.role)}</span></td>
           <td>
             <select class="role-select" data-original="${u.role}" onchange="markDirty(this)">
-              <option value="etudiant"    ${u.role==='etudiant'   ?'selected':''}>Étudiant</option>
-              <option value="membre"      ${u.role==='membre'     ?'selected':''}>Membre BDE</option>
-              <option value="responsable" ${u.role==='responsable'?'selected':''}>Responsable</option>
-              <option value="admin"       ${u.role==='admin'      ?'selected':''}>Admin</option>
+              <option value="etudiant" ${u.role==='etudiant'?'selected':''}>Étudiant</option>
+              <option value="membre"   ${u.role==='membre'  ?'selected':''}>Membre BDE</option>
+              <option value="admin"    ${u.role==='admin'   ?'selected':''}>Admin</option>
             </select>
           </td>
           <td>

@@ -3,8 +3,8 @@
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
   window._sb = sb;
 
-  const RANG   = { etudiant: 1, membre: 2, responsable: 3, admin: 4 };
-  const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' };
+  const RANG   = { etudiant: 1, membre: 2, admin: 3 };
+  const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
 
   let _profil = null;
 

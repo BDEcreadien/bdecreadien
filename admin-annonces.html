@@ -122,7 +122,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js?v=2"></script>
+  <script src="js/auth.js?v=3"></script>
   <script src="js/main.js?v=4"></script>
   <script>
     const CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
@@ -130,7 +130,7 @@
     let currentTab = 'pending';
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const ok = await Auth.requireRole('responsable');
+      const ok = await Auth.requireRole('admin');
       if (!ok) return;
       loadAll();
     });
