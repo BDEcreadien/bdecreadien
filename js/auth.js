@@ -17,7 +17,7 @@
     if (_profil && !forceRefresh) return _profil;
     const user = await getUser();
     if (!user) { _profil = null; return null; }
-    const { data } = await sb.from('profils').select('*').eq('id', user.id).single();
+    const { data } = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
     _profil = data;
     return _profil;
   }
