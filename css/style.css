@@ -2704,44 +2704,57 @@ nav.scrolled .nav-auth-link {
 .nav-auth-li {
   display: flex;
   align-items: center;
-  gap: 8px;
+}
+
+.nav-auth-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: white;
+  border-radius: 20px;
+  padding: 4px 10px 4px 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.nav-auth-avatar {
+  width: 26px;
+  height: 26px;
+  background: var(--gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
 }
 
 .nav-auth-name {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.5px;
-  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+  color: var(--violet);
   white-space: nowrap;
-}
-nav.scrolled .nav-auth-name {
-  color: var(--gris-texte);
 }
 
 .nav-auth-logout {
   background: none;
-  border: 1px solid rgba(255,255,255,0.3);
-  color: rgba(255,255,255,0.6);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  border: none;
+  border-left: 1px solid var(--gris-clair);
+  padding: 2px 0 2px 8px;
+  margin-left: 1px;
+  color: var(--gris-moyen);
+  display: flex;
+  align-items: center;
   cursor: pointer;
   transition: var(--transition);
-  white-space: nowrap;
 }
 .nav-auth-logout:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-nav.scrolled .nav-auth-logout {
-  border-color: var(--gris-moyen);
-  color: var(--gris-texte);
-}
-nav.scrolled .nav-auth-logout:hover {
-  background: var(--gris-clair);
+  color: var(--violet);
 }
 
 /* Mobile — dans le menu ouvert */
@@ -2757,13 +2770,9 @@ nav.scrolled .nav-auth-logout:hover {
   }
   .nav-auth-li {
     padding: 0.85rem 1.25rem;
-    gap: 12px;
   }
-  .nav-auth-name {
-    color: var(--noir);
-  }
-  .nav-auth-logout {
-    border-color: var(--gris-moyen);
-    color: var(--gris-texte);
+  .nav-auth-chip {
+    box-shadow: none;
+    background: var(--gris-clair);
   }
 }
