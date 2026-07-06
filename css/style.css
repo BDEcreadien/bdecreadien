@@ -2678,27 +2678,17 @@ a.contact-info-value:hover { color: var(--violet); }
 /* Bouton "Connexion" — gradient CTA */
 .nav-auth-link {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   text-decoration: none;
-  padding: 7px 18px;
-  background: var(--gradient);
-  border-radius: 20px;
-  color: white !important;
-  -webkit-text-fill-color: white !important;
   transition: var(--transition);
   white-space: nowrap;
-  opacity: 1;
 }
-.nav-auth-link:hover {
-  opacity: 0.88;
-}
-nav.scrolled .nav-auth-link {
-  color: white !important;
-  -webkit-text-fill-color: white !important;
-}
+nav:not(.scrolled) .nav-auth-link { color: rgba(255,255,255,0.85); }
+nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
+.nav-auth-link:hover               { opacity: 0.7; }
 
 /* Li connecté */
 .nav-auth-li {
@@ -2740,10 +2730,7 @@ nav.scrolled .nav-auth-logout       { color: var(--gris-texte); }
   .nav-auth-link {
     display: block;
     padding: 0.85rem 1.25rem;
-    border: none;
-    border-radius: 0;
-    color: var(--violet) !important;
-    -webkit-text-fill-color: var(--violet) !important;
+    color: var(--gris-texte) !important;
     font-size: 15px;
   }
   .nav-auth-li {
