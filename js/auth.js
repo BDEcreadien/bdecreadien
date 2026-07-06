@@ -50,7 +50,7 @@
   async function logout() {
     await sb.auth.signOut();
     _profil = null;
-    window.location.href = '/connexion.html';
+    window.location.href = '/';
   }
 
   async function initNavChip() {
@@ -64,12 +64,7 @@
       li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
     } else {
       li.className = 'nav-auth-li';
-      li.innerHTML = `
-        <a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>
-        <button class="nav-auth-logout" onclick="Auth.logout()" title="Déconnexion">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-      `;
+      li.innerHTML = `<a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>`;
     }
 
     navLinks.appendChild(li);
