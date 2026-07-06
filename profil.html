@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon profil — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=8">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <style>
+    body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
+
+    .profil-wrap { max-width: 600px; margin: 0 auto; padding: 100px 24px 60px; }
+
+    .profil-header { margin-bottom: 32px; }
+    .profil-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--violet); letter-spacing: 1px; }
+    .profil-header p  { font-size: 14px; color: var(--gris-texte); margin-top: 4px; }
+
+    .profil-card {
+      background: white; border-radius: 20px;
+      padding: 32px; box-shadow: 0 4px 24px rgba(70,58,144,0.08);
+      margin-bottom: 20px;
+    }
+    .profil-card h2 {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 16px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--violet);
+      margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1.5px solid var(--gris-clair);
+    }
+
+    .profil-field { margin-bottom: 16px; }
+    .profil-field label {
+      display: block; font-size: 12px; font-family: 'Barlow Condensed', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-texte); margin-bottom: 6px;
+    }
+    .profil-field input, .profil-field select {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
+      background: white; transition: var(--transition); outline: none; box-sizing: border-box;
+    }
+    .profil-field input:focus, .profil-field select:focus { border-color: var(--violet); }
+    .profil-field input:disabled { background: var(--gris-clair); color: var(--gris-texte); cursor: not-allowed; }
+
+    .profil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .profil-badge {
+      display: inline-block; padding: 4px 12px; border-radius: 20px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      background: var(--gris-clair); color: var(--gris-texte);
+    }
+    .profil-badge.membre       { background: #EEF0FF; color: var(--violet); }
+    .profil-badge.responsable  { background: #FFF3E0; color: #E67E22; }
+    .profil-badge.admin        { background: #FDE8E8; color: #C0392B; }
+
+    .profil-btn {
+      padding: 11px 28px; background: var(--gradient);
+      border: none; border-radius: 12px; color: white;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: var(--transition); margin-top: 4px;
+    }
+    .profil-btn:hover   { opacity: 0.9; }
+    .profil-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .profil-msg {
+      margin-top: 12px; padding: 11px 14px; border-radius: 10px; font-size: 13px; display: none;
+    }
+    .profil-msg.error   { background: #FFF0F0; color: #C0392B; border: 1px solid #F5C0C0; }
+    .profil-msg.success { background: #F0FFF4; color: #1A7A40; border: 1px solid #B0E8C4; }
+    .profil-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html">Annonces</a></li>
+      <li><a href="partenaires.html">Partenaires</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+    </button>
+  </nav>
+
+  <div class="profil-wrap">
+
+    <div class="profil-header">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-moyen);margin-bottom:4px;">BDE CREAD Lyon</p>
+      <h1>Mon profil</h1>
+      <p id="profil-role-line">Chargement…</p>
+    </div>
+
+    <!-- INFOS PERSONNELLES -->
+    <div class="profil-card">
+      <h2>Informations personnelles</h2>
+      <div class="profil-row">
+        <div class="profil-field">
+          <label>Prénom</label>
+          <input type="text" id="p-prenom" placeholder="Marie">
+        </div>
+        <div class="profil-field">
+          <label>Nom</label>
+          <input type="text" id="p-nom" placeholder="Dupont">
+        </div>
+      </div>
+      <div class="profil-row">
+        <div class="profil-field">
+          <label>Téléphone</label>
+          <input type="tel" id="p-tel" placeholder="06 xx xx xx xx">
+        </div>
+        <div class="profil-field">
+          <label>Année d'étude</label>
+          <select id="p-annee">
+            <option value="1ère">1ère année</option>
+            <option value="2ème">2ème année</option>
+            <option value="3ème">3ème année</option>
+            <option value="4ème">4ème année</option>
+            <option value="5ème">5ème année</option>
+          </select>
+        </div>
+      </div>
+      <div class="profil-field">
+        <label>Email</label>
+        <input type="email" id="p-email" disabled>
+      </div>
+      <button class="profil-btn" onclick="saveInfos()">Enregistrer</button>
+      <div id="infos-msg" class="profil-msg"></div>
+    </div>
+
+    <!-- MOT DE PASSE -->
+    <div class="profil-card">
+      <h2>Changer le mot de passe</h2>
+      <div class="profil-field">
+        <label>Nouveau mot de passe (min. 8 caractères)</label>
+        <input type="password" id="p-pwd" placeholder="••••••••">
+      </div>
+      <div class="profil-field">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="p-pwd2" placeholder="••••••••">
+      </div>
+      <button class="profil-btn" onclick="savePwd()">Changer le mot de passe</button>
+      <div id="pwd-msg" class="profil-msg"></div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js?v=3"></script>
+  <script>
+    const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const profil = await Auth.getProfil();
+      if (!profil) { window.location.href = '/connexion.html'; return; }
+
+      document.getElementById('p-prenom').value = profil.prenom || '';
+      document.getElementById('p-nom').value    = profil.nom    || '';
+      document.getElementById('p-tel').value    = profil.telephone || '';
+      document.getElementById('p-annee').value  = profil.annee || '1ère';
+
+      const user = await Auth.getUser();
+      document.getElementById('p-email').value  = user.email || '';
+
+      const label = LABELS[profil.role] || profil.role;
+      const roleLine = document.getElementById('profil-role-line');
+      roleLine.innerHTML = `<span class="profil-badge ${profil.role}">${label}</span>`;
+    });
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'profil-msg ' + type + ' visible';
+    }
+
+    async function saveInfos() {
+      const prenom = document.getElementById('p-prenom').value.trim();
+      const nom    = document.getElementById('p-nom').value.trim();
+      const tel    = document.getElementById('p-tel').value.trim();
+      const annee  = document.getElementById('p-annee').value;
+
+      if (!prenom || !nom || !tel) { showMsg('infos-msg', 'Remplis tous les champs.', 'error'); return; }
+
+      const btn = document.querySelector('.profil-card:first-of-type .profil-btn');
+      btn.disabled = true; btn.textContent = 'Enregistrement…';
+
+      const user = await Auth.getUser();
+      const { error } = await Auth.sb.from('profils')
+        .update({ prenom, nom, telephone: tel, annee })
+        .eq('id', user.id);
+
+      btn.disabled = false; btn.textContent = 'Enregistrer';
+
+      if (error) { showMsg('infos-msg', error.message, 'error'); return; }
+      await Auth.getProfil(true);
+      showMsg('infos-msg', 'Profil mis à jour.', 'success');
+    }
+
+    async function savePwd() {
+      const pwd  = document.getElementById('p-pwd').value;
+      const pwd2 = document.getElementById('p-pwd2').value;
+
+      if (!pwd || pwd.length < 8) { showMsg('pwd-msg', 'Le mot de passe doit faire au moins 8 caractères.', 'error'); return; }
+      if (pwd !== pwd2)            { showMsg('pwd-msg', 'Les mots de passe ne correspondent pas.', 'error'); return; }
+
+      const btn = document.querySelectorAll('.profil-btn')[1];
+      btn.disabled = true; btn.textContent = 'Changement…';
+
+      const { error } = await Auth.sb.auth.updateUser({ password: pwd });
+
+      btn.disabled = false; btn.textContent = 'Changer le mot de passe';
+
+      if (error) { showMsg('pwd-msg', error.message, 'error'); return; }
+      document.getElementById('p-pwd').value  = '';
+      document.getElementById('p-pwd2').value = '';
+      showMsg('pwd-msg', 'Mot de passe changé.', 'success');
+    }
+  </script>
+</body>
+</html>

@@ -65,13 +65,10 @@
     } else {
       li.className = 'nav-auth-li';
       li.innerHTML = `
-        <div class="nav-auth-chip">
-          <span class="nav-auth-avatar">${profil.prenom[0].toUpperCase()}</span>
-          <span class="nav-auth-name">${profil.prenom}</span>
-          <button class="nav-auth-logout" onclick="Auth.logout()" title="Déconnexion">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          </button>
-        </div>
+        <a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>
+        <button class="nav-auth-logout" onclick="Auth.logout()" title="Déconnexion">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
       `;
     }
 

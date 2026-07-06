@@ -2704,58 +2704,36 @@ nav.scrolled .nav-auth-link {
 .nav-auth-li {
   display: flex;
   align-items: center;
-}
-
-.nav-auth-chip {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: white;
-  border-radius: 20px;
-  padding: 4px 10px 4px 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-}
-
-.nav-auth-avatar {
-  width: 26px;
-  height: 26px;
-  background: var(--gradient);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
+  gap: 10px;
 }
 
 .nav-auth-name {
+  text-decoration: none;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--violet);
-  white-space: nowrap;
+  transition: var(--transition);
+  position: relative;
 }
+nav:not(.scrolled) .nav-auth-name { color: rgba(255,255,255,0.85); }
+nav.scrolled .nav-auth-name       { color: var(--gris-texte); }
+.nav-auth-name:hover               { opacity: 0.7; }
 
 .nav-auth-logout {
   background: none;
   border: none;
-  border-left: 1px solid var(--gris-clair);
-  padding: 2px 0 2px 8px;
-  margin-left: 1px;
-  color: var(--gris-moyen);
+  padding: 0;
   display: flex;
   align-items: center;
   cursor: pointer;
   transition: var(--transition);
+  opacity: 0.5;
 }
-.nav-auth-logout:hover {
-  color: var(--violet);
-}
+nav:not(.scrolled) .nav-auth-logout { color: white; }
+nav.scrolled .nav-auth-logout       { color: var(--gris-texte); }
+.nav-auth-logout:hover              { opacity: 1; }
 
 /* Mobile — dans le menu ouvert */
 @media (max-width: 768px) {
@@ -2770,9 +2748,8 @@ nav.scrolled .nav-auth-link {
   }
   .nav-auth-li {
     padding: 0.85rem 1.25rem;
+    gap: 14px;
   }
-  .nav-auth-chip {
-    box-shadow: none;
-    background: var(--gris-clair);
-  }
+  .nav-auth-name,
+  .nav-auth-logout { color: var(--gris-texte) !important; }
 }
