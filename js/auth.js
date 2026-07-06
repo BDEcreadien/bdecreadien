@@ -18,6 +18,12 @@
     const user = await getUser();
     if (!user) { _profil = null; return null; }
     const { data } = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
+    if (!data) {
+      // Session orpheline : l'auth user existe mais pas le profil — on déconnecte
+      await sb.auth.signOut();
+      _profil = null;
+      return null;
+    }
     _profil = data;
     return _profil;
   }
