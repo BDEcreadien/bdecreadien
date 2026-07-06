@@ -11,51 +11,107 @@
   <style>
     body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
 
-    .profil-wrap { max-width: 600px; margin: 0 auto; padding: 100px 24px 60px; }
+    .profil-wrap { max-width: 720px; margin: 0 auto; padding: 100px 24px 60px; }
 
-    .profil-header { margin-bottom: 32px; }
-    .profil-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--violet); letter-spacing: 1px; }
-    .profil-header p  { font-size: 14px; color: var(--gris-texte); margin-top: 4px; }
-
-    .profil-card {
-      background: white; border-radius: 20px;
-      padding: 32px; box-shadow: 0 4px 24px rgba(70,58,144,0.08);
+    /* HEADER avec avatar */
+    .profil-hero {
+      display: flex; align-items: center; gap: 20px;
+      background: white; border-radius: 20px; padding: 24px;
+      box-shadow: 0 4px 24px rgba(70,58,144,0.08);
       margin-bottom: 20px;
     }
-    .profil-card h2 {
-      font-family: 'Barlow Condensed', sans-serif; font-size: 16px;
-      text-transform: uppercase; letter-spacing: 1px; color: var(--violet);
-      margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1.5px solid var(--gris-clair);
+    .profil-avatar-wrap {
+      position: relative; width: 88px; height: 88px; flex-shrink: 0;
     }
-
-    .profil-field { margin-bottom: 16px; }
-    .profil-field label {
-      display: block; font-size: 12px; font-family: 'Barlow Condensed', sans-serif;
-      text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-texte); margin-bottom: 6px;
+    .profil-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: var(--gradient); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 40px;
+      overflow: hidden;
     }
-    .profil-field input, .profil-field select {
-      width: 100%; padding: 10px 14px;
-      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
-      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
-      background: white; transition: var(--transition); outline: none; box-sizing: border-box;
+    .profil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profil-avatar-edit {
+      position: absolute; bottom: 0; right: 0;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--violet); color: white; border: 3px solid white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
     }
-    .profil-field input:focus, .profil-field select:focus { border-color: var(--violet); }
-    .profil-field input:disabled { background: var(--gris-clair); color: var(--gris-texte); cursor: not-allowed; }
-
-    .profil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .profil-avatar-edit input { display: none; }
+    .profil-hero-info h1 {
+      font-family: 'Bebas Neue', sans-serif; font-size: 30px;
+      color: var(--violet); letter-spacing: 1px; line-height: 1;
+    }
+    .profil-hero-info .role-line { margin-top: 8px; font-size: 13px; color: var(--gris-texte); }
 
     .profil-badge {
-      display: inline-block; padding: 4px 12px; border-radius: 20px;
-      font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600;
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600;
       letter-spacing: 0.5px; text-transform: uppercase;
-      background: var(--gris-clair); color: var(--gris-texte);
+      background: var(--gris-clair); color: var(--gris-texte); margin-right: 4px;
     }
     .profil-badge.membre       { background: #EEF0FF; color: var(--violet); }
     .profil-badge.responsable  { background: #FFF3E0; color: #E67E22; }
     .profil-badge.admin        { background: #FDE8E8; color: #C0392B; }
 
+    /* STATS */
+    .profil-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      margin-bottom: 20px;
+    }
+    .profil-stat {
+      background: white; border-radius: 16px; padding: 18px 12px;
+      text-align: center; box-shadow: 0 4px 24px rgba(70,58,144,0.06);
+    }
+    .profil-stat-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1;
+    }
+    .profil-stat-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--gris-texte);
+      margin-top: 6px;
+    }
+
+    /* CARDS */
+    .profil-card {
+      background: white; border-radius: 20px;
+      padding: 26px; box-shadow: 0 4px 24px rgba(70,58,144,0.08);
+      margin-bottom: 20px;
+    }
+    .profil-card h2 {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 16px;
+      text-transform: uppercase; letter-spacing: 1px; color: var(--violet);
+      margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1.5px solid var(--gris-clair);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .profil-card h2 a {
+      font-size: 12px; letter-spacing: 0.5px; color: var(--violet);
+      text-decoration: none; padding: 6px 12px; border-radius: 8px;
+      background: #EEF0FF; transition: var(--transition);
+    }
+    .profil-card h2 a:hover { background: var(--violet); color: white; }
+
+    .profil-field { margin-bottom: 14px; }
+    .profil-field label {
+      display: block; font-size: 12px; font-family: 'Barlow Condensed', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-texte); margin-bottom: 6px;
+    }
+    .profil-field input, .profil-field select, .profil-field textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
+      background: white; transition: var(--transition); outline: none; box-sizing: border-box;
+    }
+    .profil-field textarea { resize: vertical; min-height: 90px; }
+    .profil-field input:focus, .profil-field select:focus, .profil-field textarea:focus { border-color: var(--violet); }
+    .profil-field input:disabled { background: var(--gris-clair); color: var(--gris-texte); cursor: not-allowed; }
+    .profil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
     .profil-btn {
-      padding: 11px 28px; background: var(--gradient);
+      padding: 11px 26px; background: var(--gradient);
       border: none; border-radius: 12px; color: white;
       font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600;
       letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
@@ -63,6 +119,10 @@
     }
     .profil-btn:hover   { opacity: 0.9; }
     .profil-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .profil-btn.ghost {
+      background: none; color: var(--violet); border: 1.5px solid var(--violet);
+    }
+    .profil-btn.ghost:hover { background: var(--violet); color: white; opacity: 1; }
 
     .profil-msg {
       margin-top: 12px; padding: 11px 14px; border-radius: 10px; font-size: 13px; display: none;
@@ -70,6 +130,68 @@
     .profil-msg.error   { background: #FFF0F0; color: #C0392B; border: 1px solid #F5C0C0; }
     .profil-msg.success { background: #F0FFF4; color: #1A7A40; border: 1px solid #B0E8C4; }
     .profil-msg.visible { display: block; }
+
+    /* MES ANNONCES / MES ÉVÉNEMENTS lists */
+    .profil-list { display: flex; flex-direction: column; gap: 10px; }
+    .profil-item {
+      display: flex; gap: 12px; padding: 12px;
+      background: var(--gris-clair); border-radius: 12px;
+      align-items: center;
+    }
+    .profil-item-thumb {
+      width: 54px; height: 54px; border-radius: 10px;
+      background: var(--gradient); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+      flex-shrink: 0; object-fit: cover; overflow: hidden;
+    }
+    .profil-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .profil-item-body { flex: 1; min-width: 0; }
+    .profil-item-title {
+      font-weight: 600; color: var(--noir); font-size: 14px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .profil-item-sub { font-size: 12px; color: var(--gris-texte); margin-top: 2px; }
+    .profil-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .profil-item-btn {
+      background: white; border: 1px solid var(--gris-moyen); border-radius: 8px;
+      padding: 5px 10px; font-size: 11px;
+      font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.5px;
+      text-transform: uppercase; cursor: pointer;
+      color: var(--gris-texte); transition: var(--transition);
+    }
+    .profil-item-btn:hover { color: var(--violet); border-color: var(--violet); }
+    .profil-item-btn.danger:hover { color: #C0392B; border-color: #C0392B; }
+
+    .status-chip {
+      display: inline-block; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+    }
+    .status-chip.pending   { background: #FFF3E0; color: #E67E22; }
+    .status-chip.published { background: #F0FFF4; color: #1A7A40; }
+    .status-chip.rejected  { background: #FFF0F0; color: #C0392B; }
+
+    .profil-empty {
+      text-align: center; padding: 24px 12px;
+      color: var(--gris-texte); font-size: 13px;
+    }
+
+    /* Section déconnexion */
+    .profil-logout-wrap { text-align: center; padding: 8px 0 40px; }
+    .profil-logout-btn {
+      background: none; border: none; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--gris-moyen); cursor: pointer; text-decoration: underline;
+      transition: var(--transition);
+    }
+    .profil-logout-btn:hover { color: #C0392B; }
+
+    @media (max-width: 600px) {
+      .profil-row { grid-template-columns: 1fr; }
+      .profil-stats { grid-template-columns: repeat(3, 1fr); }
+      .profil-stat-value { font-size: 24px; }
+    }
   </style>
 </head>
 <body>
@@ -99,10 +221,35 @@
 
   <div class="profil-wrap">
 
-    <div class="profil-header">
-      <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-moyen);margin-bottom:4px;">BDE CREAD Lyon</p>
-      <h1>Mon profil</h1>
-      <p id="profil-role-line">Chargement…</p>
+    <!-- HERO avec avatar -->
+    <div class="profil-hero">
+      <div class="profil-avatar-wrap">
+        <div class="profil-avatar" id="p-avatar">?</div>
+        <label class="profil-avatar-edit" title="Changer la photo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <input type="file" accept="image/*" id="p-avatar-input">
+        </label>
+      </div>
+      <div class="profil-hero-info">
+        <h1 id="p-hero-name">Chargement…</h1>
+        <div class="role-line" id="p-hero-role"></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="profil-stats">
+      <div class="profil-stat">
+        <div class="profil-stat-value" id="stat-annonces">0</div>
+        <div class="profil-stat-label">Annonces publiées</div>
+      </div>
+      <div class="profil-stat">
+        <div class="profil-stat-value" id="stat-events-a-venir">0</div>
+        <div class="profil-stat-label">Événements à venir</div>
+      </div>
+      <div class="profil-stat">
+        <div class="profil-stat-value" id="stat-events-passes">0</div>
+        <div class="profil-stat-label">Événements participés</div>
+      </div>
     </div>
 
     <!-- INFOS PERSONNELLES -->
@@ -111,17 +258,17 @@
       <div class="profil-row">
         <div class="profil-field">
           <label>Prénom</label>
-          <input type="text" id="p-prenom" placeholder="Marie">
+          <input type="text" id="p-prenom">
         </div>
         <div class="profil-field">
           <label>Nom</label>
-          <input type="text" id="p-nom" placeholder="Dupont">
+          <input type="text" id="p-nom">
         </div>
       </div>
       <div class="profil-row">
         <div class="profil-field">
           <label>Téléphone</label>
-          <input type="tel" id="p-tel" placeholder="06 xx xx xx xx">
+          <input type="tel" id="p-tel">
         </div>
         <div class="profil-field">
           <label>Année d'étude</label>
@@ -142,24 +289,60 @@
       <div id="infos-msg" class="profil-msg"></div>
     </div>
 
+    <!-- MES ANNONCES -->
+    <div class="profil-card">
+      <h2>Mes annonces <a href="/annonces-nouvelle.html">+ Nouvelle</a></h2>
+      <div class="profil-list" id="mes-annonces">
+        <div class="profil-empty">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- MES ÉVÉNEMENTS -->
+    <div class="profil-card">
+      <h2>Mes événements <a href="/agenda.html">Voir l'agenda</a></h2>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-moyen);margin-bottom:8px;">À venir</div>
+      <div class="profil-list" id="events-a-venir">
+        <div class="profil-empty">Chargement…</div>
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-moyen);margin:18px 0 8px;">Passés</div>
+      <div class="profil-list" id="events-passes">
+        <div class="profil-empty">Aucun événement passé.</div>
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="profil-card">
+      <h2>Une suggestion pour le BDE ?</h2>
+      <div class="profil-field">
+        <label>Sujet</label>
+        <input type="text" id="fb-sujet" placeholder="Ex : Idée d'événement, remarque…">
+      </div>
+      <div class="profil-field">
+        <label>Message</label>
+        <textarea id="fb-message" placeholder="Ton message pour le BDE…"></textarea>
+      </div>
+      <button class="profil-btn ghost" onclick="sendFeedback()">Envoyer</button>
+      <div id="fb-msg" class="profil-msg"></div>
+    </div>
+
     <!-- MOT DE PASSE -->
-    <div class="profil-card" id="pwd-card">
+    <div class="profil-card">
       <h2>Changer le mot de passe</h2>
       <div class="profil-field">
         <label>Nouveau mot de passe (min. 8 caractères)</label>
         <input type="password" id="p-pwd" placeholder="••••••••">
       </div>
       <div class="profil-field">
-        <label>Confirmer le mot de passe</label>
+        <label>Confirmer</label>
         <input type="password" id="p-pwd2" placeholder="••••••••">
       </div>
-      <button class="profil-btn" onclick="savePwd()">Changer le mot de passe</button>
+      <button class="profil-btn ghost" onclick="savePwd()">Changer le mot de passe</button>
       <div id="pwd-msg" class="profil-msg"></div>
     </div>
 
     <!-- DÉCONNEXION -->
-    <div style="text-align:center;padding:8px 0 40px;">
-      <button onclick="Auth.logout()" style="background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gris-moyen);cursor:pointer;text-decoration:underline;transition:color 0.2s;" onmouseover="this.style.color='#C0392B'" onmouseout="this.style.color='var(--gris-moyen)'">Se déconnecter</button>
+    <div class="profil-logout-wrap">
+      <button class="profil-logout-btn" onclick="Auth.logout()">Se déconnecter</button>
     </div>
 
   </div>
@@ -170,23 +353,43 @@
   <script src="js/main.js?v=3"></script>
   <script>
     const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', responsable: 'Responsable', admin: 'Admin' };
+    const CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
+    const STATUT_LABELS = { pending: 'En attente', published: 'Publiée', rejected: 'Refusée' };
+    let currentUser = null;
+    let currentProfil = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const profil = await Auth.getProfil();
-      if (!profil) { window.location.href = '/connexion.html'; return; }
-
-      document.getElementById('p-prenom').value = profil.prenom || '';
-      document.getElementById('p-nom').value    = profil.nom    || '';
-      document.getElementById('p-tel').value    = profil.telephone || '';
-      document.getElementById('p-annee').value  = profil.annee || '1ère';
-
-      const user = await Auth.getUser();
-      document.getElementById('p-email').value  = user.email || '';
-
-      const label = LABELS[profil.role] || profil.role;
-      const roleLine = document.getElementById('profil-role-line');
-      roleLine.innerHTML = `<span class="profil-badge ${profil.role}">${label}</span>`;
+      currentProfil = await Auth.getProfil();
+      if (!currentProfil) { window.location.href = '/connexion.html?next=/profil.html'; return; }
+      currentUser = await Auth.getUser();
+      renderHeader();
+      fillInfos();
+      loadAnnonces();
+      loadEvents();
     });
+
+    function renderHeader() {
+      const p = currentProfil;
+      document.getElementById('p-hero-name').textContent = p.prenom + ' ' + p.nom;
+      const label = LABELS[p.role] || p.role;
+      document.getElementById('p-hero-role').innerHTML = `<span class="profil-badge ${p.role}">${label}</span> ${p.annee} année`;
+
+      const avatar = document.getElementById('p-avatar');
+      if (p.avatar_url) {
+        avatar.innerHTML = `<img src="${p.avatar_url}" alt="Photo de profil">`;
+      } else {
+        avatar.textContent = (p.prenom[0] || '?').toUpperCase();
+      }
+    }
+
+    function fillInfos() {
+      const p = currentProfil;
+      document.getElementById('p-prenom').value = p.prenom || '';
+      document.getElementById('p-nom').value    = p.nom || '';
+      document.getElementById('p-tel').value    = p.telephone || '';
+      document.getElementById('p-annee').value  = p.annee || '1ère';
+      document.getElementById('p-email').value  = currentUser.email || '';
+    }
 
     function showMsg(id, text, type) {
       const el = document.getElementById(id);
@@ -194,47 +397,184 @@
       el.className = 'profil-msg ' + type + ' visible';
     }
 
+    // ============ AVATAR UPLOAD ============
+    document.getElementById('p-avatar-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const resized = await resizeImage(file, 256);
+        const ext = 'jpg';
+        const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
+
+        const { error: upErr } = await Auth.sb.storage.from('avatars').upload(path, resized, { upsert: true, contentType: 'image/jpeg' });
+        if (upErr) throw upErr;
+
+        const { data } = Auth.sb.storage.from('avatars').getPublicUrl(path);
+        const publicUrl = data.publicUrl;
+
+        const { error: dbErr } = await Auth.sb.from('profils').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+        if (dbErr) throw dbErr;
+
+        currentProfil.avatar_url = publicUrl;
+        await Auth.getProfil(true);
+        renderHeader();
+      } catch (err) {
+        alert('Erreur upload avatar : ' + err.message);
+      }
+    });
+
+    function resizeImage(file, maxDim) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > h) { if (w > maxDim) { h = h * maxDim / w; w = maxDim; } }
+          else       { if (h > maxDim) { w = w * maxDim / h; h = maxDim; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.85);
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    // ============ INFOS ============
     async function saveInfos() {
       const prenom = document.getElementById('p-prenom').value.trim();
       const nom    = document.getElementById('p-nom').value.trim();
       const tel    = document.getElementById('p-tel').value.trim();
       const annee  = document.getElementById('p-annee').value;
-
       if (!prenom || !nom || !tel) { showMsg('infos-msg', 'Remplis tous les champs.', 'error'); return; }
 
-      const btn = document.querySelector('.profil-card:first-of-type .profil-btn');
-      btn.disabled = true; btn.textContent = 'Enregistrement…';
-
-      const user = await Auth.getUser();
       const { error } = await Auth.sb.from('profils')
         .update({ prenom, nom, telephone: tel, annee })
-        .eq('id', user.id);
-
-      btn.disabled = false; btn.textContent = 'Enregistrer';
-
+        .eq('id', currentUser.id);
       if (error) { showMsg('infos-msg', error.message, 'error'); return; }
-      await Auth.getProfil(true);
+      currentProfil = await Auth.getProfil(true);
+      renderHeader();
       showMsg('infos-msg', 'Profil mis à jour.', 'success');
     }
 
+    // ============ MOT DE PASSE ============
     async function savePwd() {
       const pwd  = document.getElementById('p-pwd').value;
       const pwd2 = document.getElementById('p-pwd2').value;
-
-      if (!pwd || pwd.length < 8) { showMsg('pwd-msg', 'Le mot de passe doit faire au moins 8 caractères.', 'error'); return; }
+      if (!pwd || pwd.length < 8) { showMsg('pwd-msg', 'Min. 8 caractères.', 'error'); return; }
       if (pwd !== pwd2)            { showMsg('pwd-msg', 'Les mots de passe ne correspondent pas.', 'error'); return; }
-
-      const btn = document.querySelectorAll('.profil-btn')[1];
-      btn.disabled = true; btn.textContent = 'Changement…';
-
       const { error } = await Auth.sb.auth.updateUser({ password: pwd });
-
-      btn.disabled = false; btn.textContent = 'Changer le mot de passe';
-
       if (error) { showMsg('pwd-msg', error.message, 'error'); return; }
-      document.getElementById('p-pwd').value  = '';
+      document.getElementById('p-pwd').value = '';
       document.getElementById('p-pwd2').value = '';
       showMsg('pwd-msg', 'Mot de passe changé.', 'success');
+    }
+
+    // ============ MES ANNONCES ============
+    async function loadAnnonces() {
+      const { data, error } = await Auth.sb.from('annonces')
+        .select('*').eq('auteur_id', currentUser.id).order('created_at', { ascending: false });
+
+      const el = document.getElementById('mes-annonces');
+      if (error) { el.innerHTML = `<div class="profil-empty">Erreur : ${error.message}</div>`; return; }
+      if (!data || data.length === 0) {
+        el.innerHTML = `<div class="profil-empty">Aucune annonce. <a href="/annonces-nouvelle.html" style="color:var(--violet);">Publie ta première !</a></div>`;
+        document.getElementById('stat-annonces').textContent = '0';
+        return;
+      }
+
+      document.getElementById('stat-annonces').textContent = data.filter(a => a.statut === 'published').length;
+
+      el.innerHTML = data.map(a => `
+        <div class="profil-item">
+          <div class="profil-item-thumb">${a.photo_url ? `<img src="${a.photo_url}" alt="">` : (CAT_LABELS[a.categorie]||'?')[0]}</div>
+          <div class="profil-item-body">
+            <div class="profil-item-title">${escapeHtml(a.titre)}<span class="status-chip ${a.statut}">${STATUT_LABELS[a.statut]}</span></div>
+            <div class="profil-item-sub">${CAT_LABELS[a.categorie]||''} · ${a.prix || 'Gratuit'}</div>
+          </div>
+          <div class="profil-item-actions">
+            <button class="profil-item-btn danger" onclick="deleteAnnonce('${a.id}')">Supprimer</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteAnnonce(id) {
+      if (!confirm('Supprimer cette annonce ?')) return;
+      const { error } = await Auth.sb.from('annonces').delete().eq('id', id);
+      if (error) { alert(error.message); return; }
+      loadAnnonces();
+    }
+
+    // ============ MES ÉVÉNEMENTS ============
+    async function loadEvents() {
+      const { data, error } = await Auth.sb.from('inscriptions_evenements')
+        .select('*').eq('user_id', currentUser.id).order('evenement_date', { ascending: true });
+
+      const wrapAvenir = document.getElementById('events-a-venir');
+      const wrapPasses = document.getElementById('events-passes');
+      if (error) { wrapAvenir.innerHTML = `<div class="profil-empty">${error.message}</div>`; return; }
+
+      const today = new Date().toISOString().slice(0,10);
+      const avenir = (data || []).filter(e => !e.evenement_date || e.evenement_date >= today);
+      const passes = (data || []).filter(e => e.evenement_date && e.evenement_date < today);
+
+      document.getElementById('stat-events-a-venir').textContent = avenir.length;
+      document.getElementById('stat-events-passes').textContent = passes.length;
+
+      wrapAvenir.innerHTML = avenir.length === 0
+        ? `<div class="profil-empty">Aucun événement. <a href="/agenda.html" style="color:var(--violet);">Voir l'agenda</a></div>`
+        : avenir.map(e => renderEventItem(e, true)).join('');
+
+      wrapPasses.innerHTML = passes.length === 0
+        ? `<div class="profil-empty">Aucun événement passé.</div>`
+        : passes.map(e => renderEventItem(e, false)).join('');
+    }
+
+    function renderEventItem(e, showRemove) {
+      const dateStr = e.evenement_date
+        ? new Date(e.evenement_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : '';
+      return `
+        <div class="profil-item">
+          <div class="profil-item-thumb">${e.evenement_titre[0].toUpperCase()}</div>
+          <div class="profil-item-body">
+            <div class="profil-item-title">${escapeHtml(e.evenement_titre)}</div>
+            <div class="profil-item-sub">${dateStr}</div>
+          </div>
+          ${showRemove ? `<div class="profil-item-actions">
+            <button class="profil-item-btn danger" onclick="removeEvent('${e.id}')">Je ne viens plus</button>
+          </div>` : ''}
+        </div>
+      `;
+    }
+
+    async function removeEvent(id) {
+      const { error } = await Auth.sb.from('inscriptions_evenements').delete().eq('id', id);
+      if (error) { alert(error.message); return; }
+      loadEvents();
+    }
+
+    // ============ FEEDBACK ============
+    async function sendFeedback() {
+      const sujet = document.getElementById('fb-sujet').value.trim();
+      const message = document.getElementById('fb-message').value.trim();
+      if (!sujet || !message) { showMsg('fb-msg', 'Remplis les deux champs.', 'error'); return; }
+
+      const { error } = await Auth.sb.from('feedbacks').insert({
+        auteur_id: currentUser.id, sujet, message
+      });
+      if (error) { showMsg('fb-msg', error.message, 'error'); return; }
+
+      document.getElementById('fb-sujet').value = '';
+      document.getElementById('fb-message').value = '';
+      showMsg('fb-msg', 'Merci ! Ton message a été transmis au BDE.', 'success');
+    }
+
+    // ============ Utils ============
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
   </script>
 </body>

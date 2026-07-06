@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nouvelle annonce — BDE CREAD Lyon</title>
+  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <style>
+    body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
+    .an-wrap { max-width: 620px; margin: 0 auto; padding: 100px 24px 60px; }
+    .an-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--violet); letter-spacing: 1px; }
+    .an-header p  { font-size: 14px; color: var(--gris-texte); margin-top: 4px; margin-bottom: 24px; }
+
+    .an-card {
+      background: white; border-radius: 20px;
+      padding: 30px; box-shadow: 0 4px 24px rgba(70,58,144,0.08);
+    }
+
+    .an-field { margin-bottom: 16px; }
+    .an-field label {
+      display: block; font-size: 12px; font-family: 'Barlow Condensed', sans-serif;
+      text-transform: uppercase; letter-spacing: 0.5px; color: var(--gris-texte); margin-bottom: 6px;
+    }
+    .an-field input, .an-field select, .an-field textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gris-moyen); border-radius: 10px;
+      font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
+      background: white; transition: var(--transition); outline: none; box-sizing: border-box;
+    }
+    .an-field textarea { resize: vertical; min-height: 100px; }
+    .an-field input:focus, .an-field select:focus, .an-field textarea:focus { border-color: var(--violet); }
+    .an-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .an-photo-drop {
+      border: 2px dashed var(--gris-moyen); border-radius: 12px;
+      padding: 24px; text-align: center; cursor: pointer;
+      transition: var(--transition);
+    }
+    .an-photo-drop:hover { border-color: var(--violet); background: #FAFAFF; }
+    .an-photo-drop input { display: none; }
+    .an-photo-drop.has-photo { padding: 0; overflow: hidden; }
+    .an-photo-preview { width: 100%; height: 220px; object-fit: cover; display: block; }
+
+    .an-btn {
+      width: 100%; padding: 13px; background: var(--gradient);
+      border: none; border-radius: 12px; color: white;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: var(--transition); margin-top: 8px;
+    }
+    .an-btn:hover   { opacity: 0.9; }
+    .an-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .an-msg {
+      margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; display: none;
+    }
+    .an-msg.error   { background: #FFF0F0; color: #C0392B; border: 1px solid #F5C0C0; }
+    .an-msg.success { background: #F0FFF4; color: #1A7A40; border: 1px solid #B0E8C4; }
+    .an-msg.visible { display: block; }
+
+    .an-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+      color: var(--gris-texte); text-decoration: none;
+      margin-bottom: 16px; opacity: 0.7; transition: opacity 0.2s;
+    }
+    .an-back:hover { opacity: 1; }
+
+    @media (max-width: 600px) { .an-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
+    <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="bde">BDE LYON</span>
+        <span class="cread">CREAD</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="communication.html">Communication</a></li>
+      <li><a href="annonces.html">Annonces</a></li>
+      <li><a href="partenaires.html">Partenaires</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+      <span class="nav-burger-line"></span>
+    </button>
+  </nav>
+
+  <div class="an-wrap">
+    <a href="/profil.html" class="an-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour au profil
+    </a>
+
+    <div class="an-header">
+      <h1>Publier une annonce</h1>
+      <p>Ton annonce sera vérifiée par le BDE avant publication (24-48h).</p>
+    </div>
+
+    <div class="an-card">
+      <div class="an-field">
+        <label>Titre *</label>
+        <input type="text" id="a-titre" placeholder="Ex : Table à dessin A2 en excellent état" maxlength="80">
+      </div>
+      <div class="an-row">
+        <div class="an-field">
+          <label>Catégorie *</label>
+          <select id="a-categorie">
+            <option value="materiel">Matériel</option>
+            <option value="place">Place / Billet</option>
+            <option value="logement">Logement</option>
+            <option value="service">Service</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+        <div class="an-field">
+          <label>Prix</label>
+          <input type="text" id="a-prix" placeholder="Ex : 25€, Gratuit, À débattre">
+        </div>
+      </div>
+      <div class="an-field">
+        <label>Description *</label>
+        <textarea id="a-description" placeholder="Décris ton annonce (état, dimensions, conditions de vente…)"></textarea>
+      </div>
+      <div class="an-field">
+        <label>Contact (email, tel, insta…)</label>
+        <input type="text" id="a-contact" placeholder="Ex : 06 12 34 56 78 ou @tonpseudo">
+      </div>
+      <div class="an-field">
+        <label>Photo (facultatif)</label>
+        <label class="an-photo-drop" id="a-photo-drop">
+          <input type="file" accept="image/*" id="a-photo-input">
+          <div id="a-photo-placeholder">
+            <div style="font-size:32px;margin-bottom:6px;">📷</div>
+            <div style="font-size:13px;color:var(--gris-texte);">Cliquer pour ajouter une photo</div>
+            <div style="font-size:11px;color:var(--gris-moyen);margin-top:4px;">Max 5 MB · Redimensionnée automatiquement</div>
+          </div>
+          <img id="a-photo-preview" class="an-photo-preview" style="display:none;">
+        </label>
+      </div>
+
+      <button class="an-btn" id="a-submit" onclick="submitAnnonce()">Publier l'annonce</button>
+      <div id="a-msg" class="an-msg"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js?v=2"></script>
+  <script src="js/main.js?v=3"></script>
+  <script>
+    let currentUser = null;
+    let photoBlob = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const profil = await Auth.getProfil();
+      if (!profil) { window.location.href = '/connexion.html?next=/annonces-nouvelle.html'; return; }
+      currentUser = await Auth.getUser();
+    });
+
+    document.getElementById('a-photo-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) { alert('Photo trop lourde (max 10 MB avant compression).'); return; }
+      photoBlob = await resizeImage(file, 1200);
+      const preview = document.getElementById('a-photo-preview');
+      preview.src = URL.createObjectURL(photoBlob);
+      preview.style.display = 'block';
+      document.getElementById('a-photo-placeholder').style.display = 'none';
+      document.getElementById('a-photo-drop').classList.add('has-photo');
+    });
+
+    function resizeImage(file, maxDim) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > h) { if (w > maxDim) { h = h * maxDim / w; w = maxDim; } }
+          else       { if (h > maxDim) { w = w * maxDim / h; h = maxDim; } }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.85);
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    function showMsg(text, type) {
+      const el = document.getElementById('a-msg');
+      el.textContent = text;
+      el.className = 'an-msg ' + type + ' visible';
+    }
+
+    async function submitAnnonce() {
+      const titre = document.getElementById('a-titre').value.trim();
+      const categorie = document.getElementById('a-categorie').value;
+      const prix = document.getElementById('a-prix').value.trim();
+      const description = document.getElementById('a-description').value.trim();
+      const contact = document.getElementById('a-contact').value.trim();
+
+      if (!titre || !description) { showMsg('Titre et description sont obligatoires.', 'error'); return; }
+
+      const btn = document.getElementById('a-submit');
+      btn.disabled = true; btn.textContent = 'Publication…';
+
+      let photo_url = null;
+      try {
+        if (photoBlob) {
+          const path = `${currentUser.id}/${Date.now()}.jpg`;
+          const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, photoBlob, { contentType: 'image/jpeg' });
+          if (upErr) throw upErr;
+          photo_url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
+        }
+
+        const { error } = await Auth.sb.from('annonces').insert({
+          auteur_id: currentUser.id,
+          titre, description, categorie,
+          prix: prix || null,
+          contact: contact || null,
+          photo_url
+        });
+        if (error) throw error;
+
+        showMsg('Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
+        setTimeout(() => window.location.href = '/profil.html', 1800);
+      } catch (err) {
+        btn.disabled = false; btn.textContent = "Publier l'annonce";
+        showMsg('Erreur : ' + err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
