@@ -654,6 +654,15 @@ fetch('/_data/annonces-categories.json')
     }
   }).catch(() => {});
 
+function contactHref(c) {
+  const s = String(c || '').trim();
+  if (!s) return '#';
+  if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(s)) return 'mailto:' + s;
+  if (s.startsWith('@')) return 'https://instagram.com/' + s.slice(1);
+  if (/^[+\d\s().-]{6,}$/.test(s)) return 'tel:' + s.replace(/\s/g, '');
+  return 'mailto:' + s;
+}
+
 function formatPrix(prix) {
   if (!prix) return '';
   const slash = prix.indexOf('/');
@@ -729,7 +738,7 @@ function openAnnonceModal(a) {
   const photosEl = document.getElementById('an-modal-photos');
   photosEl.innerHTML = photos.length > 1 ? photos.map(p => `<img src="${p}" alt="${a.titre}" loading="lazy">`).join('') : '';
   photosEl.style.display = photos.length > 1 ? 'grid' : 'none';
-  document.getElementById('an-modal-cta').href = `mailto:${a.contact}`;
+  document.getElementById('an-modal-cta').href = contactHref(a.contact);
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -748,11 +757,45 @@ function attachFilterListeners() {
   });
 }
 
+function waitForSupabase(maxWait = 3000) {
+  return new Promise(resolve => {
+    if (window._sb) return resolve(true);
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (window._sb) { clearInterval(timer); resolve(true); }
+      else if (Date.now() - start > maxWait) { clearInterval(timer); resolve(false); }
+    }, 100);
+  });
+}
+
+async function loadSupabaseAnnonces() {
+  const ok = await waitForSupabase();
+  if (!ok) return [];
+  const { data } = await window._sb
+    .from('annonces')
+    .select('*, profils!annonces_auteur_id_fkey(prenom, nom)')
+    .eq('statut', 'published')
+    .order('created_at', { ascending: false });
+  return (data || []).map(a => ({
+    titre: a.titre,
+    description: a.description,
+    categorie: a.categorie,
+    prix: a.prix || 'Gratuit',
+    contact: a.contact || '',
+    photo: a.photo_url || '',
+    auteur: a.profils ? `${a.profils.prenom} ${a.profils.nom}` : 'Étudiant CREAD',
+    date: new Date(a.created_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'})
+  }));
+}
+
 if (document.getElementById('annonces-grid')) {
-  fetch('/_data/annonces.json')
-    .then(r => r.json())
-    .then(data => {
-      annoncesData = Array.isArray(data) ? data : (data.annonces || []);
+  Promise.all([
+    fetch('/_data/annonces.json').then(r => r.json()).catch(() => []),
+    loadSupabaseAnnonces()
+  ]).then(([jsonData, dbAnnonces]) => {
+      const jsonAnnonces = Array.isArray(jsonData) ? jsonData : (jsonData.annonces || []);
+      const data = [...dbAnnonces, ...jsonAnnonces];
+      annoncesData = data;
 
       // Construire les boutons de filtre depuis les catégories réelles
       const filtersEl = document.querySelector('.annonces-filters');
