@@ -135,7 +135,7 @@
 
       const { data, error } = await Auth.sb
         .from('profils')
-        .select('id, prenom, nom, email, annee, role, avatar_url')
+        .select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a')
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -159,12 +159,18 @@
         tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">Aucun résultat.</td></tr>';
         return;
       }
-      tbody.innerHTML = users.map(u => `
+      tbody.innerHTML = users.map(u => {
+        const banni = u.banni_jusqu_a && new Date(u.banni_jusqu_a) > new Date();
+        const bannLabel = banni
+          ? `<span style="color:#C0392B;font-size:11px;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>`
+          : '';
+        return `
         <tr data-id="${u.id}">
           <td>
             <img class="user-avatar" src="${u.avatar_url || 'assets/Logo.png'}" alt="">
             <strong>${u.prenom} ${u.nom}</strong><br>
             <span style="font-size:12px;color:var(--gris-texte)">${u.email}</span>
+            ${bannLabel ? `<br>${bannLabel}` : ''}
           </td>
           <td>${u.annee || '—'}</td>
           <td><span class="role-badge ${u.role}">${labelRole(u.role)}</span></td>
@@ -175,11 +181,35 @@
               <option value="admin"    ${u.role==='admin'   ?'selected':''}>Admin</option>
             </select>
           </td>
-          <td>
+          <td style="white-space:nowrap;">
             <button class="save-btn" data-id="${u.id}" onclick="saveRole(this)" disabled>Sauvegarder</button>
+            <button class="save-btn" style="background:${banni?'#1A7A40':'#E67E22'};margin-left:4px;" onclick="toggleBan('${u.id}', ${banni})">${banni?'Débannir':'Bannir'}</button>
+            <button class="save-btn" style="background:#C0392B;margin-left:4px;" onclick="deleteUser('${u.id}','${(u.prenom+' '+u.nom).replace(/'/g,"\\\\'")}')">Supprimer</button>
           </td>
         </tr>
-      `).join('');
+      `;}).join('');
+    }
+
+    async function toggleBan(id, isCurrentlyBanned) {
+      let banni_jusqu_a = null;
+      if (!isCurrentlyBanned) {
+        const days = prompt("Durée du bannissement en jours (0 = permanent) :", '30');
+        if (days === null) return;
+        const n = parseInt(days, 10);
+        if (isNaN(n) || n < 0) { alert('Nombre invalide.'); return; }
+        const d = n === 0 ? new Date('2099-12-31') : new Date(Date.now() + n * 86400000);
+        banni_jusqu_a = d.toISOString();
+      }
+      const { error } = await Auth.sb.from('profils').update({ banni_jusqu_a }).eq('id', id);
+      if (error) { alert(error.message); return; }
+      init();
+    }
+
+    async function deleteUser(id, name) {
+      if (!confirm(`Supprimer définitivement le compte de ${name} ?\n\nToutes ses annonces, inscriptions et feedbacks seront effacés.`)) return;
+      const { error } = await Auth.sb.from('profils').delete().eq('id', id);
+      if (error) { alert(error.message); return; }
+      init();
     }
 
     function markDirty(sel) {

@@ -168,6 +168,16 @@
       currentProfil = await Auth.getProfil();
       if (!currentProfil) { window.location.href = '/connexion.html?next=/annonces-nouvelle.html'; return; }
       currentUser = await Auth.getUser();
+      // Bannissement
+      if (currentProfil.banni_jusqu_a && new Date(currentProfil.banni_jusqu_a) > new Date()) {
+        document.querySelector('.an-card').innerHTML = `
+          <div style="text-align:center;padding:40px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+            <h2 style="color:#C0392B;margin-bottom:8px;">Publication suspendue</h2>
+            <p style="color:var(--gris-texte);font-size:14px;">Tu ne peux plus publier d'annonces jusqu'au ${new Date(currentProfil.banni_jusqu_a).toLocaleDateString('fr-FR')}. Contacte le BDE si tu penses qu'il y a une erreur.</p>
+          </div>`;
+        return;
+      }
       // Membre BDE / Admin : publication directe, pas de modération
       if (currentProfil.role === 'membre' || currentProfil.role === 'admin') {
         const p = document.querySelector('.an-header p');

@@ -31,6 +31,12 @@ Base auth : table `profils`, fonction `mon_role()`, trigger `handle_new_user`, p
   - Autoriser les membres BDE à modérer/lire
 - Permet à l'admin d'update n'importe quel profil (pour changer les rôles)
 
+## 008_admin_phase2.sql (à exécuter)
+
+- `annonces.modere_par` uuid FK profils.id — trace qui a validé/refusé
+- `annonces.modere_at` timestamptz — quand
+- `profils.banni_jusqu_a` timestamptz — bannissement (null = pas banni)
+
 ## 007_membre_bde_phase2.sql (à exécuter)
 
 Ajoute champs de réponse sur `feedbacks` :

@@ -207,6 +207,12 @@
       } else if (statut === 'published') {
         patch.motif_refus = null;
       }
+      // Trace modération
+      const user = await Auth.getUser();
+      if (user) {
+        patch.modere_par = user.id;
+        patch.modere_at = new Date().toISOString();
+      }
       const { error } = await Auth.sb.from('annonces').update(patch).eq('id', id);
       if (error) { alert(error.message); return; }
       loadAll();

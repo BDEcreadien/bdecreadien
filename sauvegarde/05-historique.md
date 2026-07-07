@@ -4,6 +4,13 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-07 — Admin phase 2
+
+- **SQL 008** : `annonces.modere_par` + `modere_at`, `profils.banni_jusqu_a`
+- `admin-annonces.html` : trace qui/quand pour chaque modération (silencieux)
+- `admin-utilisateurs.html` : boutons **Bannir** (prompt jours, 0 = permanent) et **Supprimer** (confirmation), affichage badge "Banni jusqu'au…"
+- `annonces-nouvelle.html` : écran "Publication suspendue" si l'utilisateur est banni
+
 ## 2026-07-07 — Membre BDE phase 2
 
 - **SQL 007** : `reponse`, `repondu_par`, `repondu_at` sur `feedbacks`
