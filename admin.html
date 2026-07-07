@@ -225,14 +225,19 @@
   </div>
 </header>
 
-<!-- LOGIN -->
-<div id="screen-login">
+<!-- LOGIN — token GitHub uniquement (Supabase auth déjà vérifiée avant) -->
+<div id="screen-login" style="display:none;">
   <div class="login-card">
-    <h1>Connexion admin</h1>
-    <p>Entre le token GitHub pour accéder au tableau de bord. Il sera mémorisé dans le navigateur.</p>
+    <h1>Token GitHub</h1>
+    <p>Pour éditer le contenu du site (événements, équipe, galerie, partenaires), un token GitHub est nécessaire une seule fois. Génère-le depuis <a href="https://github.com/settings/tokens" target="_blank" rel="noopener" style="color:var(--violet)">github.com/settings/tokens</a> avec le scope <code>repo</code>. Il sera mémorisé dans ton navigateur.</p>
     <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-    <button class="btn-primary" onclick="login()">Se connecter</button>
+    <button class="btn-primary" onclick="login()">Continuer</button>
   </div>
+</div>
+
+<!-- LOADER pendant la vérification Supabase -->
+<div id="screen-auth-check" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);color:var(--gris-texte);font-size:14px;">
+  Vérification de l'accès…
 </div>
 
 <!-- APP -->
@@ -444,6 +449,9 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js?v=4"></script>
 <script>
 const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
@@ -465,9 +473,8 @@ function login() {
 }
 function logout() {
   localStorage.removeItem('bde_admin_token');
-  document.getElementById('screen-login').style.display = 'flex';
-  document.getElementById('screen-app').style.display = 'none';
-  document.getElementById('btn-logout').style.display = 'none';
+  if (window.Auth && Auth.logout) Auth.logout();
+  else window.location.href = '/';
 }
 async function init() {
   document.getElementById('screen-login').style.display = 'none';
@@ -2718,10 +2725,23 @@ function showToast(msg, type) {
   t.textContent = msg; t.className = `show ${type}`;
   setTimeout(() => t.className = '', 3500);
 }
-window.addEventListener('DOMContentLoaded', () => {
-  token = localStorage.getItem('bde_admin_token') || '';
+window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout').style.display = 'none';
-  if (token) init();
+
+  // 1. Vérifier auth Supabase — role >= membre
+  const ok = await Auth.requireRole('membre');
+  if (!ok) return; // redirect vers /connexion.html?next=/admin.html
+
+  // 2. Cacher le loader
+  document.getElementById('screen-auth-check').style.display = 'none';
+
+  // 3. Vérifier token GitHub
+  token = localStorage.getItem('bde_admin_token') || '';
+  if (token) {
+    init();
+  } else {
+    document.getElementById('screen-login').style.display = 'flex';
+  }
 });
 </script>
 
