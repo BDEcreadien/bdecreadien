@@ -31,8 +31,8 @@ const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
 | `annonces-nouvelle.html` | ❌ | ✅ | ✅ | ✅ |
 | `carte.html` | ✅ (avec token) | ✅ | ✅ | ✅ |
 | `bde.html` | ❌ | ❌ | ✅ | ✅ |
-| `admin-annonces.html` | ❌ | ❌ | ❌ | ✅ (via `requireRole('admin')`) |
-| `admin-utilisateurs.html` | ❌ | ❌ | ❌ | ✅ |
+| `admin-annonces.html` | ❌ | ❌ | ❌ | ❌ (redirige vers `/bde.html#annonces`) |
+| `admin-utilisateurs.html` | ❌ | ❌ | ❌ | ❌ (redirige vers `/bde.html#utilisateurs`) |
 | `admin.html` | ❌ | ❌ | ✅ (attente si pas de token) | ✅ |
 | `scan.html` | ✅ (BDE) | | | |
 

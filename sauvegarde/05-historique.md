@@ -4,6 +4,15 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-07 — Refonte espace BDE unifié
+
+- `bde.html` réécrit de zéro avec design cohérent avec le site public (hero gradient, tabs pill, cards avec ombres douces, palette --violet/--orange/--gradient)
+- Système d'onglets : Aperçu / Annonces / Feedbacks / Inscriptions / Annuaire + Demandes/Membres/Contenu (admin)
+- Sous-onglets sur annonces (pending/published/rejected/sold)
+- Deep-link via `#hash` (bde.html#annonces, bde.html#utilisateurs, etc.)
+- `admin-annonces.html` et `admin-utilisateurs.html` deviennent de simples redirections vers `bde.html#annonces` / `#utilisateurs`
+- Aperçu : KPI grid (annonces à valider, publiées, feedbacks, étudiants, demandes) + quick actions
+
 ## 2026-07-07 — Admin phase 2
 
 - **SQL 008** : `annonces.modere_par` + `modere_at`, `profils.banni_jusqu_a`
