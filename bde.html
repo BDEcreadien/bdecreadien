@@ -179,10 +179,17 @@
       <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
         Voir tous les comptes, changer les rôles, promouvoir des membres.
       </p>
-      <div class="bde-quick-actions">
-        <a href="/admin-utilisateurs.html" class="bde-btn">Ouvrir la gestion</a>
-        <a href="/profil.html" class="bde-btn ghost">Mon profil</a>
-      </div>
+      <a href="/admin-utilisateurs.html" class="bde-btn">Ouvrir la gestion</a>
+    </div>
+
+    <!-- CONTENU DU SITE (admin only) -->
+    <div class="bde-card" id="card-content" style="display:none;">
+      <h2>Contenu du site</h2>
+      <p style="font-size:14px;color:var(--gris-texte);margin-bottom:14px;">
+        Éditer les événements, l'équipe, la galerie, les partenaires, les paramètres du site.
+        Nécessite un token GitHub la première fois.
+      </p>
+      <a href="/admin.html" class="bde-btn">Ouvrir l'éditeur</a>
     </div>
 
     <!-- RETOUR PROFIL -->
@@ -212,6 +219,7 @@
       if (currentProfil.role === 'admin') {
         document.getElementById('card-demandes').style.display = '';
         document.getElementById('card-users').style.display = '';
+        document.getElementById('card-content').style.display = '';
       }
       loadStats();
       loadFeedbacks();
