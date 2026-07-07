@@ -161,12 +161,20 @@
   <script src="js/main.js?v=4"></script>
   <script>
     let currentUser = null;
+    let currentProfil = null;
     let photoBlob = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const profil = await Auth.getProfil();
-      if (!profil) { window.location.href = '/connexion.html?next=/annonces-nouvelle.html'; return; }
+      currentProfil = await Auth.getProfil();
+      if (!currentProfil) { window.location.href = '/connexion.html?next=/annonces-nouvelle.html'; return; }
       currentUser = await Auth.getUser();
+      // Membre BDE / Admin : publication directe, pas de modération
+      if (currentProfil.role === 'membre' || currentProfil.role === 'admin') {
+        const p = document.querySelector('.an-header p');
+        if (p) p.textContent = 'Publication directe (pas de modération pour les membres BDE).';
+        const btn = document.getElementById('a-submit');
+        if (btn) btn.textContent = "Publier maintenant";
+      }
     });
 
     document.getElementById('a-photo-input').addEventListener('change', async (e) => {
@@ -225,17 +233,19 @@
           photo_url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
         }
 
+        const isBde = currentProfil && (currentProfil.role === 'membre' || currentProfil.role === 'admin');
         const { error } = await Auth.sb.from('annonces').insert({
           auteur_id: currentUser.id,
           titre, description, categorie,
           prix: prix || null,
           contact: contact || null,
-          photo_url
+          photo_url,
+          statut: isBde ? 'published' : 'pending'
         });
         if (error) throw error;
 
-        showMsg('Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
-        setTimeout(() => window.location.href = '/profil.html', 1800);
+        showMsg(isBde ? 'Annonce publiée !' : 'Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
+        setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/profil.html', 1500);
       } catch (err) {
         btn.disabled = false; btn.textContent = "Publier l'annonce";
         showMsg('Erreur : ' + err.message, 'error');

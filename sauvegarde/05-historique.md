@@ -4,6 +4,15 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-07 — Membre BDE phase 2
+
+- **SQL 007** : `reponse`, `repondu_par`, `repondu_at` sur `feedbacks`
+- `bde.html` : bouton "Répondre" sur feedbacks, réponse visible ensuite dans le message
+- `bde.html` : nouvelle card "Inscriptions aux événements" (groupé par event, avec liste des inscrits + export CSV)
+- `bde.html` : nouvelle card "Annuaire des étudiants" (recherche par nom/email/année)
+- `annonces-nouvelle.html` : publication directe pour membre BDE / admin (skip modération)
+- CSS : status-chip pour rôles etudiant/membre/admin
+
 ## 2026-07-07 — Étudiant phase 2
 
 - **SQL 006** : statut `sold` sur annonces, `motif_refus` sur annonces, `email_bde_enabled` + `notif_push` sur profils

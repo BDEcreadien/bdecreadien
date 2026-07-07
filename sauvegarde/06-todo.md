@@ -11,7 +11,7 @@
 - [ ] Notification quand une annonce est validée/refusée (email ou OneSignal)
 - [ ] Notification quand une demande d'adhésion est traitée
 - [ ] Notification admins quand une nouvelle demande d'adhésion arrive
-- [ ] Page dédiée pour voir les inscriptions par événement (`/admin-inscriptions.html`)
+- [x] ~~Page dédiée pour voir les inscriptions par événement~~ ✅ 2026-07-07 (embedded dans /bde.html + export CSV)
 - [x] ~~Bouton "Marquer comme vendu" sur les annonces (statut `sold`)~~ ✅ 2026-07-07
 - [ ] Expiration auto des annonces après 60 jours (via cron GitHub Actions ou trigger SQL)
 - [ ] Compression + optimisation des images uploadées via Cloudflare Images (si besoin de scaler)

@@ -99,6 +99,9 @@
     .status-chip.pending  { background: #FFF3E0; color: #E67E22; }
     .status-chip.accepted { background: #F0FFF4; color: #1A7A40; }
     .status-chip.rejected { background: #FFF0F0; color: #C0392B; }
+    .status-chip.etudiant { background: #EEF0FF; color: var(--violet); }
+    .status-chip.membre   { background: #EEF0FF; color: var(--violet); font-weight:700; }
+    .status-chip.admin    { background: #FDE8E8; color: #C0392B; font-weight:700; }
 
     .bde-empty {
       text-align: center; padding: 30px 12px;
@@ -165,6 +168,25 @@
       </div>
     </div>
 
+    <!-- INSCRIPTIONS ÉVÉNEMENTS -->
+    <div class="bde-card">
+      <h2>Inscriptions aux événements <span class="badge-count" id="c-insc">0</span></h2>
+      <div id="insc-list" class="bde-list">
+        <div class="bde-empty">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- ANNUAIRE ÉTUDIANTS -->
+    <div class="bde-card">
+      <h2>Annuaire des étudiants <span class="badge-count" id="c-annuaire">0</span></h2>
+      <input type="search" id="annuaire-search" placeholder="Rechercher (nom, email, année)…"
+        style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;outline:none;margin-bottom:12px;box-sizing:border-box;"
+        oninput="filterAnnuaire()">
+      <div id="annuaire-list" class="bde-list">
+        <div class="bde-empty">Chargement…</div>
+      </div>
+    </div>
+
     <!-- DEMANDES ADHÉSION (admin only) -->
     <div class="bde-card" id="card-demandes" style="display:none;">
       <h2>Demandes d'adhésion au BDE <span class="badge-count" id="c-demandes">0</span></h2>
@@ -223,8 +245,102 @@
       }
       loadStats();
       loadFeedbacks();
+      loadInscriptions();
+      loadAnnuaire();
       if (currentProfil.role === 'admin') loadDemandes();
     });
+
+    // ============ INSCRIPTIONS ÉVÉNEMENTS ============
+    async function loadInscriptions() {
+      const { data, error } = await Auth.sb.from('inscriptions_evenements')
+        .select('*, profils!inscriptions_evenements_user_id_fkey(prenom, nom, annee)')
+        .order('evenement_date', { ascending: true });
+
+      const wrap = document.getElementById('insc-list');
+      if (error) { wrap.innerHTML = `<div class="bde-empty">${error.message}</div>`; return; }
+      if (!data.length) { wrap.innerHTML = `<div class="bde-empty">Aucune inscription pour le moment.</div>`; document.getElementById('c-insc').textContent = '0'; return; }
+
+      const today = new Date().toISOString().slice(0,10);
+      const groups = {};
+      data.forEach(i => {
+        if (!groups[i.evenement_slug]) groups[i.evenement_slug] = { titre: i.evenement_titre, date: i.evenement_date, users: [] };
+        if (i.profils) groups[i.evenement_slug].users.push(i.profils);
+      });
+      const arr = Object.entries(groups).sort((a,b) => (a[1].date||'') < (b[1].date||'') ? -1 : 1);
+      document.getElementById('c-insc').textContent = arr.length;
+
+      wrap.innerHTML = arr.map(([slug, g]) => {
+        const dateStr = g.date ? new Date(g.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) : 'Date inconnue';
+        const isPast = g.date && g.date < today;
+        const rows = g.users.map(u => `<div style="padding:6px 10px;background:white;border-radius:8px;font-size:13px;color:var(--noir);">${escapeHtml(u.prenom)} ${escapeHtml(u.nom)} <span style="color:var(--gris-texte);font-size:11px;">· ${escapeHtml(u.annee||'')}</span></div>`).join('');
+        return `
+          <div class="bde-item" style="flex-direction:column;align-items:stretch;${isPast?'opacity:0.6;':''}">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div class="bde-item-title">${escapeHtml(g.titre)}<span class="status-chip ${isPast?'traite':'vu'}">${g.users.length} inscrit${g.users.length>1?'s':''}</span></div>
+              <div class="bde-item-meta">${dateStr}</div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">${rows}</div>
+            <div style="margin-top:8px;text-align:right;">
+              <button class="bde-btn ghost small" onclick="exportInscCsv('${slug.replace(/'/g,"\\\\'")}',${JSON.stringify(g.users).replace(/"/g,'&quot;')})">Export CSV</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function exportInscCsv(slug, users) {
+      const rows = [['Prénom','Nom','Année']].concat(users.map(u => [u.prenom||'',u.nom||'',u.annee||'']));
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `inscriptions-${slug}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+
+    // ============ ANNUAIRE ============
+    let _annuaire = [];
+    async function loadAnnuaire() {
+      const { data, error } = await Auth.sb.from('profils')
+        .select('id, prenom, nom, email, annee, role, avatar_url')
+        .order('created_at', { ascending: true });
+
+      const wrap = document.getElementById('annuaire-list');
+      if (error) { wrap.innerHTML = `<div class="bde-empty">${error.message}</div>`; return; }
+      _annuaire = data || [];
+      document.getElementById('c-annuaire').textContent = _annuaire.length;
+      renderAnnuaire(_annuaire);
+    }
+
+    function filterAnnuaire() {
+      const q = document.getElementById('annuaire-search').value.toLowerCase().trim();
+      if (!q) return renderAnnuaire(_annuaire);
+      renderAnnuaire(_annuaire.filter(u =>
+        (u.prenom||'').toLowerCase().includes(q) ||
+        (u.nom||'').toLowerCase().includes(q) ||
+        (u.email||'').toLowerCase().includes(q) ||
+        (u.annee||'').toLowerCase().includes(q)
+      ));
+    }
+
+    function renderAnnuaire(list) {
+      const wrap = document.getElementById('annuaire-list');
+      if (!list.length) { wrap.innerHTML = `<div class="bde-empty">Aucun résultat.</div>`; return; }
+      wrap.innerHTML = list.map(u => {
+        const avatar = u.avatar_url
+          ? `<img src="${u.avatar_url}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`
+          : `<div style="width:36px;height:36px;border-radius:50%;background:var(--gradient);color:white;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;">${(u.prenom||'?')[0].toUpperCase()}</div>`;
+        return `
+          <div class="bde-item" style="align-items:center;">
+            ${avatar}
+            <div class="bde-item-body">
+              <div class="bde-item-title">${escapeHtml(u.prenom||'')} ${escapeHtml(u.nom||'')}<span class="status-chip ${u.role}">${LABELS[u.role]||u.role}</span></div>
+              <div class="bde-item-meta">${escapeHtml(u.email||'')} · ${escapeHtml(u.annee||'')}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
     function renderHeader() {
       const r = currentProfil.role;
@@ -278,19 +394,43 @@
         const date = new Date(f.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
         const nextStatut = f.statut === 'nouveau' ? 'vu' : f.statut === 'vu' ? 'traite' : 'nouveau';
         const nextLabel  = f.statut === 'nouveau' ? 'Marquer vu' : f.statut === 'vu' ? 'Marquer traité' : 'Rouvrir';
+        const reponseBlock = f.reponse
+          ? `<div style="margin-top:10px;padding:10px 12px;background:#EEF0FF;border-radius:8px;font-size:13px;color:var(--noir);line-height:1.5;white-space:pre-wrap;"><strong style="color:var(--violet);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Réponse du BDE</strong><br>${escapeHtml(f.reponse)}</div>`
+          : `<div id="reponse-form-${f.id}" style="display:none;margin-top:10px;">
+              <textarea id="reponse-txt-${f.id}" placeholder="Ta réponse à l'étudiant…" style="width:100%;padding:10px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:13px;min-height:70px;box-sizing:border-box;"></textarea>
+              <button class="bde-btn small" style="margin-top:6px;" onclick="sendReponse('${f.id}')">Envoyer</button>
+            </div>`;
         return `
           <div class="bde-item">
             <div class="bde-item-body">
               <div class="bde-item-title">${escapeHtml(f.sujet)}<span class="status-chip ${f.statut}">${f.statut}</span></div>
               <div class="bde-item-meta">Par ${escapeHtml(auteur)} · ${date}</div>
               <div class="bde-item-msg">${escapeHtml(f.message)}</div>
+              ${reponseBlock}
             </div>
             <div class="bde-item-actions">
               <button class="bde-btn ghost small" onclick="setFeedbackStatut('${f.id}','${nextStatut}')">${nextLabel}</button>
+              ${!f.reponse ? `<button class="bde-btn ghost small" onclick="showReponseForm('${f.id}')">Répondre</button>` : ''}
             </div>
           </div>
         `;
       }).join('');
+    }
+
+    function showReponseForm(id) {
+      const el = document.getElementById('reponse-form-' + id);
+      if (el) { el.style.display = 'block'; document.getElementById('reponse-txt-' + id).focus(); }
+    }
+
+    async function sendReponse(id) {
+      const txt = document.getElementById('reponse-txt-' + id).value.trim();
+      if (!txt) return;
+      const { error } = await Auth.sb.from('feedbacks').update({
+        reponse: txt, repondu_par: currentUser.id, repondu_at: new Date().toISOString(),
+        statut: 'traite'
+      }).eq('id', id);
+      if (error) { alert(error.message); return; }
+      loadFeedbacks(); loadStats();
     }
 
     async function setFeedbackStatut(id, statut) {
