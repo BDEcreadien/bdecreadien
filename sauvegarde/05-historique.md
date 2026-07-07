@@ -4,6 +4,12 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-07 — Étudiant phase 2
+
+- **SQL 006** : statut `sold` sur annonces, `motif_refus` sur annonces, `email_bde_enabled` + `notif_push` sur profils
+- `profil.html` : bouton "Vendue" sur mes annonces published, affichage motif refus si rejected, section Notifications avec toggles push+email, section Historique (membre depuis, annonces vendues, événements totaux)
+- `admin-annonces.html` : accès rôle `membre` (au lieu de `admin`), prompt pour motif de refus au rejet
+
 ## 2026-07-06 — Espace BDE + demandes d'adhésion + token GitHub partagé
 
 - **SQL 004** : table `demandes_membre_bde` + policies remplacent `responsable` par `membre`

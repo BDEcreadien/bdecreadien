@@ -130,7 +130,7 @@
     let currentTab = 'pending';
 
     document.addEventListener('DOMContentLoaded', async () => {
-      const ok = await Auth.requireRole('admin');
+      const ok = await Auth.requireRole('membre');
       if (!ok) return;
       loadAll();
     });
@@ -199,7 +199,15 @@
     }
 
     async function setStatut(id, statut) {
-      const { error } = await Auth.sb.from('annonces').update({ statut }).eq('id', id);
+      const patch = { statut };
+      if (statut === 'rejected') {
+        const motif = prompt("Motif du refus (visible par l'étudiant) :", '');
+        if (motif === null) return;
+        patch.motif_refus = motif.trim() || null;
+      } else if (statut === 'published') {
+        patch.motif_refus = null;
+      }
+      const { error } = await Auth.sb.from('annonces').update(patch).eq('id', id);
       if (error) { alert(error.message); return; }
       loadAll();
     }
