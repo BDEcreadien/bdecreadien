@@ -225,13 +225,23 @@
   </div>
 </header>
 
-<!-- LOGIN — token GitHub uniquement (Supabase auth déjà vérifiée avant) -->
+<!-- SETUP — token GitHub (visible uniquement pour admin lors du premier setup) -->
 <div id="screen-login" style="display:none;">
   <div class="login-card">
-    <h1>Token GitHub</h1>
-    <p>Pour éditer le contenu du site (événements, équipe, galerie, partenaires), un token GitHub est nécessaire une seule fois. Génère-le depuis <a href="https://github.com/settings/tokens" target="_blank" rel="noopener" style="color:var(--violet)">github.com/settings/tokens</a> avec le scope <code>repo</code>. Il sera mémorisé dans ton navigateur.</p>
+    <h1>Configuration initiale</h1>
+    <p>Le token GitHub permet d'éditer le contenu du site. <strong>Il sera enregistré côté serveur pour que tous les membres du BDE puissent éditer sans avoir à le retaper.</strong></p>
+    <p>Génère-le depuis <a href="https://github.com/settings/tokens" target="_blank" rel="noopener" style="color:var(--violet)">github.com/settings/tokens</a> avec le scope <code>repo</code>.</p>
     <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-    <button class="btn-primary" onclick="login()">Continuer</button>
+    <button class="btn-primary" onclick="login()">Enregistrer et continuer</button>
+  </div>
+</div>
+
+<!-- ATTENTE — visible pour un membre BDE si aucun token n'a encore été configuré -->
+<div id="screen-wait-admin" style="display:none;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem;">
+  <div class="login-card">
+    <h1>En attente de configuration</h1>
+    <p>Le token GitHub n'a pas encore été configuré. Un <strong>admin</strong> doit d'abord le renseigner avant que les membres BDE puissent éditer le contenu.</p>
+    <a href="/bde.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;">Retour à l'espace BDE</a>
   </div>
 </div>
 
@@ -464,11 +474,18 @@ let navStack = []; // ['pages'] | ['pages','sections','accueil'] | ['pages','edi
 // ============================================================
 // AUTH
 // ============================================================
-function login() {
+async function login() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) return showToast('Entre un token', 'error');
-  localStorage.setItem('bde_admin_token', t);
+  // Enregistrement côté Supabase pour partager le token avec tous les membres BDE
+  const user = await Auth.getUser();
+  const { error } = await Auth.sb.from('bde_config').upsert({
+    id: 'github_token', value: t, updated_at: new Date().toISOString(), updated_by: user.id
+  });
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  localStorage.setItem('bde_admin_token', t); // cache local
   token = t;
+  document.getElementById('screen-login').style.display = 'none';
   init();
 }
 function logout() {
@@ -2728,19 +2745,42 @@ function showToast(msg, type) {
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout').style.display = 'none';
 
-  // 1. Vérifier auth Supabase — role >= membre
+  // 1. Auth Supabase — role >= membre
   const ok = await Auth.requireRole('membre');
   if (!ok) return; // redirect vers /connexion.html?next=/admin.html
 
-  // 2. Cacher le loader
+  const profil = await Auth.getProfil();
   document.getElementById('screen-auth-check').style.display = 'none';
 
-  // 3. Vérifier token GitHub
+  // 2. Charger le token GitHub depuis Supabase (partagé entre membres BDE)
+  const { data: cfg } = await Auth.sb.from('bde_config')
+    .select('value').eq('id', 'github_token').maybeSingle();
+
+  if (cfg && cfg.value) {
+    token = cfg.value;
+    localStorage.setItem('bde_admin_token', token);
+    init();
+    return;
+  }
+
+  // 3. Fallback : token dans localStorage (compat avec l'ancien flow)
   token = localStorage.getItem('bde_admin_token') || '';
   if (token) {
+    // Si admin, migrer le token vers Supabase pour le partager
+    if (profil.role === 'admin') {
+      await Auth.sb.from('bde_config').upsert({
+        id: 'github_token', value: token, updated_at: new Date().toISOString(), updated_by: profil.id
+      });
+    }
     init();
-  } else {
+    return;
+  }
+
+  // 4. Aucun token — admin voit le setup, membre voit l'écran d'attente
+  if (profil.role === 'admin') {
     document.getElementById('screen-login').style.display = 'flex';
+  } else {
+    document.getElementById('screen-wait-admin').style.display = 'flex';
   }
 });
 </script>
