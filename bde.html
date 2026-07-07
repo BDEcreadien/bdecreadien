@@ -375,7 +375,7 @@
 
     <!-- APERÇU -->
     <div id="tab-apercu" class="bde-panel active">
-      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="kpi-grid" id="kpi-grid"><div class="empty">Chargement des stats…</div></div>
       <h2 class="section-title">Actions rapides</h2>
       <div class="quick-actions">
         <button class="quick-action" onclick="switchTab('annonces')">
@@ -521,22 +521,32 @@
     }
 
     async function loadAll() {
-      await Promise.all([
-        loadAnnonces(),
-        loadFeedbacks(),
-        loadInscriptions(),
-        loadAnnuaire(),
-        currentProfil.role === 'admin' ? loadDemandes() : null,
-        currentProfil.role === 'admin' ? loadUsers() : null
-      ].filter(Boolean));
+      const tasks = [
+        ['annonces-grid',     loadAnnonces],
+        ['feedbacks-list',    loadFeedbacks],
+        ['inscriptions-list', loadInscriptions],
+        ['annuaire-list',     loadAnnuaire]
+      ];
+      if (currentProfil.role === 'admin') {
+        tasks.push(['demandes-list', loadDemandes], ['users-list', loadUsers]);
+      }
+      await Promise.all(tasks.map(async ([elId, fn]) => {
+        try { await fn(); }
+        catch (err) {
+          console.error(elId, err);
+          const el = document.getElementById(elId);
+          if (el) el.innerHTML = `<div class="empty" style="color:#C0392B;">Erreur : ${escapeHtml(err.message || 'requête échouée')}</div>`;
+        }
+      }));
       renderKpi();
     }
 
     // ============ ANNONCES ============
     async function loadAnnonces() {
-      const { data } = await Auth.sb.from('annonces')
+      const { data, error } = await Auth.sb.from('annonces')
         .select('*, profils!annonces_auteur_id_fkey(prenom, nom)')
         .order('created_at', { ascending: false });
+      if (error) throw error;
       allAnnonces = data || [];
       document.getElementById('cnt-annonces').textContent = allAnnonces.filter(a => a.statut === 'pending').length;
       renderAnnonces();
@@ -608,9 +618,10 @@
 
     // ============ FEEDBACKS ============
     async function loadFeedbacks() {
-      const { data } = await Auth.sb.from('feedbacks')
+      const { data, error } = await Auth.sb.from('feedbacks')
         .select('*, profils!feedbacks_auteur_id_fkey(prenom, nom)')
         .order('created_at', { ascending: false });
+      if (error) throw error;
       const list = data || [];
       document.getElementById('cnt-feedbacks').textContent = list.filter(f => f.statut === 'nouveau').length;
       const wrap = document.getElementById('feedbacks-list');
@@ -667,9 +678,10 @@
 
     // ============ INSCRIPTIONS ============
     async function loadInscriptions() {
-      const { data } = await Auth.sb.from('inscriptions_evenements')
+      const { data, error } = await Auth.sb.from('inscriptions_evenements')
         .select('*, profils!inscriptions_evenements_user_id_fkey(prenom, nom, annee)')
         .order('evenement_date', { ascending: true });
+      if (error) throw error;
       const wrap = document.getElementById('inscriptions-list');
       if (!data || !data.length) { wrap.innerHTML = `<div class="empty">Aucune inscription pour le moment.</div>`; return; }
       const today = new Date().toISOString().slice(0,10);
@@ -711,9 +723,10 @@
     // ============ ANNUAIRE ============
     let _annuaire = [];
     async function loadAnnuaire() {
-      const { data } = await Auth.sb.from('profils')
+      const { data, error } = await Auth.sb.from('profils')
         .select('id, prenom, nom, email, annee, role, avatar_url')
         .order('created_at', { ascending: true });
+      if (error) throw error;
       _annuaire = data || [];
       document.getElementById('annuaire-count').textContent = _annuaire.length;
       renderAnnuaire(_annuaire);
@@ -744,9 +757,10 @@
 
     // ============ DEMANDES ADHÉSION (admin) ============
     async function loadDemandes() {
-      const { data } = await Auth.sb.from('demandes_membre_bde')
+      const { data, error } = await Auth.sb.from('demandes_membre_bde')
         .select('*, profils!demandes_membre_bde_user_id_fkey(prenom, nom, email, annee)')
         .order('created_at', { ascending: false });
+      if (error) throw error;
       const list = data || [];
       document.getElementById('cnt-demandes').textContent = list.filter(d => d.statut === 'pending').length;
       const wrap = document.getElementById('demandes-list');
@@ -793,9 +807,10 @@
 
     // ============ UTILISATEURS (admin) ============
     async function loadUsers() {
-      const { data } = await Auth.sb.from('profils')
+      const { data, error } = await Auth.sb.from('profils')
         .select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a')
         .order('created_at', { ascending: true });
+      if (error) throw error;
       allUsers = data || [];
       renderUsers(allUsers);
     }

@@ -4,6 +4,17 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-07 — Refonte profil + fix chargements
+
+- `profil.html` réécrit avec le même design que `bde.html` (hero gradient, tabs, cards, chips)
+- Système d'onglets sur profil : Aperçu / Mes annonces / Mes événements / Paramètres
+- Deep-link via `#hash`
+- CTA "Espace BDE" (membres+) directement dans l'aperçu
+- Section "Rejoindre le BDE" (étudiants only) dans l'aperçu
+- Feedback form dans l'aperçu
+- Paramètres regroupe : infos perso, notifications toggles, mot de passe, déconnexion
+- Fix `bde.html` : toutes les queries Supabase déstructurent `error`, `loadAll` catch les erreurs et affiche le message dans le panel concerné (plus de chargement infini)
+
 ## 2026-07-07 — Refonte espace BDE unifié
 
 - `bde.html` réécrit de zéro avec design cohérent avec le site public (hero gradient, tabs pill, cards avec ombres douces, palette --violet/--orange/--gradient)
