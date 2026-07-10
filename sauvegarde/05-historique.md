@@ -4,6 +4,15 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-07-10 — Système de partials (`_includes/`)
+
+- Création de `_includes/nav.html`, `_includes/footer.html`, `_includes/scripts-public.html`
+- Script `build.js` idempotent qui remplace le contenu entre `<!-- @include X @start -->` et `<!-- @include X @end -->`
+- `package.json` avec `npm run build`
+- Marqueurs ajoutés dans 10 pages HTML (nav partout, footer + scripts sur pages publiques)
+- Documentation dans `_includes/README.md`
+- **À configurer côté Cloudflare Pages** : Build command = `node build.js`
+
 ## 2026-07-07 — Refonte profil + fix chargements
 
 - `profil.html` réécrit avec le même design que `bde.html` (hero gradient, tabs, cards, chips)

@@ -92,8 +92,33 @@ Bumper d'une version à chaque modification impactante :
 grep -rl "style.css?v=10" *.html | xargs sed -i '' 's/style.css?v=10/style.css?v=11/g'
 ```
 
+## Partials centralisés (`_includes/`)
+
+Les blocs répétés (nav, footer, scripts fin de body) sont **stockés une seule fois** dans `_includes/*.html` :
+- `_includes/nav.html` — nav bar (toutes les pages)
+- `_includes/footer.html` — footer (pages publiques)
+- `_includes/scripts-public.html` — main.js + notif banner + OneSignal + Supabase + auth (pages publiques)
+
+Dans les pages HTML, on met des marqueurs :
+```html
+<!-- @include nav @start -->
+<!-- @include nav @end -->
+```
+
+Le script `build.js` remplace le contenu entre les marqueurs par le fichier `_includes/`.
+
+**Workflow pour modifier la nav (ou footer, ou scripts)** :
+1. Éditer `_includes/nav.html`
+2. Lancer `node build.js` (ou `npm run build`)
+3. Git commit + push
+4. Cloudflare Pages redéploie
+
+Détails complets dans [`_includes/README.md`](../_includes/README.md).
+
 ## Deploy
 
 - Push sur `main` → Cloudflare Pages build automatique (~30-60s)
-- Pas de CI, pas de tests
+- **Build command** : `node build.js` (à configurer dans Cloudflare Pages settings)
+- **Output directory** : `/` (racine)
+- Pas de tests
 - Preview URL : https://bdecreadien.pages.dev

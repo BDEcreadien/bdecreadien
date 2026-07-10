@@ -249,28 +249,33 @@
 </head>
 <body>
 
-  <nav id="navbar" class="scrolled" aria-label="Navigation principale">
-    <a href="index.html" class="nav-logo">
-      <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%;object-fit:cover;">
-      <div class="nav-logo-text">
-        <span class="bde">BDE LYON</span>
-        <span class="cread">CREAD</span>
-      </div>
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="agenda.html">Agenda</a></li>
-      <li><a href="communication.html">Communication</a></li>
-      <li><a href="annonces.html">Annonces</a></li>
-      <li><a href="partenaires.html">Partenaires</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-    <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
-      <span class="nav-burger-line"></span>
-      <span class="nav-burger-line"></span>
-      <span class="nav-burger-line"></span>
-    </button>
-  </nav>
+  <!-- @include nav @start -->
+<nav id="navbar" aria-label="Navigation principale">
+  <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+    <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+    <div class="nav-logo-text">
+      <span class="bde">BDE LYON</span>
+      <span class="cread">CREAD</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
+    <li><a href="communication.html">Communication</a></li>
+    <li><a href="annonces.html">Annonces</a></li>
+    <li><a href="partenaires.html">Partenaires</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
+    <span class="nav-burger-line"></span>
+    <span class="nav-burger-line"></span>
+    <span class="nav-burger-line"></span>
+  </button>
+</nav>
+<script>
+(function(){var c=(location.pathname.split('/').pop()||'index.html').replace(/^$/,'index.html');document.querySelectorAll('.nav-links a').forEach(function(a){var h=a.getAttribute('href');if(h===c){a.setAttribute('aria-current','page');a.classList.add('nav-active');}});})();
+</script>
+<!-- @include nav @end -->
 
   <div class="profil-hero">
     <div class="profil-hero-inner">
