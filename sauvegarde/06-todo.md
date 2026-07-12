@@ -33,6 +33,10 @@
 - [ ] Nettoyer les résidus de `responsable` dans les CSS (harmless mais dead code)
 - [ ] Unifier les naming conventions (btn-primary vs profil-btn vs bde-btn vs auth-btn)
 
+## ⚠️ Pièges connus (ne pas refaire)
+
+- **Scripts inline + globaux** : `main.js` a des `const CAT_LABELS`, `let annoncesData`, `let _mesInscriptions` en top-level. Ne PAS re-déclarer ces noms dans un `<script>` inline (même page = même scope global → SyntaxError silencieuse → tout le script meurt). Toujours préfixer : `PROFIL_CAT_LABELS`, `BDE_ANNONCES`, etc. Ou wrapper l'inline dans une IIFE `(function(){ ... })()`.
+
 ## Bugs connus / à surveiller
 
 - Le CTA `/admin.html` n'est visible que pour admin (pas membre) alors que membre peut y accéder
