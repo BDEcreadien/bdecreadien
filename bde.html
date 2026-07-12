@@ -479,8 +479,8 @@
   <script src="js/auth.js?v=4"></script>
   <script src="js/main.js?v=4"></script>
   <script>
-    const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
-    const CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
+    const PROFIL_LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
+    const PROFIL_CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
     const STATUT_LABELS = { pending: 'En attente', published: 'Publiée', rejected: 'Refusée', sold: 'Vendue' };
 
     let currentUser = null;
@@ -522,7 +522,7 @@
 
     function renderHeader() {
       document.getElementById('role-line').innerHTML =
-        `Bonjour <strong>${escapeHtml(currentProfil.prenom)}</strong> <span class="role-badge">${LABELS[currentProfil.role]}</span>`;
+        `Bonjour <strong>${escapeHtml(currentProfil.prenom)}</strong> <span class="role-badge">${PROFIL_LABELS[currentProfil.role]}</span>`;
     }
 
     async function loadAll() {
@@ -586,12 +586,12 @@
       return `
         <div class="item-card">
           <div class="item-card-media">
-            ${a.photo_url ? `<img src="${a.photo_url}" alt="">` : `<div class="item-card-media-empty">${(CAT_LABELS[a.categorie]||'?')[0]}</div>`}
+            ${a.photo_url ? `<img src="${a.photo_url}" alt="">` : `<div class="item-card-media-empty">${(PROFIL_CAT_LABELS[a.categorie]||'?')[0]}</div>`}
           </div>
           <div class="item-card-body">
             <div class="item-card-badges">
               <span class="chip chip-${a.statut}">${STATUT_LABELS[a.statut]}</span>
-              <span class="chip" style="background:#F5F5FA;color:var(--gris-texte);">${CAT_LABELS[a.categorie]||''}</span>
+              <span class="chip" style="background:#F5F5FA;color:var(--gris-texte);">${PROFIL_CAT_LABELS[a.categorie]||''}</span>
               ${a.prix ? `<span class="chip" style="background:#EEF0FF;color:var(--violet);">${escapeHtml(a.prix)}</span>` : ''}
             </div>
             <div class="item-card-title">${escapeHtml(a.titre)}</div>
@@ -753,7 +753,7 @@
         <div class="user-row">
           <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom||'?')[0].toUpperCase()}</div>
           <div class="user-info">
-            <div class="user-name">${escapeHtml(u.prenom||'')} ${escapeHtml(u.nom||'')} <span class="chip chip-${u.role}">${LABELS[u.role]||u.role}</span></div>
+            <div class="user-name">${escapeHtml(u.prenom||'')} ${escapeHtml(u.nom||'')} <span class="chip chip-${u.role}">${PROFIL_LABELS[u.role]||u.role}</span></div>
             <div class="user-meta">${escapeHtml(u.email||'')} · ${escapeHtml(u.annee||'')}</div>
           </div>
         </div>
@@ -837,7 +837,7 @@
           <div class="user-row">
             <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom||'?')[0].toUpperCase()}</div>
             <div class="user-info">
-              <div class="user-name">${escapeHtml(u.prenom||'')} ${escapeHtml(u.nom||'')} <span class="chip chip-${u.role}">${LABELS[u.role]||u.role}</span></div>
+              <div class="user-name">${escapeHtml(u.prenom||'')} ${escapeHtml(u.nom||'')} <span class="chip chip-${u.role}">${PROFIL_LABELS[u.role]||u.role}</span></div>
               <div class="user-meta">${escapeHtml(u.email||'')} · ${escapeHtml(u.annee||'—')}${banni?` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>`:''}</div>
             </div>
             <div class="user-actions">
@@ -858,7 +858,7 @@
       const role = sel.value;
       const original = sel.dataset.original;
       if (role === original) return;
-      if (!confirm(`Passer cet utilisateur en ${LABELS[role]} ?`)) { sel.value = original; return; }
+      if (!confirm(`Passer cet utilisateur en ${PROFIL_LABELS[role]} ?`)) { sel.value = original; return; }
       const { error } = await Auth.sb.from('profils').update({ role }).eq('id', id);
       if (error) { alert(error.message); sel.value = original; return; }
       loadUsers(); loadAnnuaire();

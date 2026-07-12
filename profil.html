@@ -431,8 +431,8 @@
   <script src="js/auth.js?v=4"></script>
   <script src="js/main.js?v=4"></script>
   <script>
-    const LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
-    const CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
+    const PROFIL_LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
+    const PROFIL_CAT_LABELS = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
     const STATUT_LABELS = { pending: 'En attente', published: 'Publiée', rejected: 'Refusée', sold: 'Vendue' };
 
     let currentUser = null;
@@ -494,7 +494,7 @@
     function renderHeader() {
       const p = currentProfil;
       document.getElementById('p-hero-name').textContent = p.prenom + ' ' + p.nom;
-      document.getElementById('p-hero-role').innerHTML = `<span class="role-badge">${LABELS[p.role]}</span> · ${escapeHtml(p.annee||'')} année`;
+      document.getElementById('p-hero-role').innerHTML = `<span class="role-badge">${PROFIL_LABELS[p.role]}</span> · ${escapeHtml(p.annee||'')} année`;
       const avatar = document.getElementById('p-avatar');
       if (p.avatar_url) avatar.innerHTML = `<img src="${p.avatar_url}" alt="">`;
       else avatar.textContent = (p.prenom[0] || '?').toUpperCase();
@@ -628,10 +628,10 @@
           ? `<div style="font-size:12px;color:#C0392B;font-style:italic;margin-top:4px;">Motif : ${escapeHtml(a.motif_refus)}</div>` : '';
         return `
           <div class="list-item" style="${a.statut === 'sold' ? 'opacity:0.55;' : ''}">
-            <div class="list-item-thumb">${a.photo_url ? `<img src="${a.photo_url}" alt="">` : (CAT_LABELS[a.categorie]||'?')[0]}</div>
+            <div class="list-item-thumb">${a.photo_url ? `<img src="${a.photo_url}" alt="">` : (PROFIL_CAT_LABELS[a.categorie]||'?')[0]}</div>
             <div class="list-item-body">
               <div class="list-item-title">${escapeHtml(a.titre)} <span class="chip chip-${a.statut}">${STATUT_LABELS[a.statut]}</span></div>
-              <div class="list-item-sub">${CAT_LABELS[a.categorie]||''} · ${a.prix || 'Gratuit'}</div>
+              <div class="list-item-sub">${PROFIL_CAT_LABELS[a.categorie]||''} · ${a.prix || 'Gratuit'}</div>
               ${refus}
             </div>
             <div class="list-item-actions">${actions}</div>
