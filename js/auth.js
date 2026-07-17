@@ -54,10 +54,9 @@
   }
 
   async function initNavChip() {
-    const navLinks = document.querySelector('.nav-links');
-    if (!navLinks) return;
+    const li = document.getElementById('nav-auth-li');
+    if (!li) return;
 
-    const li = document.createElement('li');
     const profil = await getProfil();
 
     if (!profil) {
@@ -68,8 +67,6 @@
       const bdeLink = isBde ? `<a href="/bde.html" class="nav-auth-bde" title="Espace BDE">BDE</a>` : '';
       li.innerHTML = `${bdeLink}<a href="/profil.html" class="nav-auth-name">${profil.prenom}</a>`;
     }
-
-    navLinks.appendChild(li);
   }
 
   async function syncOneSignalId() {

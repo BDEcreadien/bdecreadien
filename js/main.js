@@ -659,28 +659,6 @@ if (document.getElementById('equipe-container')) {
 }
 
 // ===================================
-// GALERIE PHOTOS — Communication
-// ===================================
-if (document.getElementById('galerie-grid')) {
-  fetch(`/_data/galerie.json?t=${Date.now()}`)
-    .then(r => r.json())
-    .then(items => {
-      const photos = Array.isArray(items) ? items : [];
-      const grid = document.getElementById('galerie-grid');
-      if (!photos.length) { document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
-      grid.innerHTML = photos.map(p => {
-        const url = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
-        return `<div class="galerie-item reveal">
-          <img src="${url}" alt="${p.titre || 'Photo BDE'}" loading="lazy" onerror="this.parentElement.style.display='none'">
-          ${p.titre ? `<span class="galerie-caption">${p.titre}</span>` : ''}
-        </div>`;
-      }).join('');
-      grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-    })
-    .catch(() => {});
-}
-
-// ===================================
 // ANNONCES — Chargement & Filtres
 // ===================================
 
@@ -924,7 +902,8 @@ function downloadICS(titre, date, horaire, lieu, description) {
   const debut = parseHeure(hDebut);
   const fin = parseHeure(hFin);
   const dtstart = debut ? toICSDate(d, debut) : toICSDate(d, null);
-  const dtend = fin ? toICSDate(d, fin) : (debut ? toICSDate(d, { h: debut.h + 2, m: debut.m }) : toICSDate(d, null));
+  const nextDay = new Date(d); nextDay.setDate(nextDay.getDate() + 1);
+  const dtend = fin ? toICSDate(d, fin) : (debut ? toICSDate(d, { h: debut.h + 2, m: debut.m }) : toICSDate(nextDay, null));
   const allDay = !debut;
   const dtProp = allDay ? `DTSTART;VALUE=DATE:${dtstart}\nDTEND;VALUE=DATE:${dtend}` : `DTSTART:${dtstart}\nDTEND:${dtend}`;
   const ics = [

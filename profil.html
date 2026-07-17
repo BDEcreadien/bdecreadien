@@ -265,6 +265,7 @@
     <li><a href="annonces.html">Annonces</a></li>
     <li><a href="partenaires.html">Partenaires</a></li>
     <li><a href="contact.html">Contact</a></li>
+    <li id="nav-auth-li"></li>
   </ul>
   <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
     <span class="nav-burger-line"></span>
@@ -494,7 +495,7 @@
     function renderHeader() {
       const p = currentProfil;
       document.getElementById('p-hero-name').textContent = p.prenom + ' ' + p.nom;
-      document.getElementById('p-hero-role').innerHTML = `<span class="role-badge">${PROFIL_LABELS[p.role]}</span> · ${escapeHtml(p.annee||'')} année`;
+      document.getElementById('p-hero-role').innerHTML = `<span class="role-badge">${PROFIL_LABELS[p.role]}</span>${p.annee ? ' · ' + escapeHtml(p.annee) + ' année' : ''}`;
       const avatar = document.getElementById('p-avatar');
       if (p.avatar_url) avatar.innerHTML = `<img src="${p.avatar_url}" alt="">`;
       else avatar.textContent = (p.prenom[0] || '?').toUpperCase();
@@ -579,7 +580,7 @@
       const nom = document.getElementById('p-nom').value.trim();
       const tel = document.getElementById('p-tel').value.trim();
       const annee = document.getElementById('p-annee').value;
-      if (!prenom || !nom || !tel) return showMsg('infos-msg', 'Remplis tous les champs.', 'error');
+      if (!prenom || !nom) return showMsg('infos-msg', 'Prénom et nom sont obligatoires.', 'error');
       const { error } = await Auth.sb.from('profils').update({ prenom, nom, telephone: tel, annee }).eq('id', currentUser.id);
       if (error) return showMsg('infos-msg', error.message, 'error');
       currentProfil = await Auth.getProfil(true);
