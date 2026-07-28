@@ -493,6 +493,49 @@ if (document.getElementById('evenements-list')) {
   });
 }
 
+// Sidebar compacte — agenda.html uniquement
+if (document.getElementById('sidebar-events')) {
+  Promise.all([
+    fetch('/_data/evenements.json').then(r => r.json()).catch(() => []),
+    loadMesInscriptions()
+  ]).then(([data]) => {
+    const allData = Array.isArray(data) ? data : (data.evenements || []);
+    const now = new Date();
+    const upcoming = allData.filter(ev => !ev.date || new Date(ev.date) >= now);
+    const container = document.getElementById('sidebar-events');
+    if (!container) return;
+    if (!upcoming.length) {
+      container.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);">Aucun événement à venir.</p>';
+      return;
+    }
+    container.innerHTML = upcoming.map(ev => {
+      const d = new Date(ev.date);
+      const day = isNaN(d) ? '' : d.getDate().toString().padStart(2, '0');
+      const month = isNaN(d) ? '' : d.toLocaleString('fr-FR', { month: 'short' });
+      const slug = eventSlug(ev);
+      const jeViens = _mesInscriptions.has(slug);
+      const jvStyle = jeViens
+        ? 'background:linear-gradient(90deg,#463A90,#E85100);color:white;border-color:transparent;'
+        : 'background:white;color:var(--violet);border-color:var(--violet);';
+      const jvLabel = jeViens ? '✓ J\'y vais' : 'Je viens';
+      return `<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--gris-clair);">
+        <div style="min-width:38px;text-align:center;background:var(--gradient);border-radius:8px;padding:5px 6px;color:white;font-family:'Bebas Neue',sans-serif;flex-shrink:0;">
+          <div style="font-size:20px;line-height:1;">${day}</div>
+          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;">${month}</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--noir);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev.titre}</div>
+          <div style="font-size:11px;color:var(--gris-texte);margin-top:2px;">${ev.lieu || ''}</div>
+        </div>
+        <button class="btn-je-viens" data-slug="${slug}" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" style="font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:0.5px;padding:5px 10px;border-radius:16px;border:1.5px solid;cursor:pointer;flex-shrink:0;${jvStyle}">${jvLabel}</button>
+      </div>`;
+    }).join('');
+    container.querySelectorAll('.btn-je-viens').forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); toggleJeViens(btn); });
+    });
+  });
+}
+
 // ===================================
 // ARCHIVES — Chargement & Rendu
 // ===================================
