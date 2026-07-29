@@ -678,7 +678,36 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js?v=4"></script>
-  <script src="js/main.js?v=4"></script>
+  <script>
+    // Nav scroll
+    (function() {
+      const navEl = document.querySelector('nav');
+      if (navEl) {
+        const handleScroll = () => navEl.classList.toggle('scrolled', window.scrollY > 40);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+      }
+    })();
+    // Burger menu
+    (function() {
+      const burger = document.getElementById('nav-burger');
+      const navLinks = document.querySelector('.nav-links');
+      if (burger && navLinks) {
+        function closeMobileMenu() {
+          burger.classList.remove('open');
+          navLinks.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        }
+        burger.addEventListener('click', () => {
+          const isOpen = burger.classList.toggle('open');
+          navLinks.classList.toggle('open', isOpen);
+          burger.setAttribute('aria-expanded', String(isOpen));
+        });
+        navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMobileMenu));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
+      }
+    })();
+  </script>
   <script>
     const ROLE_LABELS = { etudiant: 'Étudiant', membre: 'Membre BDE', admin: 'Admin' };
     const CAT_LABELS  = { materiel: 'Matériel', place: 'Place', logement: 'Logement', service: 'Service', autre: 'Autre' };
