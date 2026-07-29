@@ -172,6 +172,17 @@
     </div>
   </div>
 
+  <script>
+    // Nettoie les anciens service workers pour éviter qu'ils bloquent les requêtes Supabase
+    if ('serviceWorker' in navigator && !sessionStorage.getItem('sw-cleaned')) {
+      sessionStorage.setItem('sw-cleaned', '1');
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (regs.length) {
+          Promise.all(regs.map(r => r.unregister())).then(() => location.reload());
+        }
+      });
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script>
@@ -224,6 +235,8 @@
           ? 'Email ou mot de passe incorrect.'
           : error.message === 'Email not confirmed'
           ? 'Confirme ton email avant de te connecter. Vérifie ta boîte de réception (et les spams).'
+          : (error.message === 'Load failed' || error.message === 'Failed to fetch' || error.message.includes('network'))
+          ? 'Impossible de joindre le serveur. Recharge la page et réessaie. Si le problème persiste, vide le cache de ton navigateur.'
           : error.message;
         showMsg('login-msg', msg, 'error');
         return;
@@ -257,7 +270,13 @@
 
       btn.disabled = false; btn.textContent = 'Créer mon compte';
 
-      if (error) { showMsg('reg-msg', error.message, 'error'); return; }
+      if (error) {
+        const msg = (error.message === 'Load failed' || error.message === 'Failed to fetch' || error.message.includes('network'))
+          ? 'Impossible de joindre le serveur. Recharge la page et réessaie.'
+          : error.message;
+        showMsg('reg-msg', msg, 'error');
+        return;
+      }
 
       document.getElementById('reg-email-confirm').textContent = email;
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
