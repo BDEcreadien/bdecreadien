@@ -104,7 +104,7 @@
 <!-- @include nav @end -->
 
   <div class="an-wrap">
-    <a href="/profil.html" class="an-back">
+    <a href="/mon-espace.html" class="an-back">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       Retour au profil
     </a>
@@ -261,7 +261,7 @@
         if (error) throw error;
 
         showMsg(isBde ? 'Annonce publiée !' : 'Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
-        setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/profil.html', 1500);
+        setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/mon-espace.html', 1500);
       } catch (err) {
         btn.disabled = false; btn.textContent = "Publier l'annonce";
         showMsg('Erreur : ' + err.message, 'error');
