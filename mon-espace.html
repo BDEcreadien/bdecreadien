@@ -693,25 +693,30 @@
     let _annuaire = [];
     let annoncesCount = 0, soldCount = 0, eventsAvenirCount = 0, eventsPasseCount = 0;
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      currentProfil = await Auth.getProfil();
-      if (!currentProfil) { window.location.href = '/connexion.html?next=/mon-espace.html'; return; }
-      currentUser = await Auth.getUser();
-
-      renderHero();
-      showTabsForRole(currentProfil.role);
-      fillInfos();
-      renderNotifPrefs();
-
-      // Tab navigation
-      document.querySelectorAll('.me-tab').forEach(t => {
-        t.addEventListener('click', () => switchTab(t.dataset.tab));
-      });
-      const hash = location.hash.replace('#', '');
-      if (hash) switchTab(hash);
-
-      await loadAll();
+    // Tabs cliquables immédiatement (sans attendre le profil)
+    document.querySelectorAll('.me-tab').forEach(t => {
+      t.addEventListener('click', () => switchTab(t.dataset.tab));
     });
+    const _initHash = location.hash.replace('#', '');
+    if (_initHash) switchTab(_initHash);
+
+    // Init async
+    (async () => {
+      try {
+        currentProfil = await Auth.getProfil();
+        if (!currentProfil) { window.location.href = '/connexion.html?next=/mon-espace.html'; return; }
+        try { currentUser = await Auth.getUser(); } catch (_) {}
+
+        renderHero();
+        showTabsForRole(currentProfil.role);
+        fillInfos();
+        renderNotifPrefs();
+        await loadAll();
+      } catch (err) {
+        console.error('Erreur init mon-espace:', err);
+        document.getElementById('me-hero-name').textContent = 'Erreur de chargement';
+      }
+    })();
 
     // ======= NAVIGATION =======
     function switchTab(name) {
