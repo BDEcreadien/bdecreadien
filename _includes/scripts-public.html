@@ -2,7 +2,7 @@
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"868cda79a5844d4a842363b412470415"}'></script>
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
+    navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' });
   }
 </script>
 
