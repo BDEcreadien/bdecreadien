@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$(date) hook fired\" >> /tmp/claude-hook-check.txt; FILE=$(jq -r '.tool_input.file_path // empty'); if [ -n \"$FILE\" ] && [[ \"$FILE\" != *\".DS_Store\"* ]]; then cd /Users/maradantom/Documents/Archi/CREAD/BDE/BDE/SiteBDE && git add \"$FILE\" && git diff --cached --quiet || git commit -m \"auto: $(basename $FILE)\" && git push; fi 2>/dev/null || true",
+            "timeout": 30,
+            "statusMessage": "Commit + push..."
+          }
+        ]
+      }
+    ]
+  }
+}
