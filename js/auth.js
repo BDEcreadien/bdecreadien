@@ -15,16 +15,25 @@
 
   async function getProfil(forceRefresh = false) {
     if (_profil && !forceRefresh) return _profil;
+    // Cache sessionStorage pour éviter un aller-retour Supabase entre pages
+    if (!forceRefresh) {
+      try {
+        const cached = sessionStorage.getItem('_bde_profil');
+        if (cached) { _profil = JSON.parse(cached); return _profil; }
+      } catch (_) {}
+    }
     const user = await getUser();
-    if (!user) { _profil = null; return null; }
+    if (!user) { _profil = null; sessionStorage.removeItem('_bde_profil'); return null; }
     const { data } = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
     if (!data) {
       // Session orpheline : l'auth user existe mais pas le profil — on déconnecte
       await sb.auth.signOut();
       _profil = null;
+      sessionStorage.removeItem('_bde_profil');
       return null;
     }
     _profil = data;
+    try { sessionStorage.setItem('_bde_profil', JSON.stringify(data)); } catch (_) {}
     return _profil;
   }
 
