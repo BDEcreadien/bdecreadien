@@ -834,6 +834,8 @@
 
         renderHero();
         showTabsForRole(currentProfil.role);
+        // Re-appliquer le hash après que les onglets de rôle soient révélés
+        if (location.hash) switchTab(location.hash.replace('#', ''));
         fillInfos();
         renderNotifPrefs();
         await loadAll();
