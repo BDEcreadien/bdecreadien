@@ -519,7 +519,12 @@ async function init() {
   }
 
   loader.remove();
-  showStep('pages');
+  const urlPage = new URLSearchParams(location.search).get('page');
+  if (urlPage) {
+    selectPage(urlPage);
+  } else {
+    showStep('pages');
+  }
 }
 
 // ============================================================

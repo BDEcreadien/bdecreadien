@@ -271,6 +271,25 @@
     .quick-action-title { font-weight: 700; font-size: 14px; }
     .quick-action-sub { font-size: 12px; color: var(--gris-texte); margin-top: 2px; }
 
+    /* CONTENU GRID */
+    .contenu-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .contenu-card {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 20px 12px; background: white; border-radius: 14px;
+      text-decoration: none; color: var(--noir);
+      box-shadow: 0 4px 24px rgba(70,58,144,0.06);
+      border: 1.5px solid transparent;
+      transition: var(--transition);
+    }
+    .contenu-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(70,58,144,0.12); }
+    .contenu-card-icon { margin-bottom: 10px; }
+    .contenu-card-icon svg { width: 36px; height: 36px; stroke: var(--violet); }
+    .contenu-card-name { font-weight: 700; font-size: 14px; }
+    .contenu-card-desc { font-size: 11px; color: var(--gris-texte); margin-top: 3px; line-height: 1.4; }
+
     /* ANNONCES GRID (modération BDE) */
     .item-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -394,6 +413,38 @@
     }
     .role-select:focus { border-color: var(--violet); }
 
+    /* SUB-TAB BAR (entre onglets principaux et panneaux) */
+    .me-subtabbar {
+      display: flex; gap: 4px; overflow-x: auto;
+      background: #eeeef8; border-radius: 12px; padding: 5px;
+      margin: -20px 0 24px; scrollbar-width: none;
+    }
+    .me-subtabbar::-webkit-scrollbar { display: none; }
+    .me-subtab {
+      flex-shrink: 0; padding: 8px 16px; border: none; background: none;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+      letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+      color: var(--gris-texte); cursor: pointer; border-radius: 8px;
+      transition: var(--transition); white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .me-subtab:hover { color: var(--violet); }
+    .me-subtab.active { background: white; color: var(--violet); box-shadow: 0 2px 8px rgba(70,58,144,0.1); }
+    .me-subtab .count { background: #EEF0FF; color: var(--violet); padding: 1px 7px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .me-subtab.active .count { background: rgba(70,58,144,0.12); }
+
+    /* BOUTON ADMIN */
+    .me-tab-admin {
+      flex-shrink: 0; padding: 10px 18px; border: 1.5px solid var(--violet);
+      font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+      letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+      color: var(--violet); cursor: pointer; border-radius: 10px;
+      transition: var(--transition); white-space: nowrap; background: none;
+      text-decoration: none; display: none; align-items: center; gap: 6px;
+      margin-left: auto;
+    }
+    .me-tab-admin:hover { background: var(--violet); color: white; }
+
     @media (max-width: 640px) {
       .me-hero { padding: 110px 20px 40px; }
       .me-container { padding: 0 16px 60px; }
@@ -453,21 +504,31 @@
 
   <div class="me-container">
 
-    <!-- TABS -->
+    <!-- TABS PRINCIPAUX -->
     <div class="me-tabs" role="tablist" id="me-tabbar">
-      <button class="me-tab active" data-tab="bord">Tableau de bord</button>
-      <button class="me-tab" data-tab="annonces-perso">Mes annonces</button>
-      <button class="me-tab" data-tab="events-perso">Mes événements</button>
-      <button class="me-tab" data-tab="parametres">Paramètres</button>
-      <span class="tab-sep" id="sep-bde" style="display:none;"></span>
-      <button class="me-tab" data-tab="bde-apercu" data-role="membre" style="display:none;">Aperçu BDE</button>
-      <button class="me-tab" data-tab="bde-annonces" data-role="membre" style="display:none;">Annonces <span class="count" id="cnt-annonces">0</span></button>
-      <button class="me-tab" data-tab="bde-feedbacks" data-role="membre" style="display:none;">Feedbacks <span class="count" id="cnt-feedbacks">0</span></button>
-      <button class="me-tab" data-tab="bde-inscriptions" data-role="membre" style="display:none;">Inscriptions</button>
-      <button class="me-tab" data-tab="bde-annuaire" data-role="membre" style="display:none;">Annuaire</button>
-      <button class="me-tab" data-tab="bde-demandes" data-role="admin" style="display:none;">Demandes <span class="count" id="cnt-demandes">0</span></button>
-      <button class="me-tab" data-tab="bde-membres" data-role="admin" style="display:none;">Membres</button>
-      <button class="me-tab" data-tab="bde-contenu" data-role="membre" style="display:none;">Contenu</button>
+      <button class="me-tab active" data-tab="bord" onclick="switchTab('bord')">Tableau de bord</button>
+      <button class="me-tab" data-tab="mon-espace" onclick="switchTab('annonces-perso')">Mon espace</button>
+      <button class="me-tab" data-tab="bde" data-role="membre" style="display:none;" onclick="switchTab('bde-apercu')">BDE</button>
+      <button class="me-tab" data-tab="administration" data-role="admin" style="display:none;" onclick="switchTab('bde-demandes')">Administration</button>
+      <a href="/admin.html" class="me-tab-admin" id="me-tab-admin">Accès page admin</a>
+    </div>
+
+    <!-- SOUS-ONGLETS -->
+    <div class="me-subtabbar" id="me-subtabbar" style="display:none;">
+      <!-- Mon espace -->
+      <button class="me-subtab" data-tab="annonces-perso" style="display:none;" onclick="switchTab('annonces-perso')">Mes annonces</button>
+      <button class="me-subtab" data-tab="events-perso" style="display:none;" onclick="switchTab('events-perso')">Mes événements</button>
+      <button class="me-subtab" data-tab="parametres" style="display:none;" onclick="switchTab('parametres')">Paramètres</button>
+      <!-- BDE -->
+      <button class="me-subtab" data-tab="bde-apercu" style="display:none;" onclick="switchTab('bde-apercu')">Aperçu</button>
+      <button class="me-subtab" data-tab="bde-annonces" style="display:none;" onclick="switchTab('bde-annonces')">Annonces <span class="count" id="cnt-annonces">0</span></button>
+      <button class="me-subtab" data-tab="bde-feedbacks" style="display:none;" onclick="switchTab('bde-feedbacks')">Feedbacks <span class="count" id="cnt-feedbacks">0</span></button>
+      <button class="me-subtab" data-tab="bde-inscriptions" style="display:none;" onclick="switchTab('bde-inscriptions')">Inscriptions</button>
+      <button class="me-subtab" data-tab="bde-annuaire" style="display:none;" onclick="switchTab('bde-annuaire')">Annuaire</button>
+      <button class="me-subtab" data-tab="bde-contenu" style="display:none;" onclick="switchTab('bde-contenu')">Contenu</button>
+      <!-- Administration -->
+      <button class="me-subtab" data-tab="bde-demandes" style="display:none;" onclick="switchTab('bde-demandes')">Demandes <span class="count" id="cnt-demandes">0</span></button>
+      <button class="me-subtab" data-tab="bde-membres" style="display:none;" onclick="switchTab('bde-membres')">Membres</button>
     </div>
 
     <!-- TABLEAU DE BORD -->
@@ -661,14 +722,52 @@
     <!-- BDE CONTENU (admin) -->
     <div id="tab-bde-contenu" class="me-panel">
       <h2 class="section-title">Contenu du site</h2>
-      <p class="section-sub">Éditer les événements, l'équipe, la galerie, les partenaires.</p>
-      <div class="quick-actions">
-        <a href="/admin.html" class="quick-action">
-          <div class="quick-action-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-          <div>
-            <div class="quick-action-title">Éditer les JSON</div>
-            <div class="quick-action-sub">Événements, équipe, galerie, partenaires</div>
-          </div>
+      <p class="section-sub">Clique sur une section pour l'éditer directement.</p>
+      <div class="contenu-grid">
+        <a href="/admin.html?page=agenda" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div class="contenu-card-name">Agenda</div>
+          <div class="contenu-card-desc">Événements à venir</div>
+        </a>
+        <a href="/admin.html?page=archives" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+          <div class="contenu-card-name">Archives</div>
+          <div class="contenu-card-desc">Événements passés</div>
+        </a>
+        <a href="/admin.html?page=galerie" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div class="contenu-card-name">Galerie</div>
+          <div class="contenu-card-desc">Photos galerie</div>
+        </a>
+        <a href="/admin.html?page=communication" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="contenu-card-name">Équipe</div>
+          <div class="contenu-card-desc">Membres du BDE</div>
+        </a>
+        <a href="/admin.html?page=partenaires" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="contenu-card-name">Partenaires</div>
+          <div class="contenu-card-desc">Sponsors & partenaires</div>
+        </a>
+        <a href="/admin.html?page=accueil" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
+          <div class="contenu-card-name">Accueil</div>
+          <div class="contenu-card-desc">Photos & vidéos</div>
+        </a>
+        <a href="/admin.html?page=stats" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+          <div class="contenu-card-name">Stats</div>
+          <div class="contenu-card-desc">Fréquentation</div>
+        </a>
+        <a href="/admin.html?page=fidelite" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg></div>
+          <div class="contenu-card-name">Fidélité</div>
+          <div class="contenu-card-desc">Cartes & tampons</div>
+        </a>
+        <a href="/admin.html?page=parametres" class="contenu-card">
+          <div class="contenu-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+          <div class="contenu-card-name">Paramètres</div>
+          <div class="contenu-card-desc">Chiffres clés, contact</div>
         </a>
       </div>
     </div>
@@ -722,10 +821,7 @@
     let _annuaire = [];
     let annoncesCount = 0, soldCount = 0, eventsAvenirCount = 0, eventsPasseCount = 0;
 
-    // Tabs cliquables immédiatement (sans attendre le profil)
-    document.querySelectorAll('.me-tab').forEach(t => {
-      t.addEventListener('click', () => switchTab(t.dataset.tab));
-    });
+    // Hash routing (les boutons d'onglets ont des onclick inline)
     const _initHash = location.hash.replace('#', '');
     if (_initHash) switchTab(_initHash);
 
@@ -748,8 +844,32 @@
     })();
 
     // ======= NAVIGATION =======
+    const _MAIN_TAB = {
+      'bord':'bord', 'annonces-perso':'mon-espace', 'events-perso':'mon-espace',
+      'parametres':'mon-espace', 'bde-apercu':'bde', 'bde-annonces':'bde',
+      'bde-feedbacks':'bde', 'bde-inscriptions':'bde', 'bde-annuaire':'bde',
+      'bde-contenu':'bde', 'bde-demandes':'administration', 'bde-membres':'administration',
+    };
+    const _SUB_TABS = {
+      'mon-espace':    ['annonces-perso','events-perso','parametres'],
+      'bde':           ['bde-apercu','bde-annonces','bde-feedbacks','bde-inscriptions','bde-annuaire','bde-contenu'],
+      'administration':['bde-demandes','bde-membres'],
+    };
+
     function switchTab(name) {
-      document.querySelectorAll('.me-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      const mainTab = _MAIN_TAB[name] || name;
+      document.querySelectorAll('.me-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === mainTab));
+      const subtabBar = document.getElementById('me-subtabbar');
+      const subs = _SUB_TABS[mainTab];
+      if (subs) {
+        document.querySelectorAll('.me-subtab').forEach(t => {
+          t.style.display = subs.includes(t.dataset.tab) ? '' : 'none';
+          t.classList.toggle('active', t.dataset.tab === name);
+        });
+        subtabBar.style.display = 'flex';
+      } else {
+        subtabBar.style.display = 'none';
+      }
       document.querySelectorAll('.me-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
       history.replaceState(null, '', '#' + name);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -761,11 +881,9 @@
         const min = RANG[t.dataset.role] ?? 99;
         if (rang >= min) t.style.display = '';
       });
-      if (rang >= RANG.membre) {
-        document.getElementById('sep-bde').style.display = '';
-      }
       if (role === 'admin') {
         document.getElementById('qa-demandes-btn').style.display = '';
+        document.getElementById('me-tab-admin').style.display = 'inline-flex';
       }
       if (role === 'etudiant') {
         document.getElementById('card-rejoindre').style.display = '';
