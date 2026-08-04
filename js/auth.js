@@ -59,6 +59,7 @@
   async function logout() {
     await sb.auth.signOut();
     _profil = null;
+    sessionStorage.removeItem('_bde_profil');
     window.location.href = '/';
   }
 
