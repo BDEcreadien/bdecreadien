@@ -194,13 +194,12 @@
       btn.textContent = 'Envoi en cours…';
       btn.disabled = true;
 
-      const formData = new FormData(this);
-      formData.append('name', nom);
-      formData.append('email', email);
-      formData.append('message', `Sujet: ${sujet}\n\n${message}`);
-
       try {
-        const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
+        const res = await fetch('https://zgscyfpqwbmwemzqtvpx.supabase.co/functions/v1/send-contact-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, email, sujet, message }),
+        });
         const data = await res.json();
         if (data.success) {
           this.innerHTML = `<div style="text-align:center;padding:2rem 0;">
