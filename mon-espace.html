@@ -911,7 +911,7 @@
       try {
         const resized = await resizeImage(file, 256);
         const path = `${currentUser.id}/avatar-${Date.now()}.jpg`;
-        const { error: upErr } = await Auth.sb.storage.from('avatars').upload(path, resized, { upsert: true, contentType: 'image/jpeg' });
+        const { error: upErr } = await Auth.sb.storage.from('avatars').upload(path, resized, { contentType: 'image/jpeg' });
         if (upErr) throw upErr;
         const publicUrl = Auth.sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
         const { error: dbErr } = await Auth.sb.from('profils').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
