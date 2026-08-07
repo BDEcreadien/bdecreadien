@@ -36,7 +36,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
               <tr>
                 <td style="width:40px;vertical-align:top;padding-top:2px;">
-                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#463A90,#E85100);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;text-align:center;line-height:36px;">${nom.charAt(0).toUpperCase()}</div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#463A90,#E85100);color:white;font-weight:700;font-size:16px;text-align:center;line-height:36px;">${nom.charAt(0).toUpperCase()}</div>
                 </td>
                 <td style="padding-left:14px;vertical-align:top;">
                   <p style="margin:0;font-size:16px;font-weight:700;color:#1A1A2E;">${nom}</p>
