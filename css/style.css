@@ -1923,7 +1923,7 @@ footer {
 
 @media (max-width: 768px) {
   .videos-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
