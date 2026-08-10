@@ -28,7 +28,7 @@
   })();
   function dismissNotifBanner() {
     document.getElementById('notif-banner').classList.remove('show');
-    sessionStorage.setItem('notif-shown', '1');
+    localStorage.setItem('notif-dismissed', '1');
   }
   function subscribeNotif() {
     document.getElementById('notif-banner').classList.remove('show');

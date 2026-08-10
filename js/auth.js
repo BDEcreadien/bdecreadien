@@ -90,6 +90,14 @@
 
   window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb };
 
+  // Purge le cache profil quand la session change (logout, expiration, autre onglet)
+  sb.auth.onAuthStateChange((event, session) => {
+    if (!session || event === 'SIGNED_OUT') {
+      _profil = null;
+      try { sessionStorage.removeItem('_bde_profil'); } catch (_) {}
+    }
+  });
+
   document.addEventListener('DOMContentLoaded', () => {
     initNavChip();
     syncOneSignalId();
