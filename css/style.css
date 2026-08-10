@@ -1921,13 +1921,13 @@ footer {
   line-height: 1.4;
 }
 
+br.mobile-only { display: none; }
 @media (max-width: 768px) {
   .videos-grid {
     grid-template-columns: 1fr;
   }
-  br.mobile-only { display: initial; }
+  br.mobile-only { display: inline; }
 }
-br.mobile-only { display: none; }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .videos-grid {
