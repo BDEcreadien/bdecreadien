@@ -2054,6 +2054,11 @@ footer {
   /* Partenaires */
   .partenaires-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
   .partenaires-cta { padding: 4rem 1.25rem; }
+
+  /* Logo mobile — CREAD à la ligne */
+  .nav-logo-text { max-width: 50px; }
+  .nav-logo-text .bde { font-size: 14px; }
+  .nav-logo-text .cread { font-size: 9px; }
 }
 
 /* ===================================
