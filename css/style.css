@@ -367,7 +367,7 @@ nav.scrolled .nav-burger-line {
 .hero-title .accent::before {
   content: '';
   position: absolute;
-  bottom: 8px;
+  bottom: -12px;
   left: 0;
   right: 0;
   height: 4px;
