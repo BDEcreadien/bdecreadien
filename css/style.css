@@ -2040,7 +2040,10 @@ br.mobile-only { display: none; }
 
   /* Hero accueil — icônes seules sur mobile, 4 sur une ligne */
   .hero-content { padding: 60px 1.25rem 0; }
-  .hero-cards { gap: 0.5rem; flex-wrap: nowrap; }
+  .hero-eyebrow { margin-bottom: 2.5rem; }
+  .hero-title { margin-bottom: 2.5rem; }
+  .hero-tagline { margin-top: 1rem; }
+  .hero-cards { gap: 0.5rem; flex-wrap: nowrap; margin-top: 3rem; }
   .hero-card { padding: 0.9rem 0.5rem; min-width: 0; }
   .hero-card-icon { width: 30px; height: 30px; margin-bottom: 0; }
   .hero-card-label { display: none; }
