@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Connexion — BDE CREAD Lyon</title>
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
   <link rel="icon" type="image/png" href="assets/Logo.png?v=2">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
@@ -241,7 +241,8 @@
         showMsg('login-msg', msg, 'error');
         return;
       }
-      const next = new URLSearchParams(window.location.search).get('next') || '/';
+      const rawNext = new URLSearchParams(window.location.search).get('next') || '/';
+      const next = (rawNext.startsWith('/') && !rawNext.startsWith('//')) ? rawNext : '/';
       window.location.href = next;
     }
 

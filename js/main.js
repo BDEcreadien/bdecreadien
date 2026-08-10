@@ -2,6 +2,26 @@
 // BDE CREAD — Script principal
 // ===================================
 
+// Escape HTML pour bloquer XSS sur données Supabase (annonces, profils, événements)
+function escapeHTML(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+// Autorise seulement les URLs http(s) sûres — bloque javascript:, data:, etc.
+function safeURL(u) {
+  if (!u) return '';
+  const s = String(u).trim();
+  if (/^https?:\/\//i.test(s)) return escapeHTML(s);
+  return '';
+}
+window.escapeHTML = escapeHTML;
+window.safeURL = safeURL;
+
 const labelLien = { shotgun: 'Billetterie', helloasso: 'Billetterie' };
 const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
 
@@ -19,21 +39,26 @@ const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
   `;
   document.documentElement.appendChild(overlay);
 
-  // Fade out au chargement
+  // Fade out au chargement + retire complètement du DOM après l'animation
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       overlay.style.opacity = '0';
-      setTimeout(() => { overlay.style.pointerEvents = 'none'; }, 180);
+      setTimeout(() => {
+        overlay.style.pointerEvents = 'none';
+        overlay.style.display = 'none';
+      }, 220);
     });
   });
 
-  // Fade in au clic sur un lien interne
+  // Fade in au clic sur un lien interne (ignore modificateurs / clic droit / cible _blank)
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href]').forEach(a => {
       const href = a.getAttribute('href');
       if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http') || a.target === '_blank') return;
       a.addEventListener('click', e => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         e.preventDefault();
+        overlay.style.display = 'flex';
         overlay.style.pointerEvents = 'all';
         overlay.style.opacity = '1';
         setTimeout(() => { window.location.href = href; }, 180);
@@ -66,6 +91,10 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+// Fail-safe : après 3s, tout .reveal encore invisible est révélé (bug observer, ancre profonde, etc.)
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => el.classList.add('visible'));
+}, 3000);
 
 // ===================================
 // ACCUEIL — Événements dynamiques
@@ -783,24 +812,29 @@ function renderAnnonces(filtre = 'tous') {
   }
   if (empty) empty.style.display = 'none';
 
-  grid.innerHTML = filtered.map((a, i) => `
-    <li class="annonce-card reveal" data-an-index="${i}" role="button" tabindex="0" aria-label="Voir l'annonce : ${a.titre}">
-      ${a.photo ? `<img class="annonce-photo" src="${a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo}" alt="${a.titre}" loading="lazy">` : ''}
+  grid.innerHTML = filtered.map((a, i) => {
+    const rawPhoto = a.photo ? (a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo) : '';
+    const photoUrl = safeURL(rawPhoto);
+    const titre = escapeHTML(a.titre);
+    return `
+    <li class="annonce-card reveal" data-an-index="${i}" role="button" tabindex="0" aria-label="Voir l'annonce : ${titre}">
+      ${photoUrl ? `<img class="annonce-photo" src="${photoUrl}" alt="${titre}" loading="lazy">` : ''}
       <div class="annonce-header">
-        <span class="annonce-badge" style="${getBadgeStyle(a.categorie)}">${getBadgeLabel(a.categorie)}</span>
+        <span class="annonce-badge" style="${getBadgeStyle(a.categorie)}">${escapeHTML(getBadgeLabel(a.categorie))}</span>
         ${formatPrix(a.prix)}
       </div>
-      <h3 class="annonce-title">${a.titre}</h3>
-      <p class="annonce-desc">${a.description}</p>
+      <h3 class="annonce-title">${titre}</h3>
+      <p class="annonce-desc">${escapeHTML(a.description)}</p>
       <div class="annonce-footer">
         <div class="annonce-meta">
-          <span class="annonce-auteur">${a.auteur}</span>
-          <span class="annonce-date">${a.date}</span>
+          <span class="annonce-auteur">${escapeHTML(a.auteur)}</span>
+          <span class="annonce-date">${escapeHTML(a.date)}</span>
         </div>
         <span class="annonce-contact">Voir →</span>
       </div>
     </li>
-  `).join('');
+  `;
+  }).join('');
 
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   grid.querySelectorAll('.annonce-card').forEach(card => {
@@ -815,8 +849,9 @@ function openAnnonceModal(a) {
   const photoSrc = a.photo ? (a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo) : null;
   const photos = a.photos ? a.photos.map(p => p.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + p : p) : (photoSrc ? [photoSrc] : []);
 
-  document.getElementById('an-modal-media').innerHTML = photoSrc
-    ? `<img class="an-modal-cover" src="${photoSrc}" alt="${a.titre}">`
+  const safePhoto = safeURL(photoSrc);
+  document.getElementById('an-modal-media').innerHTML = safePhoto
+    ? `<img class="an-modal-cover" src="${safePhoto}" alt="${escapeHTML(a.titre)}">`
     : `<div class="an-modal-cover-bar"></div>`;
   const modalBadge = document.getElementById('an-modal-badge');
   modalBadge.className = 'annonce-badge';

@@ -1,12 +1,28 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = ['https://bdecreadien.fr', 'https://www.bdecreadien.fr'];
+
+function corsHeaders(origin: string | null) {
+  const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Vary': 'Origin',
+  };
+}
+
+function esc(s: string): string {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function buildEmailHtml(nom: string, email: string, sujet: string, message: string): string {
-  const messageHtml = message.replace(/\n/g, '<br>');
+  const messageHtml = esc(message).replace(/\n/g, '<br>');
+  nom = esc(nom); email = esc(email); sujet = esc(sujet);
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -99,6 +115,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
 }
 
 serve(async (req) => {
+  const CORS = corsHeaders(req.headers.get('origin'));
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
 
   try {
@@ -106,6 +123,19 @@ serve(async (req) => {
 
     if (!nom || !email || !sujet || !message) {
       return new Response(JSON.stringify({ error: 'Champs manquants' }), {
+        status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validation stricte
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email)) || String(email).length > 254) {
+      return new Response(JSON.stringify({ error: 'Email invalide' }), {
+        status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
+    if (String(nom).length > 100 || String(sujet).length > 100 || String(message).length > 5000) {
+      return new Response(JSON.stringify({ error: 'Contenu trop long' }), {
         status: 400, headers: { ...CORS, 'Content-Type': 'application/json' },
       });
     }
@@ -134,7 +164,7 @@ serve(async (req) => {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: (err as Error).message }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
