@@ -1922,10 +1922,17 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .videos-grid {
+  .videos-grid,
+  .videos-grid:has(.video-item:nth-child(1):nth-last-child(1)),
+  .videos-grid:has(.video-item:nth-child(1):nth-last-child(2)),
+  .videos-grid:has(.video-item:nth-child(1):nth-last-child(3)) {
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
   }
+  .video-titre { font-size: 11px; }
+  .mobile-only { display: inline; }
 }
+.mobile-only { display: none; }
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .videos-grid {
