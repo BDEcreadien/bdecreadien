@@ -101,7 +101,10 @@
       </div>
       <div class="auth-field">
         <label for="login-pwd">Mot de passe</label>
-        <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
+        <div class="pwd-wrap">
+          <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('login-pwd', this)">👁</button>
+        </div>
       </div>
       <button class="auth-btn" onclick="doLogin()">Se connecter</button>
       <div class="auth-divider">ou</div>
