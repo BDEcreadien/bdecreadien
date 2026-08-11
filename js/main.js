@@ -623,11 +623,19 @@ fetch(`/_data/config.json?t=${Date.now()}`)
     const grid = document.getElementById('chiffres-grid');
     if (grid && cfg.chiffres?.length) {
       const delays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
-      grid.innerHTML = cfg.chiffres.map((c, i) => `
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      grid.innerHTML = cfg.chiffres.map((c, i) => {
+        const raw = String(c.number);
+        const target = parseInt(raw.replace(/\D/g, ''), 10);
+        const suffix = raw.replace(/[\d]/g, '');
+        // Valeur initiale = 0 (animation) ou finale (reduced-motion)
+        const initial = prefersReduced || isNaN(target) ? raw : ('0' + suffix);
+        return `
         <div class="chiffre-item reveal ${delays[i] || ''}">
-          <p class="chiffre-number" data-target="${c.number}">${c.number}</p>
-          <p class="chiffre-label">${c.label}</p>
-        </div>`).join('');
+          <p class="chiffre-number" data-target="${escapeHTML(raw)}">${escapeHTML(initial)}</p>
+          <p class="chiffre-label">${escapeHTML(c.label)}</p>
+        </div>`;
+      }).join('');
 
       const counterObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -639,6 +647,7 @@ fetch(`/_data/config.json?t=${Date.now()}`)
           const suffix = raw.replace(/[\d]/g, '');
           const target = parseInt(raw.replace(/\D/g, ''), 10);
           if (isNaN(target)) return;
+          if (prefersReduced) { el.textContent = raw; return; }
           const duration = 1200;
           const start = performance.now();
           const update = (now) => {

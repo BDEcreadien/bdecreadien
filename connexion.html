@@ -211,6 +211,15 @@
       }
     });
 
+    function togglePwd(inputId, btn) {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      const isPwd = el.type === 'password';
+      el.type = isPwd ? 'text' : 'password';
+      btn.textContent = isPwd ? '🙈' : '👁';
+      btn.setAttribute('aria-label', isPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    }
+
     function showTab(name) {
       ['connexion','inscription','reset','success'].forEach(t => {
         const panel = document.getElementById('panel-' + t);
