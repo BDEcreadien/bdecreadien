@@ -132,7 +132,10 @@
       </div>
       <div class="auth-field">
         <label for="reg-pwd">Mot de passe * (min. 8 caractères)</label>
-        <input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password">
+        <div class="pwd-wrap">
+          <input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password">
+          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('reg-pwd', this)">👁</button>
+        </div>
       </div>
       <div class="auth-row">
         <div class="auth-field">
