@@ -96,11 +96,11 @@
     <!-- CONNEXION -->
     <div id="panel-connexion" class="auth-panel active">
       <div class="auth-field">
-        <label>Email</label>
+        <label for="login-email">Email</label>
         <input type="email" id="login-email" placeholder="ton@email.com" autocomplete="email">
       </div>
       <div class="auth-field">
-        <label>Mot de passe</label>
+        <label for="login-pwd">Mot de passe</label>
         <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
       </div>
       <button class="auth-btn" onclick="doLogin()">Se connecter</button>
@@ -115,25 +115,25 @@
     <div id="panel-inscription" class="auth-panel">
       <div class="auth-row">
         <div class="auth-field">
-          <label>Prénom *</label>
+          <label for="reg-prenom">Prénom *</label>
           <input type="text" id="reg-prenom" placeholder="Marie" autocomplete="given-name">
         </div>
         <div class="auth-field">
-          <label>Nom *</label>
+          <label for="reg-nom">Nom *</label>
           <input type="text" id="reg-nom" placeholder="Dupont" autocomplete="family-name">
         </div>
       </div>
       <div class="auth-field">
-        <label>Email *</label>
+        <label for="reg-email">Email *</label>
         <input type="email" id="reg-email" placeholder="ton@email.com" autocomplete="email">
       </div>
       <div class="auth-field">
-        <label>Mot de passe * (min. 8 caractères)</label>
+        <label for="reg-pwd">Mot de passe * (min. 8 caractères)</label>
         <input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password">
       </div>
       <div class="auth-row">
         <div class="auth-field">
-          <label>Année d'étude *</label>
+          <label for="reg-annee">Année d&#39;étude *</label>
           <select id="reg-annee">
             <option value="1ère">1ère année</option>
             <option value="2ème">2ème année</option>
@@ -143,7 +143,7 @@
           </select>
         </div>
         <div class="auth-field">
-          <label>Téléphone *</label>
+          <label for="reg-tel">Téléphone *</label>
           <input type="tel" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel">
         </div>
       </div>
