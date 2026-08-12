@@ -2,8 +2,8 @@ name: Keep Supabase alive
 
 on:
   schedule:
-    # Toutes les 6 jours à 8h UTC — Supabase pause après 7j d'inactivité (free tier)
-    - cron: '0 8 */6 * *'
+    # Tous les jours à 8h UTC — garantit zéro pause (Supabase pause après 7j d'inactivité)
+    - cron: '0 8 * * *'
   workflow_dispatch: # Permet de lancer manuellement depuis GitHub
 
 jobs:
