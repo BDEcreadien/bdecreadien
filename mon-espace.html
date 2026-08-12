@@ -955,11 +955,30 @@
     }
 
     // ======= LOAD ALL =======
+    async function loadCarteFidelite() {
+      const link = document.getElementById('fidelite-link');
+      const bar = document.getElementById('fidelite-bar');
+      if (!currentUser) return;
+      link.href = `/carte.html?uid=${currentUser.id}`;
+      const { data: carte } = await Auth.sb.from('cartes_fidelite').select('*').eq('user_id', currentUser.id).maybeSingle();
+      const tampons = carte?.tampons ?? 0;
+      const total = carte?.total ?? 10;
+      document.getElementById('fidelite-tampons').textContent = tampons;
+      document.getElementById('fidelite-total').textContent = total;
+      bar.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.style.cssText = `flex:1;height:6px;border-radius:3px;background:${i < tampons ? 'var(--violet)' : 'rgba(70,58,144,0.15)'};`;
+        bar.appendChild(dot);
+      }
+    }
+
     async function loadAll() {
       const rang = RANG[currentProfil.role] ?? 0;
       const tasks = [
         ['mes-annonces', loadMesAnnonces],
-        ['events-a-venir', loadEvents]
+        ['events-a-venir', loadEvents],
+        ['fidelite-content', loadCarteFidelite]
       ];
       if (rang >= RANG.membre) {
         tasks.push(
