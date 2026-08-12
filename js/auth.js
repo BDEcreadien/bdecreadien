@@ -83,7 +83,7 @@
       <button type="button" class="nav-auth-name" aria-haspopup="true" aria-expanded="false" id="nav-auth-btn">${escapeText(profil.prenom)} <span aria-hidden="true" style="font-size:10px;opacity:0.6;">▾</span></button>
       <div class="nav-auth-menu" id="nav-auth-menu" role="menu" hidden>
         <a href="/mon-espace.html" role="menuitem">Mon espace</a>
-        <a href="/mon-espace.html#carte" role="menuitem">Ma carte fidélité</a>
+        <a href="/carte.html?uid=${encodeURIComponent(profil.id)}" role="menuitem">Ma carte fidélité</a>
         <button type="button" role="menuitem" id="nav-logout-btn">Se déconnecter</button>
       </div>
     `;

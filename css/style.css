@@ -2754,7 +2754,9 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
 }
 .nav-auth-menu[hidden] { display: none; }
 .nav-auth-menu a,
-.nav-auth-menu button {
+.nav-auth-menu button,
+nav:not(.scrolled) .nav-auth-menu a,
+nav:not(.scrolled) .nav-auth-menu button {
   display: block;
   text-align: left;
   width: 100%;
@@ -2762,17 +2764,28 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
   font-family: 'Barlow', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: var(--noir);
+  color: #1A1A2E !important;
+  -webkit-text-fill-color: #1A1A2E !important;
   text-decoration: none;
   background: none;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .nav-auth-menu a:hover,
 .nav-auth-menu button:hover { background: var(--gris-clair); }
-.nav-auth-menu button#nav-logout-btn { color: #C0392B; border-top: 1px solid var(--gris-clair); margin-top: 4px; padding-top: 12px; border-radius: 0 0 8px 8px; }
+.nav-auth-menu button#nav-logout-btn,
+nav:not(.scrolled) .nav-auth-menu button#nav-logout-btn {
+  color: #C0392B !important;
+  -webkit-text-fill-color: #C0392B !important;
+  border-top: 1px solid var(--gris-clair);
+  margin-top: 4px;
+  padding-top: 12px;
+  border-radius: 0 0 8px 8px;
+}
 .nav-auth-bde {
   text-decoration: none;
   font-family: 'Barlow Condensed', sans-serif;

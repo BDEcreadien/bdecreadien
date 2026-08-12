@@ -461,7 +461,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabase-config.js"></script>
-<script src="js/auth.js?v=5"></script>
+<script src="js/auth.js?v=6"></script>
 <script>
 const REPO = 'BDEcreadien/bdecreadien';
 const BRANCH = 'main';
@@ -2529,16 +2529,39 @@ async function initFidelite() {
   document.getElementById('fid-empty').style.display = 'none';
   document.getElementById('form-fidelite').classList.remove('visible');
 
+  // 1) Cartes Supabase (auto-créées à l'inscription)
+  let sbCartes = [];
+  try {
+    const { data, error } = await window.Auth.sb
+      .from('cartes_fidelite')
+      .select('user_id, tampons, total, created_at, profils(prenom, nom)')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    sbCartes = (data || []).map(c => ({
+      id: c.user_id,
+      user_id: c.user_id,
+      prenom: c.profils?.prenom || '',
+      nom: c.profils?.nom || '',
+      email: '',
+      tampons: c.tampons,
+      total: c.total,
+      createdAt: c.created_at,
+      historique: [],
+      source: 'supabase'
+    }));
+  } catch(e) { console.warn('Supabase cartes load failed', e); }
+
+  // 2) Cartes JSON legacy (anciennes cartes créées avant migration)
+  let jsonCartes = [];
   try {
     const file = await getFile('_data/fidelite.json');
     fideliteSha = file.sha;
     const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
-    fideliteData = JSON.parse(new TextDecoder().decode(bytes));
-    if (!Array.isArray(fideliteData.cartes)) fideliteData.cartes = [];
-  } catch(e) {
-    fideliteData = { cartes: [] };
-    fideliteSha = null;
-  }
+    const parsed = JSON.parse(new TextDecoder().decode(bytes));
+    jsonCartes = (parsed.cartes || []).map(c => ({ ...c, source: 'json' }));
+  } catch(e) { fideliteSha = null; }
+
+  fideliteData = { cartes: [...sbCartes, ...jsonCartes] };
   renderFideliteList();
 }
 
@@ -2709,7 +2732,12 @@ async function confirmerTampon() {
   if (!Array.isArray(c.historique)) c.historique = [];
   c.historique.push({ date: dateStr, heure: heureStr, validateur, event });
   try {
-    await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom} (${event})`);
+    if (c.source === 'supabase') {
+      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons }).eq('user_id', c.user_id);
+      if (error) throw error;
+    } else {
+      await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom} (${event})`);
+    }
     renderFideliteList();
     showToast(`Tampon ${c.tampons}/${c.total||10} ajouté !`, 'success');
   } catch(e) { c.tampons--; c.historique.pop(); showToast('Erreur : ' + e.message, 'error'); }
@@ -2725,7 +2753,12 @@ async function reinitialiserCarte(i) {
   const old = c.tampons;
   c.tampons = 0;
   try {
-    await saveFidelite(`Fidélité : réinitialisation carte — ${c.prenom} ${c.nom}`);
+    if (c.source === 'supabase') {
+      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: 0 }).eq('user_id', c.user_id);
+      if (error) throw error;
+    } else {
+      await saveFidelite(`Fidélité : réinitialisation carte — ${c.prenom} ${c.nom}`);
+    }
     renderFideliteList();
     showToast('Carte réinitialisée', 'success');
   } catch(e) { c.tampons = old; showToast('Erreur : ' + e.message, 'error'); }
@@ -2733,6 +2766,9 @@ async function reinitialiserCarte(i) {
 
 async function supprimerCarte(i) {
   const c = fideliteData.cartes[i];
+  if (c.source === 'supabase') {
+    return showToast('Impossible : cette carte est liée à un compte étudiant. Supprime le compte pour supprimer la carte.', 'error');
+  }
   if (!confirm(`Supprimer la carte de ${c.prenom} ${c.nom} ?`)) return;
   fideliteData.cartes.splice(i, 1);
   try {

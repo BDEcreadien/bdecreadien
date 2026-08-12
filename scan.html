@@ -147,6 +147,7 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const carteId = params.get('id');
+  const uid = params.get('uid');
 
   // PIN stocké en cookie 30 jours + localStorage
   function savePin(p) {
@@ -205,7 +206,9 @@
 
   async function callApi(pinToUse, validateur, event) {
     try {
-      const body = { carteId, pin: pinToUse };
+      const body = { pin: pinToUse };
+      if (uid) body.uid = uid;
+      else body.carteId = carteId;
       if (validateur !== undefined) { body.validateur = validateur; body.event = event; }
       const res = await fetch('/api/tampon', {
         method: 'POST',
@@ -217,7 +220,7 @@
   }
 
   async function loadCarte() {
-    if (!carteId) { showError('ID de carte manquant.'); return; }
+    if (!carteId && !uid) { showError('ID de carte manquant.'); return; }
     if (!pin) { show('login'); return; }
     show('loading');
     const res = await callApi(pin);
