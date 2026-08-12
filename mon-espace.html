@@ -535,6 +535,21 @@
     <div id="tab-bord" class="me-panel active">
       <div class="kpi-grid" id="kpi-perso"></div>
 
+      <!-- Carte fidélité -->
+      <div class="card" id="card-fidelite">
+        <h3>Ma carte fidélité</h3>
+        <div id="fidelite-content" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:180px;">
+            <p style="margin:0 0 6px;font-size:13px;color:var(--gris-texte);">Événements validés</p>
+            <p style="margin:0;font-size:32px;font-weight:700;color:var(--violet);">
+              <span id="fidelite-tampons">0</span><span style="font-size:18px;opacity:0.5;">/<span id="fidelite-total">10</span></span>
+            </p>
+            <div id="fidelite-bar" style="display:flex;gap:4px;margin-top:10px;"></div>
+          </div>
+          <a id="fidelite-link" href="#" class="btn" style="white-space:nowrap;">Voir ma carte →</a>
+        </div>
+      </div>
+
       <!-- Rejoindre BDE (étudiants) -->
       <div class="card" id="card-rejoindre" style="display:none;">
         <h3>Rejoindre le BDE</h3>
