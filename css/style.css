@@ -358,6 +358,7 @@ nav.scrolled .nav-burger-line {
   letter-spacing: 4px;
   animation: fadeUp 0.8s 0.1s ease both;
   position: relative;
+  margin-bottom: 2rem;
 }
 
 .hero-title .accent {
