@@ -396,22 +396,37 @@
       }
     }
 
+    async function fetchFromSupabase(uid) {
+      if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON) return null;
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      const { data: carte } = await sb.from('cartes_fidelite').select('*').eq('user_id', uid).maybeSingle();
+      if (!carte) return null;
+      const { data: profil } = await sb.from('profils').select('prenom, nom').eq('id', uid).maybeSingle();
+      return {
+        id: uid,
+        prenom: profil?.prenom || '',
+        nom: profil?.nom || '',
+        tampons: carte.tampons,
+        total: carte.total,
+        createdAt: carte.created_at,
+        source: 'supabase'
+      };
+    }
+
     async function init() {
       const params = new URLSearchParams(window.location.search);
+      const uid = params.get('uid');
       const id = params.get('id') || window.location.pathname.split('/carte/')[1];
 
-      if (!id) {
-        document.getElementById('carte-error').style.display = 'block';
-        return;
+      let carte = null;
+      // Priorité 1 : nouvelle carte Supabase (?uid=<user_id>)
+      if (uid) carte = await fetchFromSupabase(uid);
+      // Priorité 2 : ancienne carte JSON GitHub (?id=<carte_id>)
+      if (!carte && id) {
+        const data = await fetchFidelite();
+        if (data && data.cartes) carte = data.cartes.find(c => c.id === id);
       }
 
-      const data = await fetchFidelite();
-      if (!data) {
-        document.getElementById('carte-error').style.display = 'block';
-        return;
-      }
-
-      const carte = data.cartes && data.cartes.find(c => c.id === id);
       if (!carte) {
         document.getElementById('carte-error').style.display = 'block';
         return;
@@ -421,7 +436,7 @@
       const total = carte.total || 10;
       const complete = tampons >= total;
 
-      document.getElementById('carte-nom').textContent = carte.prenom + ' ' + carte.nom;
+      document.getElementById('carte-nom').textContent = (carte.prenom || '') + ' ' + (carte.nom || '');
       document.getElementById('carte-num').textContent = tampons;
       document.getElementById('carte-den').textContent = '/' + total;
       document.getElementById('carte-sous').textContent = complete ? '1 accès offert au prochain événement' : 'événements validés';
@@ -443,8 +458,9 @@
       }
 
       renderProgress(tampons, total);
-      const scanUrl = `https://bdecreadien.fr/scan.html?id=${carte.id}`;
-      drawQR(scanUrl);
+      // QR code : soit user_id (Supabase) soit legacy id (JSON)
+      const scanParam = carte.source === 'supabase' ? `uid=${uid}` : `id=${carte.id}`;
+      drawQR(`https://bdecreadien.fr/scan.html?${scanParam}`);
 
       document.getElementById('carte-content').style.display = 'block';
     }
