@@ -1,45 +1,16 @@
 {
   "cartes": [
     {
-      "id": "9jmzq3q1mr0p5irj",
+      "id": "6e7df637-fab4-45d8-b186-856d9607ae49",
+      "user_id": "6e7df637-fab4-45d8-b186-856d9607ae49",
       "prenom": "Tom",
       "nom": "Maradan",
-      "email": "maradantom@gmail.com",
-      "tampons": 5,
+      "email": "",
+      "tampons": 0,
       "total": 10,
-      "createdAt": "2026-06-30",
-      "historique": [
-        {
-          "date": "30/06/2026",
-          "heure": "19:39",
-          "validateur": "Tom",
-          "event": "CrÃªpes"
-        },
-        {
-          "date": "30/06/2026",
-          "heure": "19:40",
-          "validateur": "Coco",
-          "event": "SoirÃ©e"
-        },
-        {
-          "date": "30/06/2026",
-          "heure": "22:24",
-          "validateur": "Julien",
-          "event": "Loto"
-        },
-        {
-          "date": "30/06/2026",
-          "heure": "22:36",
-          "validateur": "Moi",
-          "event": "CafÃ©"
-        },
-        {
-          "date": "03/07/2026",
-          "heure": "15:22",
-          "validateur": "Tom",
-          "event": "Piscine"
-        }
-      ]
+      "createdAt": "2026-08-12T19:36:26.360332+00:00",
+      "historique": [],
+      "source": "supabase"
     }
   ]
 }
