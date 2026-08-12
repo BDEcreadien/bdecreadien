@@ -63,6 +63,10 @@
     window.location.href = '/';
   }
 
+  function escapeText(s) {
+    return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
   async function initNavChip() {
     const li = document.getElementById('nav-auth-li');
     if (!li) return;
@@ -71,10 +75,38 @@
 
     if (!profil) {
       li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
-    } else {
-      li.className = 'nav-auth-li';
-      li.innerHTML = `<a href="/mon-espace.html" class="nav-auth-name">${profil.prenom}</a>`;
+      return;
     }
+
+    li.className = 'nav-auth-li';
+    li.innerHTML = `
+      <button type="button" class="nav-auth-name" aria-haspopup="true" aria-expanded="false" id="nav-auth-btn">${escapeText(profil.prenom)} <span aria-hidden="true" style="font-size:10px;opacity:0.6;">▾</span></button>
+      <div class="nav-auth-menu" id="nav-auth-menu" role="menu" hidden>
+        <a href="/mon-espace.html" role="menuitem">Mon espace</a>
+        <a href="/mon-espace.html#carte" role="menuitem">Ma carte fidélité</a>
+        <button type="button" role="menuitem" id="nav-logout-btn">Se déconnecter</button>
+      </div>
+    `;
+
+    const btn = document.getElementById('nav-auth-btn');
+    const menu = document.getElementById('nav-auth-menu');
+    const logoutBtn = document.getElementById('nav-logout-btn');
+
+    function closeMenu() {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !menu.hidden;
+      if (isOpen) closeMenu();
+      else { menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
+    });
+    document.addEventListener('click', (e) => {
+      if (!li.contains(e.target)) closeMenu();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    logoutBtn.addEventListener('click', () => logout());
   }
 
   async function syncOneSignalId() {
