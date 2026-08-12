@@ -1,12 +1,24 @@
 {
   "cartes": [
     {
+      "id": "a452d638-e44c-450e-b32b-10f2b715677a",
+      "user_id": "a452d638-e44c-450e-b32b-10f2b715677a",
+      "prenom": "Jean",
+      "nom": "Bon",
+      "email": "",
+      "tampons": 0,
+      "total": 10,
+      "createdAt": "2026-08-12T21:54:21.52946+00:00",
+      "historique": [],
+      "source": "supabase"
+    },
+    {
       "id": "6e7df637-fab4-45d8-b186-856d9607ae49",
       "user_id": "6e7df637-fab4-45d8-b186-856d9607ae49",
       "prenom": "Tom",
       "nom": "Maradan",
       "email": "",
-      "tampons": 0,
+      "tampons": 1,
       "total": 10,
       "createdAt": "2026-08-12T19:36:26.360332+00:00",
       "historique": [],
