@@ -2717,6 +2717,7 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .nav-auth-name {
@@ -2728,7 +2729,50 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
   text-transform: uppercase;
   transition: var(--transition);
   position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
+
+.nav-auth-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(70,58,144,0.18);
+  border: 1px solid rgba(70,58,144,0.08);
+  padding: 6px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+.nav-auth-menu[hidden] { display: none; }
+.nav-auth-menu a,
+.nav-auth-menu button {
+  display: block;
+  text-align: left;
+  width: 100%;
+  padding: 10px 14px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--noir);
+  text-decoration: none;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-auth-menu a:hover,
+.nav-auth-menu button:hover { background: var(--gris-clair); }
+.nav-auth-menu button#nav-logout-btn { color: #C0392B; border-top: 1px solid var(--gris-clair); margin-top: 4px; padding-top: 12px; border-radius: 0 0 8px 8px; }
 .nav-auth-bde {
   text-decoration: none;
   font-family: 'Barlow Condensed', sans-serif;
