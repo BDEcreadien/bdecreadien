@@ -403,7 +403,9 @@
       const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
       const { data: carte } = await sb.from('cartes_fidelite').select('*').eq('user_id', uid).maybeSingle();
       if (!carte) return null;
-      const { data: profil } = await sb.from('profils').select('prenom, nom').eq('id', uid).maybeSingle();
+      // Utilise la fonction sécurisée qui n'expose que prenom/nom (pas email/tel/role)
+      const { data: profilArr } = await sb.rpc('get_carte_profil', { uid });
+      const profil = Array.isArray(profilArr) && profilArr.length ? profilArr[0] : null;
       return {
         id: uid,
         prenom: profil?.prenom || '',
