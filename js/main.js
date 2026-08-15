@@ -879,6 +879,27 @@ function openAnnonceModal(a) {
   document.body.style.overflow = 'hidden';
 }
 
+function closeAnnonceModal() {
+  const overlay = document.getElementById('an-modal-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Listeners de fermeture (bouton X, clic sur l'overlay, touche Escape)
+(function initAnnonceModalClose() {
+  const overlay = document.getElementById('an-modal-overlay');
+  if (!overlay) return;
+  const closeBtn = document.getElementById('an-modal-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeAnnonceModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeAnnonceModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeAnnonceModal();
+  });
+})();
+
 function attachFilterListeners() {
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
