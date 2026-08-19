@@ -1475,11 +1475,14 @@
 
     // ======= MEMBRES (admin) =======
     async function loadUsers() {
-      const { data, error } = await Auth.sb.from('profils')
-        .select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone')
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      allUsers = data || [];
+      const [profilsRes, cartesRes] = await Promise.all([
+        Auth.sb.from('profils').select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone').order('created_at', { ascending: true }),
+        Auth.sb.from('cartes_fidelite').select('user_id, tampons, total, historique')
+      ]);
+      if (profilsRes.error) throw profilsRes.error;
+      const cartesByUid = {};
+      (cartesRes.data || []).forEach(c => { cartesByUid[c.user_id] = c; });
+      allUsers = (profilsRes.data || []).map(u => ({ ...u, carte: cartesByUid[u.id] || null }));
       renderUsers(allUsers);
     }
     function filterUsers() {
@@ -1495,29 +1498,51 @@
     function renderUsers(list) {
       const wrap = document.getElementById('users-list');
       if (!list.length) { wrap.innerHTML = `<div class="empty">Aucun utilisateur.</div>`; return; }
-      wrap.innerHTML = list.map(u => {
+      wrap.innerHTML = list.map((u, idx) => {
         const banni = u.banni_jusqu_a && new Date(u.banni_jusqu_a) > new Date();
         const mail = u.email ? `<a href="mailto:${escapeHtml(u.email)}" style="color:var(--violet);text-decoration:none;">${escapeHtml(u.email)}</a>` : '—';
         const tel = u.telephone ? `<a href="tel:${escapeHtml(u.telephone)}" style="color:var(--violet);text-decoration:none;">${escapeHtml(u.telephone)}</a>` : '—';
+        const carte = u.carte;
+        const hist = Array.isArray(carte?.historique) ? carte.historique : [];
+        const tampons = carte?.tampons ?? 0;
+        const total = carte?.total ?? 10;
+        const histBtn = hist.length ? `<button class="btn ghost small" onclick="toggleUserHist(${idx}, this)">Passages (${hist.length}) ↓</button>` : '';
+        const histHtml = hist.length ? `
+          <div id="user-hist-${idx}" style="display:none;margin-top:12px;padding:12px;background:var(--gris-clair);border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;color:var(--gris-texte);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${hist.length} passage${hist.length > 1 ? 's' : ''} · Carte ${tampons}/${total}</div>
+            ${hist.slice().reverse().map(h => `<div style="font-size:12px;color:var(--gris-texte);padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05);"><span style="color:var(--violet);font-weight:600;">${escapeHtml(h.date || '')}${h.heure ? ' ' + escapeHtml(h.heure) : ''}</span> — validé par <strong>${escapeHtml(h.validateur || '—')}</strong>${h.event ? ' · ' + escapeHtml(h.event) : ''}</div>`).join('')}
+          </div>` : '';
         return `
-          <div class="user-row">
-            <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom || '?')[0].toUpperCase()}</div>
-            <div class="user-info">
-              <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
-              <div class="user-meta">${mail} · ${tel} · ${escapeHtml(u.annee || '—')}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
+          <div class="user-row" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;align-items:flex-start;gap:1rem;">
+              <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom || '?')[0].toUpperCase()}</div>
+              <div class="user-info" style="flex:1;">
+                <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
+                <div class="user-meta">${mail} · ${tel} · ${escapeHtml(u.annee || '—')}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
+              </div>
+              <div class="user-actions">
+                <a class="btn ghost small" href="/carte.html?uid=${u.id}" target="_blank" rel="noopener" style="text-decoration:none;">Carte fidélité</a>
+                ${histBtn}
+                <select class="role-select" data-uid="${u.id}" data-original="${u.role}" onchange="changeRole(this)">
+                  <option value="etudiant" ${u.role === 'etudiant' ? 'selected' : ''}>Étudiant</option>
+                  <option value="membre"   ${u.role === 'membre'   ? 'selected' : ''}>Membre BDE</option>
+                  <option value="admin"    ${u.role === 'admin'    ? 'selected' : ''}>Admin</option>
+                </select>
+                <button class="btn ghost small" onclick="toggleBan('${u.id}', ${banni})" style="${banni ? 'color:#1A7A40;border-color:#1A7A40;' : ''}">${banni ? 'Débannir' : 'Bannir'}</button>
+                <button class="btn danger small" onclick="deleteUser('${u.id}','${(u.prenom + ' ' + u.nom).replace(/'/g, "\\'")}')">Supprimer</button>
+              </div>
             </div>
-            <div class="user-actions">
-              <a class="btn ghost small" href="/carte.html?uid=${u.id}" target="_blank" rel="noopener" style="text-decoration:none;">Carte fidélité</a>
-              <select class="role-select" data-uid="${u.id}" data-original="${u.role}" onchange="changeRole(this)">
-                <option value="etudiant" ${u.role === 'etudiant' ? 'selected' : ''}>Étudiant</option>
-                <option value="membre"   ${u.role === 'membre'   ? 'selected' : ''}>Membre BDE</option>
-                <option value="admin"    ${u.role === 'admin'    ? 'selected' : ''}>Admin</option>
-              </select>
-              <button class="btn ghost small" onclick="toggleBan('${u.id}', ${banni})" style="${banni ? 'color:#1A7A40;border-color:#1A7A40;' : ''}">${banni ? 'Débannir' : 'Bannir'}</button>
-              <button class="btn danger small" onclick="deleteUser('${u.id}','${(u.prenom + ' ' + u.nom).replace(/'/g, "\\'")}')">Supprimer</button>
-            </div>
+            ${histHtml}
           </div>`;
       }).join('');
+    }
+
+    function toggleUserHist(idx, btn) {
+      const el = document.getElementById('user-hist-' + idx);
+      if (!el) return;
+      const open = el.style.display !== 'none';
+      el.style.display = open ? 'none' : 'block';
+      btn.textContent = btn.textContent.replace(open ? '↑' : '↓', open ? '↓' : '↑');
     }
     async function changeRole(sel) {
       const id = sel.dataset.uid;
