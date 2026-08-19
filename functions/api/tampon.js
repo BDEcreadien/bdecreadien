@@ -56,7 +56,7 @@ async function handleSupabase(uid, validateur, event, env) {
   };
 
   // Lire la carte + le profil
-  const getRes = await fetch(`${base}/cartes_fidelite?user_id=eq.${uid}&select=tampons,total,historique,profils(prenom,nom)`, { headers });
+  const getRes = await fetch(`${base}/cartes_fidelite?user_id=eq.${uid}&select=tampons,total,historique,profils(prenom,nom,email)`, { headers });
   if (!getRes.ok) return json({ error: 'Lecture Supabase échouée' }, 502);
   const rows = await getRes.json();
   if (!rows.length) return json({ error: 'Carte introuvable' }, 404);
@@ -65,6 +65,7 @@ async function handleSupabase(uid, validateur, event, env) {
     id: uid,
     prenom: row.profils?.prenom || '',
     nom: row.profils?.nom || '',
+    email: row.profils?.email || '',
     tampons: row.tampons,
     total: row.total,
     historique: Array.isArray(row.historique) ? row.historique : [],
