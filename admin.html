@@ -2534,7 +2534,7 @@ async function initFidelite() {
   try {
     const { data, error } = await window.Auth.sb
       .from('cartes_fidelite')
-      .select('user_id, tampons, total, created_at, profils(prenom, nom)')
+      .select('user_id, tampons, total, historique, created_at, profils(prenom, nom, email)')
       .order('created_at', { ascending: false });
     if (error) throw error;
     sbCartes = (data || []).map(c => ({
@@ -2542,11 +2542,11 @@ async function initFidelite() {
       user_id: c.user_id,
       prenom: c.profils?.prenom || '',
       nom: c.profils?.nom || '',
-      email: '',
+      email: c.profils?.email || '',
       tampons: c.tampons,
       total: c.total,
       createdAt: c.created_at,
-      historique: [],
+      historique: Array.isArray(c.historique) ? c.historique : [],
       source: 'supabase'
     }));
   } catch(e) { console.warn('Supabase cartes load failed', e); }
