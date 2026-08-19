@@ -1497,13 +1497,14 @@
       if (!list.length) { wrap.innerHTML = `<div class="empty">Aucun utilisateur.</div>`; return; }
       wrap.innerHTML = list.map(u => {
         const banni = u.banni_jusqu_a && new Date(u.banni_jusqu_a) > new Date();
+        const mail = u.email ? `<a href="mailto:${escapeHtml(u.email)}" style="color:var(--violet);text-decoration:none;">${escapeHtml(u.email)}</a>` : '—';
         const tel = u.telephone ? `<a href="tel:${escapeHtml(u.telephone)}" style="color:var(--violet);text-decoration:none;">${escapeHtml(u.telephone)}</a>` : '—';
         return `
           <div class="user-row">
             <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom || '?')[0].toUpperCase()}</div>
             <div class="user-info">
               <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
-              <div class="user-meta">${escapeHtml(u.email || '')} · ${escapeHtml(u.annee || '—')} · 📞 ${tel}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
+              <div class="user-meta">${mail} · ${tel} · ${escapeHtml(u.annee || '—')}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
             </div>
             <div class="user-actions">
               <a class="btn ghost small" href="/carte.html?uid=${u.id}" target="_blank" rel="noopener" style="text-decoration:none;">Carte fidélité</a>
