@@ -2751,17 +2751,19 @@ async function reinitialiserCarte(i) {
   const c = fideliteData.cartes[i];
   if (!confirm(`Réinitialiser la carte de ${c.prenom} ${c.nom} ? (les tampons seront remis à 0)`)) return;
   const old = c.tampons;
+  const oldHist = c.historique || [];
   c.tampons = 0;
+  c.historique = [];
   try {
     if (c.source === 'supabase') {
-      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: 0 }).eq('user_id', c.user_id);
+      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: 0, historique: [] }).eq('user_id', c.user_id);
       if (error) throw error;
     } else {
       await saveFidelite(`Fidélité : réinitialisation carte — ${c.prenom} ${c.nom}`);
     }
     renderFideliteList();
     showToast('Carte réinitialisée', 'success');
-  } catch(e) { c.tampons = old; showToast('Erreur : ' + e.message, 'error'); }
+  } catch(e) { c.tampons = old; c.historique = oldHist; showToast('Erreur : ' + e.message, 'error'); }
 }
 
 async function supprimerCarte(i) {
