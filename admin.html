@@ -2733,7 +2733,7 @@ async function confirmerTampon() {
   c.historique.push({ date: dateStr, heure: heureStr, validateur, event });
   try {
     if (c.source === 'supabase') {
-      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons }).eq('user_id', c.user_id);
+      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons, historique: c.historique }).eq('user_id', c.user_id);
       if (error) throw error;
     } else {
       await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom} (${event})`);
