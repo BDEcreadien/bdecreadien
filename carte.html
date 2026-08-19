@@ -443,7 +443,7 @@
       document.getElementById('carte-nom').textContent = (carte.prenom || '') + ' ' + (carte.nom || '');
       document.getElementById('carte-num').textContent = tampons;
       document.getElementById('carte-den').textContent = '/' + total;
-      document.getElementById('carte-sous').textContent = complete ? '1 accès offert au prochain événement' : 'événements validés';
+      document.getElementById('carte-sous').textContent = complete ? '-10% soirée ou repas offert' : 'événements validés';
 
       if (carte.createdAt) {
         const d = new Date(carte.createdAt);
