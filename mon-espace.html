@@ -1476,7 +1476,7 @@
     // ======= MEMBRES (admin) =======
     async function loadUsers() {
       const { data, error } = await Auth.sb.from('profils')
-        .select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a')
+        .select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone')
         .order('created_at', { ascending: true });
       if (error) throw error;
       allUsers = data || [];
@@ -1488,7 +1488,8 @@
       renderUsers(allUsers.filter(u =>
         (u.prenom || '').toLowerCase().includes(q) ||
         (u.nom || '').toLowerCase().includes(q) ||
-        (u.email || '').toLowerCase().includes(q)
+        (u.email || '').toLowerCase().includes(q) ||
+        (u.telephone || '').toLowerCase().includes(q)
       ));
     }
     function renderUsers(list) {
@@ -1496,14 +1497,16 @@
       if (!list.length) { wrap.innerHTML = `<div class="empty">Aucun utilisateur.</div>`; return; }
       wrap.innerHTML = list.map(u => {
         const banni = u.banni_jusqu_a && new Date(u.banni_jusqu_a) > new Date();
+        const tel = u.telephone ? `<a href="tel:${escapeHtml(u.telephone)}" style="color:var(--violet);text-decoration:none;">${escapeHtml(u.telephone)}</a>` : '—';
         return `
           <div class="user-row">
             <div class="user-avatar">${u.avatar_url ? `<img src="${u.avatar_url}" alt="">` : (u.prenom || '?')[0].toUpperCase()}</div>
             <div class="user-info">
               <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
-              <div class="user-meta">${escapeHtml(u.email || '')} · ${escapeHtml(u.annee || '—')}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
+              <div class="user-meta">${escapeHtml(u.email || '')} · ${escapeHtml(u.annee || '—')} · 📞 ${tel}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>
             </div>
             <div class="user-actions">
+              <a class="btn ghost small" href="/carte.html?uid=${u.id}" target="_blank" rel="noopener" style="text-decoration:none;">Carte fidélité</a>
               <select class="role-select" data-uid="${u.id}" data-original="${u.role}" onchange="changeRole(this)">
                 <option value="etudiant" ${u.role === 'etudiant' ? 'selected' : ''}>Étudiant</option>
                 <option value="membre"   ${u.role === 'membre'   ? 'selected' : ''}>Membre BDE</option>
