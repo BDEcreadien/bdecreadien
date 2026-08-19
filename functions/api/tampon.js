@@ -92,7 +92,68 @@ async function handleSupabase(uid, validateur, event, env) {
   }
   carte.tampons = newTampons;
   carte.historique = newHistorique;
+
+  // Si la carte est maintenant pleine, envoyer un email de récompense
+  if (newTampons >= carte.total && carte.email && env.RESEND_API_KEY) {
+    // Fire-and-forget : on n'attend pas la réponse pour ne pas ralentir le scan
+    sendRewardEmail(carte, env).catch(err => console.error('Reward email failed:', err));
+  }
+
   return json({ ok: true, carte });
+}
+
+async function sendRewardEmail(carte, env) {
+  const html = `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><title>Carte fidélité complète</title></head>
+<body style="margin:0;padding:0;background:#F0EFF8;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
+        <tr>
+          <td style="background:linear-gradient(135deg,#463A90 0%,#8B1A6B 50%,#E85100 100%);padding:44px 40px;text-align:center;">
+            <p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON</p>
+            <h1 style="margin:0;font-size:32px;font-weight:700;color:#fff;letter-spacing:1px;">Carte fidélité complète 🎉</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#fff;padding:40px;">
+            <p style="margin:0 0 20px;font-size:17px;color:#1A1A2E;">Salut ${escapeHtml(carte.prenom)},</p>
+            <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.7;">Bravo, tu as rempli ta carte fidélité BDE CREAD ! 🎊<br>Ta récompense t'attend :</p>
+            <div style="background:linear-gradient(135deg,#463A90,#E85100);border-radius:14px;padding:24px;text-align:center;color:#fff;margin:20px 0;">
+              <p style="margin:0 0 6px;font-size:22px;font-weight:700;">-10% sur une soirée BDE</p>
+              <p style="margin:0 0 8px;font-size:14px;opacity:0.85;">ou</p>
+              <p style="margin:0;font-size:22px;font-weight:700;">Un repas offert 🍽️</p>
+            </div>
+            <p style="margin:20px 0;font-size:14px;color:#4A4560;line-height:1.7;">Pour en profiter, montre simplement ta carte fidélité au BDE lors du prochain événement.</p>
+            <div style="text-align:center;margin-top:28px;">
+              <a href="https://bdecreadien.fr/carte.html?uid=${carte.id}" style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.5px;">Voir ma carte</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#F5F4FF;padding:20px 40px;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#888;">BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a></p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
+      to: [carte.email],
+      bcc: ['bdecreadien@gmail.com'],
+      subject: '🎉 Ta carte fidélité BDE est complète !',
+      html
+    })
+  });
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 async function handleJson(carteId, validateur, event, env) {
