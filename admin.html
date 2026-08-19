@@ -2634,14 +2634,20 @@ function toggleHist(i, btn) {
 async function supprimerPassage(carteIndex, passageIndex) {
   const c = fideliteData.cartes[carteIndex];
   if (!confirm(`Supprimer le passage du ${c.historique[passageIndex].date} ?`)) return;
+  const backup = c.historique[passageIndex];
   c.historique.splice(passageIndex, 1);
   c.tampons = Math.max(0, c.tampons - 1);
   try {
-    await saveFidelite(`Fidélité : suppression passage — ${c.prenom} ${c.nom}`);
+    if (c.source === 'supabase') {
+      const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons, historique: c.historique }).eq('user_id', c.user_id);
+      if (error) throw error;
+    } else {
+      await saveFidelite(`Fidélité : suppression passage — ${c.prenom} ${c.nom}`);
+    }
     renderFideliteList();
     showToast('Passage supprimé', 'success');
   } catch(e) {
-    c.historique.splice(passageIndex, 0, c.historique[passageIndex]);
+    c.historique.splice(passageIndex, 0, backup);
     c.tampons++;
     showToast('Erreur : ' + e.message, 'error');
   }
