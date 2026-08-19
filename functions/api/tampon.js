@@ -56,7 +56,7 @@ async function handleSupabase(uid, validateur, event, env) {
   };
 
   // Lire la carte + le profil
-  const getRes = await fetch(`${base}/cartes_fidelite?user_id=eq.${uid}&select=tampons,total,profils(prenom,nom)`, { headers });
+  const getRes = await fetch(`${base}/cartes_fidelite?user_id=eq.${uid}&select=tampons,total,historique,profils(prenom,nom)`, { headers });
   if (!getRes.ok) return json({ error: 'Lecture Supabase échouée' }, 502);
   const rows = await getRes.json();
   if (!rows.length) return json({ error: 'Carte introuvable' }, 404);
@@ -67,23 +67,30 @@ async function handleSupabase(uid, validateur, event, env) {
     nom: row.profils?.nom || '',
     tampons: row.tampons,
     total: row.total,
+    historique: Array.isArray(row.historique) ? row.historique : [],
   };
 
   if (!validateur || !event) return json({ carte });
 
   if (carte.tampons >= carte.total) return json({ error: 'Carte déjà complète', carte }, 200);
 
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/Paris' });
+  const heureStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
   const newTampons = carte.tampons + 1;
+  const newHistorique = [...carte.historique, { date: dateStr, heure: heureStr, validateur, event }];
+
   const patchRes = await fetch(`${base}/cartes_fidelite?user_id=eq.${uid}`, {
     method: 'PATCH',
     headers: { ...headers, Prefer: 'return=representation' },
-    body: JSON.stringify({ tampons: newTampons }),
+    body: JSON.stringify({ tampons: newTampons, historique: newHistorique }),
   });
   if (!patchRes.ok) {
     const err = await patchRes.text().catch(() => '');
     return json({ error: 'Écriture Supabase échouée: ' + err }, 502);
   }
   carte.tampons = newTampons;
+  carte.historique = newHistorique;
   return json({ ok: true, carte });
 }
 
