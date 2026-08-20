@@ -228,12 +228,42 @@
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
+    // Détecte si on arrive depuis un lien de reset password
+    const _hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const _isRecovery = _hash.get('type') === 'recovery' || new URLSearchParams(window.location.search).get('type') === 'recovery';
+    let _recoveryMode = _isRecovery;
+    sb.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        _recoveryMode = true;
+        showTab('new-password');
+      }
+    });
+
     sb.auth.getUser().then(({ data: { user } }) => {
+      if (_recoveryMode) {
+        showTab('new-password');
+        return;
+      }
       if (user) {
         const next = new URLSearchParams(window.location.search).get('next') || '/';
         window.location.href = next;
       }
     });
+
+    async function doUpdatePassword() {
+      hideMsg('new-pwd-msg');
+      const pwd = document.getElementById('new-pwd').value;
+      const confirm = document.getElementById('new-pwd-confirm').value;
+      if (pwd.length < 8) { showMsg('new-pwd-msg', 'Le mot de passe doit faire au moins 8 caractères.', 'error'); return; }
+      if (pwd !== confirm) { showMsg('new-pwd-msg', 'Les deux mots de passe ne correspondent pas.', 'error'); return; }
+      const btn = document.querySelector('#panel-new-password .auth-btn');
+      btn.disabled = true; btn.textContent = 'Mise à jour…';
+      const { error } = await sb.auth.updateUser({ password: pwd });
+      btn.disabled = false; btn.textContent = 'Mettre à jour';
+      if (error) { showMsg('new-pwd-msg', error.message, 'error'); return; }
+      showMsg('new-pwd-msg', 'Mot de passe modifié ! Redirection vers ton espace…', 'success');
+      setTimeout(() => { window.location.href = '/mon-espace.html'; }, 1500);
+    }
 
     function togglePwd(inputId, btn) {
       const el = document.getElementById(inputId);
