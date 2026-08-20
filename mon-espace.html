@@ -1067,10 +1067,11 @@
         return;
       }
       wrap.innerHTML = list.map(a => {
-        const actions = a.statut === 'published'
-          ? `<button class="btn ghost small" onclick="markSold('${a.id}')">Vendue</button>
-             <button class="btn danger small" onclick="deletePersoAnnonce('${a.id}')">Supprimer</button>`
-          : `<button class="btn danger small" onclick="deletePersoAnnonce('${a.id}')">Supprimer</button>`;
+        const editBtn = (a.statut === 'published' || a.statut === 'pending')
+          ? `<a class="btn ghost small" href="/annonces-nouvelle.html?edit=${a.id}" style="text-decoration:none;">Modifier</a>` : '';
+        const soldBtn = a.statut === 'published'
+          ? `<button class="btn ghost small" onclick="markSold('${a.id}')">Marquer vendue</button>` : '';
+        const actions = `${editBtn}${soldBtn}<button class="btn danger small" onclick="deletePersoAnnonce('${a.id}')">Supprimer</button>`;
         const refus = (a.statut === 'rejected' && a.motif_refus)
           ? `<div style="font-size:12px;color:#C0392B;font-style:italic;margin-top:4px;">Motif : ${escapeHtml(a.motif_refus)}</div>` : '';
         return `
