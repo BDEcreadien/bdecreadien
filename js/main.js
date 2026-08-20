@@ -891,7 +891,17 @@ function openAnnonceModal(a) {
   const photosEl = document.getElementById('an-modal-photos');
   photosEl.innerHTML = photos.length > 1 ? photos.map(p => `<img src="${p}" alt="${a.titre}" loading="lazy">`).join('') : '';
   photosEl.style.display = photos.length > 1 ? 'grid' : 'none';
-  document.getElementById('an-modal-cta').href = contactHref(a.contact);
+  const wrap = document.getElementById('an-modal-cta-wrap');
+  if (wrap) {
+    const methods = parseContactMethods(a.contact);
+    wrap.innerHTML = methods.map(m => {
+      const target = m.kind === 'insta' ? ' target="_blank" rel="noopener"' : '';
+      return `<a href="${m.href}" class="an-modal-cta"${target}>${m.icon} ${escapeHTML(m.label)}</a>`;
+    }).join('') || '<span style="color:var(--gris-texte);font-size:13px;">Aucun contact renseigné</span>';
+  } else {
+    const legacyCta = document.getElementById('an-modal-cta');
+    if (legacyCta) legacyCta.href = contactHref(a.contact);
+  }
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
