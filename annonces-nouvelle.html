@@ -182,16 +182,16 @@
         </div>
       </div>
       <div class="an-field">
-        <label>Photo (facultatif)</label>
-        <label class="an-photo-drop" id="a-photo-drop">
-          <input type="file" accept="image/*" id="a-photo-input">
+        <label>Photos (facultatif, jusqu'à 6)</label>
+        <label class="an-photo-drop" id="a-photo-drop" style="padding: 20px 24px;">
+          <input type="file" accept="image/*" id="a-photo-input" multiple>
           <div id="a-photo-placeholder">
             <div style="font-size:32px;margin-bottom:6px;">📷</div>
-            <div style="font-size:13px;color:var(--gris-texte);">Cliquer pour ajouter une photo</div>
-            <div style="font-size:11px;color:var(--gris-moyen);margin-top:4px;">Max 5 MB · Redimensionnée automatiquement</div>
+            <div style="font-size:13px;color:var(--gris-texte);">Cliquer pour ajouter une ou plusieurs photos</div>
+            <div style="font-size:11px;color:var(--gris-moyen);margin-top:4px;">La 1ère sera la couverture · Max 10 MB par photo</div>
           </div>
-          <img id="a-photo-preview" class="an-photo-preview" style="display:none;">
         </label>
+        <div id="a-photo-thumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
       </div>
 
       <button class="an-btn" id="a-submit" onclick="submitAnnonce()">Publier l'annonce</button>
