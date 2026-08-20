@@ -330,15 +330,16 @@
     }
 
     document.getElementById('a-photo-input').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      if (file.size > 10 * 1024 * 1024) { alert('Photo trop lourde (max 10 MB avant compression).'); return; }
-      photoBlob = await resizeImage(file, 1200);
-      const preview = document.getElementById('a-photo-preview');
-      preview.src = URL.createObjectURL(photoBlob);
-      preview.style.display = 'block';
-      document.getElementById('a-photo-placeholder').style.display = 'none';
-      document.getElementById('a-photo-drop').classList.add('has-photo');
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      for (const file of files) {
+        if (existingPhotos.length + photoBlobs.length >= MAX_PHOTOS) { alert(`Max ${MAX_PHOTOS} photos.`); break; }
+        if (file.size > 10 * 1024 * 1024) { alert(`"${file.name}" trop lourd (max 10 MB).`); continue; }
+        const blob = await resizeImage(file, 1400);
+        photoBlobs.push(blob);
+      }
+      renderThumbs();
+      e.target.value = ''; // reset pour permettre re-sélection
     });
 
     function resizeImage(file, maxDim) {
