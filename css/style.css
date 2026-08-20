@@ -1470,13 +1470,27 @@ section {
   width: 100%;
   max-width: 560px;
   max-height: 92vh;
+  min-height: 60vh;
   overflow-y: auto;
   box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
   position: relative;
   animation: anModalIn 0.28s ease;
+  -webkit-overflow-scrolling: touch;
 }
 @media (min-width: 600px) {
-  .an-modal { border-radius: 24px; box-shadow: 0 24px 80px rgba(0,0,0,0.25); }
+  .an-modal { border-radius: 24px; box-shadow: 0 24px 80px rgba(0,0,0,0.25); min-height: 0; }
+}
+/* Barre pour indiquer que c'est un bottom sheet sur mobile */
+@media (max-width: 599px) {
+  .an-modal::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 2px;
+    margin: 8px auto 0;
+    position: sticky; top: 8px; z-index: 5;
+  }
 }
 @keyframes anModalIn {
   from { opacity:0; transform: translateY(40px); }
