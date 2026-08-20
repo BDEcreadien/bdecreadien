@@ -793,6 +793,23 @@ function contactHref(c) {
   return 'mailto:' + s;
 }
 
+// Parse le champ contact : JSON multi-canal ({email,tel,insta}) ou texte legacy
+function parseContactMethods(c) {
+  if (!c) return [];
+  try {
+    const p = typeof c === 'string' ? JSON.parse(c) : c;
+    if (p && typeof p === 'object' && !Array.isArray(p)) {
+      const out = [];
+      if (p.email) out.push({ kind: 'email', label: 'Envoyer un mail', icon: '✉', href: 'mailto:' + p.email, value: p.email });
+      if (p.tel)   out.push({ kind: 'tel',   label: 'Appeler',          icon: '📞', href: 'tel:' + String(p.tel).replace(/\s/g, ''), value: p.tel });
+      if (p.insta) out.push({ kind: 'insta', label: 'Voir Instagram',   icon: '📷', href: 'https://instagram.com/' + String(p.insta).replace(/^@/, ''), value: '@' + String(p.insta).replace(/^@/, '') });
+      return out;
+    }
+  } catch (_) {}
+  // Legacy texte libre
+  return [{ kind: 'legacy', label: 'Contacter', icon: '✉', href: contactHref(c), value: String(c) }];
+}
+
 function formatPrix(prix) {
   if (!prix) return '';
   const slash = prix.indexOf('/');
