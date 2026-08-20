@@ -398,7 +398,7 @@
           const { error } = await Auth.sb.from('annonces').update(patch).eq('id', editId);
           if (error) throw error;
           showMsg('Modifications enregistrées !', 'success');
-          setTimeout(() => window.location.href = '/mon-espace.html#annonces-perso', 1200);
+          setTimeout(() => window.location.href = '/annonces.html', 800);
         } else {
           // CRÉATION
           const { error } = await Auth.sb.from('annonces').insert({
