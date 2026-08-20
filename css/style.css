@@ -1550,6 +1550,24 @@ section {
   transition: var(--transition);
 }
 
+/* Version compacte : 3 boutons sur une ligne dans la modal annonce */
+.an-modal-cta--small {
+  padding: 10px 14px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}
+.an-modal-cta--small svg { flex-shrink: 0; }
+.an-modal-cta--small:hover { opacity: 0.9; }
+#an-modal-cta-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 480px) {
+  .an-modal-cta--small { padding: 10px 10px; font-size: 12px; letter-spacing: 0.5px; }
+  .an-modal-cta--small span { display: none; }
+}
+
 .annonces-empty {
   text-align: center;
   padding: 5rem 2rem;
