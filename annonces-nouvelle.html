@@ -206,9 +206,32 @@
   <script>
     let currentUser = null;
     let currentProfil = null;
-    let photoBlob = null;
-    let editId = null; // ID de l'annonce en cours d'édition
+    let photoBlobs = []; // nouveaux blobs à uploader
+    let existingPhotos = []; // URLs déjà en DB (en mode édition)
+    const MAX_PHOTOS = 6;
+    let editId = null;
     let editData = null;
+
+    function renderThumbs() {
+      const wrap = document.getElementById('a-photo-thumbs');
+      const items = [
+        ...existingPhotos.map((url, i) => ({ src: url, kind: 'existing', idx: i })),
+        ...photoBlobs.map((b, i) => ({ src: URL.createObjectURL(b), kind: 'new', idx: i }))
+      ];
+      if (!items.length) { wrap.innerHTML = ''; return; }
+      wrap.innerHTML = items.map((it, i) => `
+        <div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:${i===0?'2px solid var(--violet)':'1px solid var(--gris-moyen)'};">
+          <img src="${it.src}" style="width:100%;height:100%;object-fit:cover;">
+          ${i===0?'<span style="position:absolute;top:2px;left:2px;background:var(--violet);color:white;font-size:9px;padding:2px 5px;border-radius:4px;font-weight:700;">COUV</span>':''}
+          <button type="button" onclick="removePhoto('${it.kind}',${it.idx})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:white;border:none;width:20px;height:20px;border-radius:50%;font-size:12px;cursor:pointer;line-height:1;">×</button>
+        </div>`).join('');
+    }
+
+    function removePhoto(kind, idx) {
+      if (kind === 'existing') existingPhotos.splice(idx, 1);
+      else photoBlobs.splice(idx, 1);
+      renderThumbs();
+    }
 
     document.addEventListener('DOMContentLoaded', async () => {
       currentProfil = await Auth.getProfil();
