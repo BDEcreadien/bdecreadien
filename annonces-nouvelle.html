@@ -341,19 +341,47 @@
       el.className = 'an-msg ' + type + ' visible';
     }
 
+    function buildPrix() {
+      const inp = document.getElementById('a-prix');
+      if (inp.dataset.special) return inp.dataset.special;
+      const val = inp.value.trim();
+      if (!val) return null;
+      const num = parseFloat(val);
+      if (isNaN(num)) return val;
+      return `${num}€`;
+    }
+
+    function buildContact() {
+      const out = {};
+      if (document.getElementById('c-email-chk').checked) {
+        const v = document.getElementById('c-email').value.trim();
+        if (v) out.email = v;
+      }
+      if (document.getElementById('c-tel-chk').checked) {
+        const v = document.getElementById('c-tel').value.trim();
+        if (v) out.tel = v;
+      }
+      if (document.getElementById('c-insta-chk').checked) {
+        const v = document.getElementById('c-insta').value.trim().replace(/^@/, '');
+        if (v) out.insta = v;
+      }
+      return Object.keys(out).length ? JSON.stringify(out) : null;
+    }
+
     async function submitAnnonce() {
       const titre = document.getElementById('a-titre').value.trim();
       const categorie = document.getElementById('a-categorie').value;
-      const prix = document.getElementById('a-prix').value.trim();
       const description = document.getElementById('a-description').value.trim();
-      const contact = document.getElementById('a-contact').value.trim();
+      const prix = buildPrix();
+      const contact = buildContact();
 
       if (!titre || !description) { showMsg('Titre et description sont obligatoires.', 'error'); return; }
+      if (!contact) { showMsg('Coche au moins une méthode de contact et remplis-la.', 'error'); return; }
 
       const btn = document.getElementById('a-submit');
-      btn.disabled = true; btn.textContent = 'Publication…';
+      btn.disabled = true; btn.textContent = editId ? 'Enregistrement…' : 'Publication…';
 
-      let photo_url = null;
+      let photo_url = editData ? editData.photo_url : null;
       try {
         if (photoBlob) {
           const path = `${currentUser.id}/${Date.now()}.jpg`;
@@ -363,20 +391,27 @@
         }
 
         const isBde = currentProfil && (currentProfil.role === 'membre' || currentProfil.role === 'admin');
-        const { error } = await Auth.sb.from('annonces').insert({
-          auteur_id: currentUser.id,
-          titre, description, categorie,
-          prix: prix || null,
-          contact: contact || null,
-          photo_url,
-          statut: isBde ? 'published' : 'pending'
-        });
-        if (error) throw error;
 
-        showMsg(isBde ? 'Annonce publiée !' : 'Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
-        setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/mon-espace.html', 1500);
+        if (editId) {
+          // MODIFICATION : garde le statut actuel
+          const patch = { titre, description, categorie, prix, contact, photo_url };
+          const { error } = await Auth.sb.from('annonces').update(patch).eq('id', editId);
+          if (error) throw error;
+          showMsg('Modifications enregistrées !', 'success');
+          setTimeout(() => window.location.href = '/mon-espace.html#annonces-perso', 1200);
+        } else {
+          // CRÉATION
+          const { error } = await Auth.sb.from('annonces').insert({
+            auteur_id: currentUser.id,
+            titre, description, categorie, prix, contact, photo_url,
+            statut: isBde ? 'published' : 'pending'
+          });
+          if (error) throw error;
+          showMsg(isBde ? 'Annonce publiée !' : 'Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
+          setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/mon-espace.html', 1500);
+        }
       } catch (err) {
-        btn.disabled = false; btn.textContent = "Publier l'annonce";
+        btn.disabled = false; btn.textContent = editId ? 'Enregistrer les modifications' : "Publier l'annonce";
         showMsg('Erreur : ' + err.message, 'error');
       }
     }
