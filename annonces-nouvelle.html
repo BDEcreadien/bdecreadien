@@ -207,6 +207,8 @@
     let currentUser = null;
     let currentProfil = null;
     let photoBlob = null;
+    let editId = null; // ID de l'annonce en cours d'édition
+    let editData = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       currentProfil = await Auth.getProfil();
@@ -223,13 +225,86 @@
         return;
       }
       // Membre BDE / Admin : publication directe, pas de modération
-      if (currentProfil.role === 'membre' || currentProfil.role === 'admin') {
-        const p = document.querySelector('.an-header p');
-        if (p) p.textContent = 'Publication directe (pas de modération pour les membres BDE).';
-        const btn = document.getElementById('a-submit');
-        if (btn) btn.textContent = "Publier maintenant";
+      const isBde = currentProfil.role === 'membre' || currentProfil.role === 'admin';
+      if (isBde) {
+        document.getElementById('an-page-subtitle').textContent = 'Publication directe (pas de modération pour les membres BDE).';
+        document.getElementById('a-submit').textContent = 'Publier maintenant';
       }
+
+      // Mode édition : ?edit=<uuid>
+      editId = new URLSearchParams(location.search).get('edit');
+      if (editId) await loadEditData(editId);
     });
+
+    async function loadEditData(id) {
+      const { data, error } = await Auth.sb.from('annonces').select('*').eq('id', id).maybeSingle();
+      if (error || !data) { alert('Annonce introuvable ou accès refusé.'); window.location.href = '/mon-espace.html'; return; }
+      if (data.auteur_id !== currentUser.id && currentProfil.role !== 'admin') {
+        alert('Tu ne peux pas modifier cette annonce.'); window.location.href = '/mon-espace.html'; return;
+      }
+      editData = data;
+      document.getElementById('an-page-title').textContent = 'Modifier l\'annonce';
+      document.getElementById('an-page-subtitle').textContent = 'Les changements seront visibles immédiatement.';
+      document.getElementById('a-submit').textContent = 'Enregistrer les modifications';
+      document.getElementById('a-titre').value = data.titre || '';
+      document.getElementById('a-categorie').value = data.categorie || 'materiel';
+      document.getElementById('a-description').value = data.description || '';
+      // Prix
+      if (data.prix === 'Gratuit' || data.prix === 'À débattre') {
+        setPrixSpecial(data.prix, document.querySelector(`.an-prix-chip[onclick*="${data.prix}"]`));
+      } else if (data.prix) {
+        document.getElementById('a-prix').value = String(data.prix).replace(/[^\d.]/g, '');
+      }
+      // Contact : tente de parser en JSON
+      let contact = data.contact;
+      try { const parsed = JSON.parse(contact); if (parsed && typeof parsed === 'object') contact = parsed; } catch (_) {}
+      if (contact && typeof contact === 'object') {
+        if (contact.email) { document.getElementById('c-email-chk').checked = true; toggleContact('email'); document.getElementById('c-email').value = contact.email; }
+        if (contact.tel)   { document.getElementById('c-tel-chk').checked = true;   toggleContact('tel');   document.getElementById('c-tel').value = contact.tel; }
+        if (contact.insta) { document.getElementById('c-insta-chk').checked = true; toggleContact('insta'); document.getElementById('c-insta').value = contact.insta; }
+      } else if (contact) {
+        // Ancien format texte libre — devine
+        if (contact.includes('@') && contact.includes('.')) { document.getElementById('c-email-chk').checked = true; toggleContact('email'); document.getElementById('c-email').value = contact; }
+        else if (/^[+\d\s]{6,}$/.test(contact)) { document.getElementById('c-tel-chk').checked = true; toggleContact('tel'); document.getElementById('c-tel').value = contact; }
+        else { document.getElementById('c-insta-chk').checked = true; toggleContact('insta'); document.getElementById('c-insta').value = contact.replace('@',''); }
+      }
+      // Photo existante
+      if (data.photo_url) {
+        const preview = document.getElementById('a-photo-preview');
+        preview.src = data.photo_url;
+        preview.style.display = 'block';
+        document.getElementById('a-photo-placeholder').style.display = 'none';
+        document.getElementById('a-photo-drop').classList.add('has-photo');
+      }
+    }
+
+    // Prix "Gratuit" / "À débattre"
+    function setPrixSpecial(label, chip) {
+      const prixInput = document.getElementById('a-prix');
+      const chips = document.querySelectorAll('.an-prix-chip');
+      if (chip && chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        prixInput.disabled = false;
+        prixInput.value = '';
+        prixInput.dataset.special = '';
+      } else {
+        chips.forEach(c => c.classList.remove('active'));
+        if (chip) chip.classList.add('active');
+        prixInput.disabled = true;
+        prixInput.value = label;
+        prixInput.dataset.special = label;
+      }
+    }
+
+    function toggleContact(kind) {
+      const chk = document.getElementById(`c-${kind}-chk`);
+      const inp = document.getElementById(`c-${kind}`);
+      const row = document.getElementById(`cr-${kind}`);
+      inp.disabled = !chk.checked;
+      row.classList.toggle('active', chk.checked);
+      if (chk.checked) inp.focus();
+      else inp.value = '';
+    }
 
     document.getElementById('a-photo-input').addEventListener('change', async (e) => {
       const file = e.target.files[0];
