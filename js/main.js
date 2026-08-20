@@ -793,6 +793,13 @@ function contactHref(c) {
   return 'mailto:' + s;
 }
 
+// Icônes SVG contact
+const CONTACT_ICONS = {
+  email: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  tel:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2h-3l-4 4v-4h-3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+  insta: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>'
+};
+
 // Parse le champ contact : JSON multi-canal ({email,tel,insta}) ou texte legacy
 function parseContactMethods(c) {
   if (!c) return [];
@@ -800,14 +807,18 @@ function parseContactMethods(c) {
     const p = typeof c === 'string' ? JSON.parse(c) : c;
     if (p && typeof p === 'object' && !Array.isArray(p)) {
       const out = [];
-      if (p.email) out.push({ kind: 'email', label: 'Envoyer un mail', icon: '✉', href: 'mailto:' + p.email, value: p.email });
-      if (p.tel)   out.push({ kind: 'tel',   label: 'Appeler',          icon: '📞', href: 'tel:' + String(p.tel).replace(/\s/g, ''), value: p.tel });
-      if (p.insta) out.push({ kind: 'insta', label: 'Voir Instagram',   icon: '📷', href: 'https://instagram.com/' + String(p.insta).replace(/^@/, ''), value: '@' + String(p.insta).replace(/^@/, '') });
+      if (p.email) out.push({ kind: 'email', label: 'Mail',      href: 'mailto:' + p.email });
+      if (p.tel)   out.push({ kind: 'tel',   label: 'Message',   href: 'sms:' + String(p.tel).replace(/\s/g, '') });
+      if (p.insta) out.push({ kind: 'insta', label: 'Instagram', href: 'https://instagram.com/' + String(p.insta).replace(/^@/, '') });
       return out;
     }
   } catch (_) {}
-  // Legacy texte libre
-  return [{ kind: 'legacy', label: 'Contacter', icon: '✉', href: contactHref(c), value: String(c) }];
+  // Legacy texte libre — devine si mail / tel / autre
+  const s = String(c).trim();
+  if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(s)) return [{ kind: 'email', label: 'Mail', href: 'mailto:' + s }];
+  if (/^[+\d\s().-]{6,}$/.test(s)) return [{ kind: 'tel', label: 'Message', href: 'sms:' + s.replace(/\s/g, '') }];
+  if (s.startsWith('@')) return [{ kind: 'insta', label: 'Instagram', href: 'https://instagram.com/' + s.slice(1) }];
+  return [{ kind: 'email', label: 'Contacter', href: contactHref(c) }];
 }
 
 function formatPrix(prix) {
