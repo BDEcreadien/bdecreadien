@@ -401,29 +401,31 @@
       const btn = document.getElementById('a-submit');
       btn.disabled = true; btn.textContent = editId ? 'Enregistrement…' : 'Publication…';
 
-      let photo_url = editData ? editData.photo_url : null;
       try {
-        if (photoBlob) {
-          const path = `${currentUser.id}/${Date.now()}.jpg`;
-          const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, photoBlob, { contentType: 'image/jpeg' });
+        // Upload de tous les nouveaux blobs
+        const uploadedUrls = [];
+        for (const blob of photoBlobs) {
+          const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+          const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, blob, { contentType: 'image/jpeg' });
           if (upErr) throw upErr;
-          photo_url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
+          uploadedUrls.push(Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl);
         }
+        const allPhotos = [...existingPhotos, ...uploadedUrls];
+        const cover = allPhotos[0] || null;
 
         const isBde = currentProfil && (currentProfil.role === 'membre' || currentProfil.role === 'admin');
 
         if (editId) {
-          // MODIFICATION : garde le statut actuel
-          const patch = { titre, description, categorie, prix, contact, photo_url };
+          const patch = { titre, description, categorie, prix, contact, photo_url: cover, photos: allPhotos };
           const { error } = await Auth.sb.from('annonces').update(patch).eq('id', editId);
           if (error) throw error;
           showMsg('Modifications enregistrées !', 'success');
           setTimeout(() => window.location.href = '/annonces.html', 800);
         } else {
-          // CRÉATION
           const { error } = await Auth.sb.from('annonces').insert({
             auteur_id: currentUser.id,
-            titre, description, categorie, prix, contact, photo_url,
+            titre, description, categorie, prix, contact,
+            photo_url: cover, photos: allPhotos,
             statut: isBde ? 'published' : 'pending'
           });
           if (error) throw error;
