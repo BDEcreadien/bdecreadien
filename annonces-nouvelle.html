@@ -291,14 +291,10 @@
         else if (/^[+\d\s]{6,}$/.test(contact)) { document.getElementById('c-tel-chk').checked = true; toggleContact('tel'); document.getElementById('c-tel').value = contact; }
         else { document.getElementById('c-insta-chk').checked = true; toggleContact('insta'); document.getElementById('c-insta').value = contact.replace('@',''); }
       }
-      // Photo existante
-      if (data.photo_url) {
-        const preview = document.getElementById('a-photo-preview');
-        preview.src = data.photo_url;
-        preview.style.display = 'block';
-        document.getElementById('a-photo-placeholder').style.display = 'none';
-        document.getElementById('a-photo-drop').classList.add('has-photo');
-      }
+      // Photos existantes (nouveau format array + fallback photo_url)
+      const arr = Array.isArray(data.photos) ? data.photos : [];
+      existingPhotos = arr.length ? arr.slice() : (data.photo_url ? [data.photo_url] : []);
+      renderThumbs();
     }
 
     // Prix "Gratuit" / "À débattre"
