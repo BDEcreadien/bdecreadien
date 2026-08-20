@@ -971,16 +971,21 @@ async function loadSupabaseAnnonces() {
     .select('*, profils!annonces_auteur_id_fkey(prenom, nom)')
     .eq('statut', 'published')
     .order('created_at', { ascending: false });
-  return (data || []).map(a => ({
-    titre: a.titre,
-    description: a.description,
-    categorie: a.categorie,
-    prix: a.prix || 'Gratuit',
-    contact: a.contact || '',
-    photo: a.photo_url || '',
-    auteur: a.profils ? `${a.profils.prenom} ${a.profils.nom}` : 'Étudiant CREAD',
-    date: new Date(a.created_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'})
-  }));
+  return (data || []).map(a => {
+    const photosArr = Array.isArray(a.photos) ? a.photos.filter(Boolean) : [];
+    const allPhotos = photosArr.length ? photosArr : (a.photo_url ? [a.photo_url] : []);
+    return {
+      titre: a.titre,
+      description: a.description,
+      categorie: a.categorie,
+      prix: a.prix || 'Gratuit',
+      contact: a.contact || '',
+      photo: allPhotos[0] || '',
+      photos: allPhotos,
+      auteur: a.profils ? `${a.profils.prenom} ${a.profils.nom}` : 'Étudiant CREAD',
+      date: new Date(a.created_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'})
+    };
+  });
 }
 
 if (document.getElementById('annonces-grid')) {
