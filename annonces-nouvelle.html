@@ -69,6 +69,23 @@
     }
     .an-back:hover { opacity: 1; }
 
+    /* Prix avec € */
+    .an-prix-wrap { position: relative; }
+    .an-prix-wrap input { padding-right: 30px; }
+    .an-prix-wrap .an-eur { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--gris-texte); font-weight: 600; pointer-events: none; }
+    .an-prix-toggle { display: flex; gap: 8px; margin-top: 6px; }
+    .an-prix-chip { padding: 4px 10px; font-size: 12px; border-radius: 99px; border: 1px solid var(--gris-moyen); background: white; color: var(--gris-texte); cursor: pointer; }
+    .an-prix-chip.active { background: var(--violet); color: white; border-color: var(--violet); }
+
+    /* Contact multi-canal */
+    .an-contact-methods { display: flex; flex-direction: column; gap: 10px; }
+    .an-contact-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--gris-moyen); border-radius: 10px; transition: var(--transition); }
+    .an-contact-row.active { border-color: var(--violet); background: #FAFAFF; }
+    .an-contact-row label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-family: 'Barlow', sans-serif; text-transform: none; letter-spacing: 0; margin: 0; min-width: 90px; color: var(--noir); }
+    .an-contact-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--violet); margin: 0; }
+    .an-contact-row .an-contact-input { flex: 1; border: none; background: transparent; padding: 4px 0; font-size: 14px; outline: none; }
+    .an-contact-row .an-contact-input:disabled { color: var(--gris-moyen); }
+
     @media (max-width: 600px) { .an-row { grid-template-columns: 1fr; } }
   </style>
 </head>
