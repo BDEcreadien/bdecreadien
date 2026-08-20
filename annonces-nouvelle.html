@@ -127,8 +127,8 @@
     </a>
 
     <div class="an-header">
-      <h1>Publier une annonce</h1>
-      <p>Ton annonce sera vérifiée par le BDE avant publication (24-48h).</p>
+      <h1 id="an-page-title">Publier une annonce</h1>
+      <p id="an-page-subtitle">Ton annonce sera vérifiée par le BDE avant publication (24-48h).</p>
     </div>
 
     <div class="an-card">
@@ -149,7 +149,14 @@
         </div>
         <div class="an-field">
           <label>Prix</label>
-          <input type="text" id="a-prix" placeholder="Ex : 25€, Gratuit, À débattre">
+          <div class="an-prix-wrap">
+            <input type="number" id="a-prix" placeholder="25" min="0" step="1" inputmode="numeric">
+            <span class="an-eur">€</span>
+          </div>
+          <div class="an-prix-toggle">
+            <span class="an-prix-chip" onclick="setPrixSpecial('Gratuit', this)">Gratuit</span>
+            <span class="an-prix-chip" onclick="setPrixSpecial('À débattre', this)">À débattre</span>
+          </div>
         </div>
       </div>
       <div class="an-field">
@@ -157,8 +164,22 @@
         <textarea id="a-description" placeholder="Décris ton annonce (état, dimensions, conditions de vente…)"></textarea>
       </div>
       <div class="an-field">
-        <label>Contact (email, tel, insta…)</label>
-        <input type="text" id="a-contact" placeholder="Ex : 06 12 34 56 78 ou @tonpseudo">
+        <label>Comment te contacter ? *</label>
+        <p style="font-size:12px;color:var(--gris-texte);margin:-2px 0 8px;text-transform:none;letter-spacing:0;font-family:'Barlow',sans-serif;">Coche au moins une option. Les acheteurs cliqueront pour te contacter directement.</p>
+        <div class="an-contact-methods">
+          <div class="an-contact-row" id="cr-email">
+            <label><input type="checkbox" id="c-email-chk" onchange="toggleContact('email')"> Email</label>
+            <input type="email" id="c-email" class="an-contact-input" placeholder="ton@email.com" disabled>
+          </div>
+          <div class="an-contact-row" id="cr-tel">
+            <label><input type="checkbox" id="c-tel-chk" onchange="toggleContact('tel')"> Téléphone</label>
+            <input type="tel" id="c-tel" class="an-contact-input" placeholder="06 12 34 56 78" disabled>
+          </div>
+          <div class="an-contact-row" id="cr-insta">
+            <label><input type="checkbox" id="c-insta-chk" onchange="toggleContact('insta')"> Instagram</label>
+            <input type="text" id="c-insta" class="an-contact-input" placeholder="tonpseudo (sans @)" disabled>
+          </div>
+        </div>
       </div>
       <div class="an-field">
         <label>Photo (facultatif)</label>
