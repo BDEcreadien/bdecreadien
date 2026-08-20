@@ -112,7 +112,7 @@
         <label for="login-pwd">Mot de passe</label>
         <div class="pwd-wrap">
           <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password">
-          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('login-pwd', this)">👁</button>
+          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('login-pwd', this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <button class="auth-btn" onclick="doLogin()">Se connecter</button>
@@ -143,7 +143,7 @@
         <label for="reg-pwd">Mot de passe * (min. 8 caractères)</label>
         <div class="pwd-wrap">
           <input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('reg-pwd', this)">👁</button>
+          <button type="button" class="pwd-toggle" aria-label="Afficher le mot de passe" onclick="togglePwd('reg-pwd', this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <div class="auth-row">
@@ -196,14 +196,14 @@
         <label for="new-pwd">Nouveau mot de passe (min. 8 caractères)</label>
         <div class="pwd-wrap">
           <input type="password" id="new-pwd" placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="pwd-toggle" aria-label="Afficher" onclick="togglePwd('new-pwd', this)">👁</button>
+          <button type="button" class="pwd-toggle" aria-label="Afficher" onclick="togglePwd('new-pwd', this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <div class="auth-field">
         <label for="new-pwd-confirm">Confirme ton mot de passe</label>
         <div class="pwd-wrap">
           <input type="password" id="new-pwd-confirm" placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="pwd-toggle" aria-label="Afficher" onclick="togglePwd('new-pwd-confirm', this)">👁</button>
+          <button type="button" class="pwd-toggle" aria-label="Afficher" onclick="togglePwd('new-pwd-confirm', this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <button class="auth-btn" onclick="doUpdatePassword()">Mettre à jour</button>
@@ -265,12 +265,14 @@
       setTimeout(() => { window.location.href = '/mon-espace.html'; }, 1500);
     }
 
+    const _svgEye = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const _svgEyeOff = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
     function togglePwd(inputId, btn) {
       const el = document.getElementById(inputId);
       if (!el) return;
       const isPwd = el.type === 'password';
       el.type = isPwd ? 'text' : 'password';
-      btn.textContent = isPwd ? '🙈' : '👁';
+      btn.innerHTML = isPwd ? _svgEyeOff : _svgEye;
       btn.setAttribute('aria-label', isPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
     }
 
