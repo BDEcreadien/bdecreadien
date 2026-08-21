@@ -237,7 +237,9 @@
       currentUser = await Auth.getUser();
       // Bannissement
       if (currentProfil.banni_jusqu_a && new Date(currentProfil.banni_jusqu_a) > new Date()) {
-        document.querySelector('.an-card').innerHTML = `
+        const card = document.getElementById('an-card');
+        card.style.display = 'block';
+        card.innerHTML = `
           <div style="text-align:center;padding:40px 20px;">
             <div style="font-size:48px;margin-bottom:16px;">🚫</div>
             <h2 style="color:#C0392B;margin-bottom:8px;">Publication suspendue</h2>
@@ -245,6 +247,8 @@
           </div>`;
         return;
       }
+      // OK, on affiche le formulaire (jusque-là caché pour éviter fuite d'UI aux non-connectés)
+      document.getElementById('an-card').style.display = 'block';
       // Membre BDE / Admin : publication directe, pas de modération
       const isBde = currentProfil.role === 'membre' || currentProfil.role === 'admin';
       if (isBde) {
