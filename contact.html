@@ -12,9 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BDE CREAD">
   <link rel="apple-touch-icon" href="/assets/icon-192.png">
-  <link rel="icon" type="image/png" href="assets/favicon-bde.png">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon-round.svg">
 </head>
 <body>
 
@@ -94,6 +92,17 @@
             <div class="form-contact-row">
               <label for="c-message">Message *</label>
               <textarea id="c-message" rows="5" placeholder="Écris ton message ici…" required></textarea>
+            </div>
+            <!-- Honeypot anti-bot (invisible pour humain, rempli par bot) -->
+            <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;height:0;overflow:hidden;">
+              <label>Site web (ne pas remplir) <input type="text" id="c-hp-website" name="website" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <div class="form-contact-row" style="display:flex;flex-direction:row;align-items:flex-start;gap:8px;">
+              <input type="checkbox" id="c-rgpd" required style="margin-top:3px;flex-shrink:0;">
+              <label for="c-rgpd" style="font-size:12px;color:var(--gris-texte);line-height:1.5;cursor:pointer;font-weight:400;">
+                J'accepte que mes données (prénom, email, message) soient utilisées par le BDE CREAD Lyon pour répondre à ma demande.
+                <a href="/mentions-legales.html" style="color:var(--violet);">Politique de confidentialité</a>
+              </label>
             </div>
             <p id="contact-error" style="color:#c0392b;font-size:13px;display:none;margin-bottom:0.5rem;"></p>
             <button type="submit" class="btn btn-primary contact-submit">Envoyer le message</button>
@@ -261,5 +270,6 @@
 <script src="js/supabase-config.js"></script>
 <script defer src="js/auth.js?v=6"></script>
 <!-- @include scripts-public @end -->
+<script defer src="/js/cookie-banner.js?v=1"></script>
 </body>
 </html>
