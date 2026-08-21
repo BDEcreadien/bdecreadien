@@ -1,5 +1,12 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /admin/
+Disallow: /mon-espace.html
+Disallow: /annonces-nouvelle.html
+Disallow: /scan.html
+Disallow: /carte.html
+Disallow: /profil.html
+Disallow: /_data/
 
 Sitemap: https://bdecreadien.fr/sitemap.xml
