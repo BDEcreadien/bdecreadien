@@ -192,9 +192,21 @@
       const email = document.getElementById('c-email').value.trim();
       const sujet = document.getElementById('c-sujet').value;
       const message = document.getElementById('c-message').value.trim();
+      const rgpd = document.getElementById('c-rgpd').checked;
+      const hp = document.getElementById('c-hp-website').value;
       const err = document.getElementById('contact-error');
+      // Honeypot : si rempli, silencieusement "succès" mais on n'envoie rien (piège à bots)
+      if (hp) {
+        this.innerHTML = '<div style="text-align:center;padding:2rem 0;"><p style="font-size:14px;color:var(--gris-texte);">Message envoyé.</p></div>';
+        return;
+      }
       if (!nom || !email || !sujet || !message) {
         err.textContent = 'Merci de remplir tous les champs.';
+        err.style.display = 'block';
+        return;
+      }
+      if (!rgpd) {
+        err.textContent = 'Merci d\'accepter la politique de confidentialité.';
         err.style.display = 'block';
         return;
       }
