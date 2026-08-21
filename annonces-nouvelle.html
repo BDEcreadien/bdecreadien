@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nouvelle annonce — BDE CREAD Lyon</title>
   <link rel="stylesheet" href="css/style.css?v=16">
-  <link rel="icon" type="image/png" href="assets/favicon-bde.png">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon-round.svg">
   <style>
     body { background: var(--gris-clair); min-height: 100vh; font-family: 'Barlow', sans-serif; }
     .an-wrap { max-width: 620px; margin: 0 auto; padding: 100px 24px 60px; }
@@ -131,7 +129,7 @@
       <p id="an-page-subtitle">Ton annonce sera vérifiée par le BDE avant publication (24-48h).</p>
     </div>
 
-    <div class="an-card">
+    <div class="an-card" id="an-card" style="display:none;">
       <div class="an-field">
         <label>Titre *</label>
         <input type="text" id="a-titre" placeholder="Ex : Table à dessin A2 en excellent état" maxlength="80">
@@ -438,5 +436,6 @@
       }
     }
   </script>
+<script defer src="/js/cookie-banner.js?v=1"></script>
 </body>
 </html>
