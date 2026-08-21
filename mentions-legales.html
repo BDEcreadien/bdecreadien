@@ -27,9 +27,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="BDE CREAD">
   <link rel="apple-touch-icon" href="/assets/icon-192.png">
-  <link rel="icon" type="image/png" href="assets/favicon-bde.png">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8REVEGYYL"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C8REVEGYYL');</script>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon-round.svg">
   <style>
     .ml-wrap {
       max-width: 900px;
@@ -288,6 +286,31 @@
               <li>Droit d'opposition au traitement</li>
             </ul>
             <p style="margin-top:0.75rem;">Pour exercer ces droits : <a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></p>
+
+            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Données collectées</h3>
+            <ul style="font-size:13px;">
+              <li><strong>Formulaire contact</strong> : prénom, email, message → <em>finalité :</em> répondre à la demande → <em>conservation :</em> 1 an → <em>base légale :</em> intérêt légitime.</li>
+              <li><strong>Compte étudiant</strong> (mon-espace) : prénom, nom, email, téléphone, année d'étude, avatar → <em>finalité :</em> gestion des membres BDE, carte fidélité, annonces → <em>conservation :</em> durée de l'adhésion + 1 an → <em>base légale :</em> exécution du contrat d'adhésion.</li>
+              <li><strong>Annonces</strong> : titre, description, prix, contact (email/tel/insta), photos → <em>finalité :</em> mise en relation entre étudiants → <em>conservation :</em> jusqu'à suppression par l'auteur → <em>base légale :</em> consentement.</li>
+              <li><strong>Google Analytics 4</strong> : données de navigation anonymisées (pages vues, durée) → <em>finalité :</em> mesure d'audience → <em>conservation :</em> 2 ans → <em>base légale :</em> consentement (bandeau cookies).</li>
+              <li><strong>Notifications push</strong> (OneSignal, si activées) : identifiant device → <em>finalité :</em> envoi de notifications d'événements → <em>conservation :</em> jusqu'à désactivation → <em>base légale :</em> consentement.</li>
+            </ul>
+
+            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Sous-traitants et transferts hors UE</h3>
+            <ul style="font-size:13px;">
+              <li><strong>Supabase</strong> (Frankfurt, UE) : hébergement de la base de données et authentification. Données hébergées en Union Européenne.</li>
+              <li><strong>Cloudflare</strong> (USA) : hébergement du site et routage email. Transfert encadré par les <a href="https://www.cloudflare.com/gdpr/introduction/" target="_blank" rel="noopener">Clauses Contractuelles Types</a>.</li>
+              <li><strong>Resend</strong> (USA) : envoi d'emails transactionnels. Transfert encadré par les Clauses Contractuelles Types.</li>
+              <li><strong>Google Analytics 4</strong> (Google LLC, USA) : mesure d'audience. Voir <a href="https://policies.google.com/privacy/frameworks" target="_blank" rel="noopener">garanties Google</a>.</li>
+              <li><strong>OneSignal</strong> (USA) : notifications push. Uniquement si consenties.</li>
+              <li><strong>GitHub</strong> (USA) : hébergement des fichiers médias publics du site.</li>
+            </ul>
+
+            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Cookies</h3>
+            <p style="font-size:13px;">Nous utilisons uniquement des cookies de mesure d'audience (Google Analytics 4, IP anonymisée), déposés <strong>après consentement explicite</strong> via le bandeau. Tu peux modifier ton choix à tout moment en cliquant <a href="#" onclick="event.preventDefault();window.openCookieSettings&&window.openCookieSettings();">ici pour rouvrir les paramètres cookies</a>.</p>
+
+            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Réclamation</h3>
+            <p style="font-size:13px;">Si tu estimes que tes droits ne sont pas respectés, tu peux introduire une réclamation auprès de la <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">CNIL</a>.</p>
           </div>
         </div>
 
@@ -399,5 +422,6 @@
     }
   </script>
   <script defer src="js/notif.js?v=1"></script>
+<script defer src="/js/cookie-banner.js?v=1"></script>
 </body>
 </html>
