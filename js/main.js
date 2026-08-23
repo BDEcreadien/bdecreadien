@@ -823,10 +823,11 @@ function parseContactMethods(c) {
 
 function formatPrix(prix) {
   if (!prix) return '';
-  const slash = prix.indexOf('/');
-  if (slash === -1) return `<span class="annonce-prix">${prix}</span>`;
-  const montant = prix.slice(0, slash).trim();
-  const unite = prix.slice(slash).trim();
+  const p = escapeHTML(String(prix));
+  const slash = p.indexOf('/');
+  if (slash === -1) return `<span class="annonce-prix">${p}</span>`;
+  const montant = p.slice(0, slash).trim();
+  const unite = p.slice(slash).trim();
   if (!montant) return `<span class="annonce-prix">${unite}</span>`;
   return `<span class="annonce-prix"><span style="white-space:nowrap">${montant}</span><small class="annonce-prix-unit">${unite}</small></span>`;
 }
