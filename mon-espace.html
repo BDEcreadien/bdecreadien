@@ -1585,6 +1585,12 @@
     function escapeHtml(s) {
       return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
+    // Ne renvoie l'URL que si elle est http(s) — bloque javascript:, data:, etc.
+    function safeAvatar(u) {
+      if (!u) return '';
+      const s = String(u).trim();
+      return /^https?:\/\//i.test(s) ? escapeHtml(s) : '';
+    }
   </script>
 <script defer src="/js/cookie-banner.js?v=1"></script>
 </body>
