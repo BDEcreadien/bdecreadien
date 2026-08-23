@@ -911,7 +911,10 @@ function openAnnonceModal(a) {
     const methods = parseContactMethods(a.contact);
     wrap.innerHTML = methods.map(m => {
       const target = m.kind === 'insta' ? ' target="_blank" rel="noopener"' : '';
-      return `<a href="${m.href}" class="an-modal-cta an-modal-cta--small"${target}>${CONTACT_ICONS[m.kind] || ''}<span>${escapeHTML(m.label)}</span></a>`;
+      // Autoriser seulement mailto:, tel:, sms:, https://instagram.com/
+      const rawHref = String(m.href || '');
+      const validHref = /^(mailto:[^"'\s<>]+|tel:[+\d]+|sms:[+\d]+|https:\/\/instagram\.com\/[\w._-]+)$/.test(rawHref) ? rawHref : '#';
+      return `<a href="${escapeHTML(validHref)}" class="an-modal-cta an-modal-cta--small"${target}>${CONTACT_ICONS[m.kind] || ''}<span>${escapeHTML(m.label)}</span></a>`;
     }).join('') || '<span style="color:var(--gris-texte);font-size:13px;">Aucun contact renseigné</span>';
   } else {
     const legacyCta = document.getElementById('an-modal-cta');
