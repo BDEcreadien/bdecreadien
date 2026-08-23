@@ -900,7 +900,10 @@ function openAnnonceModal(a) {
   document.getElementById('an-modal-auteur').textContent = a.auteur;
   document.getElementById('an-modal-date').textContent = a.date;
   const photosEl = document.getElementById('an-modal-photos');
-  photosEl.innerHTML = photos.length > 1 ? photos.map(p => `<img src="${p}" alt="${a.titre}" loading="lazy">`).join('') : '';
+  photosEl.innerHTML = photos.length > 1 ? photos.map(p => {
+    const safeP = safeURL(p);
+    return safeP ? `<img src="${safeP}" alt="${escapeHTML(a.titre)}" loading="lazy">` : '';
+  }).join('') : '';
   photosEl.style.display = photos.length > 1 ? 'grid' : 'none';
   const wrap = document.getElementById('an-modal-cta-wrap');
   if (wrap) {
