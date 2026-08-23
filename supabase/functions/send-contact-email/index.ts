@@ -115,11 +115,27 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
 }
 
 serve(async (req) => {
-  const CORS = corsHeaders(req.headers.get('origin'));
+  const origin = req.headers.get('origin');
+  const CORS = corsHeaders(origin);
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
 
+  // Rejette origin non autorisé (au lieu de retomber silencieusement sur le default)
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return new Response(JSON.stringify({ error: 'Origin non autorisé' }), {
+      status: 403, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
-    const { nom, email, sujet, message } = await req.json();
+    const body = await req.json();
+    const { nom, email, sujet, message, website } = body;
+
+    // Honeypot serveur : si le champ caché est rempli, c'est un bot
+    if (website) {
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+      });
+    }
 
     if (!nom || !email || !sujet || !message) {
       return new Response(JSON.stringify({ error: 'Champs manquants' }), {
