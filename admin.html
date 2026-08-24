@@ -470,16 +470,26 @@
           <button type="button" onclick="nlInsertButton()" title="Bouton (call to action)" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">🔘 Bouton</button>
         </div>
         <textarea id="nl-contenu" rows="14" placeholder="Salut à tous !&#10;&#10;Cette semaine au BDE :&#10;&#10;- Soirée jeudi 20h&#10;- Sortie musée samedi&#10;&#10;À très vite,&#10;L'équipe BDE" style="width:100%;padding:12px;border:1.5px solid var(--gris-border);border-radius:0 0 8px 8px;background:white;color:var(--texte);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.7;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
-        <p style="margin:6px 0 0;font-size:12px;color:var(--gris-texte);">
-          Écris naturellement. Les sauts de ligne créent des paragraphes.
-          <strong>**gras**</strong> · <em>*italique*</em> · [lien](url) · ![image](url) — ou utilise les boutons.
-        </p>
-      </div>
-      <div class="form-row">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="nl-preview-only" style="width:16px;height:16px;accent-color:var(--violet);">
-          <span style="font-size:13px;color:var(--gris-texte);">Envoi test uniquement à mon email (aperçu)</span>
-        </label>
+
+        <!-- Mini panneau lien/bouton -->
+        <div id="nl-inline-panel" style="display:none;margin-top:12px;padding:14px;background:#F5F4FF;border:1.5px solid var(--violet);border-radius:10px;">
+          <p id="nl-inline-title" style="margin:0 0 10px;font-weight:700;font-size:14px;color:var(--violet);">Insérer un lien</p>
+          <div class="form-row" style="margin-bottom:8px;">
+            <label style="font-size:12px;">Texte à afficher</label>
+            <input type="text" id="nl-inline-label" placeholder="ex : clique ici" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--gris-border);background:white;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div class="form-row" style="margin-bottom:8px;">
+            <label style="font-size:12px;">URL cible</label>
+            <input type="url" id="nl-inline-url" placeholder="https://…" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--gris-border);background:white;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button type="button" onclick="nlInlineCancel()" style="padding:8px 14px;background:none;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">Annuler</button>
+            <button type="button" onclick="nlInlineConfirm()" style="padding:8px 14px;background:var(--violet);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">Insérer</button>
+          </div>
+        </div>
+
+        <!-- Input caché pour upload image -->
+        <input type="file" id="nl-img-upload" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="nlUploadImage(this.files)">
       </div>
       <div class="form-actions">
         <button class="stats-ext-btn" onclick="previewNewsletter()">👁 Aperçu</button>
