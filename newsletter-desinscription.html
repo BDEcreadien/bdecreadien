@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Désinscription newsletter — BDE CREAD Lyon</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon-round.svg?v=3">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <style>
+    body { background: var(--gradient); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .unsub-card {
+      background: #fff; border-radius: 20px; padding: 40px 32px; max-width: 460px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2); text-align: center;
+    }
+    .unsub-icon { font-size: 48px; margin-bottom: 12px; }
+    .unsub-card h1 { font-family: 'Barlow Condensed',sans-serif; font-size: 26px; color: var(--violet); margin: 0 0 12px; }
+    .unsub-card p { font-family: 'Barlow',sans-serif; font-size: 15px; color: var(--gris-texte); line-height: 1.6; margin: 0 0 16px; }
+    .unsub-card a { color: var(--violet); font-weight: 600; text-decoration: none; }
+    .unsub-btn {
+      display: inline-block; margin-top: 12px; padding: 12px 28px; background: var(--gradient);
+      color: #fff; border-radius: 10px; font-family: 'Barlow Condensed',sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="unsub-card" id="card">
+    <div class="unsub-icon">⏳</div>
+    <h1>Désinscription en cours…</h1>
+    <p>Un instant s'il te plaît.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    (async function () {
+      const card = document.getElementById('card');
+      const token = new URLSearchParams(location.search).get('token');
+      if (!token) {
+        card.innerHTML = '<div class="unsub-icon">❌</div><h1>Lien invalide</h1><p>Ce lien de désinscription n\'est pas valide.</p><a href="/" class="unsub-btn">Retour au site</a>';
+        return;
+      }
+      try {
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+        const { data, error } = await sb.rpc('unsubscribe_newsletter', { p_token: token });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          card.innerHTML = '<div class="unsub-icon">✅</div><h1>C\'est fait</h1><p>Tu ne recevras plus la newsletter du BDE CREAD Lyon.<br>Tu peux te réinscrire à tout moment depuis le site.</p><a href="/" class="unsub-btn">Retour à l\'accueil</a>';
+        } else {
+          card.innerHTML = '<div class="unsub-icon">ℹ️</div><h1>Déjà désinscrit</h1><p>Cette adresse est déjà désinscrite ou le lien a expiré.</p><a href="/" class="unsub-btn">Retour au site</a>';
+        }
+      } catch (err) {
+        card.innerHTML = '<div class="unsub-icon">⚠️</div><h1>Erreur</h1><p>Impossible de traiter ta désinscription pour le moment. Contacte-nous à <a href="mailto:contact@bdecreadien.fr">contact@bdecreadien.fr</a>.</p><a href="/" class="unsub-btn">Retour</a>';
+      }
+    })();
+  </script>
+</body>
+</html>
