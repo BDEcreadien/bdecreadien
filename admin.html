@@ -460,8 +460,20 @@
         <input type="text" id="nl-sujet" placeholder="ex : Soirée BDE le 15 septembre 🎉" maxlength="150">
       </div>
       <div class="form-row">
-        <label>Contenu (HTML autorisé — &lt;p&gt;, &lt;strong&gt;, &lt;a href&gt;, &lt;br&gt;, &lt;img src&gt;)</label>
-        <textarea id="nl-contenu" rows="12" placeholder="Salut à tous !&#10;&#10;Cette semaine au BDE : ..." style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.6;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+        <label>Contenu du message</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;padding:6px;background:var(--gris-bg);border-radius:8px;border:1.5px solid var(--gris-border);border-bottom:none;border-radius:8px 8px 0 0;">
+          <button type="button" onclick="nlWrap('**','**','texte en gras')" title="Gras" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;">B</button>
+          <button type="button" onclick="nlWrap('*','*','texte en italique')" title="Italique" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-style:italic;font-size:13px;">I</button>
+          <button type="button" onclick="nlWrap('## ','','Titre')" title="Titre" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;">Titre</button>
+          <button type="button" onclick="nlInsertLink()" title="Lien" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">🔗 Lien</button>
+          <button type="button" onclick="nlInsertImage()" title="Image" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">🖼 Image</button>
+          <button type="button" onclick="nlInsertButton()" title="Bouton (call to action)" style="padding:6px 10px;background:white;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">🔘 Bouton</button>
+        </div>
+        <textarea id="nl-contenu" rows="14" placeholder="Salut à tous !&#10;&#10;Cette semaine au BDE :&#10;&#10;- Soirée jeudi 20h&#10;- Sortie musée samedi&#10;&#10;À très vite,&#10;L'équipe BDE" style="width:100%;padding:12px;border:1.5px solid var(--gris-border);border-radius:0 0 8px 8px;background:white;color:var(--texte);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.7;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+        <p style="margin:6px 0 0;font-size:12px;color:var(--gris-texte);">
+          Écris naturellement. Les sauts de ligne créent des paragraphes.
+          <strong>**gras**</strong> · <em>*italique*</em> · [lien](url) · ![image](url) — ou utilise les boutons.
+        </p>
       </div>
       <div class="form-row">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
