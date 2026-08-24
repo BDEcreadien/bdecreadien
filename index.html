@@ -236,7 +236,9 @@
     try {
       var sbClient = window.sb || (window.supabase && window.SUPABASE_URL ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null);
       if (sbClient) {
-        await sbClient.from('newsletter_subscribers').insert({ email: email, source: 'banner' });
+        const res = await sbClient.from('newsletter_subscribers').insert({ email: email, source: 'banner' });
+        // 23505 = déjà inscrit → OK on affiche succès quand même
+        if (res.error && res.error.code && res.error.code !== '23505') { console.warn(res.error); }
       }
     } catch (_) {}
     document.getElementById('nb-form').style.display = 'none';
