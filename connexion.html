@@ -368,8 +368,12 @@
       document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('panel-success').classList.add('active');
 
-      if (window.OneSignalDeferred) {
-        OneSignalDeferred.push(async (OS) => { await OS.User.PushSubscription.optIn(); });
+      if (wantsNewsletter) {
+        sb.from('newsletter_subscribers').insert({
+          email,
+          nom: (prenom + ' ' + nom).trim(),
+          source: 'inscription'
+        }).then(() => {}, () => {});
       }
     }
 
