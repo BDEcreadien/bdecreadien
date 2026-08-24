@@ -12,11 +12,13 @@ function escapeHTML(s) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
-// Autorise seulement les URLs http(s) sûres — bloque javascript:, data:, etc.
+// Autorise seulement les URLs https sûres et sur domaines de confiance
+// Bloque javascript:, data:, blob:, http:// (mixed content), et domaines externes non listés
+const SAFE_HOSTS = /^https:\/\/([\w-]+\.supabase\.co|raw\.githubusercontent\.com|instagram\.com|www\.instagram\.com|bdecreadien\.fr|www\.bdecreadien\.fr)\//i;
 function safeURL(u) {
   if (!u) return '';
   const s = String(u).trim();
-  if (/^https?:\/\//i.test(s)) return escapeHTML(s);
+  if (SAFE_HOSTS.test(s)) return escapeHTML(s);
   return '';
 }
 window.escapeHTML = escapeHTML;
