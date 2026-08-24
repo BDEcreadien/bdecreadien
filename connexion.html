@@ -337,6 +337,7 @@
       const pwd    = document.getElementById('reg-pwd').value;
       const annee  = document.getElementById('reg-annee').value;
       const tel    = document.getElementById('reg-tel').value.trim();
+      const wantsNewsletter = document.getElementById('reg-newsletter').checked;
 
       if (!prenom || !nom || !email || !pwd || !annee || !tel) {
         showMsg('reg-msg', 'Remplis tous les champs obligatoires (*).', 'error');
