@@ -2943,11 +2943,85 @@ async function loadHistorique() {
   }).join('');
 }
 
+// Barre d'outils — insertion dans le textarea
+function nlWrap(before, after, placeholder) {
+  const ta = document.getElementById('nl-contenu');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const sel = ta.value.slice(start, end) || placeholder;
+  const insert = before + sel + after;
+  ta.value = ta.value.slice(0, start) + insert + ta.value.slice(end);
+  ta.focus();
+  ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+}
+function nlInsertLink() {
+  const url = prompt('URL du lien (https://…) :', 'https://');
+  if (!url) return;
+  const label = prompt('Texte à afficher :', 'clique ici') || 'lien';
+  nlInsertAt('[' + label + '](' + url + ')');
+}
+function nlInsertImage() {
+  const url = prompt('URL de l\'image (https://…) :', 'https://');
+  if (!url) return;
+  nlInsertAt('\n![image](' + url + ')\n');
+}
+function nlInsertButton() {
+  const url = prompt('URL cible du bouton :', 'https://bdecreadien.fr');
+  if (!url) return;
+  const label = prompt('Texte du bouton :', 'En savoir plus') || 'En savoir plus';
+  nlInsertAt('\n[[BTN:' + label + '|' + url + ']]\n');
+}
+function nlInsertAt(text) {
+  const ta = document.getElementById('nl-contenu');
+  const start = ta.selectionStart;
+  ta.value = ta.value.slice(0, start) + text + ta.value.slice(ta.selectionEnd);
+  ta.focus();
+  ta.setSelectionRange(start + text.length, start + text.length);
+}
+
+// Convertit le texte "simple" (markdown-lite) en HTML propre pour l'email
+function nlTextToHtml(txt) {
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const isSafeUrl = u => /^https?:\/\//i.test(u) || /^mailto:/i.test(u);
+  // Découpe en paragraphes (double saut de ligne)
+  const blocks = txt.replace(/\r\n/g, '\n').split(/\n{2,}/);
+  return blocks.map(block => {
+    block = block.trim();
+    if (!block) return '';
+    // Bouton call-to-action : [[BTN:label|url]]
+    const btn = block.match(/^\[\[BTN:([^|]+)\|([^\]]+)\]\]$/);
+    if (btn && isSafeUrl(btn[2])) {
+      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
+    }
+    // Image seule : ![alt](url)
+    const img = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (img && isSafeUrl(img[2])) {
+      return `<p style="text-align:center;margin:16px 0;"><img src="${esc(img[2])}" alt="${esc(img[1])}" style="max-width:100%;height:auto;border-radius:8px;"></p>`;
+    }
+    // Titre H2 : ## Titre
+    if (/^##\s+/.test(block)) {
+      return `<h2 style="font-size:20px;color:#463A90;margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
+    }
+    // Paragraphe normal — un simple saut de ligne devient <br>
+    const inner = block.split('\n').map(l => nlInline(esc(l))).join('<br>');
+    return `<p style="margin:0 0 14px;">${inner}</p>`;
+  }).filter(Boolean).join('\n');
+}
+function nlInline(s) {
+  // **gras**
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // *italique* (mais pas si collé à un autre *)
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // [label](url) — validation URL basique
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
+    '<a href="$2" style="color:#463A90;">$1</a>');
+  return s;
+}
+
 function previewNewsletter() {
   const sujet = document.getElementById('nl-sujet').value.trim();
   const contenu = document.getElementById('nl-contenu').value.trim();
   if (!contenu) { showNlMsg('Écris d\'abord un contenu.', 'error'); return; }
-  const html = buildNewsletterHtml(sujet || '(sans sujet)', contenu);
+  const html = buildNewsletterHtml(sujet || '(sans sujet)', nlTextToHtml(contenu));
   const w = window.open('', '_blank', 'width=700,height=800');
   w.document.write(html);
   w.document.close();
