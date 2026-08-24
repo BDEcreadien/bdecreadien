@@ -914,7 +914,7 @@
       const p = currentProfil;
       document.getElementById('me-hero-name').textContent = p.prenom + ' ' + p.nom;
       document.getElementById('me-hero-role').innerHTML =
-        `<span class="role-badge">${ROLE_LABELS[p.role]}</span>${p.annee ? ' · ' + escapeHtml(p.annee) + ' année' : ''}`;
+        `<span class="role-badge">${ROLE_LABELS[p.role]}</span>${p.annee ? ' · ' + escapeHtml(p.annee) + (p.annee === 'Admin/Prof' ? '' : ' année') : ''}`;
       const av = document.getElementById('me-avatar');
       if (p.avatar_url) av.innerHTML = (safeAvatar(p.avatar_url) ? `<img src="${safeAvatar(p.avatar_url)}" alt="">` : "");
       else av.textContent = (p.prenom[0] || '?').toUpperCase();
