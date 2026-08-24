@@ -161,6 +161,10 @@
           <input type="tel" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel">
         </div>
       </div>
+      <label style="display:flex;align-items:flex-start;gap:10px;margin:16px 0 4px;cursor:pointer;font-size:13px;color:var(--gris-texte);line-height:1.4;">
+        <input type="checkbox" id="reg-newsletter" checked style="margin-top:2px;flex-shrink:0;accent-color:var(--violet);">
+        <span>Je souhaite recevoir la <strong>newsletter du BDE</strong> (soirées, actus, deals partenaires).</span>
+      </label>
       <button class="auth-btn" onclick="doSignup()">Créer mon compte</button>
       <div id="reg-msg" class="auth-msg"></div>
     </div>
