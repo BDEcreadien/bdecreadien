@@ -3090,13 +3090,13 @@ function buildNewsletterHtml(sujet, contenu) {
 async function sendNewsletter() {
   const sujet = document.getElementById('nl-sujet').value.trim();
   const contenu = document.getElementById('nl-contenu').value.trim();
-  const testOnly = document.getElementById('nl-preview-only').checked;
+  const testOnly = false;
 
   if (!sujet) { showNlMsg('Ajoute un sujet.', 'error'); return; }
   if (!contenu) { showNlMsg('Écris un contenu.', 'error'); return; }
 
   const active = _nlAbonnes.filter(a => a.status === 'active').length;
-  if (!testOnly && !confirm('Envoyer cette newsletter à ' + active + ' abonné' + (active > 1 ? 's' : '') + ' ?')) return;
+  if (!confirm('Envoyer cette newsletter à ' + active + ' abonné' + (active > 1 ? 's' : '') + ' ?')) return;
 
   const btn = event.target;
   btn.disabled = true; const oldText = btn.textContent; btn.textContent = 'Envoi…';
