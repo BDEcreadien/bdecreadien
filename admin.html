@@ -601,6 +601,7 @@ function goBack() {
   if (!prev || prev === 'pages') { navStack = ['pages']; showStep('pages'); }
   else if (prev === 'stats') showStep('stats');
   else if (prev === 'fidelite') { showStep('fidelite'); initFidelite(); }
+  else if (prev === 'newsletter') { showStep('newsletter'); initNewsletter(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
     const type = prev.split(':')[1];
