@@ -2963,22 +2963,51 @@ function nlWrap(before, after, placeholder) {
   ta.focus();
   ta.setSelectionRange(start + before.length, start + before.length + sel.length);
 }
-function nlInsertLink() {
-  const url = prompt('URL du lien (https://…) :', 'https://');
-  if (!url) return;
-  const label = prompt('Texte à afficher :', 'clique ici') || 'lien';
-  nlInsertAt('[' + label + '](' + url + ')');
+let _nlInlineMode = null; // 'link' | 'button'
+
+function nlOpenInline(mode) {
+  _nlInlineMode = mode;
+  const p = document.getElementById('nl-inline-panel');
+  document.getElementById('nl-inline-title').textContent = mode === 'button' ? 'Insérer un bouton' : 'Insérer un lien';
+  document.getElementById('nl-inline-label').value = '';
+  document.getElementById('nl-inline-url').value = 'https://';
+  document.getElementById('nl-inline-label').placeholder = mode === 'button' ? 'ex : Je m\'inscris' : 'ex : notre site';
+  p.style.display = 'block';
+  setTimeout(() => document.getElementById('nl-inline-label').focus(), 50);
 }
-function nlInsertImage() {
-  const url = prompt('URL de l\'image (https://…) :', 'https://');
-  if (!url) return;
+function nlInlineCancel() {
+  document.getElementById('nl-inline-panel').style.display = 'none';
+  _nlInlineMode = null;
+}
+function nlInlineConfirm() {
+  const label = document.getElementById('nl-inline-label').value.trim();
+  const url = document.getElementById('nl-inline-url').value.trim();
+  if (!label || !url) { alert('Renseigne le texte et l\'URL.'); return; }
+  if (!/^https?:\/\//i.test(url) && !/^mailto:/i.test(url)) { alert('L\'URL doit commencer par https:// ou http://'); return; }
+  const insert = _nlInlineMode === 'button'
+    ? '\n[[BTN:' + label + '|' + url + ']]\n'
+    : '[' + label + '](' + url + ')';
+  nlInsertAt(insert);
+  nlInlineCancel();
+}
+function nlInsertLink() { nlOpenInline('link'); }
+function nlInsertButton() { nlOpenInline('button'); }
+function nlInsertImage() { document.getElementById('nl-img-upload').click(); }
+
+async function nlUploadImage(files) {
+  if (!files || !files.length) return;
+  const file = files[0];
+  if (file.size > 5 * 1024 * 1024) { alert('Image trop lourde (max 5 Mo).'); return; }
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = 'newsletter/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+  showNlMsg('Upload de l\'image en cours…', 'info');
+  const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, file, { contentType: file.type });
+  if (upErr) { showNlMsg('Erreur upload : ' + upErr.message, 'error'); return; }
+  const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
   nlInsertAt('\n![image](' + url + ')\n');
-}
-function nlInsertButton() {
-  const url = prompt('URL cible du bouton :', 'https://bdecreadien.fr');
-  if (!url) return;
-  const label = prompt('Texte du bouton :', 'En savoir plus') || 'En savoir plus';
-  nlInsertAt('\n[[BTN:' + label + '|' + url + ']]\n');
+  showNlMsg('✓ Image insérée', 'success');
+  setTimeout(() => { document.getElementById('nl-msg').style.display = 'none'; }, 2000);
+  document.getElementById('nl-img-upload').value = '';
 }
 function nlInsertAt(text) {
   const ta = document.getElementById('nl-contenu');
