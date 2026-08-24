@@ -442,6 +442,54 @@
     <div id="fid-empty" class="empty-state" style="display:none;">Aucune carte créée pour l'instant.</div>
   </div>
 
+  <!-- NEWSLETTER -->
+  <div id="step-newsletter" style="display:none;">
+    <div class="stats-header">
+      <h2>Newsletter</h2>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <span id="nl-count-badge" class="page-badge" style="font-size:13px;">— abonnés</span>
+        <button class="stats-ext-btn" onclick="exportNewsletterCsv()">↓ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Éditeur -->
+    <div class="form-card" style="margin-bottom:1.5rem;">
+      <h3 style="margin:0 0 12px;">Composer une newsletter</h3>
+      <div class="form-row">
+        <label>Sujet de l'email</label>
+        <input type="text" id="nl-sujet" placeholder="ex : Soirée BDE le 15 septembre 🎉" maxlength="150">
+      </div>
+      <div class="form-row">
+        <label>Contenu (HTML autorisé — &lt;p&gt;, &lt;strong&gt;, &lt;a href&gt;, &lt;br&gt;, &lt;img src&gt;)</label>
+        <textarea id="nl-contenu" rows="12" placeholder="Salut à tous !&#10;&#10;Cette semaine au BDE : ..." style="width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.6;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+      </div>
+      <div class="form-row">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="nl-preview-only" style="width:16px;height:16px;accent-color:var(--violet);">
+          <span style="font-size:13px;color:var(--gris-texte);">Envoi test uniquement à mon email (aperçu)</span>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="stats-ext-btn" onclick="previewNewsletter()">👁 Aperçu</button>
+        <button class="btn-save" onclick="sendNewsletter()">Envoyer la newsletter</button>
+      </div>
+      <div id="nl-msg" style="margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;"></div>
+    </div>
+
+    <!-- Historique -->
+    <div class="form-card" style="margin-bottom:1.5rem;">
+      <h3 style="margin:0 0 12px;">Historique des envois</h3>
+      <div id="nl-historique" style="max-height:280px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- Liste abonnés -->
+    <div class="form-card">
+      <h3 style="margin:0 0 12px;">Abonnés</h3>
+      <input type="search" id="nl-search" placeholder="Rechercher un email ou un nom…" oninput="renderAbonnes()" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;margin-bottom:12px;">
+      <div id="nl-abonnes" style="max-height:400px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
   <!-- ÉTAPE 3 : ÉDITEUR -->
   <div id="step-editor">
     <div class="editor-header">
