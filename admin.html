@@ -3077,7 +3077,7 @@ async function sendNewsletter() {
       },
       body: JSON.stringify({
         sujet,
-        contenu_html: buildNewsletterHtml(sujet, contenu),
+        contenu_html: buildNewsletterHtml(sujet, nlTextToHtml(contenu)),
         test_only: testOnly
       })
     });
