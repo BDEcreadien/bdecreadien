@@ -432,6 +432,7 @@
           });
           if (error) throw error;
           showMsg(isBde ? 'Annonce publiée !' : 'Annonce envoyée ! Le BDE la validera sous 24-48h.', 'success');
+          if (!isBde) Auth.notifyBde('annonce', titre, description);
           setTimeout(() => window.location.href = isBde ? '/annonces.html' : '/mon-espace.html', 1500);
         }
       } catch (err) {
