@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rejoindre le BDE — BDE CREAD Lyon</title>
+  <meta name="description" content="Rejoins le Bureau des Étudiants de la CREAD Lyon. Remplis le formulaire et on te recontacte.">
+  <link rel="canonical" href="https://bdecreadien.fr/rejoindre-bde.html">
+  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-round.svg?v=3">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png?v=3">
+  <link rel="shortcut icon" href="/favicon.ico?v=3">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=3">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- @include nav @start -->
+<nav id="navbar" aria-label="Navigation principale">
+  <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+    <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+    <div class="nav-logo-text">
+      <span class="bde">BDE LYON</span>
+      <span class="cread">CREAD</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="agenda.html">Agenda</a></li>
+    <li><a href="communication.html">Communication</a></li>
+    <li><a href="annonces.html">Annonces</a></li>
+    <li><a href="partenaires.html">Partenaires</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li id="nav-auth-li"></li>
+  </ul>
+  <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
+    <span class="nav-burger-line"></span>
+    <span class="nav-burger-line"></span>
+    <span class="nav-burger-line"></span>
+  </button>
+</nav>
+<script>
+(function(){var c=(location.pathname.split('/').pop()||'index.html').replace(/^$/,'index.html');document.querySelectorAll('.nav-links a').forEach(function(a){var h=a.getAttribute('href');if(h===c){a.setAttribute('aria-current','page');a.classList.add('nav-active');}});})();
+</script>
+<!-- @include nav @end -->
+
+  <div class="agenda-hero">
+    <div class="page-title-block">
+      <p class="eyebrow">Bureau des Étudiants</p>
+      <h1>REJOINDRE<br>LE BDE</h1>
+    </div>
+  </div>
+
+  <main id="main-content">
+    <section class="contact-section">
+      <div class="contact-grid">
+
+        <!-- FORMULAIRE -->
+        <div class="contact-form-card reveal">
+          <h2 class="contact-form-title">Envoie ta demande</h2>
+          <p class="contact-form-sub">Remplis ce petit formulaire, on te recontacte rapidement pour la suite (entretien, motivation, etc.).</p>
+
+          <form id="rejoindre-form" novalidate>
+            <div class="form-contact-row">
+              <label for="r-prenom">Ton prénom *</label>
+              <input type="text" id="r-prenom" placeholder="Ex : Léa" required autocomplete="given-name">
+            </div>
+            <div class="form-contact-row">
+              <label for="r-nom">Ton nom *</label>
+              <input type="text" id="r-nom" placeholder="Ex : Dupont" required autocomplete="family-name">
+            </div>
+            <div class="form-contact-row">
+              <label for="r-email">Ton email *</label>
+              <input type="email" id="r-email" placeholder="prenom@cread.fr" required autocomplete="email">
+            </div>
+            <div class="form-contact-row">
+              <label for="r-tel">Ton téléphone *</label>
+              <input type="tel" id="r-tel" placeholder="06 xx xx xx xx" required autocomplete="tel">
+            </div>
+            <div class="form-contact-row">
+              <label for="r-annee">Ton année d'étude *</label>
+              <select id="r-annee" required>
+                <option value="">— Choisir —</option>
+                <option value="1ère">1ère année</option>
+                <option value="2ème">2ème année</option>
+                <option value="3ème">3ème année</option>
+                <option value="4ème">4ème année</option>
+                <option value="5ème">5ème année</option>
+              </select>
+            </div>
+            <div class="form-contact-row">
+              <label for="r-message">Un mot sur toi (optionnel)</label>
+              <textarea id="r-message" rows="4" placeholder="Ce qui te motive, ton dispo, un pôle qui t'intéresse…" maxlength="1000"></textarea>
+            </div>
+            <!-- Honeypot -->
+            <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;height:0;overflow:hidden;">
+              <label>Site web (ne pas remplir) <input type="text" id="r-hp-website" name="website" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <div class="form-contact-row" style="display:flex;flex-direction:row;align-items:flex-start;gap:8px;">
+              <input type="checkbox" id="r-rgpd" required style="margin-top:3px;flex-shrink:0;">
+              <label for="r-rgpd" style="font-size:12px;color:var(--gris-texte);line-height:1.5;cursor:pointer;font-weight:400;">
+                J'accepte que mes données (prénom, nom, email, téléphone, année) soient utilisées par le BDE CREAD Lyon pour traiter ma demande d'adhésion.
+                <a href="/mentions-legales.html" style="color:var(--violet);">Politique de confidentialité</a>
+              </label>
+            </div>
+            <p id="rejoindre-error" style="color:#c0392b;font-size:13px;display:none;margin-bottom:0.5rem;"></p>
+            <button type="submit" class="btn btn-primary contact-submit">Envoyer ma demande</button>
+          </form>
+
+          <div id="rejoindre-success" style="display:none;text-align:center;padding:24px 0;">
+            <div style="font-size:48px;margin-bottom:12px;">✅</div>
+            <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:22px;color:var(--violet);margin:0 0 8px;">Demande envoyée !</h3>
+            <p style="color:var(--gris-texte);font-size:14px;">On te recontacte très vite par email pour la suite.</p>
+            <a href="/" class="btn btn-primary" style="margin-top:16px;display:inline-block;">Retour à l'accueil</a>
+          </div>
+        </div>
+
+        <!-- INFOS -->
+        <div class="contact-infos reveal reveal-delay-1">
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">Qui peut rejoindre ?</p>
+              <p class="contact-info-value" style="color:var(--gris-texte);">Tout étudiant de la CREAD Lyon, quelle que soit ton année.</p>
+            </div>
+          </div>
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">Combien de temps ?</p>
+              <p class="contact-info-value" style="color:var(--gris-texte);">Compte 1 à 2 semaines pour la réponse et l'entretien.</p>
+            </div>
+          </div>
+          <div class="contact-info-block">
+            <div class="contact-info-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <p class="contact-info-label">Une question ?</p>
+              <a href="mailto:bdecreadien@gmail.com" class="contact-info-value">bdecreadien@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- @include footer @start -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
+        <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+        <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
+      </a>
+      <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="footer-year"></span> BDE CREAD Lyon</p>
+  </div>
+</footer>
+<script>document.getElementById('footer-year').textContent=new Date().getFullYear();</script>
+<!-- @include footer @end -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script defer src="js/auth.js?v=7"></script>
+  <script>
+    document.getElementById('rejoindre-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('rejoindre-error');
+      err.style.display = 'none';
+
+      const prenom  = document.getElementById('r-prenom').value.trim();
+      const nom     = document.getElementById('r-nom').value.trim();
+      const email   = document.getElementById('r-email').value.trim();
+      const tel     = document.getElementById('r-tel').value.trim();
+      const annee   = document.getElementById('r-annee').value;
+      const message = document.getElementById('r-message').value.trim();
+      const rgpd    = document.getElementById('r-rgpd').checked;
+      const hp      = document.getElementById('r-hp-website').value;
+
+      if (!prenom || !nom || !email || !tel || !annee) {
+        err.textContent = 'Merci de remplir tous les champs obligatoires.'; err.style.display = 'block'; return;
+      }
+      if (!rgpd) {
+        err.textContent = 'Merci d\'accepter la politique de confidentialité.'; err.style.display = 'block'; return;
+      }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Envoi…';
+
+      const bodyMessage =
+        `Prénom : ${prenom}\n` +
+        `Nom : ${nom}\n` +
+        `Email : ${email}\n` +
+        `Téléphone : ${tel}\n` +
+        `Année d'étude : ${annee}\n\n` +
+        `Message :\n${message || '(pas de message)'}`;
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/send-contact-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` },
+          body: JSON.stringify({
+            nom: `${prenom} ${nom}`,
+            email,
+            sujet: `Demande d'adhésion BDE — ${prenom} ${nom}`,
+            message: bodyMessage,
+            website: hp
+          })
+        });
+        const json = await res.json();
+        if (!res.ok || json.error) throw new Error(json.error || 'Erreur inconnue');
+
+        document.getElementById('rejoindre-form').style.display = 'none';
+        document.getElementById('rejoindre-success').style.display = 'block';
+      } catch (e2) {
+        err.textContent = 'Erreur : ' + e2.message + '. Réessaie ou contacte-nous directement à bdecreadien@gmail.com.';
+        err.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Envoyer ma demande';
+      }
+    });
+  </script>
+<script defer src="/js/cookie-banner.js?v=1"></script>
+</body>
+</html>
