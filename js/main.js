@@ -549,7 +549,7 @@ if (document.getElementById('sidebar-events')) {
         ? 'background:linear-gradient(90deg,#463A90,#E85100);color:white;border-color:transparent;'
         : 'background:white;color:var(--violet);border-color:var(--violet);';
       const jvLabel = jeViens ? '✓ J\'y vais' : 'Je viens';
-      return `<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--gris-clair);">
+      return `<div class="sidebar-ev-row" data-idx="${upcoming.indexOf(ev)}" style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--gris-clair);cursor:pointer;transition:background 0.2s;">
         <div style="min-width:38px;text-align:center;background:var(--gradient);border-radius:8px;padding:5px 6px;color:white;font-family:'Bebas Neue',sans-serif;flex-shrink:0;">
           <div style="font-size:20px;line-height:1;">${day}</div>
           <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;">${month}</div>
@@ -563,6 +563,16 @@ if (document.getElementById('sidebar-events')) {
     }).join('');
     container.querySelectorAll('.btn-je-viens').forEach(btn => {
       btn.addEventListener('click', e => { e.stopPropagation(); toggleJeViens(btn); });
+    });
+    // Clic sur la ligne → ouvre le modal détails (sauf sur le bouton "Je viens")
+    container.querySelectorAll('.sidebar-ev-row').forEach(row => {
+      row.addEventListener('click', e => {
+        if (e.target.closest('button')) return;
+        const idx = parseInt(row.dataset.idx);
+        if (!isNaN(idx) && upcoming[idx] && window.openEvModal) window.openEvModal(upcoming[idx]);
+      });
+      row.addEventListener('mouseenter', () => row.style.background = 'rgba(70,58,144,0.04)');
+      row.addEventListener('mouseleave', () => row.style.background = '');
     });
   });
 }
