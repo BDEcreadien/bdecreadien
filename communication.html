@@ -126,7 +126,7 @@
           const user = await Auth.getUser();
           if (!user) {
             // Non connecté → redirige vers connexion puis mon-espace
-            btn.href = '/connexion.html?next=/mon-espace.html%23bord';
+            btn.href = '/connexion.html?next=/mon-espace.html%23card-rejoindre';
             hint.textContent = 'Connecte-toi ou crée un compte pour envoyer ta demande.';
             wrap.style.display = 'block';
             return;
