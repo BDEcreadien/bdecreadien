@@ -1179,6 +1179,7 @@
       if (!motivation || motivation.length < 20) return showMsg('rej-msg', 'Décris ta motivation en au moins 20 caractères.', 'error');
       const { error } = await Auth.sb.from('demandes_membre_bde').insert({ user_id: currentUser.id, motivation });
       if (error) return showMsg('rej-msg', error.message, 'error');
+      Auth.notifyBde('adhesion', 'Demande d\'adhésion', motivation);
       loadDemandeBde();
     }
     async function cancelDemandeBde(id) {
