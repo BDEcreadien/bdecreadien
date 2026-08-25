@@ -1076,6 +1076,31 @@
       else currentProfil[key] = nowOn;
     }
 
+    async function confirmDeleteAccount() {
+      const confirm1 = confirm('Es-tu sûr de vouloir supprimer ton compte ?\n\nToutes tes données (annonces, carte fidélité, inscriptions) seront effacées définitivement.');
+      if (!confirm1) return;
+      const typed = prompt('Pour confirmer, tape SUPPRIMER en majuscules :');
+      if (typed !== 'SUPPRIMER') { showMsg('delete-msg', 'Suppression annulée.', 'error'); return; }
+      showMsg('delete-msg', 'Suppression en cours…', 'info');
+      try {
+        const { data: sessionData } = await Auth.sb.auth.getSession();
+        const token = sessionData.session && sessionData.session.access_token;
+        if (!token) throw new Error('Session expirée');
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Erreur inconnue');
+        await Auth.sb.auth.signOut();
+        alert('Ton compte a été supprimé. Merci de la part du BDE CREAD Lyon !');
+        window.location.href = '/';
+      } catch (e) {
+        showMsg('delete-msg', 'Erreur : ' + e.message, 'error');
+      }
+    }
+
     async function savePwd() {
       const pwd  = document.getElementById('p-pwd').value;
       const pwd2 = document.getElementById('p-pwd2').value;
