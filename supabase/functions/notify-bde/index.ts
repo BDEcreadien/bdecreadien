@@ -104,7 +104,9 @@ serve(async (req) => {
 
   // Récupère la liste des membres BDE + admins
   const { data: membres, error: mErr } = await sbAdmin
-    .from('profils').select('email').in('role', ['membre', 'admin']);
+    .from('profils').select('email')
+    .in('role', ['membre', 'admin'])
+    .neq('notifications_bde_enabled', false);
   if (mErr) {
     return new Response(JSON.stringify({ error: 'Impossible de charger les membres BDE : ' + mErr.message }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
