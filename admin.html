@@ -2306,22 +2306,101 @@ let gaTokenClient = null;
 let gaScriptLoaded = false;
 
 function initStatsPage() {
-  const propId = localStorage.getItem('bde_ga_property_id');
-  const clientId = localStorage.getItem('bde_ga_client_id');
-  if (!propId || !clientId) {
-    statsSetupMode();
-  } else {
-    document.getElementById('stats-property-id').value = propId;
-    document.getElementById('stats-client-id').value = clientId;
-    document.getElementById('stats-setup').style.display = 'none';
-    document.getElementById('stats-dashboard').style.display = 'block';
-    loadGaScript(clientId).then(() => {
-      if (gaAccessToken && Date.now() < gaTokenExpiry) {
-        loadStats(statsRange);
-      } else {
-        renderStatsConnectPrompt();
-      }
-    });
+  loadSbStats();
+}
+
+async function loadSbStats() {
+  const body = document.getElementById('stats-body');
+  body.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gris-texte);">Chargement…</p>';
+  try {
+    const sb = window.Auth.sb;
+    const nowIso = new Date().toISOString();
+
+    const [
+      profils, cartes, annonces, feedbacks, demandes, newsletter, evenements
+    ] = await Promise.all([
+      sb.from('profils').select('id, role, created_at'),
+      sb.from('cartes_fidelite').select('tampons, total'),
+      sb.from('annonces').select('id, statut, created_at'),
+      sb.from('feedbacks').select('id, statut'),
+      sb.from('demandes_membre_bde').select('id, statut'),
+      sb.from('newsletter_subscribers').select('id, status'),
+      sb.from('evenements').select('id, date').gte('date', nowIso).order('date').limit(1000).then(r=>r).catch(()=>({data:[]})),
+    ]);
+
+    const p = profils.data || [];
+    const c = cartes.data || [];
+    const a = annonces.data || [];
+    const f = feedbacks.data || [];
+    const d = demandes.data || [];
+    const n = newsletter.data || [];
+
+    const roleCounts = { etudiant:0, membre:0, admin:0 };
+    p.forEach(u => { if (roleCounts[u.role] !== undefined) roleCounts[u.role]++; });
+
+    // Inscrits 7/30 jours
+    const now = Date.now();
+    const in7 = p.filter(u => now - new Date(u.created_at).getTime() < 7*86400000).length;
+    const in30 = p.filter(u => now - new Date(u.created_at).getTime() < 30*86400000).length;
+
+    // Annonces par statut
+    const annonceCounts = { pending:0, published:0, sold:0 };
+    a.forEach(x => { if (annonceCounts[x.statut] !== undefined) annonceCounts[x.statut]++; });
+
+    // Cartes fidélité
+    const cartesActives = c.length;
+    const cartesTampons = c.reduce((s, x) => s + (x.tampons || 0), 0);
+    const cartesCompletes = c.filter(x => x.tampons >= (x.total || 10)).length;
+
+    // Feedbacks / demandes en attente
+    const fbPending = f.filter(x => !x.statut || x.statut === 'pending' || x.statut === 'new').length;
+    const demandesPending = d.filter(x => x.statut === 'pending').length;
+
+    // Newsletter
+    const nActifs = n.filter(x => x.status === 'active').length;
+
+    // Évenements à venir
+    const evUpcoming = (evenements.data || []).length;
+
+    const tile = (label, val, sub, color) =>
+      `<div style="background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${color||'var(--violet)'};margin-bottom:6px;">${label}</div>
+        <div style="font-size:32px;font-weight:800;color:var(--noir);line-height:1;">${val}</div>
+        ${sub ? `<div style="font-size:12px;color:var(--gris-texte);margin-top:6px;">${sub}</div>` : ''}
+      </div>`;
+
+    body.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.5rem;">
+        ${tile('Membres inscrits', p.length, `+${in7} en 7j · +${in30} en 30j`)}
+        ${tile('Étudiants', roleCounts.etudiant, `${roleCounts.membre} membres BDE · ${roleCounts.admin} admin`, '#8B1A6B')}
+        ${tile('Événements à venir', evUpcoming, '', '#E85100')}
+        ${tile('Newsletter', nActifs, 'abonnés actifs', '#8B1A6B')}
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Annonces</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+        ${tile('En attente', annonceCounts.pending, 'à modérer', '#E85100')}
+        ${tile('Publiées', annonceCounts.published)}
+        ${tile('Vendues', annonceCounts.sold, '', '#22c55e')}
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Cartes fidélité</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+        ${tile('Cartes actives', cartesActives)}
+        ${tile('Tampons distribués', cartesTampons)}
+        ${tile('Récompenses débloquées', cartesCompletes, '10/10 atteint', '#22c55e')}
+      </div>
+
+      <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">À traiter</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+        ${tile('Feedbacks en attente', fbPending, '', '#E85100')}
+        ${tile('Demandes d\\'adhésion', demandesPending, 'à valider', '#E85100')}
+      </div>
+
+      <p style="text-align:right;font-size:11px;color:var(--gris-texte);margin-top:1rem;">Statistiques Supabase — temps réel · pour l'audience détaillée : Google Analytics ou Cloudflare</p>
+    `;
+  } catch (e) {
+    body.innerHTML = '<p style="text-align:center;padding:2rem;color:#c0392b;">Erreur : ' + e.message + '</p>';
   }
 }
 
