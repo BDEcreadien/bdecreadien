@@ -1039,6 +1039,11 @@
     function renderNotifPrefs() {
       if (currentProfil.notif_push !== false) document.getElementById('toggle-push').classList.add('on');
       if (currentProfil.email_bde_enabled !== false) document.getElementById('toggle-email').classList.add('on');
+      // Toggle spécifique aux membres BDE / admins
+      if (currentProfil.role === 'membre' || currentProfil.role === 'admin') {
+        document.getElementById('row-notif-bde').style.display = '';
+        if (currentProfil.notifications_bde_enabled !== false) document.getElementById('toggle-notif-bde').classList.add('on');
+      }
     }
 
     async function saveInfos() {
