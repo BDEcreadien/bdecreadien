@@ -2631,7 +2631,13 @@ async function initFidelite() {
     jsonCartes = (parsed.cartes || []).map(c => ({ ...c, source: 'json' }));
   } catch(e) { fideliteSha = null; }
 
-  fideliteData = { cartes: [...sbCartes, ...jsonCartes] };
+  // Déduplication : si un email est déjà en Supabase, on ignore la carte JSON legacy
+  const sbEmails = new Set(sbCartes.map(c => (c.email || '').toLowerCase().trim()).filter(Boolean));
+  const jsonSansDoublons = jsonCartes.filter(c => {
+    const e = (c.email || '').toLowerCase().trim();
+    return !e || !sbEmails.has(e);
+  });
+  fideliteData = { cartes: [...sbCartes, ...jsonSansDoublons] };
   renderFideliteList();
 }
 
