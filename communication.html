@@ -107,15 +107,15 @@
 
       <div id="equipe-container"></div>
 
-      <div id="rejoindre-cta-wrap" style="display:none;text-align:center;margin-top:2.5rem;">
+      <div id="rejoindre-cta-wrap" style="text-align:center;margin-top:2.5rem;">
         <p style="font-size:15px;color:var(--gris-texte);margin:0 0 14px;">Envie de rejoindre l'aventure ?</p>
-        <a href="/mon-espace.html#card-rejoindre" id="rejoindre-cta-btn" class="btn btn-primary" style="display:inline-block;padding:14px 32px;font-size:15px;">Faire une demande d'adhésion au BDE</a>
+        <a href="/connexion.html?next=%2Fmon-espace.html%23card-rejoindre" id="rejoindre-cta-btn" class="btn btn-primary" style="display:inline-block;padding:14px 32px;font-size:15px;">Faire une demande d'adhésion au BDE</a>
         <p id="rejoindre-cta-hint" style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;"></p>
       </div>
 
     </section>
     <script>
-      // Affiche le CTA d'adhésion selon l'état de l'utilisateur
+      // Adapte le CTA selon l'état de l'utilisateur (masque pour les membres/admins)
       (async function() {
         const wrap = document.getElementById('rejoindre-cta-wrap');
         const btn = document.getElementById('rejoindre-cta-btn');
@@ -124,23 +124,20 @@
           await new Promise(r => window.Auth ? r() : window.addEventListener('load', r, { once: true }));
           if (!window.Auth) return;
           const user = await Auth.getUser();
-          if (!user) {
-            // Non connecté → redirige vers connexion puis mon-espace
-            btn.href = '/connexion.html?next=/mon-espace.html%23card-rejoindre';
-            hint.textContent = 'Connecte-toi ou crée un compte pour envoyer ta demande.';
-            wrap.style.display = 'block';
+          if (!user) return; // href par défaut → /connexion.html
+          const profil = await Auth.getProfil();
+          if (!profil || profil.role === 'membre' || profil.role === 'admin') {
+            wrap.style.display = 'none'; // déjà membre → cache le CTA
             return;
           }
-          const profil = await Auth.getProfil();
-          if (!profil || profil.role === 'membre' || profil.role === 'admin') return; // déjà membre → rien
-          // Étudiant : vérifie s'il a déjà une demande
+          // Étudiant connecté → va direct au formulaire dans mon-espace
+          btn.href = '/mon-espace.html#card-rejoindre';
           const { data: demande } = await Auth.sb.from('demandes_membre_bde')
             .select('statut').eq('user_id', user.id).maybeSingle();
           if (demande && demande.statut === 'pending') {
             btn.textContent = 'Voir ma demande en cours';
             hint.textContent = 'Ta demande est en attente de validation.';
           }
-          wrap.style.display = 'block';
         } catch (_) {}
       })();
     </script>
