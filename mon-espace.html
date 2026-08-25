@@ -1152,6 +1152,7 @@
       document.getElementById('fb-sujet').value = '';
       document.getElementById('fb-message').value = '';
       showMsg('fb-msg', 'Merci ! Ton message a été transmis au BDE.', 'success');
+      Auth.notifyBde('feedback', sujet, message);
     }
 
     // ======= REJOINDRE BDE =======
