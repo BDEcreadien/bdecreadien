@@ -244,33 +244,61 @@
   }
 </script>
 
-<div id="notif-banner" role="dialog" aria-label="Notifications BDE CREAD">
-  <div class="nb-icon">🔔</div>
-  <div class="nb-text">
-    <p class="nb-title">BDE CREAD Lyon</p>
-    <p class="nb-sub">Reçois les notifs des soirées et actus !</p>
+<div id="notif-banner" role="dialog" aria-label="Newsletter BDE CREAD">
+  <div class="nb-icon">📧</div>
+  <div class="nb-text" id="nb-default-text">
+    <p class="nb-title">Newsletter BDE CREAD</p>
+    <p class="nb-sub">Reste au courant : soirées, actus, deals partenaires</p>
   </div>
-  <div class="nb-actions">
+  <div class="nb-actions" id="nb-default-actions">
     <button class="nb-later" onclick="dismissNotifBanner()">Plus tard</button>
-    <button class="nb-subscribe" onclick="subscribeNotif()">Activer 🔔</button>
+    <button class="nb-subscribe" onclick="openNewsletterForm()">S'abonner</button>
   </div>
+  <form id="nb-form" onsubmit="submitNewsletterInline(event)" style="display:none;flex:1;gap:8px;">
+    <input type="email" id="nb-email" required placeholder="ton@email.com"
+      style="flex:1;min-width:0;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;">
+    <button type="submit" class="nb-subscribe">OK</button>
+  </form>
+  <p id="nb-success" style="display:none;margin:0;color:#a5f3c4;font-size:13px;font-family:'Barlow',sans-serif;">✓ Inscrit ! Bienvenue.</p>
 </div>
 <script>
   (function() {
-    if (localStorage.getItem('notif-dismissed') || sessionStorage.getItem('notif-shown')) return;
-    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') return;
+    if (localStorage.getItem('nl-dismissed') || localStorage.getItem('nl-subscribed') || sessionStorage.getItem('nl-shown')) return;
     setTimeout(function() {
       var b = document.getElementById('notif-banner');
-      if (b) { b.classList.add('show'); sessionStorage.setItem('notif-shown', '1'); }
+      if (b) { b.classList.add('show'); sessionStorage.setItem('nl-shown', '1'); }
     }, 3000);
   })();
   function dismissNotifBanner() {
     document.getElementById('notif-banner').classList.remove('show');
-    localStorage.setItem('notif-dismissed', '1');
+    localStorage.setItem('nl-dismissed', '1');
   }
-  function subscribeNotif() {
-    document.getElementById('notif-banner').classList.remove('show');
-    if (window.loadAndSubscribeOneSignal) window.loadAndSubscribeOneSignal();
+  function openNewsletterForm() {
+    document.getElementById('nb-default-text').style.display = 'none';
+    document.getElementById('nb-default-actions').style.display = 'none';
+    var f = document.getElementById('nb-form');
+    f.style.display = 'flex';
+    setTimeout(function(){ document.getElementById('nb-email').focus(); }, 50);
+  }
+  async function submitNewsletterInline(e) {
+    e.preventDefault();
+    var email = document.getElementById('nb-email').value.trim().toLowerCase();
+    if (!email) return;
+    var btn = e.target.querySelector('button');
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      var sbClient = window.sb || (window.supabase && window.SUPABASE_URL ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null);
+      if (sbClient) {
+        var res = await sbClient.from('newsletter_subscribers').insert({ email: email, source: 'banner' });
+        if (res.error && res.error.code && res.error.code !== '23505') { console.warn(res.error); }
+      }
+    } catch (_) {}
+    document.getElementById('nb-form').style.display = 'none';
+    document.getElementById('nb-success').style.display = 'block';
+    localStorage.setItem('nl-subscribed', '1');
+    setTimeout(function(){
+      document.getElementById('notif-banner').classList.remove('show');
+    }, 2000);
   }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
