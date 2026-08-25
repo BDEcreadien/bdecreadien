@@ -2314,53 +2314,14 @@ async function loadSbStats() {
   body.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gris-texte);">Chargement…</p>';
   try {
     const sb = window.Auth.sb;
-    const nowIso = new Date().toISOString();
-
-    const [
-      profils, cartes, annonces, feedbacks, demandes, newsletter, evenements
-    ] = await Promise.all([
-      sb.from('profils').select('id, role, created_at'),
-      sb.from('cartes_fidelite').select('tampons, total'),
-      sb.from('annonces').select('id, statut, created_at'),
-      sb.from('feedbacks').select('id, statut'),
-      sb.from('demandes_membre_bde').select('id, statut'),
-      sb.from('newsletter_subscribers').select('id, status'),
-      sb.from('evenements').select('id, date').gte('date', nowIso).order('date').limit(1000).then(r=>r).catch(()=>({data:[]})),
+    const [rpc, evJson] = await Promise.all([
+      sb.rpc('bde_stats'),
+      fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] })),
     ]);
-
-    const p = profils.data || [];
-    const c = cartes.data || [];
-    const a = annonces.data || [];
-    const f = feedbacks.data || [];
-    const d = demandes.data || [];
-    const n = newsletter.data || [];
-
-    const roleCounts = { etudiant:0, membre:0, admin:0 };
-    p.forEach(u => { if (roleCounts[u.role] !== undefined) roleCounts[u.role]++; });
-
-    // Inscrits 7/30 jours
-    const now = Date.now();
-    const in7 = p.filter(u => now - new Date(u.created_at).getTime() < 7*86400000).length;
-    const in30 = p.filter(u => now - new Date(u.created_at).getTime() < 30*86400000).length;
-
-    // Annonces par statut
-    const annonceCounts = { pending:0, published:0, sold:0 };
-    a.forEach(x => { if (annonceCounts[x.statut] !== undefined) annonceCounts[x.statut]++; });
-
-    // Cartes fidélité
-    const cartesActives = c.length;
-    const cartesTampons = c.reduce((s, x) => s + (x.tampons || 0), 0);
-    const cartesCompletes = c.filter(x => x.tampons >= (x.total || 10)).length;
-
-    // Feedbacks / demandes en attente
-    const fbPending = f.filter(x => !x.statut || x.statut === 'pending' || x.statut === 'new').length;
-    const demandesPending = d.filter(x => x.statut === 'pending').length;
-
-    // Newsletter
-    const nActifs = n.filter(x => x.status === 'active').length;
-
-    // Évenements à venir
-    const evUpcoming = (evenements.data || []).length;
+    if (rpc.error) throw rpc.error;
+    const s = rpc.data || {};
+    const allEv = Array.isArray(evJson) ? evJson : (evJson.evenements || []);
+    const evUpcoming = allEv.filter(e => !e.date || new Date(e.date) >= new Date()).length;
 
     const tile = (label, val, sub, color) =>
       `<div style="background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
@@ -2371,36 +2332,37 @@ async function loadSbStats() {
 
     body.innerHTML = `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.5rem;">
-        ${tile('Membres inscrits', p.length, `+${in7} en 7j · +${in30} en 30j`)}
-        ${tile('Étudiants', roleCounts.etudiant, `${roleCounts.membre} membres BDE · ${roleCounts.admin} admin`, '#8B1A6B')}
+        ${tile('Membres inscrits', s.profils_total || 0, `+${s.profils_7j||0} en 7j · +${s.profils_30j||0} en 30j`)}
+        ${tile('Étudiants', s.profils_etudiant || 0, `${s.profils_membre||0} membres BDE · ${s.profils_admin||0} admin`, '#8B1A6B')}
         ${tile('Événements à venir', evUpcoming, '', '#E85100')}
-        ${tile('Newsletter', nActifs, 'abonnés actifs', '#8B1A6B')}
+        ${tile('Newsletter', s.newsletter_active || 0, 'abonnés actifs', '#8B1A6B')}
       </div>
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Annonces</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        ${tile('En attente', annonceCounts.pending, 'à modérer', '#E85100')}
-        ${tile('Publiées', annonceCounts.published)}
-        ${tile('Vendues', annonceCounts.sold, '', '#22c55e')}
+        ${tile('En attente', s.annonces_pending || 0, 'à modérer', '#E85100')}
+        ${tile('Publiées', s.annonces_published || 0)}
+        ${tile('Vendues', s.annonces_sold || 0, '', '#22c55e')}
       </div>
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Cartes fidélité</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        ${tile('Cartes actives', cartesActives)}
-        ${tile('Tampons distribués', cartesTampons)}
-        ${tile('Récompenses débloquées', cartesCompletes, '10/10 atteint', '#22c55e')}
+        ${tile('Cartes actives', s.cartes_total || 0)}
+        ${tile('Tampons distribués', s.cartes_tampons || 0)}
+        ${tile('Récompenses débloquées', s.cartes_completes || 0, '10/10 atteint', '#22c55e')}
       </div>
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">À traiter</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        ${tile('Feedbacks en attente', fbPending, '', '#E85100')}
-        ${tile('Demandes d\\'adhésion', demandesPending, 'à valider', '#E85100')}
+        ${tile('Feedbacks en attente', s.feedbacks_pending || 0, '', '#E85100')}
+        ${tile('Demandes d\\'adhésion', s.demandes_pending || 0, 'à valider', '#E85100')}
+        ${tile('Inscriptions événements', s.inscriptions_total || 0, 'total')}
       </div>
 
-      <p style="text-align:right;font-size:11px;color:var(--gris-texte);margin-top:1rem;">Statistiques Supabase — temps réel · pour l'audience détaillée : Google Analytics ou Cloudflare</p>
+      <p style="text-align:right;font-size:11px;color:var(--gris-texte);margin-top:1rem;">Données Supabase — temps réel · pour l'audience détaillée : Google Analytics ou Cloudflare</p>
     `;
   } catch (e) {
-    body.innerHTML = '<p style="text-align:center;padding:2rem;color:#c0392b;">Erreur : ' + e.message + '</p>';
+    body.innerHTML = '<p style="text-align:center;padding:2rem;color:#c0392b;">Erreur : ' + (e.message || e) + '</p>';
   }
 }
 
