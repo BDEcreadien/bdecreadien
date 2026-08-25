@@ -120,7 +120,26 @@
     });
   }
 
-  window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb };
+  // Notifie les membres BDE d'un nouvel événement (feedback / annonce / adhésion)
+  // Fire-and-forget : n'attend pas la réponse pour ne pas bloquer l'UI.
+  async function notifyBde(type, sujet, message) {
+    try {
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session && sessionData.session.access_token;
+      if (!token) return;
+      await fetch(`${SUPABASE_URL}/functions/v1/notify-bde`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON,
+        },
+        body: JSON.stringify({ type, sujet: sujet || '', message: message || '' }),
+      });
+    } catch (_) {}
+  }
+
+  window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb, notifyBde };
 
   // Purge le cache profil quand la session change (logout, expiration, autre onglet)
   sb.auth.onAuthStateChange((event, session) => {
