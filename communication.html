@@ -102,45 +102,15 @@
       <div class="section-header reveal">
         <p class="section-label">L'équipe</p>
         <h2 class="section-title" id="equipe-titre">Le bureau<br><span class="gradient-text">2025–2026</span></h2>
-        <p class="section-intro">Des questions ? N'hésite pas à nous contacter directement ou via les canaux ci-dessus.</p>
+        <p class="section-intro">Si tu veux rejoindre le BDE, clique ci-dessous — on te recontacte rapidement pour la suite.</p>
+        <div style="text-align:center;margin-top:20px;">
+          <a href="/rejoindre-bde.html" class="btn btn-primary" style="display:inline-block;padding:14px 32px;font-size:15px;">Faire une demande d'adhésion au BDE</a>
+        </div>
       </div>
 
       <div id="equipe-container"></div>
 
-      <div id="rejoindre-cta-wrap" style="text-align:center;margin-top:2.5rem;">
-        <p style="font-size:15px;color:var(--gris-texte);margin:0 0 14px;">Envie de rejoindre l'aventure ?</p>
-        <a href="/connexion.html?next=%2Fmon-espace.html%23card-rejoindre" id="rejoindre-cta-btn" class="btn btn-primary" style="display:inline-block;padding:14px 32px;font-size:15px;">Faire une demande d'adhésion au BDE</a>
-        <p id="rejoindre-cta-hint" style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;"></p>
-      </div>
-
     </section>
-    <script>
-      // Adapte le CTA selon l'état de l'utilisateur (masque pour les membres/admins)
-      (async function() {
-        const wrap = document.getElementById('rejoindre-cta-wrap');
-        const btn = document.getElementById('rejoindre-cta-btn');
-        const hint = document.getElementById('rejoindre-cta-hint');
-        try {
-          await new Promise(r => window.Auth ? r() : window.addEventListener('load', r, { once: true }));
-          if (!window.Auth) return;
-          const user = await Auth.getUser();
-          if (!user) return; // href par défaut → /connexion.html
-          const profil = await Auth.getProfil();
-          if (!profil || profil.role === 'membre' || profil.role === 'admin') {
-            wrap.style.display = 'none'; // déjà membre → cache le CTA
-            return;
-          }
-          // Étudiant connecté → va direct au formulaire dans mon-espace
-          btn.href = '/mon-espace.html#card-rejoindre';
-          const { data: demande } = await Auth.sb.from('demandes_membre_bde')
-            .select('statut').eq('user_id', user.id).maybeSingle();
-          if (demande && demande.statut === 'pending') {
-            btn.textContent = 'Voir ma demande en cours';
-            hint.textContent = 'Ta demande est en attente de validation.';
-          }
-        } catch (_) {}
-      })();
-    </script>
 
   </main>
 
