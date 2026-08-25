@@ -1834,7 +1834,11 @@ async function saveEvenement() {
   }
 
   const inscrits = parseInt(document.getElementById('ev-inscrits').value) || 0;
-  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, categorie, imageUrl, lien: document.getElementById('ev-lien').value.trim(), typeLien: document.getElementById('ev-typeLien').value, phare, ...(inscrits > 0 ? { inscrits } : {}) };
+  let lienNorm = document.getElementById('ev-lien').value.trim();
+  if (lienNorm && !/^https?:\/\//i.test(lienNorm) && !/^mailto:/i.test(lienNorm)) {
+    lienNorm = 'https://' + lienNorm.replace(/^\/+/, '');
+  }
+  const ev = { titre, date, dateAffichage, horaire, lieu, adresse: document.getElementById('ev-adresse').value.trim(), description, prix, categorie, imageUrl, lien: lienNorm, typeLien: document.getElementById('ev-typeLien').value, phare, ...(inscrits > 0 ? { inscrits } : {}) };
   if (phare) data.evenements.forEach((e, i) => { if (i !== idx) e.phare = false; });
   if (idx >= 0) data.evenements[idx] = ev; else data.evenements.push(ev);
   try {
