@@ -42,9 +42,7 @@ function buildHtml(type: string, auteur: string, sujet: string, message: string)
           ${sujet ? `<p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${cfg.color};">Sujet</p>
           <p style="margin:0 0 20px;font-size:15px;color:#1A1A2E;">${esc(sujet)}</p>` : ''}
           ${message ? `<div style="background:#F8F8FF;border-left:3px solid ${cfg.color};border-radius:0 12px 12px 0;padding:16px 20px;font-size:14px;color:#333;line-height:1.7;">${messageHtml}</div>` : ''}
-          <p style="margin:24px 0 0;text-align:center;">
-            <a href="https://bdecreadien.fr${cfg.url}" style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Voir dans l'admin</a>
-          </p>
+          <p style="margin:24px 0 0;font-size:12px;color:#999;text-align:center;">Retrouve le détail dans ton espace BDE sur <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a></p>
         </td></tr>
         <tr><td style="background:#F5F4FF;padding:16px 40px;text-align:center;font-size:11px;color:#888;">
           BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a>
