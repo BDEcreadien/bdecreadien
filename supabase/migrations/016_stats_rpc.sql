@@ -29,7 +29,7 @@ begin
     'feedbacks_pending', (select count(*) from public.feedbacks where statut in ('pending', 'new') or statut is null),
     'demandes_pending', (select count(*) from public.demandes_membre_bde where statut = 'pending'),
     'newsletter_active', (select count(*) from public.newsletter_subscribers where status = 'active'),
-    'evenements_upcoming', (select count(*) from public.evenements where date > now())
+    'inscriptions_total', (select count(*) from public.inscriptions_evenements)
   )
   into result;
 
