@@ -662,6 +662,15 @@
       <div class="logout-wrap">
         <button class="logout-btn" onclick="Auth.logout()">Se déconnecter</button>
       </div>
+
+      <div class="card" style="border:1.5px solid #F5C0C0;background:#FFFAFA;margin-top:1rem;">
+        <h3 style="color:#C0392B;">Zone dangereuse</h3>
+        <p style="font-size:13px;color:var(--gris-texte);line-height:1.6;margin-bottom:14px;">
+          Supprimer ton compte est <strong>définitif</strong>. Toutes tes données (profil, annonces, carte fidélité, inscriptions événements) seront effacées et cette action est irréversible.
+        </p>
+        <button class="btn ghost" onclick="confirmDeleteAccount()" style="border-color:#C0392B;color:#C0392B;">Supprimer mon compte</button>
+        <div id="delete-msg" class="msg"></div>
+      </div>
     </div>
 
     <!-- BDE APERÇU -->
