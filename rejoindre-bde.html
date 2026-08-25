@@ -256,7 +256,6 @@
       const annee   = document.getElementById('r-annee').value;
       const insta   = document.getElementById('r-insta').value.trim();
       const poles   = Array.from(document.querySelectorAll('input[name="pole"]:checked')).map(c => c.value);
-      const dispo   = (document.querySelector('input[name="dispo"]:checked') || {}).value || '';
       const exp     = (document.querySelector('input[name="exp"]:checked') || {}).value || '';
       const expDet  = document.getElementById('r-exp-detail').value.trim();
       const message = document.getElementById('r-message').value.trim();
