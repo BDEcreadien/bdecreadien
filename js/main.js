@@ -846,14 +846,22 @@ function formatPrix(prix) {
 
 let annoncesData = [];
 
-function renderAnnonces(filtre = 'tous') {
+let _annoncesCurrentFilter = 'tous';
+let _annoncesCurrentSearch = '';
+
+function renderAnnonces(filtre) {
+  if (filtre !== undefined) _annoncesCurrentFilter = filtre;
   const grid = document.getElementById('annonces-grid');
   const empty = document.getElementById('annonces-empty');
   if (!grid) return;
 
-  const filtered = filtre === 'tous'
-    ? annoncesData
-    : annoncesData.filter(a => a.categorie === filtre);
+  const q = _annoncesCurrentSearch.toLowerCase().trim();
+  const filtered = annoncesData.filter(a => {
+    if (_annoncesCurrentFilter !== 'tous' && a.categorie !== _annoncesCurrentFilter) return false;
+    if (!q) return true;
+    const hay = [a.titre, a.description, a.categorie, getBadgeLabel(a.categorie)].filter(Boolean).join(' ').toLowerCase();
+    return hay.includes(q);
+  });
 
   if (filtered.length === 0) {
     grid.innerHTML = '';
