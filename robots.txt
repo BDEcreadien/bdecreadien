@@ -8,7 +8,6 @@ Disallow: /scan.html
 Disallow: /carte.html
 Disallow: /profil.html
 Disallow: /_data/
-Disallow: /rejoindre-bde.html
 Disallow: /newsletter-desinscription.html
 Disallow: /admin-annonces.html
 Disallow: /admin-utilisateurs.html
