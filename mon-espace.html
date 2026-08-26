@@ -956,9 +956,10 @@
       const file = e.target.files[0];
       if (!file) return;
       try {
-        const resized = await resizeImage(file, 256);
-        const path = `${currentUser.id}/avatar-${Date.now()}.jpg`;
-        const { error: upErr } = await Auth.sb.storage.from('avatars').upload(path, resized, { contentType: 'image/jpeg' });
+        const webp = window.imageToAvatarWebp ? await window.imageToAvatarWebp(file) : file;
+        const ext = webp.type === 'image/webp' ? 'webp' : 'jpg';
+        const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
+        const { error: upErr } = await Auth.sb.storage.from('avatars').upload(path, webp, { contentType: webp.type });
         if (upErr) throw upErr;
         const publicUrl = Auth.sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
         const { error: dbErr } = await Auth.sb.from('profils').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
