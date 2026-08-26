@@ -409,11 +409,13 @@
       btn.disabled = true; btn.textContent = editId ? 'Enregistrement…' : 'Publication…';
 
       try {
-        // Upload de tous les nouveaux blobs
+        // Upload de tous les nouveaux blobs — conversion WebP automatique
         const uploadedUrls = [];
         for (const blob of photoBlobs) {
-          const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
-          const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, blob, { contentType: 'image/jpeg' });
+          const webp = window.imageToWebp ? await window.imageToWebp(blob, { maxWidth: 1600, quality: 0.82 }) : blob;
+          const ext = webp.type === 'image/webp' ? 'webp' : 'jpg';
+          const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+          const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, webp, { contentType: webp.type });
           if (upErr) throw upErr;
           uploadedUrls.push(Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl);
         }
