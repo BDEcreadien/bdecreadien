@@ -48,6 +48,7 @@
       try { localStorage.setItem(KEY, 'accepted'); } catch (_) {}
       hideBanner();
       loadGA();
+      window.dispatchEvent(new Event('cookie-accepted'));
     });
     document.getElementById('cb-refuse').addEventListener('click', function () {
       try { localStorage.setItem(KEY, 'refused'); } catch (_) {}
