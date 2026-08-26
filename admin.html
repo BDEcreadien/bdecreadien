@@ -2402,6 +2402,23 @@ async function loadSbStats(days) {
   }
 }
 
+function fmtDuration(secs) {
+  const s = parseInt(secs) || 0;
+  if (s < 60) return s + 's';
+  if (s < 3600) return Math.floor(s / 60) + 'm' + String(s % 60).padStart(2, '0') + 's';
+  return Math.floor(s / 3600) + 'h' + String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+}
+
+async function resetAnalytics() {
+  if (!confirm('Effacer TOUS les événements de trafic (visites, clics) ?\n\nCette action est irréversible.')) return;
+  const typed = prompt('Pour confirmer, tape RESET en majuscules :');
+  if (typed !== 'RESET') { showToast('Reset annulé', 'error'); return; }
+  const { data, error } = await window.Auth.sb.rpc('analytics_reset');
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast((data || 0) + ' événements supprimés', 'success');
+  loadSbStats();
+}
+
 function statsSetupMode() {
   document.getElementById('stats-setup').style.display = 'block';
   document.getElementById('stats-dashboard').style.display = 'none';
