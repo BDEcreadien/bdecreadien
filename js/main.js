@@ -194,11 +194,53 @@ function partagerEvenement(titre, date) {
   }
 }
 
+// Charge les événements depuis Supabase (source principale) + JSON legacy (fallback)
+// Format uniforme : {id, titre, date, dateAffichage, horaire, lieu, adresse, description, prix, categorie, imageUrl, lien, typeLien, phare, inscrits}
+async function loadEvenementsMerged() {
+  const [sbEvents, jsonData] = await Promise.all([
+    loadEvenementsSb(),
+    fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] })),
+  ]);
+  const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
+  // Fusion : les événements Supabase en tête, JSON en fallback (dédupliqués par titre+date)
+  const sbKeys = new Set(sbEvents.map(e => `${(e.titre||'').toLowerCase()}|${e.date||''}`));
+  const jsonUnique = jsonEvents.filter(e => !sbKeys.has(`${(e.titre||'').toLowerCase()}|${e.date||''}`));
+  return [...sbEvents, ...jsonUnique];
+}
+
+async function loadEvenementsSb() {
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON) return [];
+  try {
+    const { createClient } = window.supabase || {};
+    if (!createClient) return [];
+    const client = window._readSb || (window._readSb = createClient(SUPABASE_URL, SUPABASE_ANON));
+    const { data, error } = await client.from('evenements').select('*').eq('archived', false).order('date', { ascending: true });
+    if (error || !data) return [];
+    // Mappe snake_case → camelCase pour compat avec le code existant
+    return data.map(e => ({
+      id: e.id,
+      titre: e.titre,
+      date: e.date,
+      dateAffichage: e.date_affichage,
+      horaire: e.horaire,
+      horaireDebut: e.horaire_debut,
+      horaireFin: e.horaire_fin,
+      lieu: e.lieu,
+      adresse: e.adresse,
+      description: e.description,
+      prix: e.prix,
+      categorie: e.categorie,
+      imageUrl: e.image_url,
+      lien: e.lien,
+      typeLien: e.type_lien,
+      phare: e.phare,
+      inscrits: e.inscrits,
+    }));
+  } catch (_) { return []; }
+}
+
 if (document.getElementById('actu-featured')) {
-  fetch('/_data/evenements.json')
-    .then(r => r.json())
-    .then(data => renderActu(Array.isArray(data) ? data : (data.evenements || [])))
-    .catch(() => {});
+  loadEvenementsMerged().then(events => renderActu(events)).catch(() => {});
 }
 
 // ===================================
