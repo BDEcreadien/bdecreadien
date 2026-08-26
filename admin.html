@@ -3038,10 +3038,12 @@ async function nlUploadImage(files) {
   if (!files || !files.length) return;
   const file = files[0];
   if (file.size > 5 * 1024 * 1024) { alert('Image trop lourde (max 5 Mo).'); return; }
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  showNlMsg('Compression de l\'image…', 'info');
+  const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1600, quality: 0.82 }) : file;
+  const ext = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
   const path = 'newsletter/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
   showNlMsg('Upload de l\'image en cours…', 'info');
-  const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, file, { contentType: file.type });
+  const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, webp, { contentType: webp.type });
   if (upErr) { showNlMsg('Erreur upload : ' + upErr.message, 'error'); return; }
   const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
   nlInsertAt('\n![image](' + url + ')\n');
