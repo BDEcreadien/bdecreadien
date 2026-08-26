@@ -559,20 +559,20 @@ async function toggleJeViens(btn) {
 
 if (document.getElementById('evenements-list')) {
   Promise.all([
-    fetch('/_data/evenements.json').then(r => r.json()).catch(() => []),
+    loadEvenementsMerged(),
     loadMesInscriptions()
-  ]).then(([data]) => {
-    renderEvenements(Array.isArray(data) ? data : (data.evenements || []));
+  ]).then(([events]) => {
+    renderEvenements(events);
   });
 }
 
 // Sidebar compacte — agenda.html uniquement
 if (document.getElementById('sidebar-events')) {
   Promise.all([
-    fetch('/_data/evenements.json').then(r => r.json()).catch(() => []),
+    loadEvenementsMerged(),
     loadMesInscriptions()
-  ]).then(([data]) => {
-    const allData = Array.isArray(data) ? data : (data.evenements || []);
+  ]).then(([events]) => {
+    const allData = events;
     const now = new Date();
     const upcoming = allData.filter(ev => !ev.date || new Date(ev.date) >= now);
     const container = document.getElementById('sidebar-events');
