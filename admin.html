@@ -2309,17 +2309,22 @@ function initStatsPage() {
   loadSbStats();
 }
 
-async function loadSbStats() {
+let _statsRangeDays = 30;
+
+async function loadSbStats(days) {
+  if (days) _statsRangeDays = days;
   const body = document.getElementById('stats-body');
   body.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gris-texte);">Chargement…</p>';
   try {
     const sb = window.Auth.sb;
-    const [rpc, evJson] = await Promise.all([
+    const [rpc, evJson, traficRpc] = await Promise.all([
       sb.rpc('bde_stats'),
       fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] })),
+      sb.rpc('analytics_stats', { p_days: _statsRangeDays }),
     ]);
     if (rpc.error) throw rpc.error;
     const s = rpc.data || {};
+    const t = (traficRpc && !traficRpc.error) ? (traficRpc.data || {}) : null;
     const allEv = Array.isArray(evJson) ? evJson : (evJson.evenements || []);
     const evUpcoming = allEv.filter(e => !e.date || new Date(e.date) >= new Date()).length;
 
