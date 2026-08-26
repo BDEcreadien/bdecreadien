@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon espace — BDE CREAD Lyon</title>
-  <link rel="stylesheet" href="css/style.css?v=16">
+    <link rel="preconnect" href="https://zgscyfpqwbmwemzqtvpx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="css/style.css?v=16">
   <style>
     body { background: #FAFAFC; min-height: 100vh; }
 
@@ -460,7 +462,7 @@
   <!-- @include nav @start -->
 <nav id="navbar" aria-label="Navigation principale">
   <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
-    <img src="assets/Logo.png" alt="Logo BDE CREAD Lyon" width="44" height="44" style="border-radius:50%; object-fit:cover;">
+    <img src="assets/Logo-nav.webp" alt="Logo BDE CREAD Lyon" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
     <div class="nav-logo-text">
       <span class="bde">BDE LYON</span>
       <span class="cread">CREAD</span>
@@ -945,7 +947,7 @@
       document.getElementById('me-hero-role').innerHTML =
         `<span class="role-badge">${ROLE_LABELS[p.role]}</span>${p.annee ? ' · ' + escapeHtml(p.annee) + (p.annee === 'Admin/Prof' ? '' : ' année') : ''}`;
       const av = document.getElementById('me-avatar');
-      if (p.avatar_url) av.innerHTML = (safeAvatar(p.avatar_url) ? `<img src="${safeAvatar(p.avatar_url)}" alt="">` : "");
+      if (p.avatar_url) av.innerHTML = (safeAvatar(p.avatar_url) ? `<img loading="lazy" decoding="async" src="${safeAvatar(p.avatar_url)}" alt="">` : "");
       else av.textContent = (p.prenom[0] || '?').toUpperCase();
     }
 
@@ -1136,7 +1138,7 @@
           ? `<div style="font-size:12px;color:#C0392B;font-style:italic;margin-top:4px;">Motif : ${escapeHtml(a.motif_refus)}</div>` : '';
         return `
           <div class="list-item" style="${a.statut === 'sold' ? 'opacity:0.55;' : ''}">
-            <div class="list-item-thumb">${safeAvatar(a.photo_url) ? `<img src="${safeAvatar(a.photo_url)}" alt="">` : escapeHtml((CAT_LABELS[a.categorie]||"?")[0])}</div>
+            <div class="list-item-thumb">${safeAvatar(a.photo_url) ? `<img loading="lazy" decoding="async" src="${safeAvatar(a.photo_url)}" alt="">` : escapeHtml((CAT_LABELS[a.categorie]||"?")[0])}</div>
             <div class="list-item-body">
               <div class="list-item-title">${escapeHtml(a.titre)} <span class="chip chip-${a.statut}">${STATUT_LABELS[a.statut]}</span></div>
               <div class="list-item-sub">${CAT_LABELS[a.categorie]||''} · ${a.prix || 'Gratuit'}</div>
@@ -1322,7 +1324,7 @@
       return `
         <div class="item-card">
           <div class="item-card-media">
-            ${a.photo_url ? `<img src="${a.photo_url}" alt="">` : `<div class="item-card-media-empty">${(CAT_LABELS[a.categorie]||'?')[0]}</div>`}
+            ${a.photo_url ? `<img loading="lazy" decoding="async" src="${a.photo_url}" alt="">` : `<div class="item-card-media-empty">${(CAT_LABELS[a.categorie]||'?')[0]}</div>`}
           </div>
           <div class="item-card-body">
             <div class="item-card-badges">
@@ -1479,7 +1481,7 @@
       if (!list.length) { wrap.innerHTML = `<div class="empty">Aucun résultat.</div>`; return; }
       wrap.innerHTML = list.map(u => `
         <div class="user-row">
-          <div class="user-avatar">${safeAvatar(u.avatar_url) ? `<img src="${safeAvatar(u.avatar_url)}" alt="">` : escapeHtml((u.prenom || "?")[0].toUpperCase())}</div>
+          <div class="user-avatar">${safeAvatar(u.avatar_url) ? `<img loading="lazy" decoding="async" src="${safeAvatar(u.avatar_url)}" alt="">` : escapeHtml((u.prenom || "?")[0].toUpperCase())}</div>
           <div class="user-info">
             <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
             <div class="user-meta">${escapeHtml(u.email || '')} · ${escapeHtml(u.annee || '')}</div>
@@ -1578,7 +1580,7 @@
         return `
           <div class="user-row" style="flex-direction:column;align-items:stretch;">
             <div style="display:flex;align-items:flex-start;gap:1rem;">
-              <div class="user-avatar">${safeAvatar(u.avatar_url) ? `<img src="${safeAvatar(u.avatar_url)}" alt="">` : escapeHtml((u.prenom || "?")[0].toUpperCase())}</div>
+              <div class="user-avatar">${safeAvatar(u.avatar_url) ? `<img loading="lazy" decoding="async" src="${safeAvatar(u.avatar_url)}" alt="">` : escapeHtml((u.prenom || "?")[0].toUpperCase())}</div>
               <div class="user-info" style="flex:1;">
                 <div class="user-name">${escapeHtml(u.prenom || '')} ${escapeHtml(u.nom || '')} <span class="chip chip-${u.role}">${ROLE_LABELS[u.role] || u.role}</span></div>
                 <div class="user-meta">${mail} · ${tel} · ${escapeHtml(u.annee || '—')}${banni ? ` · <span style="color:#C0392B;">Banni jusqu'au ${new Date(u.banni_jusqu_a).toLocaleDateString('fr-FR')}</span>` : ''}</div>

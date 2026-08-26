@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carte fidélité — BDE CREAD Lyon</title>
-  <link rel="stylesheet" href="css/style.css?v=16">
+    <link rel="preconnect" href="https://zgscyfpqwbmwemzqtvpx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="css/style.css?v=16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ma carte BDE">
@@ -293,7 +295,7 @@
           <small>-10% sur une soirée BDE <strong>ou</strong> un repas offert — montre cette carte à l'entrée</small>
         </div>
 
-        <img src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
+        <img loading="lazy" decoding="async" src="/assets/Logo.png" alt="BDE CREAD" class="carte-logo">
 
         <div class="carte-body">
           <div class="carte-body-left">
@@ -389,12 +391,12 @@
           color: { dark: '#000000', light: '#ffffff' }
         }, function(err) {
           if (err) {
-            canvas.parentElement.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
+            canvas.parentElement.innerHTML = `<img loading="lazy" decoding="async" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
           }
         });
       } catch(e) {
         const wrap = document.getElementById('qr-canvas').parentElement;
-        wrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
+        wrap.innerHTML = `<img loading="lazy" decoding="async" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(text)}&color=000000&bgcolor=ffffff&format=png" width="120" height="120" style="border-radius:4px;">`;
       }
     }
 
