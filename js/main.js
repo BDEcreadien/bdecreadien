@@ -1042,6 +1042,22 @@ if (document.getElementById('annonces-grid')) {
 
       attachFilterListeners();
 
+      // Recherche dans les annonces (debounced)
+      const search = document.getElementById('annonces-search');
+      if (search) {
+        let searchTimer;
+        // Auto-remplit depuis ?q=... (venant du SearchAction schema.org)
+        const urlQ = new URLSearchParams(location.search).get('q');
+        if (urlQ) { search.value = urlQ; _annoncesCurrentSearch = urlQ; }
+        search.addEventListener('input', () => {
+          clearTimeout(searchTimer);
+          searchTimer = setTimeout(() => {
+            _annoncesCurrentSearch = search.value;
+            renderAnnonces();
+          }, 150);
+        });
+      }
+
       // Compteurs sur les filtres
       document.querySelectorAll('.filter-btn').forEach(btn => {
         const f = btn.dataset.filter;
