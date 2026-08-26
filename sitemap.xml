@@ -2,36 +2,49 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bdecreadien.fr/</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>1.0</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://bdecreadien.fr/agenda.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.9</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
     <loc>https://bdecreadien.fr/communication.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://bdecreadien.fr/annonces.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.7</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://bdecreadien.fr/rejoindre-bde.html</loc>
+    <lastmod>2026-08-26</lastmod>
+    <priority>0.9</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
     <loc>https://bdecreadien.fr/partenaires.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://bdecreadien.fr/contact.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.6</priority>
     <changefreq>yearly</changefreq>
   </url>
   <url>
     <loc>https://bdecreadien.fr/mentions-legales.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
   </url>
