@@ -201,7 +201,7 @@
   </div>
   <div class="nb-actions" id="nb-default-actions">
     <button class="nb-later" onclick="dismissNotifBanner()">Plus tard</button>
-    <button class="nb-subscribe" onclick="openNewsletterForm()">S'abonner</button>
+    <button class="nb-subscribe" onclick="openNewsletterForm()" data-track="newsletter-cta-clic">S'abonner</button>
   </div>
   <form id="nb-form" onsubmit="submitNewsletterInline(event)" style="display:none;flex:1;gap:8px;">
     <input type="email" id="nb-email" required placeholder="ton@email.com"
@@ -259,5 +259,6 @@
 <script defer src="js/auth.js?v=7"></script>
 <!-- @include scripts-public @end -->
 <script defer src="/js/cookie-banner.js?v=1"></script>
+<script defer src="/js/tracker.js?v=1"></script>
 </body>
 </html>
