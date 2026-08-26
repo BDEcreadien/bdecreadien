@@ -3,17 +3,26 @@
 // Session_id anonyme stocké en sessionStorage (pas de cookie)
 
 (function () {
-  // Attendre le consentement cookies (même règle que GA4)
-  const consent = localStorage.getItem('cookie-consent');
-  if (consent !== 'accepted') return;
-
-  // Ne pas tracker les pages admin
   const path = location.pathname;
+  // Ne pas tracker les pages admin/backend
   if (/^\/(admin|scan)/.test(path)) return;
 
   const SUPABASE_URL = window.SUPABASE_URL;
   const SUPABASE_ANON = window.SUPABASE_ANON;
   if (!SUPABASE_URL || !SUPABASE_ANON) return;
+
+  let started = false;
+  function startTracking() {
+    if (started) return;
+    if (localStorage.getItem('cookie_consent') !== 'accepted') return;
+    started = true;
+    init();
+  }
+  // Démarre tout de suite si déjà consenti, sinon attend l'événement du bandeau
+  startTracking();
+  window.addEventListener('cookie-accepted', startTracking);
+
+  function init() {
 
   // Session ID anonyme (persiste tant que l'onglet reste ouvert)
   let sid = sessionStorage.getItem('_an_sid');
