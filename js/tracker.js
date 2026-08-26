@@ -34,14 +34,14 @@
     };
 
     function send(payload) {
-      const body = JSON.stringify(payload);
-      try {
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon(URL_REST, new Blob([body], { type: 'application/json' }));
-          return;
-        }
-      } catch (_) {}
-      fetch(URL_REST, { method: 'POST', headers: HEADERS, body, keepalive: true }).catch(() => {});
+      // Supabase REST exige les headers apikey + Authorization,
+      // sendBeacon ne peut pas les définir → fetch keepalive
+      fetch(URL_REST, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
     }
 
     // Pageview immédiat
