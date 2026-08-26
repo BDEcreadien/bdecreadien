@@ -2355,7 +2355,7 @@ async function loadSbStats() {
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">À traiter</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
         ${tile('Feedbacks en attente', s.feedbacks_pending || 0, '', '#E85100')}
-        ${tile('Demandes d\\'adhésion', s.demandes_pending || 0, 'à valider', '#E85100')}
+        ${tile("Demandes d'adhésion", s.demandes_pending || 0, 'à valider', '#E85100')}
         ${tile('Inscriptions événements', s.inscriptions_total || 0, 'total')}
       </div>
 
