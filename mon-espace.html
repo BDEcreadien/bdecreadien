@@ -961,6 +961,7 @@
       const file = e.target.files[0];
       if (!file) return;
       try {
+        const oldAvatarUrl = currentProfil.avatar_url;
         const webp = window.imageToAvatarWebp ? await window.imageToAvatarWebp(file) : file;
         const ext = webp.type === 'image/webp' ? 'webp' : 'jpg';
         const path = `${currentUser.id}/avatar-${Date.now()}.${ext}`;
@@ -969,6 +970,11 @@
         const publicUrl = Auth.sb.storage.from('avatars').getPublicUrl(path).data.publicUrl;
         const { error: dbErr } = await Auth.sb.from('profils').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
         if (dbErr) throw dbErr;
+        // Purge l'ancien avatar du storage (best-effort)
+        if (oldAvatarUrl) {
+          const oldPath = _sbStoragePath(oldAvatarUrl, 'avatars');
+          if (oldPath) Auth.sb.storage.from('avatars').remove([oldPath]).catch(() => {});
+        }
         currentProfil.avatar_url = publicUrl;
         await Auth.getProfil(true);
         renderHero();
