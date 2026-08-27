@@ -98,6 +98,28 @@ serve(async (req) => {
     });
   }
 
+  // Rate limit : max 5 notifications par heure et par utilisateur
+  // Empêche le spam de feedbacks/annonces/adhésions par un même compte
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: recentCount } = await sbAdmin
+    .from('analytics_events')
+    .select('id', { count: 'exact', head: true })
+    .eq('event_type', 'click')
+    .eq('label', `notify-bde:${userData.user.id}`)
+    .gte('created_at', oneHourAgo);
+  if ((recentCount || 0) >= 5) {
+    return new Response(JSON.stringify({ error: 'Trop de notifications récentes. Réessaie plus tard.' }), {
+      status: 429, headers: { ...CORS, 'Content-Type': 'application/json' },
+    });
+  }
+  // Enregistre l'appel (fire-and-forget)
+  sbAdmin.from('analytics_events').insert({
+    event_type: 'click',
+    path: '/notify-bde',
+    session_id: userData.user.id.slice(0, 32),
+    label: `notify-bde:${userData.user.id}`,
+  }).then(() => {}, () => {});
+
   // Récupère infos de l'appelant (prénom, nom, email)
   const { data: profil } = await sbAdmin.from('profils').select('prenom, nom, email').eq('id', userData.user.id).maybeSingle();
   const auteur = profil ? `${profil.prenom || ''} ${profil.nom || ''}`.trim() + (profil.email ? ` (${profil.email})` : '') : (userData.user.email || 'Utilisateur');
