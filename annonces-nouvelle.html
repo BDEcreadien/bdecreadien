@@ -314,6 +314,7 @@
       // Photos existantes (nouveau format array + fallback photo_url)
       const arr = Array.isArray(data.photos) ? data.photos : [];
       existingPhotos = arr.length ? arr.slice() : (data.photo_url ? [data.photo_url] : []);
+      _originalPhotos = existingPhotos.slice();
       renderThumbs();
     }
 
