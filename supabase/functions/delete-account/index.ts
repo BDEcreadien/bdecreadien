@@ -52,6 +52,18 @@ serve(async (req) => {
     });
   }
 
+  // Purge des fichiers storage de l'utilisateur (avatars + annonces)
+  // Les paths ont le pattern USER_ID/... on liste et supprime
+  try {
+    for (const bucket of ['avatars', 'annonces']) {
+      const { data: files } = await sbAdmin.storage.from(bucket).list(userId, { limit: 1000 });
+      if (files && files.length) {
+        const paths = files.map((f: { name: string }) => `${userId}/${f.name}`);
+        await sbAdmin.storage.from(bucket).remove(paths);
+      }
+    }
+  } catch (_) { /* best-effort */ }
+
   // Suppression du profil (cascade sur cartes_fidelite, annonces, etc.)
   await sbAdmin.from('profils').delete().eq('id', userId);
   // Suppression du user auth
