@@ -1161,10 +1161,33 @@
       if (error) return alert(error.message);
       await loadMesAnnonces(); renderKpiPerso();
     }
+    // Extrait le chemin storage d'une URL publique Supabase
+    // ex: https://xxx.supabase.co/storage/v1/object/public/annonces/UID/photo.jpg → UID/photo.jpg
+    function _sbStoragePath(url, bucket) {
+      if (!url || typeof url !== 'string') return null;
+      const marker = `/storage/v1/object/public/${bucket}/`;
+      const i = url.indexOf(marker);
+      return i >= 0 ? url.slice(i + marker.length).split('?')[0] : null;
+    }
+
+    // Récupère toutes les photos d'une annonce (cover + photos[]) et les supprime du storage
+    async function _purgeAnnoncePhotos(annonceRow) {
+      const paths = new Set();
+      const add = u => { const p = _sbStoragePath(u, 'annonces'); if (p) paths.add(p); };
+      if (annonceRow.photo_url) add(annonceRow.photo_url);
+      if (Array.isArray(annonceRow.photos)) annonceRow.photos.forEach(add);
+      if (paths.size) {
+        await Auth.sb.storage.from('annonces').remove([...paths]).catch(() => {});
+      }
+    }
+
     async function deletePersoAnnonce(id) {
       if (!confirm('Supprimer cette annonce ?')) return;
+      // Récupère les photos avant delete pour pouvoir les purger du storage
+      const { data: row } = await Auth.sb.from('annonces').select('photo_url, photos').eq('id', id).maybeSingle();
       const { error } = await Auth.sb.from('annonces').delete().eq('id', id);
       if (error) return alert(error.message);
+      if (row) await _purgeAnnoncePhotos(row);
       await loadMesAnnonces(); renderKpiPerso();
     }
 
