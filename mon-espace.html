@@ -1382,8 +1382,10 @@
     }
     async function deleteBdeAnnonce(id) {
       if (!confirm('Supprimer définitivement cette annonce ?')) return;
+      const { data: row } = await Auth.sb.from('annonces').select('photo_url, photos').eq('id', id).maybeSingle();
       const { error } = await Auth.sb.from('annonces').delete().eq('id', id);
       if (error) { alert(error.message); return; }
+      if (row) await _purgeAnnoncePhotos(row);
       await loadAnnonces(); renderKpiBde();
     }
 
