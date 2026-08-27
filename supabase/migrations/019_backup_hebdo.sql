@@ -26,6 +26,7 @@ create policy "backups_admin_only" on public.backups_hebdo
   with check (public.mon_role() = 'admin');
 
 -- 3. Fonction qui fait un snapshot de toutes les tables critiques
+-- Note : les alias de tables (t) diffèrent des variables PL/pgSQL (v_now_ts) pour éviter les collisions
 create or replace function public.faire_backup_hebdo()
 returns text
 language plpgsql
@@ -33,44 +34,42 @@ security definer
 set search_path = public
 as $$
 declare
-  n int;
-  now_ts timestamptz := now();
+  v_now_ts timestamptz := now();
 begin
   -- Profils utilisateurs
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'profils', jsonb_agg(row_to_json(p)), count(*)
-  from public.profils p;
-  get diagnostics n = row_count;
+  select v_now_ts, 'profils', jsonb_agg(row_to_json(t)), count(*)
+  from public.profils t;
 
   -- Annonces
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'annonces', jsonb_agg(row_to_json(a)), count(*)
-  from public.annonces a;
+  select v_now_ts, 'annonces', jsonb_agg(row_to_json(t)), count(*)
+  from public.annonces t;
 
   -- Cartes fidélité
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'cartes_fidelite', jsonb_agg(row_to_json(c)), count(*)
-  from public.cartes_fidelite c;
+  select v_now_ts, 'cartes_fidelite', jsonb_agg(row_to_json(t)), count(*)
+  from public.cartes_fidelite t;
 
   -- Newsletter
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'newsletter_subscribers', jsonb_agg(row_to_json(n)), count(*)
-  from public.newsletter_subscribers n;
+  select v_now_ts, 'newsletter_subscribers', jsonb_agg(row_to_json(t)), count(*)
+  from public.newsletter_subscribers t;
 
   -- Demandes d'adhésion
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'demandes_membre_bde', jsonb_agg(row_to_json(d)), count(*)
-  from public.demandes_membre_bde d;
+  select v_now_ts, 'demandes_membre_bde', jsonb_agg(row_to_json(t)), count(*)
+  from public.demandes_membre_bde t;
 
   -- Feedbacks
   insert into public.backups_hebdo (date_snap, table_name, contenu, nb_lignes)
-  select now_ts, 'feedbacks', jsonb_agg(row_to_json(f)), count(*)
-  from public.feedbacks f;
+  select v_now_ts, 'feedbacks', jsonb_agg(row_to_json(t)), count(*)
+  from public.feedbacks t;
 
   -- Purge des snapshots > 3 mois (garde ~12 snapshots)
-  delete from public.backups_hebdo where date_snap < now_ts - interval '3 months';
+  delete from public.backups_hebdo where date_snap < v_now_ts - interval '3 months';
 
-  return 'Backup effectué le ' || to_char(now_ts, 'YYYY-MM-DD HH24:MI');
+  return 'Backup effectué le ' || to_char(v_now_ts, 'YYYY-MM-DD HH24:MI');
 end;
 $$;
 
