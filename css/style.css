@@ -2736,7 +2736,7 @@ a.contact-info-value:hover { color: var(--violet); }
 }
 #notif-banner .nb-subscribe:hover { opacity: 0.88; }
 @media (max-width: 480px) {
-  #notif-banner { flex-wrap: wrap; bottom: 80px; }
+  #notif-banner { flex-wrap: wrap; bottom: max(16px, env(safe-area-inset-bottom, 16px)); }
   #notif-banner .nb-actions { width: 100%; justify-content: flex-end; }
 }
 
