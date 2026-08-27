@@ -251,6 +251,11 @@
       }
     });
 
+    // Affiche un message si l'utilisateur est arrivé ici après expiration de session
+    if (new URLSearchParams(location.search).get('expired') === '1') {
+      setTimeout(() => showMsg('login-msg', 'Ta session a expiré. Reconnecte-toi pour continuer.', 'error'), 0);
+    }
+
     sb.auth.getUser().then(({ data: { user } }) => {
       if (_recoveryMode) {
         showTab('new-password');
