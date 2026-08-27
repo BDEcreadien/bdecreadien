@@ -142,10 +142,23 @@
   window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb, notifyBde };
 
   // Purge le cache profil quand la session change (logout, expiration, autre onglet)
+  // + redirige si expiration détectée sur une page protégée
+  const PROTECTED_PAGES = ['/admin', '/admin.html', '/mon-espace', '/mon-espace.html', '/annonces-nouvelle', '/annonces-nouvelle.html', '/scan.html', '/carte.html', '/profil.html'];
+  function isOnProtected() {
+    return PROTECTED_PAGES.some(p => location.pathname.startsWith(p));
+  }
   sb.auth.onAuthStateChange((event, session) => {
     if (!session || event === 'SIGNED_OUT') {
       _profil = null;
       try { sessionStorage.removeItem('_bde_profil'); } catch (_) {}
+      // Si l'utilisateur était sur une page protégée et que la session expire,
+      // redirection propre vers connexion avec message
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_OUT') {
+        if (isOnProtected() && !document.hidden) {
+          const next = encodeURIComponent(location.pathname + location.search);
+          location.href = '/connexion.html?next=' + next + '&expired=1';
+        }
+      }
     }
   });
 
