@@ -2420,20 +2420,20 @@ function fmtBytes(bytes) {
 async function loadStorageStats() {
   const el = document.getElementById('stats-storage-body');
   if (!el) return;
-  const FREE_PLAN_BYTES = 1024 * 1024 * 1024; // 1 Go
+  const SB_QUOTA = 1024 * 1024 * 1024; // 1 Go Supabase Free
+  const GH_QUOTA = 1024 * 1024 * 1024; // 1 Go GitHub repo recommandé
   try {
     const sb = window.Auth.sb;
+
+    // === SUPABASE ===
     const buckets = ['annonces', 'avatars'];
-    const rows = await Promise.all(buckets.map(async (bucket) => {
-      // Liste récursivement tous les fichiers (max 10000)
-      let totalSize = 0;
-      let totalFiles = 0;
+    const sbRows = await Promise.all(buckets.map(async (bucket) => {
+      let totalSize = 0, totalFiles = 0;
       const walk = async (prefix = '') => {
-        const { data, error } = await sb.storage.from(bucket).list(prefix, { limit: 1000, sortBy: { column: 'name', order: 'asc' } });
+        const { data, error } = await sb.storage.from(bucket).list(prefix, { limit: 1000 });
         if (error || !data) return;
         for (const f of data) {
           if (f.id === null) {
-            // Dossier → récursion
             await walk((prefix ? prefix + '/' : '') + f.name);
           } else {
             totalSize += (f.metadata && f.metadata.size) ? f.metadata.size : 0;
@@ -2444,25 +2444,73 @@ async function loadStorageStats() {
       await walk();
       return { bucket, totalSize, totalFiles };
     }));
-    const grandTotal = rows.reduce((s, r) => s + r.totalSize, 0);
-    const percentUsed = (grandTotal / FREE_PLAN_BYTES) * 100;
-    const barColor = percentUsed > 80 ? '#C0392B' : percentUsed > 50 ? '#E85100' : '#22c55e';
+    const sbTotal = sbRows.reduce((s, r) => s + r.totalSize, 0);
+
+    // === GITHUB ===
+    let ghSize = 0, ghErr = null;
+    try {
+      const ghResp = await fetch('https://api.github.com/repos/BDEcreadien/bdecreadien');
+      if (ghResp.ok) {
+        const info = await ghResp.json();
+        ghSize = (info.size || 0) * 1024; // GitHub API renvoie en Ko
+      } else ghErr = 'API GitHub inaccessible';
+    } catch (_) { ghErr = 'API GitHub inaccessible'; }
+
+    const grandTotal = sbTotal + ghSize;
+
+    const bar = (used, quota, color) => `
+      <div style="height:6px;background:var(--gris-clair);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;width:${Math.min((used/quota)*100, 100)}%;background:${color};"></div>
+      </div>
+    `;
+
+    const sbPct = (sbTotal / SB_QUOTA) * 100;
+    const ghPct = (ghSize / GH_QUOTA) * 100;
+    const sbColor = sbPct > 80 ? '#C0392B' : sbPct > 50 ? '#E85100' : '#22c55e';
+    const ghColor = ghPct > 80 ? '#C0392B' : ghPct > 50 ? '#E85100' : '#22c55e';
 
     el.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <div style="font-size:20px;font-weight:800;color:var(--noir);">${fmtBytes(grandTotal)} <span style="font-size:13px;color:var(--gris-texte);font-weight:400;">/ 1 Go</span></div>
-        <div style="font-size:12px;color:var(--gris-texte);">${percentUsed.toFixed(1)}% du quota Free plan</div>
+      <div style="text-align:center;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--gris-clair);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gris-texte);margin-bottom:6px;">Total tous services</div>
+        <div style="font-size:32px;font-weight:800;color:var(--violet);line-height:1;">${fmtBytes(grandTotal)}</div>
       </div>
-      <div style="height:8px;background:var(--gris-clair);border-radius:99px;overflow:hidden;margin-bottom:16px;">
-        <div style="height:100%;width:${Math.min(percentUsed, 100)}%;background:${barColor};transition:width 0.3s;"></div>
-      </div>
-      ${rows.map(r => `
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gris-clair);font-size:13px;">
-          <span style="color:var(--noir);font-weight:500;">📦 ${r.bucket}</span>
-          <span style="color:var(--gris-texte);">${r.totalFiles} fichier${r.totalFiles > 1 ? 's' : ''} · <strong style="color:var(--violet);">${fmtBytes(r.totalSize)}</strong></span>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+        <!-- SUPABASE -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+            <div style="font-size:13px;font-weight:700;color:var(--noir);">☁️ Supabase</div>
+            <div style="font-size:11px;color:var(--gris-texte);">${sbPct.toFixed(1)}% / 1 Go</div>
+          </div>
+          ${bar(sbTotal, SB_QUOTA, sbColor)}
+          <div style="font-size:18px;font-weight:800;color:var(--noir);margin-top:6px;">${fmtBytes(sbTotal)}</div>
+          <div style="font-size:11px;color:var(--gris-texte);margin:2px 0 10px;">Uploads utilisateurs (annonces + avatars)</div>
+          ${sbRows.map(r => `
+            <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--gris-texte);">
+              <span>📦 ${r.bucket}</span>
+              <span>${r.totalFiles} · <strong style="color:var(--noir);">${fmtBytes(r.totalSize)}</strong></span>
+            </div>
+          `).join('')}
         </div>
-      `).join('')}
-      <p style="font-size:11px;color:var(--gris-texte);margin:12px 0 0;">Uniquement les uploads utilisateurs (annonces, avatars). Les images/vidéos d'événements et de galerie sont hébergées via GitHub, hors quota Supabase.</p>
+
+        <!-- GITHUB -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+            <div style="font-size:13px;font-weight:700;color:var(--noir);">🐙 GitHub</div>
+            <div style="font-size:11px;color:var(--gris-texte);">${ghErr ? '—' : ghPct.toFixed(1) + '% / 1 Go'}</div>
+          </div>
+          ${ghErr ? '<p style="font-size:12px;color:var(--gris-texte);margin:8px 0;">' + ghErr + '</p>' : bar(ghSize, GH_QUOTA, ghColor)}
+          <div style="font-size:18px;font-weight:800;color:var(--noir);margin-top:6px;">${fmtBytes(ghSize)}</div>
+          <div style="font-size:11px;color:var(--gris-texte);margin:2px 0 10px;">Code source + assets/ + _data/ (events, catégories…)</div>
+          <div style="font-size:12px;color:var(--gris-texte);padding:5px 0;">📄 Repo bdecreadien/bdecreadien</div>
+        </div>
+      </div>
+
+      <p style="font-size:11px;color:var(--gris-texte);margin:16px 0 0;padding-top:12px;border-top:1px solid var(--gris-clair);text-align:center;">
+        Vidéos (YouTube/Vimeo) = 0 Ko sur le site (juste des embeds).
+        Cloudflare Pages = pas de limite pertinente pour ce site.
+      </p>
     `;
   } catch (e) {
     el.innerHTML = '<p style="font-size:13px;color:#c0392b;margin:0;">Erreur : ' + (e.message || e) + '</p>';
