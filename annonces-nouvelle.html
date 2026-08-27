@@ -442,6 +442,10 @@
           const patch = { titre, description, categorie, prix, contact, photo_url: cover, photos: allPhotos };
           const { error } = await Auth.sb.from('annonces').update(patch).eq('id', editId);
           if (error) throw error;
+          // Purge du storage les photos retirées par l'utilisateur
+          const removed = _originalPhotos.filter(u => !existingPhotos.includes(u));
+          const removedPaths = removed.map(_sbAnnPath).filter(Boolean);
+          if (removedPaths.length) Auth.sb.storage.from('annonces').remove(removedPaths).catch(() => {});
           showMsg('Modifications enregistrées !', 'success');
           setTimeout(() => window.location.href = '/annonces.html', 800);
         } else {
