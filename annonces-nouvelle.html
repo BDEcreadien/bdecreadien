@@ -216,6 +216,14 @@
     let currentProfil = null;
     let photoBlobs = []; // nouveaux blobs à uploader
     let existingPhotos = []; // URLs déjà en DB (en mode édition)
+    let _originalPhotos = []; // Snapshot au chargement pour détecter les photos supprimées
+
+    function _sbAnnPath(url) {
+      if (!url || typeof url !== 'string') return null;
+      const m = '/storage/v1/object/public/annonces/';
+      const i = url.indexOf(m);
+      return i >= 0 ? url.slice(i + m.length).split('?')[0] : null;
+    }
     const MAX_PHOTOS = 6;
     let editId = null;
     let editData = null;
