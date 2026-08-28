@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@300;400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@300;400;600;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="stylesheet" href="css/style.css?v=19">
   <style>
     body { background: #FAFAFC; min-height: 100vh; }
 
@@ -1578,7 +1578,7 @@
     // ======= MEMBRES (admin) =======
     async function loadUsers() {
       const [profilsRes, cartesRes] = await Promise.all([
-        Auth.sb.from('profils').select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone').order('created_at', { ascending: true }),
+        Auth.sb.from('profils').select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone, bureau').order('created_at', { ascending: true }),
         Auth.sb.from('cartes_fidelite').select('user_id, tampons, total, historique')
       ]);
       if (profilsRes.error) throw profilsRes.error;
