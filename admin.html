@@ -3195,6 +3195,433 @@ function showToast(msg, type) {
   t.textContent = msg; t.className = `show ${type}`;
   setTimeout(() => t.className = '', 3500);
 }
+
+// ============================================================
+// FINANCES
+// ============================================================
+const FIN_CATEGORIES = {
+  soiree: { label: 'Soirée', emoji: '🎉' },
+  repas: { label: 'Repas', emoji: '🍽️' },
+  sortie: { label: 'Sortie', emoji: '🚌' },
+  cotisation: { label: 'Cotisation', emoji: '💳' },
+  sponsoring: { label: 'Sponsoring', emoji: '🤝' },
+  virement_sumup: { label: 'Virement SumUp', emoji: '💰' },
+  depense_course: { label: 'Dépense course', emoji: '🛒' },
+  materiel: { label: 'Matériel', emoji: '📦' },
+  autre: { label: 'Autre', emoji: '✨' },
+};
+
+let _finDateDebut = null, _finDateFin = null;
+let _finTransactions = [];
+let _finEditingId = null;
+
+function finPeriodeMois(delta) {
+  const now = new Date();
+  now.setMonth(now.getMonth() + delta);
+  const y = now.getFullYear(), m = now.getMonth();
+  return { debut: new Date(y, m, 1), fin: new Date(y, m + 1, 0) };
+}
+
+function finPeriode(mode) {
+  const delta = mode === 'prev' ? -1 : mode === 'next' ? 1 : 0;
+  const { debut, fin } = finPeriodeMois(delta);
+  _finDateDebut = debut;
+  _finDateFin = fin;
+  document.getElementById('fin-date-debut').value = debut.toISOString().slice(0, 10);
+  document.getElementById('fin-date-fin').value = fin.toISOString().slice(0, 10);
+  finLoadTransactions();
+}
+
+function finPeriodeCustom() {
+  const d = document.getElementById('fin-date-debut').value;
+  const f = document.getElementById('fin-date-fin').value;
+  if (!d || !f) return;
+  _finDateDebut = new Date(d);
+  _finDateFin = new Date(f);
+  finLoadTransactions();
+}
+
+async function initFinances() {
+  document.getElementById('fin-non-autorise').style.display = 'none';
+  document.getElementById('fin-content').style.display = 'none';
+  const profil = await window.Auth.getProfil();
+  const autorise = profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true;
+  if (!autorise) {
+    document.getElementById('fin-non-autorise').style.display = 'block';
+    return;
+  }
+  document.getElementById('fin-content').style.display = 'block';
+  document.getElementById('fin-form').classList.remove('visible');
+  document.getElementById('tx-date').value = new Date().toISOString().slice(0, 10);
+  if (!_finDateDebut) finPeriode('current');
+  else finLoadTransactions();
+}
+
+async function finLoadTransactions() {
+  const debutStr = _finDateDebut.toISOString().slice(0, 10);
+  const finStr = _finDateFin.toISOString().slice(0, 10);
+  const { data, error } = await window.Auth.sb
+    .from('transactions')
+    .select('*')
+    .gte('date', debutStr)
+    .lte('date', finStr)
+    .order('date', { ascending: false })
+    .order('created_at', { ascending: false });
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  _finTransactions = data || [];
+  finRender();
+}
+
+function finRender() {
+  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
+  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  const solde = recettes - depenses;
+
+  document.getElementById('fin-periode-label').textContent =
+    `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
+
+  const tuile = (label, val, color) => `
+    <div style="background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${color};margin-bottom:6px;">${label}</div>
+      <div style="font-size:28px;font-weight:800;color:var(--noir);line-height:1;">${val.toFixed(2)} €</div>
+    </div>`;
+  document.getElementById('fin-tuiles').innerHTML =
+    tuile('Recettes', recettes, '#22c55e') +
+    tuile('Dépenses', depenses, '#dc2626') +
+    tuile('Solde période', solde, solde >= 0 ? 'var(--violet)' : '#dc2626') +
+    tuile('Nb transactions', _finTransactions.length, 'var(--gris-texte)');
+
+  const list = document.getElementById('fin-liste');
+  if (!_finTransactions.length) {
+    list.innerHTML = '<p style="text-align:center;padding:24px;color:var(--gris-texte);font-size:13px;">Aucune transaction sur cette période.</p>';
+    return;
+  }
+  list.innerHTML = _finTransactions.map(tx => {
+    const c = FIN_CATEGORIES[tx.categorie] || FIN_CATEGORIES.autre;
+    const isRecette = Number(tx.montant) > 0;
+    const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--gris-clair);">
+        <div style="width:38px;text-align:center;font-size:20px;flex-shrink:0;">${c.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;color:var(--noir);">${escapeHtmlNl(tx.libelle)}</div>
+          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${c.label}${tx.notes ? ' · ' + escapeHtmlNl(tx.notes).slice(0, 60) : ''}</div>
+        </div>
+        <div style="font-size:16px;font-weight:800;color:${isRecette ? '#22c55e' : '#dc2626'};flex-shrink:0;">${isRecette ? '+' : ''}${Number(tx.montant).toFixed(2)} €</div>
+        <button onclick="finEdit('${tx.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>
+        <button onclick="finDelete('${tx.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:6px;font-size:14px;">🗑</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function finTogglerForm() {
+  const f = document.getElementById('fin-form');
+  const visible = f.classList.contains('visible');
+  if (visible) {
+    f.classList.remove('visible');
+    _finEditingId = null;
+  } else {
+    _finEditingId = null;
+    document.getElementById('tx-libelle').value = '';
+    document.getElementById('tx-montant').value = '';
+    document.getElementById('tx-notes').value = '';
+    document.getElementById('tx-type').value = 'depense';
+    document.getElementById('tx-categorie').value = 'soiree';
+    document.getElementById('tx-date').value = new Date().toISOString().slice(0, 10);
+    f.classList.add('visible');
+  }
+}
+
+function finEdit(id) {
+  const tx = _finTransactions.find(t => t.id === id);
+  if (!tx) return;
+  _finEditingId = id;
+  document.getElementById('tx-date').value = tx.date;
+  document.getElementById('tx-libelle').value = tx.libelle;
+  document.getElementById('tx-categorie').value = tx.categorie;
+  document.getElementById('tx-montant').value = Math.abs(Number(tx.montant));
+  document.getElementById('tx-type').value = Number(tx.montant) >= 0 ? 'recette' : 'depense';
+  document.getElementById('tx-notes').value = tx.notes || '';
+  document.getElementById('fin-form').classList.add('visible');
+  document.getElementById('fin-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function finSaveTransaction() {
+  const date = document.getElementById('tx-date').value;
+  const libelle = document.getElementById('tx-libelle').value.trim();
+  const categorie = document.getElementById('tx-categorie').value;
+  const montantAbs = parseFloat(document.getElementById('tx-montant').value);
+  const type = document.getElementById('tx-type').value;
+  const notes = document.getElementById('tx-notes').value.trim() || null;
+  if (!date || !libelle || isNaN(montantAbs) || montantAbs < 0) {
+    showToast('Remplis tous les champs correctement', 'error'); return;
+  }
+  const montant = type === 'recette' ? montantAbs : -montantAbs;
+  const btn = document.getElementById('fin-btn-save');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const payload = { date, libelle, categorie, montant, notes };
+  let error;
+  if (_finEditingId) {
+    ({ error } = await window.Auth.sb.from('transactions').update(payload).eq('id', _finEditingId));
+  } else {
+    const user = await window.Auth.getUser();
+    payload.created_by = user.id;
+    ({ error } = await window.Auth.sb.from('transactions').insert(payload));
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast(_finEditingId ? 'Transaction modifiée' : 'Transaction ajoutée', 'success');
+  document.getElementById('fin-form').classList.remove('visible');
+  _finEditingId = null;
+  finLoadTransactions();
+}
+
+async function finDelete(id) {
+  if (!confirm('Supprimer cette transaction ?')) return;
+  const { error } = await window.Auth.sb.from('transactions').delete().eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('Transaction supprimée', 'success');
+  finLoadTransactions();
+}
+
+// ============================================================
+// PDF FINANCES (via jsPDF chargé à la demande)
+// ============================================================
+let _jsPdfLoaded = false;
+function loadJsPdf() {
+  return new Promise((resolve, reject) => {
+    if (_jsPdfLoaded || window.jspdf) { _jsPdfLoaded = true; resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
+    s.onload = () => { _jsPdfLoaded = true; resolve(); };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function pdfRapportResume() {
+  await loadJsPdf();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
+  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  const solde = recettes - depenses;
+  pdfHeader(doc, 'Résumé financier');
+  const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
+  doc.setFontSize(14); doc.setTextColor(30);
+  doc.text('Récapitulatif', 15, 62);
+  const rows = [
+    ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
+    ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
+    ['Solde de la période', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
+    ['Nombre de transactions', String(_finTransactions.length), 100, 100, 100],
+  ];
+  let y = 75;
+  rows.forEach(([label, val, r, g, b]) => {
+    doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 12, 'F');
+    doc.setFontSize(11); doc.setTextColor(80); doc.text(label, 20, y + 2);
+    doc.setFontSize(13); doc.setTextColor(r, g, b); doc.text(val, 190, y + 2, { align: 'right' });
+    y += 16;
+  });
+  pdfFooter(doc);
+  doc.save(pdfFilename('resume'));
+}
+
+async function pdfRapportDetaille() {
+  await loadJsPdf();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
+  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  const solde = recettes - depenses;
+  const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
+
+  // === PAGE 1 : Récap chiffres ===
+  pdfHeader(doc, 'Rapport financier détaillé');
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
+  doc.setFontSize(14); doc.setTextColor(30); doc.text('Récapitulatif', 15, 62);
+  const rows = [
+    ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
+    ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
+    ['Solde', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
+  ];
+  let y = 75;
+  rows.forEach(([label, val, r, g, b]) => {
+    doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 14, 'F');
+    doc.setFontSize(12); doc.setTextColor(80); doc.text(label, 20, y + 3);
+    doc.setFontSize(15); doc.setTextColor(r, g, b); doc.text(val, 190, y + 3, { align: 'right' });
+    y += 18;
+  });
+  // Répartition par catégorie
+  y += 8;
+  doc.setFontSize(14); doc.setTextColor(30); doc.text('Répartition par catégorie', 15, y); y += 8;
+  const byCat = {};
+  _finTransactions.forEach(t => {
+    if (!byCat[t.categorie]) byCat[t.categorie] = { rec: 0, dep: 0 };
+    if (t.montant > 0) byCat[t.categorie].rec += Number(t.montant);
+    else byCat[t.categorie].dep += Math.abs(Number(t.montant));
+  });
+  Object.entries(byCat).forEach(([cat, v]) => {
+    const c = FIN_CATEGORIES[cat] || FIN_CATEGORIES.autre;
+    doc.setFontSize(10); doc.setTextColor(80);
+    doc.text(c.label, 20, y);
+    doc.text('+' + v.rec.toFixed(2) + ' EUR', 130, y, { align: 'right' });
+    doc.setTextColor(220, 38, 38);
+    doc.text('-' + v.dep.toFixed(2) + ' EUR', 190, y, { align: 'right' });
+    y += 6;
+  });
+  pdfFooter(doc);
+
+  // === PAGE 2 : Détail transactions ===
+  doc.addPage();
+  pdfHeader(doc, 'Détail des transactions');
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  if (!_finTransactions.length) {
+    doc.setFontSize(12); doc.setTextColor(150);
+    doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
+  } else {
+    y = 58;
+    doc.setFontSize(9); doc.setTextColor(120);
+    doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y);
+    doc.text('CATÉGORIE', 130, y); doc.text('MONTANT', 195, y, { align: 'right' });
+    doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2);
+    y += 8;
+    _finTransactions.forEach(tx => {
+      if (y > 275) { doc.addPage(); pdfHeader(doc, 'Détail des transactions (suite)'); y = 45; }
+      const c = FIN_CATEGORIES[tx.categorie] || FIN_CATEGORIES.autre;
+      const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      doc.setFontSize(9); doc.setTextColor(50);
+      doc.text(dateStr, 15, y);
+      const libelleShort = tx.libelle.length > 45 ? tx.libelle.slice(0, 42) + '…' : tx.libelle;
+      doc.text(libelleShort, 40, y);
+      doc.text(c.label, 130, y);
+      const mNum = Number(tx.montant);
+      doc.setTextColor(mNum >= 0 ? 34 : 220, mNum >= 0 ? 197 : 38, mNum >= 0 ? 94 : 38);
+      doc.text((mNum >= 0 ? '+' : '') + mNum.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+      y += 6;
+    });
+  }
+  pdfFooter(doc);
+
+  // === PAGE 3 : Événements du mois avec coût réel ===
+  doc.addPage();
+  pdfHeader(doc, 'Événements de la période');
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
+  if (!evs.length) {
+    doc.setFontSize(12); doc.setTextColor(150);
+    doc.text('Aucun événement sur cette période.', 105, 100, { align: 'center' });
+  } else {
+    y = 58;
+    evs.forEach(ev => {
+      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements (suite)'); y = 45; }
+      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
+      doc.setFontSize(11); doc.setTextColor(30);
+      doc.text(ev.titre.slice(0, 60), 15, y);
+      doc.setFontSize(9); doc.setTextColor(120);
+      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
+      if (ev.cout_reel != null) {
+        doc.setFontSize(11); doc.setTextColor(220, 38, 38);
+        doc.text('-' + Number(ev.cout_reel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
+      } else if (ev.budget_previsionnel != null) {
+        doc.setFontSize(9); doc.setTextColor(150);
+        doc.text('(prévu ' + Number(ev.budget_previsionnel).toFixed(2) + ' EUR)', 190, y, { align: 'right' });
+      }
+      y += 12;
+    });
+  }
+  pdfFooter(doc);
+
+  // === PAGE 4 : Événements planifiés mois suivant ===
+  doc.addPage();
+  pdfHeader(doc, 'Prévisionnel du mois suivant');
+  const monthAfter = new Date(_finDateFin);
+  monthAfter.setDate(monthAfter.getDate() + 1);
+  const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
+  doc.setFontSize(11); doc.setTextColor(90);
+  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 45);
+  const evsPrev = await pdfChargerEvenements(monthAfter, monthAfterEnd);
+  if (!evsPrev.length) {
+    doc.setFontSize(12); doc.setTextColor(150);
+    doc.text('Aucun événement planifié pour le mois suivant.', 105, 100, { align: 'center' });
+  } else {
+    y = 58;
+    let totalPrev = 0;
+    evsPrev.forEach(ev => {
+      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
+      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
+      doc.setFontSize(11); doc.setTextColor(30);
+      doc.text(ev.titre.slice(0, 60), 15, y);
+      doc.setFontSize(9); doc.setTextColor(120);
+      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
+      if (ev.budget_previsionnel != null) {
+        doc.setFontSize(11); doc.setTextColor(232, 81, 0);
+        doc.text(Number(ev.budget_previsionnel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
+        totalPrev += Number(ev.budget_previsionnel);
+      } else {
+        doc.setFontSize(9); doc.setTextColor(150);
+        doc.text('(pas de budget)', 190, y, { align: 'right' });
+      }
+      y += 12;
+    });
+    y += 5; doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
+    doc.setFontSize(12); doc.setTextColor(30);
+    doc.text('Total prévisionnel estimé', 15, y);
+    doc.setTextColor(232, 81, 0);
+    doc.text(totalPrev.toFixed(2) + ' EUR', 190, y, { align: 'right' });
+  }
+  pdfFooter(doc);
+
+  doc.save(pdfFilename('rapport-detaille'));
+}
+
+async function pdfChargerEvenements(debut, fin) {
+  const debutStr = debut.toISOString().slice(0, 10);
+  const finStr = fin.toISOString().slice(0, 10);
+  try {
+    const { data } = await window.Auth.sb.from('evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
+    if (data && data.length) return data.map(e => ({ ...e, cout_reel: e.cout_reel, budget_previsionnel: e.budget_previsionnel }));
+  } catch (_) {}
+  // Fallback JSON
+  try {
+    const res = await fetch('/_data/evenements.json');
+    const raw = await res.json();
+    const all = Array.isArray(raw) ? raw : (raw.evenements || []);
+    return all.filter(e => {
+      if (!e.date) return false;
+      const d = new Date(e.date);
+      return d >= debut && d <= fin;
+    });
+  } catch (_) { return []; }
+}
+
+function pdfHeader(doc, titre) {
+  doc.setFillColor(70, 58, 144); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255); doc.setFontSize(9);
+  doc.text('BDE CREAD LYON', 15, 12);
+  doc.setFontSize(18); doc.setFont(undefined, 'bold');
+  doc.text(titre, 15, 22);
+  doc.setFont(undefined, 'normal');
+}
+
+function pdfFooter(doc) {
+  const h = doc.internal.pageSize.getHeight();
+  doc.setDrawColor(220); doc.line(15, h - 15, 195, h - 15);
+  doc.setFontSize(8); doc.setTextColor(150);
+  doc.text('BDE CREAD Lyon · 232 Rue Paul Bert, 69003 Lyon · bdecreadien@gmail.com', 105, h - 9, { align: 'center' });
+  doc.text('Généré le ' + new Date().toLocaleString('fr-FR'), 105, h - 5, { align: 'center' });
+}
+
+function pdfFilename(prefix) {
+  const d1 = _finDateDebut.toISOString().slice(0, 10);
+  const d2 = _finDateFin.toISOString().slice(0, 10);
+  return `bde-cread-${prefix}-${d1}-au-${d2}.pdf`;
+}
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout').style.display = 'none';
 
