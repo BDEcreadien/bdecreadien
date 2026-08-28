@@ -1630,6 +1630,11 @@
                   <option value="membre"   ${u.role === 'membre'   ? 'selected' : ''}>Membre BDE</option>
                   <option value="admin"    ${u.role === 'admin'    ? 'selected' : ''}>Admin</option>
                 </select>
+                ${(u.role === 'membre' || u.role === 'admin') ? `
+                  <label class="btn ghost small" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;${u.bureau ? 'background:#F5F4FF;border-color:var(--violet);color:var(--violet);' : ''}">
+                    <input type="checkbox" ${u.bureau ? 'checked' : ''} onchange="toggleBureau('${u.id}', this.checked)" style="margin:0;accent-color:var(--violet);">
+                    Bureau
+                  </label>` : ''}
                 <button class="btn ghost small" onclick="toggleBan('${u.id}', ${banni})" style="${banni ? 'color:#1A7A40;border-color:#1A7A40;' : ''}">${banni ? 'Débannir' : 'Bannir'}</button>
                 <button class="btn danger small" onclick="deleteUser('${u.id}','${(u.prenom + ' ' + u.nom).replace(/'/g, "\\'")}')">Supprimer</button>
               </div>
