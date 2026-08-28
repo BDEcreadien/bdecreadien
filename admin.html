@@ -677,6 +677,10 @@ function selectPage(page) {
     navStack.push('newsletter');
     showStep('newsletter');
     initNewsletter();
+  } else if (page === 'finances') {
+    navStack.push('finances');
+    showStep('finances');
+    initFinances();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
