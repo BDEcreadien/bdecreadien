@@ -1,4 +1,4 @@
--- Migration 020 — Suivi financier BDE (version robuste, tolère l'absence de evenements)
+-- Migration 020 — Suivi financier BDE (version simplifiée, sans dépendance evenements)
 
 -- 1. Colonne "bureau" sur profils
 alter table public.profils
@@ -7,17 +7,7 @@ alter table public.profils
 comment on column public.profils.bureau is
   'Si true (en combinaison avec role in [membre,admin]), accès aux fonctions financières';
 
--- 2. Colonnes budget sur evenements (uniquement si la table existe)
-do $$
-begin
-  if exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'evenements') then
-    alter table public.evenements add column if not exists budget_previsionnel numeric(10,2);
-    alter table public.evenements add column if not exists cout_reel numeric(10,2);
-    alter table public.evenements add column if not exists categorie_budget text;
-  end if;
-end $$;
-
--- 3. Table des transactions financières (indépendante de evenements)
+-- 2. Table des transactions financières
 create table if not exists public.transactions (
   id            uuid primary key default gen_random_uuid(),
   date          date not null default current_date,
@@ -28,7 +18,7 @@ create table if not exists public.transactions (
   )),
   montant       numeric(10,2) not null,
   notes         text,
-  evenement_id  uuid,  -- pas de FK vers evenements pour ne pas dépendre de la table
+  evenement_id  uuid,
   created_by    uuid references public.profils(id) on delete set null,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
@@ -56,7 +46,7 @@ create trigger trg_touch_transactions
   before update on public.transactions
   for each row execute function public.touch_updated_at();
 
--- 4. Backup hebdo étendu à transactions (et resilient sans evenements)
+-- 3. Backup hebdo étendu à transactions
 create or replace function public.faire_backup_hebdo()
 returns text
 language plpgsql
@@ -92,31 +82,3 @@ begin
   return 'Backup effectué le ' || to_char(v_now_ts, 'YYYY-MM-DD HH24:MI');
 end;
 $$;
-
--- 5. RPC moyenne_cout_categorie — retourne null si table evenements absente
-create or replace function public.moyenne_cout_categorie(p_categorie text, p_limit int default 5)
-returns numeric
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_moy numeric;
-begin
-  if not exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'evenements') then
-    return null;
-  end if;
-  execute format('
-    select round(avg(cout_reel)::numeric, 2)
-    from (
-      select cout_reel from public.evenements
-      where categorie_budget = %L and cout_reel is not null
-      order by date desc nulls last, created_at desc
-      limit %s
-    ) t', p_categorie, p_limit)
-  into v_moy;
-  return v_moy;
-end;
-$$;
-
-grant execute on function public.moyenne_cout_categorie(text, int) to authenticated;
