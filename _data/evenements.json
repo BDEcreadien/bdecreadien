@@ -25,10 +25,9 @@
     "prix": "15€",
     "categorie": "soiree",
     "imageUrl": "/assets/uploads/1782208420652_mmns_470944192_18139858825367878_7721243372732316369_n.jpg",
-    "lien": "https://bdecreadien.fr",
-    "typeLien": "shotgun",
-    "phare": true,
-    "inscrits": 70
+    "lien": "",
+    "typeLien": "",
+    "phare": true
   },
   {
     "titre": "Soirée Halloween - Six Brotteaux",
