@@ -1651,6 +1651,11 @@
       el.style.display = open ? 'none' : 'block';
       btn.textContent = btn.textContent.replace(open ? '↑' : '↓', open ? '↓' : '↑');
     }
+    async function toggleBureau(id, checked) {
+      const { error } = await Auth.sb.from('profils').update({ bureau: checked }).eq('id', id);
+      if (error) { alert(error.message); return; }
+      await loadUsers();
+    }
     async function changeRole(sel) {
       const id = sel.dataset.uid;
       const role = sel.value;
