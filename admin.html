@@ -628,6 +628,8 @@ function showStep(step, opts = {}) {
   document.getElementById('step-fidelite').style.display = 'none';
   const nlEl = document.getElementById('step-newsletter');
   if (nlEl) nlEl.style.display = 'none';
+  const finEl = document.getElementById('step-finances');
+  if (finEl) finEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
 }
