@@ -3535,7 +3535,7 @@ async function pdfRapportResume() {
     y += 16;
   });
   pdfFooter(doc);
-  doc.save(pdfFilename('resume'));
+  pdfPreview(doc, pdfFilename('resume'));
 }
 
 async function pdfRapportDetaille() {
