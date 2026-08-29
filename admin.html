@@ -3401,7 +3401,11 @@ function finEdit(id) {
 async function finSaveTransaction() {
   const date = document.getElementById('tx-date').value;
   const libelle = document.getElementById('tx-libelle').value.trim();
-  const categorie = document.getElementById('tx-categorie').value;
+  let categorie = document.getElementById('tx-categorie').value;
+  if (categorie === '__custom__') {
+    categorie = document.getElementById('tx-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
+    if (!categorie) { showToast('Nomme la catégorie personnalisée', 'error'); return; }
+  }
   const montantAbs = parseFloat(document.getElementById('tx-montant').value);
   const type = document.getElementById('tx-type').value;
   const notes = document.getElementById('tx-notes').value.trim() || null;
