@@ -457,11 +457,17 @@
   <div id="step-finances" style="display:none;">
     <div class="stats-header">
       <h2>Finances du BDE</h2>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-        <button class="stats-ext-btn" onclick="finPeriode('prev')">← Mois précédent</button>
-        <button class="stats-ext-btn" onclick="finPeriode('current')" id="fin-btn-current">Mois courant</button>
-        <button class="stats-ext-btn" onclick="finPeriode('next')">Mois suivant →</button>
-        <span style="margin:0 8px;color:var(--gris-texte);">|</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="stats-ext-btn" onclick="finNavMois(-1)" title="Mois précédent" style="padding:6px 12px;">←</button>
+        <select id="fin-mois" onchange="finMoisChange()" style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--gris-border);font-size:14px;font-weight:600;background:white;cursor:pointer;">
+          <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option>
+          <option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option>
+          <option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option>
+          <option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
+        </select>
+        <select id="fin-annee" onchange="finMoisChange()" style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--gris-border);font-size:14px;font-weight:600;background:white;cursor:pointer;"></select>
+        <button class="stats-ext-btn" onclick="finNavMois(1)" title="Mois suivant" style="padding:6px 12px;">→</button>
+        <span style="margin:0 6px;color:var(--gris-texte);">ou plage :</span>
         <input type="date" id="fin-date-debut" onchange="finPeriodeCustom()" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--gris-border);font-size:13px;">
         <input type="date" id="fin-date-fin" onchange="finPeriodeCustom()" style="padding:6px 10px;border-radius:6px;border:1.5px solid var(--gris-border);font-size:13px;">
       </div>
