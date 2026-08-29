@@ -3223,21 +3223,46 @@ let _finDateDebut = null, _finDateFin = null;
 let _finTransactions = [];
 let _finEditingId = null;
 
-function finPeriodeMois(delta) {
-  const now = new Date();
-  now.setMonth(now.getMonth() + delta);
-  const y = now.getFullYear(), m = now.getMonth();
-  return { debut: new Date(y, m, 1), fin: new Date(y, m + 1, 0) };
+function finRemplirAnnees() {
+  const sel = document.getElementById('fin-annee');
+  if (sel.options.length) return;
+  const y = new Date().getFullYear();
+  for (let i = y + 1; i >= y - 5; i--) {
+    const opt = document.createElement('option');
+    opt.value = String(i); opt.textContent = String(i);
+    sel.appendChild(opt);
+  }
 }
 
-function finPeriode(mode) {
-  const delta = mode === 'prev' ? -1 : mode === 'next' ? 1 : 0;
-  const { debut, fin } = finPeriodeMois(delta);
-  _finDateDebut = debut;
-  _finDateFin = fin;
-  document.getElementById('fin-date-debut').value = debut.toISOString().slice(0, 10);
-  document.getElementById('fin-date-fin').value = fin.toISOString().slice(0, 10);
+function finSetMoisCourant(date) {
+  document.getElementById('fin-mois').value = String(date.getMonth());
+  document.getElementById('fin-annee').value = String(date.getFullYear());
+}
+
+function finMoisChange() {
+  const m = parseInt(document.getElementById('fin-mois').value);
+  const y = parseInt(document.getElementById('fin-annee').value);
+  _finDateDebut = new Date(y, m, 1);
+  _finDateFin = new Date(y, m + 1, 0);
+  document.getElementById('fin-date-debut').value = _finDateDebut.toISOString().slice(0, 10);
+  document.getElementById('fin-date-fin').value = _finDateFin.toISOString().slice(0, 10);
   finLoadTransactions();
+}
+
+function finNavMois(delta) {
+  let m = parseInt(document.getElementById('fin-mois').value) + delta;
+  let y = parseInt(document.getElementById('fin-annee').value);
+  if (m < 0) { m = 11; y--; }
+  if (m > 11) { m = 0; y++; }
+  const anneeSel = document.getElementById('fin-annee');
+  if (![...anneeSel.options].some(o => o.value === String(y))) {
+    const opt = document.createElement('option');
+    opt.value = String(y); opt.textContent = String(y);
+    anneeSel.appendChild(opt);
+  }
+  document.getElementById('fin-mois').value = String(m);
+  document.getElementById('fin-annee').value = String(y);
+  finMoisChange();
 }
 
 function finPeriodeCustom() {
@@ -3247,6 +3272,18 @@ function finPeriodeCustom() {
   _finDateDebut = new Date(d);
   _finDateFin = new Date(f);
   finLoadTransactions();
+}
+
+function finTxCatChange() {
+  const sel = document.getElementById('tx-categorie');
+  const input = document.getElementById('tx-categorie-custom');
+  if (sel.value === '__custom__') {
+    input.style.display = 'block';
+    setTimeout(() => input.focus(), 50);
+  } else {
+    input.style.display = 'none';
+    input.value = '';
+  }
 }
 
 async function initFinances() {
