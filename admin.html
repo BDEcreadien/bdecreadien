@@ -3709,6 +3709,10 @@ async function pdfChargerEvenements(debut, fin) {
 
 function pdfHeader(doc, titre) {
   doc.setFillColor(70, 58, 144); doc.rect(0, 0, 210, 30, 'F');
+  // Logo à droite si dispo
+  if (_logoDataUrl) {
+    try { doc.addImage(_logoDataUrl, 'WEBP', 180, 6, 18, 18); } catch (_) {}
+  }
   doc.setTextColor(255); doc.setFontSize(9);
   doc.text('BDE CREAD LYON', 15, 12);
   doc.setFontSize(18); doc.setFont(undefined, 'bold');
