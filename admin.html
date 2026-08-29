@@ -3686,7 +3686,7 @@ async function pdfRapportDetaille() {
   }
   pdfFooter(doc);
 
-  doc.save(pdfFilename('rapport-detaille'));
+  pdfPreview(doc, pdfFilename('rapport-detaille'));
 }
 
 async function pdfChargerEvenements(debut, fin) {
