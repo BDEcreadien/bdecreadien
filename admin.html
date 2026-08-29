@@ -3379,6 +3379,8 @@ function finTogglerForm() {
     document.getElementById('tx-notes').value = '';
     document.getElementById('tx-type').value = 'depense';
     document.getElementById('tx-categorie').value = 'soiree';
+    document.getElementById('tx-categorie-custom').value = '';
+    document.getElementById('tx-categorie-custom').style.display = 'none';
     document.getElementById('tx-date').value = new Date().toISOString().slice(0, 10);
     f.classList.add('visible');
   }
