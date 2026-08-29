@@ -3298,8 +3298,14 @@ async function initFinances() {
   document.getElementById('fin-content').style.display = 'block';
   document.getElementById('fin-form').classList.remove('visible');
   document.getElementById('tx-date').value = new Date().toISOString().slice(0, 10);
-  if (!_finDateDebut) finPeriode('current');
-  else finLoadTransactions();
+  finRemplirAnnees();
+  if (!_finDateDebut) {
+    finSetMoisCourant(new Date());
+    finMoisChange();
+  } else {
+    finSetMoisCourant(_finDateDebut);
+    finLoadTransactions();
+  }
 }
 
 async function finLoadTransactions() {
