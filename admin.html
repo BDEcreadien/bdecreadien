@@ -494,7 +494,7 @@
           <div class="form-row"><label>Date</label><input type="date" id="tx-date"></div>
           <div class="form-row">
             <label>Catégorie</label>
-            <select id="tx-categorie">
+            <select id="tx-categorie" onchange="finTxCatChange()">
               <option value="soiree">🎉 Soirée</option>
               <option value="repas">🍽️ Repas</option>
               <option value="sortie">🚌 Sortie</option>
@@ -504,7 +504,9 @@
               <option value="depense_course">🛒 Dépense course</option>
               <option value="materiel">📦 Matériel</option>
               <option value="autre">✨ Autre</option>
+              <option value="__custom__">✏️ Personnalisée…</option>
             </select>
+            <input type="text" id="tx-categorie-custom" placeholder="Nom de la catégorie" maxlength="60" style="display:none;margin-top:8px;">
           </div>
         </div>
         <div class="form-row"><label>Libellé</label><input type="text" id="tx-libelle" placeholder="ex: Soirée intégration Ninkasi" maxlength="200"></div>
