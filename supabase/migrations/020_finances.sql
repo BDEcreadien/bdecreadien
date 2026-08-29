@@ -41,6 +41,17 @@ create policy "transactions_bureau_only" on public.transactions
     and (select bureau from public.profils where id = auth.uid()) = true
   );
 
+-- Créé la fonction touch_updated_at si elle n'existe pas
+create or replace function public.touch_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
 drop trigger if exists trg_touch_transactions on public.transactions;
 create trigger trg_touch_transactions
   before update on public.transactions
