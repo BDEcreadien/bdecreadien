@@ -3392,7 +3392,18 @@ function finEdit(id) {
   _finEditingId = id;
   document.getElementById('tx-date').value = tx.date;
   document.getElementById('tx-libelle').value = tx.libelle;
-  document.getElementById('tx-categorie').value = tx.categorie;
+  const catSel = document.getElementById('tx-categorie');
+  const catInput = document.getElementById('tx-categorie-custom');
+  const known = [...catSel.options].some(o => o.value === tx.categorie);
+  if (known) {
+    catSel.value = tx.categorie;
+    catInput.style.display = 'none';
+    catInput.value = '';
+  } else {
+    catSel.value = '__custom__';
+    catInput.style.display = 'block';
+    catInput.value = tx.categorie;
+  }
   document.getElementById('tx-montant').value = Math.abs(Number(tx.montant));
   document.getElementById('tx-type').value = Number(tx.montant) >= 0 ? 'recette' : 'depense';
   document.getElementById('tx-notes').value = tx.notes || '';
