@@ -3540,6 +3540,7 @@ async function pdfRapportResume() {
 
 async function pdfRapportDetaille() {
   await loadJsPdf();
+  await loadLogo();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
