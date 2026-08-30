@@ -3914,15 +3914,25 @@ async function pdfChargerEvenements(debut, fin) {
 }
 
 function pdfHeader(doc, titre) {
-  doc.setFillColor(70, 58, 144); doc.rect(0, 0, 210, 30, 'F');
-  // Logo à droite si dispo
+  // Logo à gauche (non encadré)
   if (_logoDataUrl) {
-    try { doc.addImage(_logoDataUrl, 'WEBP', 180, 6, 18, 18); } catch (_) {}
+    try { doc.addImage(_logoDataUrl, 'PNG', 15, 12, 22, 22); } catch (_) {}
   }
-  doc.setTextColor(255); doc.setFontSize(9);
-  doc.text('BDE CREAD LYON', 15, 12);
-  doc.setFontSize(18); doc.setFont(undefined, 'bold');
-  doc.text(titre, 15, 22);
+  // Coordonnées BDE à droite
+  doc.setFontSize(11); doc.setTextColor(30); doc.setFont(undefined, 'bold');
+  doc.text('BDE CREAD LYON', 195, 16, { align: 'right' });
+  doc.setFont(undefined, 'normal');
+  doc.setFontSize(8); doc.setTextColor(110);
+  doc.text('232 Rue Paul Bert, 69003 Lyon', 195, 21, { align: 'right' });
+  doc.text('bdecreadien@gmail.com', 195, 25, { align: 'right' });
+  doc.text('bdecreadien.fr', 195, 29, { align: 'right' });
+  // Trait sous le header
+  doc.setDrawColor(70, 58, 144); doc.setLineWidth(0.8);
+  doc.line(15, 40, 195, 40);
+  doc.setLineWidth(0.2);
+  // Titre du rapport
+  doc.setFontSize(16); doc.setTextColor(30); doc.setFont(undefined, 'bold');
+  doc.text(titre.toUpperCase(), 15, 50);
   doc.setFont(undefined, 'normal');
 }
 
