@@ -3687,8 +3687,8 @@ async function pdfConstruireDetaille(doc) {
   doc.addPage(); pdfHeader(doc, 'Prévisionnel du mois suivant');
   const monthAfter = new Date(_finDateFin); monthAfter.setDate(monthAfter.getDate() + 1);
   const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
-  doc.setFontSize(11); doc.setTextColor(90);
-  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 58);
+  doc.setFontSize(10); doc.setTextColor(110);
+  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 62);
   const evsPrev = await pdfChargerEvenements(monthAfter, monthAfterEnd);
   if (!evsPrev.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement planifié pour le mois suivant.', 105, 100, { align: 'center' });
