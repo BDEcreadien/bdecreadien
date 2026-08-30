@@ -3372,6 +3372,7 @@ async function finLoadTransactions() {
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   _finTransactions = data || [];
   finRender();
+  finLoadEvenements();
 }
 
 function finRender() {
