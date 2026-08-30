@@ -3574,7 +3574,7 @@ function pdfConstruireResume(doc) {
   const solde = recettes - depenses;
   const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
   pdfHeader(doc, 'Résumé financier');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   doc.setFontSize(14); doc.setTextColor(30); doc.setFont(undefined, 'bold'); doc.text('Récapitulatif', 15, 72); doc.setFont(undefined, 'normal');
   const rows = [
     ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
@@ -3600,7 +3600,7 @@ async function pdfConstruireDetaille(doc) {
 
   // P1
   pdfHeader(doc, 'Rapport financier détaillé');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   doc.setFontSize(14); doc.setTextColor(30); doc.setFont(undefined, 'bold'); doc.text('Récapitulatif', 15, 72); doc.setFont(undefined, 'normal');
   const rows = [
     ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
@@ -3633,7 +3633,7 @@ async function pdfConstruireDetaille(doc) {
 
   // P2
   doc.addPage(); pdfHeader(doc, 'Détail des transactions');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   if (!_finTransactions.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
   } else {
@@ -3660,7 +3660,7 @@ async function pdfConstruireDetaille(doc) {
 
   // P3
   doc.addPage(); pdfHeader(doc, 'Événements de la période');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
   if (!evs.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement sur cette période.', 105, 100, { align: 'center' });
