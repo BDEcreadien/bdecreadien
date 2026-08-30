@@ -43,6 +43,25 @@ create trigger trg_touch_evenements
   before update on public.evenements
   for each row execute function public.touch_updated_at();
 
+-- RPC : moyenne des coûts réels par catégorie (pour l'auto-estimation prévisionnelle)
+create or replace function public.moyenne_cout_categorie(p_categorie text, p_limit int default 5)
+returns numeric
+language sql
+security definer
+set search_path = public
+as $$
+  select round(avg(cout_reel)::numeric, 2)
+  from (
+    select cout_reel from public.evenements
+    where categorie_budget = p_categorie and cout_reel is not null
+    order by date desc nulls last, created_at desc
+    limit p_limit
+  ) t;
+$$;
+
+revoke execute on function public.moyenne_cout_categorie(text, int) from public;
+grant execute on function public.moyenne_cout_categorie(text, int) to authenticated;
+
 -- Backup hebdo étendu à evenements
 create or replace function public.faire_backup_hebdo()
 returns text
