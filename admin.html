@@ -3486,19 +3486,27 @@ function loadJsPdf() {
   });
 }
 
-// Charge le logo BDE en base64 pour l'inclure dans les PDF
+// Charge le logo BDE et le convertit en JPEG blanc (évite le fond noir jsPDF sur PNG transparent)
 async function loadLogo() {
   if (_logoDataUrl) return _logoDataUrl;
-  try {
-    const res = await fetch('/assets/Logo.png');
-    const blob = await res.blob();
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onload = () => { _logoDataUrl = reader.result; resolve(_logoDataUrl); };
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
-  } catch (_) { return null; }
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const size = 256;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // Fond blanc pour éviter le noir dû aux zones transparentes en PDF
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      _logoDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      resolve(_logoDataUrl);
+    };
+    img.onerror = () => resolve(null);
+    img.src = '/assets/Logo.png';
+  });
 }
 
 // Ouvre le PDF dans un modal pour aperçu avant téléchargement
@@ -3566,16 +3574,15 @@ function pdfConstruireResume(doc) {
   const solde = recettes - depenses;
   const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
   pdfHeader(doc, 'Résumé financier');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
-  doc.setFontSize(14); doc.setTextColor(30); doc.text('Récapitulatif', 15, 62);
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(14); doc.setTextColor(30); doc.setFont(undefined, 'bold'); doc.text('Récapitulatif', 15, 72); doc.setFont(undefined, 'normal');
   const rows = [
     ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
     ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
     ['Solde de la période', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
     ['Nombre de transactions', String(_finTransactions.length), 100, 100, 100],
   ];
-  let y = 75;
+  let y = 90;
   rows.forEach(([label, val, r, g, b]) => {
     doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 12, 'F');
     doc.setFontSize(11); doc.setTextColor(80); doc.text(label, 20, y + 2);
@@ -3593,15 +3600,14 @@ async function pdfConstruireDetaille(doc) {
 
   // P1
   pdfHeader(doc, 'Rapport financier détaillé');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
-  doc.setFontSize(14); doc.setTextColor(30); doc.text('Récapitulatif', 15, 62);
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
+  doc.setFontSize(14); doc.setTextColor(30); doc.setFont(undefined, 'bold'); doc.text('Récapitulatif', 15, 72); doc.setFont(undefined, 'normal');
   const rows = [
     ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
     ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
     ['Solde', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
   ];
-  let y = 75;
+  let y = 90;
   rows.forEach(([label, val, r, g, b]) => {
     doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 14, 'F');
     doc.setFontSize(12); doc.setTextColor(80); doc.text(label, 20, y + 3);
@@ -3627,11 +3633,11 @@ async function pdfConstruireDetaille(doc) {
 
   // P2
   doc.addPage(); pdfHeader(doc, 'Détail des transactions');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
   if (!_finTransactions.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
   } else {
-    y = 58;
+    y = 72;
     doc.setFontSize(9); doc.setTextColor(120);
     doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y); doc.text('CATÉGORIE', 130, y); doc.text('MONTANT', 195, y, { align: 'right' });
     doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
@@ -3654,13 +3660,12 @@ async function pdfConstruireDetaille(doc) {
 
   // P3
   doc.addPage(); pdfHeader(doc, 'Événements de la période');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
+  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 58);
   const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
   if (!evs.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement sur cette période.', 105, 100, { align: 'center' });
   } else {
-    y = 58;
-    evs.forEach(ev => {
+    y = 72; evs.forEach(ev => {
       if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements (suite)'); y = 45; }
       const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
       doc.setFontSize(11); doc.setTextColor(30); doc.text((ev.titre || '').slice(0, 60), 15, y);
@@ -3683,12 +3688,12 @@ async function pdfConstruireDetaille(doc) {
   const monthAfter = new Date(_finDateFin); monthAfter.setDate(monthAfter.getDate() + 1);
   const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
   doc.setFontSize(11); doc.setTextColor(90);
-  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 45);
+  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 58);
   const evsPrev = await pdfChargerEvenements(monthAfter, monthAfterEnd);
   if (!evsPrev.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement planifié pour le mois suivant.', 105, 100, { align: 'center' });
   } else {
-    y = 58; let totalPrev = 0;
+    y = 72; let totalPrev = 0;
     evsPrev.forEach(ev => {
       if (y > 265) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
       const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
@@ -3711,187 +3716,6 @@ async function pdfConstruireDetaille(doc) {
   pdfFooter(doc);
 }
 
-async function pdfRapportResume() {
-  await loadJsPdf();
-  await loadLogo();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
-  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-  const solde = recettes - depenses;
-  pdfHeader(doc, 'Résumé financier');
-  const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
-  doc.setFontSize(14); doc.setTextColor(30);
-  doc.text('Récapitulatif', 15, 62);
-  const rows = [
-    ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
-    ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
-    ['Solde de la période', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
-    ['Nombre de transactions', String(_finTransactions.length), 100, 100, 100],
-  ];
-  let y = 75;
-  rows.forEach(([label, val, r, g, b]) => {
-    doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 12, 'F');
-    doc.setFontSize(11); doc.setTextColor(80); doc.text(label, 20, y + 2);
-    doc.setFontSize(13); doc.setTextColor(r, g, b); doc.text(val, 190, y + 2, { align: 'right' });
-    y += 16;
-  });
-  pdfFooter(doc);
-  pdfPreview(doc, pdfFilename('resume'));
-}
-
-async function pdfRapportDetaille() {
-  await loadJsPdf();
-  await loadLogo();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
-  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-  const solde = recettes - depenses;
-  const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
-
-  // === PAGE 1 : Récap chiffres ===
-  pdfHeader(doc, 'Rapport financier détaillé');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  doc.setDrawColor(230); doc.line(15, 50, 195, 50);
-  doc.setFontSize(14); doc.setTextColor(30); doc.text('Récapitulatif', 15, 62);
-  const rows = [
-    ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
-    ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
-    ['Solde', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
-  ];
-  let y = 75;
-  rows.forEach(([label, val, r, g, b]) => {
-    doc.setFillColor(248, 248, 250); doc.rect(15, y - 6, 180, 14, 'F');
-    doc.setFontSize(12); doc.setTextColor(80); doc.text(label, 20, y + 3);
-    doc.setFontSize(15); doc.setTextColor(r, g, b); doc.text(val, 190, y + 3, { align: 'right' });
-    y += 18;
-  });
-  // Répartition par catégorie
-  y += 8;
-  doc.setFontSize(14); doc.setTextColor(30); doc.text('Répartition par catégorie', 15, y); y += 8;
-  const byCat = {};
-  _finTransactions.forEach(t => {
-    if (!byCat[t.categorie]) byCat[t.categorie] = { rec: 0, dep: 0 };
-    if (t.montant > 0) byCat[t.categorie].rec += Number(t.montant);
-    else byCat[t.categorie].dep += Math.abs(Number(t.montant));
-  });
-  Object.entries(byCat).forEach(([cat, v]) => {
-    const c = FIN_CATEGORIES[cat] || FIN_CATEGORIES.autre;
-    doc.setFontSize(10); doc.setTextColor(80);
-    doc.text(c.label, 20, y);
-    doc.text('+' + v.rec.toFixed(2) + ' EUR', 130, y, { align: 'right' });
-    doc.setTextColor(220, 38, 38);
-    doc.text('-' + v.dep.toFixed(2) + ' EUR', 190, y, { align: 'right' });
-    y += 6;
-  });
-  pdfFooter(doc);
-
-  // === PAGE 2 : Détail transactions ===
-  doc.addPage();
-  pdfHeader(doc, 'Détail des transactions');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  if (!_finTransactions.length) {
-    doc.setFontSize(12); doc.setTextColor(150);
-    doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
-  } else {
-    y = 58;
-    doc.setFontSize(9); doc.setTextColor(120);
-    doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y);
-    doc.text('CATÉGORIE', 130, y); doc.text('MONTANT', 195, y, { align: 'right' });
-    doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2);
-    y += 8;
-    _finTransactions.forEach(tx => {
-      if (y > 275) { doc.addPage(); pdfHeader(doc, 'Détail des transactions (suite)'); y = 45; }
-      const c = FIN_CATEGORIES[tx.categorie] || { label: tx.categorie.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()), emoji: '📌' };
-      const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      doc.setFontSize(9); doc.setTextColor(50);
-      doc.text(dateStr, 15, y);
-      const libelleShort = tx.libelle.length > 45 ? tx.libelle.slice(0, 42) + '…' : tx.libelle;
-      doc.text(libelleShort, 40, y);
-      doc.text(c.label, 130, y);
-      const mNum = Number(tx.montant);
-      doc.setTextColor(mNum >= 0 ? 34 : 220, mNum >= 0 ? 197 : 38, mNum >= 0 ? 94 : 38);
-      doc.text((mNum >= 0 ? '+' : '') + mNum.toFixed(2) + ' EUR', 195, y, { align: 'right' });
-      y += 6;
-    });
-  }
-  pdfFooter(doc);
-
-  // === PAGE 3 : Événements du mois avec coût réel ===
-  doc.addPage();
-  pdfHeader(doc, 'Événements de la période');
-  doc.setFontSize(11); doc.setTextColor(90); doc.text(periodeLabel, 15, 45);
-  const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
-  if (!evs.length) {
-    doc.setFontSize(12); doc.setTextColor(150);
-    doc.text('Aucun événement sur cette période.', 105, 100, { align: 'center' });
-  } else {
-    y = 58;
-    evs.forEach(ev => {
-      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements (suite)'); y = 45; }
-      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
-      doc.setFontSize(11); doc.setTextColor(30);
-      doc.text(ev.titre.slice(0, 60), 15, y);
-      doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
-      if (ev.cout_reel != null) {
-        doc.setFontSize(11); doc.setTextColor(220, 38, 38);
-        doc.text('-' + Number(ev.cout_reel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
-      } else if (ev.budget_previsionnel != null) {
-        doc.setFontSize(9); doc.setTextColor(150);
-        doc.text('(prévu ' + Number(ev.budget_previsionnel).toFixed(2) + ' EUR)', 190, y, { align: 'right' });
-      }
-      y += 12;
-    });
-  }
-  pdfFooter(doc);
-
-  // === PAGE 4 : Événements planifiés mois suivant ===
-  doc.addPage();
-  pdfHeader(doc, 'Prévisionnel du mois suivant');
-  const monthAfter = new Date(_finDateFin);
-  monthAfter.setDate(monthAfter.getDate() + 1);
-  const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
-  doc.setFontSize(11); doc.setTextColor(90);
-  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 45);
-  const evsPrev = await pdfChargerEvenements(monthAfter, monthAfterEnd);
-  if (!evsPrev.length) {
-    doc.setFontSize(12); doc.setTextColor(150);
-    doc.text('Aucun événement planifié pour le mois suivant.', 105, 100, { align: 'center' });
-  } else {
-    y = 58;
-    let totalPrev = 0;
-    evsPrev.forEach(ev => {
-      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
-      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
-      doc.setFontSize(11); doc.setTextColor(30);
-      doc.text(ev.titre.slice(0, 60), 15, y);
-      doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
-      if (ev.budget_previsionnel != null) {
-        doc.setFontSize(11); doc.setTextColor(232, 81, 0);
-        doc.text(Number(ev.budget_previsionnel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
-        totalPrev += Number(ev.budget_previsionnel);
-      } else {
-        doc.setFontSize(9); doc.setTextColor(150);
-        doc.text('(pas de budget)', 190, y, { align: 'right' });
-      }
-      y += 12;
-    });
-    y += 5; doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
-    doc.setFontSize(12); doc.setTextColor(30);
-    doc.text('Total prévisionnel estimé', 15, y);
-    doc.setTextColor(232, 81, 0);
-    doc.text(totalPrev.toFixed(2) + ' EUR', 190, y, { align: 'right' });
-  }
-  pdfFooter(doc);
-
-  pdfPreview(doc, pdfFilename('rapport-detaille'));
-}
 
 async function pdfChargerEvenements(debut, fin) {
   const debutStr = debut.toISOString().slice(0, 10);
