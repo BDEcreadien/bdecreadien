@@ -3738,9 +3738,9 @@ async function pdfChargerEvenements(debut, fin) {
 }
 
 function pdfHeader(doc, titre) {
-  // Logo à gauche (non encadré)
+  // Logo à gauche (non encadré) — JPEG blanc pour éviter fond noir
   if (_logoDataUrl) {
-    try { doc.addImage(_logoDataUrl, 'PNG', 15, 12, 22, 22); } catch (_) {}
+    try { doc.addImage(_logoDataUrl, 'JPEG', 15, 10, 24, 24); } catch (_) {}
   }
   // Coordonnées BDE à droite
   doc.setFontSize(11); doc.setTextColor(30); doc.setFont(undefined, 'bold');
