@@ -3507,6 +3507,147 @@ async function finDelete(id) {
 }
 
 // ============================================================
+// FINANCES — ÉVÉNEMENTS PRÉVISIONNELS
+// ============================================================
+let _finEvenements = [];
+let _finEvEditingId = null;
+
+async function finLoadEvenements() {
+  // Charge événements de la période courante + du mois suivant (pour prévisionnel)
+  const monthAfter = new Date(_finDateFin); monthAfter.setDate(monthAfter.getDate() + 1);
+  const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
+  const debutStr = _finDateDebut.toISOString().slice(0, 10);
+  const finStr = monthAfterEnd.toISOString().slice(0, 10);
+  const { data, error } = await window.Auth.sb
+    .from('evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
+  if (error) { console.warn(error); _finEvenements = []; }
+  else _finEvenements = data || [];
+  finRenderEvenements();
+}
+
+function finRenderEvenements() {
+  const el = document.getElementById('fin-liste-ev');
+  if (!el) return;
+  if (!_finEvenements.length) {
+    el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--gris-texte);font-size:13px;">Aucun événement sur cette période. Ajoutes-en pour construire le prévisionnel.</p>';
+    return;
+  }
+  const now = new Date();
+  el.innerHTML = _finEvenements.map(ev => {
+    const dateObj = ev.date ? new Date(ev.date) : null;
+    const dateStr = dateObj ? dateObj.toLocaleDateString('fr-FR') : '(sans date)';
+    const passe = dateObj && dateObj < now;
+    const cat = FIN_CATEGORIES[ev.categorie_budget] || { label: ev.categorie_budget || 'Autre', emoji: '📅' };
+    const budgetTxt = ev.budget_previsionnel != null ? `${Number(ev.budget_previsionnel).toFixed(2)} €` : '—';
+    const coutTxt = ev.cout_reel != null ? `${Number(ev.cout_reel).toFixed(2)} €` : '—';
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--gris-clair);">
+        <div style="width:38px;text-align:center;font-size:20px;flex-shrink:0;">${cat.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;color:var(--noir);">${escapeHtmlNl(ev.titre)}</div>
+          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${cat.label}${ev.lieu ? ' · ' + escapeHtmlNl(ev.lieu) : ''}</div>
+        </div>
+        <div style="text-align:right;font-size:12px;flex-shrink:0;">
+          <div style="color:var(--gris-texte);">Prévu : <strong style="color:var(--violet);">${budgetTxt}</strong></div>
+          <div style="color:var(--gris-texte);">Réel : <strong style="color:${passe && ev.cout_reel != null ? '#dc2626' : 'var(--noir)'};">${coutTxt}</strong></div>
+        </div>
+        <button onclick="finEditEv('${ev.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>
+        <button onclick="finDeleteEv('${ev.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:6px;font-size:14px;">🗑</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function finTogglerFormEv() {
+  const f = document.getElementById('fin-form-ev');
+  const visible = f.classList.contains('visible');
+  if (visible) { f.classList.remove('visible'); _finEvEditingId = null; return; }
+  _finEvEditingId = null;
+  document.getElementById('ev-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('ev-titre').value = '';
+  document.getElementById('ev-lieu').value = '';
+  document.getElementById('ev-categorie').value = 'soiree';
+  document.getElementById('ev-budget').value = '';
+  document.getElementById('ev-cout-reel').value = '';
+  document.getElementById('ev-desc').value = '';
+  f.classList.add('visible');
+  finAutoEstimation();
+  document.getElementById('ev-categorie').onchange = finAutoEstimation;
+}
+
+async function finAutoEstimation() {
+  const cat = document.getElementById('ev-categorie').value;
+  const hint = document.getElementById('ev-hint-moy');
+  hint.textContent = '';
+  try {
+    const { data } = await window.Auth.sb.rpc('moyenne_cout_categorie', { p_categorie: cat, p_limit: 5 });
+    if (data != null) {
+      hint.textContent = `— moyenne des 5 derniers ${cat} : ${Number(data).toFixed(2)} €`;
+      const budgetInput = document.getElementById('ev-budget');
+      if (!budgetInput.value) budgetInput.placeholder = Number(data).toFixed(2);
+    }
+  } catch (_) {}
+}
+
+function finEditEv(id) {
+  const ev = _finEvenements.find(e => e.id === id);
+  if (!ev) return;
+  _finEvEditingId = id;
+  document.getElementById('ev-date').value = ev.date || '';
+  document.getElementById('ev-titre').value = ev.titre || '';
+  document.getElementById('ev-lieu').value = ev.lieu || '';
+  document.getElementById('ev-categorie').value = ev.categorie_budget || 'soiree';
+  document.getElementById('ev-budget').value = ev.budget_previsionnel != null ? ev.budget_previsionnel : '';
+  document.getElementById('ev-cout-reel').value = ev.cout_reel != null ? ev.cout_reel : '';
+  document.getElementById('ev-desc').value = ev.description || '';
+  document.getElementById('fin-form-ev').classList.add('visible');
+  document.getElementById('fin-form-ev').scrollIntoView({ behavior: 'smooth' });
+  finAutoEstimation();
+}
+
+async function finSaveEv() {
+  const titre = document.getElementById('ev-titre').value.trim();
+  const date = document.getElementById('ev-date').value || null;
+  const lieu = document.getElementById('ev-lieu').value.trim() || null;
+  const categorie_budget = document.getElementById('ev-categorie').value;
+  const budgetVal = document.getElementById('ev-budget').value;
+  const coutVal = document.getElementById('ev-cout-reel').value;
+  const description = document.getElementById('ev-desc').value.trim() || null;
+  if (!titre) { showToast('Titre requis', 'error'); return; }
+  const payload = {
+    titre, date, lieu, categorie_budget, description,
+    budget_previsionnel: budgetVal ? parseFloat(budgetVal) : null,
+    cout_reel: coutVal ? parseFloat(coutVal) : null,
+  };
+  const btn = document.getElementById('fin-btn-save-ev');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  let error;
+  if (_finEvEditingId) {
+    ({ error } = await window.Auth.sb.from('evenements').update(payload).eq('id', _finEvEditingId));
+  } else {
+    const user = await window.Auth.getUser();
+    payload.created_by = user.id;
+    ({ error } = await window.Auth.sb.from('evenements').insert(payload));
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast(_finEvEditingId ? 'Événement modifié' : 'Événement ajouté', 'success');
+  document.getElementById('fin-form-ev').classList.remove('visible');
+  _finEvEditingId = null;
+  finLoadEvenements();
+  pdfRegenererPreview();
+}
+
+async function finDeleteEv(id) {
+  if (!confirm('Supprimer cet événement ?')) return;
+  const { error } = await window.Auth.sb.from('evenements').delete().eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('Événement supprimé', 'success');
+  finLoadEvenements();
+  pdfRegenererPreview();
+}
+
+// ============================================================
 // PDF FINANCES (via jsPDF chargé à la demande)
 // ============================================================
 let _jsPdfLoaded = false;
