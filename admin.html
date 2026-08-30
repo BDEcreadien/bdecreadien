@@ -484,6 +484,43 @@
 
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau">+ Nouvelle transaction</button>
+        <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg,#E85100,#8B1A6B);">+ Nouvel événement</button>
+      </div>
+
+      <div id="fin-form-ev" class="form-card" style="margin-bottom:1.5rem;">
+        <h3>Nouvel événement (prévisionnel)</h3>
+        <div class="form-grid">
+          <div class="form-row"><label>Date</label><input type="date" id="ev-date"></div>
+          <div class="form-row">
+            <label>Catégorie budget</label>
+            <select id="ev-categorie">
+              <option value="soiree">🎉 Soirée</option>
+              <option value="repas">🍽️ Repas</option>
+              <option value="sortie">🚌 Sortie</option>
+              <option value="materiel">📦 Matériel</option>
+              <option value="autre">✨ Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>Titre</label><input type="text" id="ev-titre" placeholder="ex: Soirée Halloween Six Brotteaux" maxlength="200"></div>
+        <div class="form-row"><label>Lieu (optionnel)</label><input type="text" id="ev-lieu" placeholder="ex: Ninkasi Cordeliers" maxlength="200"></div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Budget prévisionnel (€) <span id="ev-hint-moy" style="font-size:11px;color:var(--gris-texte);font-weight:400;"></span></label>
+            <input type="number" id="ev-budget" step="0.01" min="0" placeholder="ex: 280">
+          </div>
+          <div class="form-row"><label>Coût réel (€) — après l'événement</label><input type="number" id="ev-cout-reel" step="0.01" min="0" placeholder="à remplir plus tard"></div>
+        </div>
+        <div class="form-row"><label>Description (optionnel)</label><textarea id="ev-desc" rows="2" placeholder="Détails, notes…" maxlength="500"></textarea></div>
+        <div class="form-actions">
+          <button class="btn-cancel" onclick="finTogglerFormEv()">Annuler</button>
+          <button class="btn-save" onclick="finSaveEv()" id="fin-btn-save-ev">Enregistrer</button>
+        </div>
+      </div>
+
+      <div class="form-card visible" id="fin-liste-ev-wrap" style="margin-bottom:1.5rem;">
+        <h3 style="margin:0 0 12px;">Événements (période sélectionnée)</h3>
+        <div id="fin-liste-ev"></div>
       </div>
 
       <div id="fin-form" class="form-card" style="margin-bottom:1.5rem;">
