@@ -531,6 +531,22 @@
         <h3 style="margin:0 0 12px;">Transactions</h3>
         <div id="fin-liste" style="max-height:500px;overflow-y:auto;"></div>
       </div>
+
+      <!-- APERÇU PDF EN DIRECT -->
+      <div class="form-card visible" style="margin-top:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+          <h3 style="margin:0;">Aperçu du rapport PDF (mise à jour en direct)</h3>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button class="stats-ext-btn" id="pdf-tab-resume" onclick="pdfChangerType('resume')" style="background:var(--violet);color:white;">Résumé (1 page)</button>
+            <button class="stats-ext-btn" id="pdf-tab-detaille" onclick="pdfChangerType('detaille')">Détaillé (4 pages)</button>
+            <button class="stats-ext-btn" onclick="pdfTelecharger()" style="border-color:var(--orange);color:var(--orange);font-weight:600;">⬇ Télécharger</button>
+          </div>
+        </div>
+        <div id="pdf-preview-wrap" style="background:#e5e5e5;border-radius:12px;padding:20px;display:flex;justify-content:center;overflow:auto;">
+          <iframe id="pdf-preview-iframe" style="width:210mm;height:297mm;border:none;box-shadow:0 4px 20px rgba(0,0,0,0.15);background:white;" title="Aperçu PDF"></iframe>
+        </div>
+        <p style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;text-align:center;">Aperçu mis à jour automatiquement à chaque modification. Format A4 réel.</p>
+      </div>
     </div>
   </div>
 
