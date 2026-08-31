@@ -480,7 +480,13 @@
     <div id="fin-content" style="display:none;">
       <h3 id="fin-periode-label" style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1rem 0 0.75rem;"></h3>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.5rem;" id="fin-tuiles"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:1.5rem;" id="fin-tuiles"></div>
+      <style>
+        @media (max-width: 900px) { #fin-tuiles { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 480px) { #fin-tuiles { grid-template-columns: 1fr !important; } }
+        .fin-two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .fin-two-cols { grid-template-columns: 1fr; } }
+      </style>
 
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau">+ Nouvelle transaction</button>
