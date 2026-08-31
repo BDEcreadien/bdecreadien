@@ -3927,7 +3927,7 @@ async function pdfChargerEvenements(debut, fin) {
 function pdfHeader(doc, titre) {
   // Logo à gauche (non encadré) — JPEG blanc pour éviter fond noir
   if (_logoDataUrl) {
-    try { doc.addImage(_logoDataUrl, 'JPEG', 15, 8, 34, 34); } catch (_) {}
+    try { doc.addImage(_logoDataUrl, 'JPEG', 15, 12, 22, 22); } catch (_) {}
   }
   // Coordonnées BDE à droite
   doc.setFontSize(11); doc.setTextColor(30); doc.setFont(undefined, 'bold');
