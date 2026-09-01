@@ -1758,6 +1758,123 @@ footer {
 .no-js .reveal { opacity: 1; transform: none; }
 
 /* ===================================
+   ANIMATIONS MINIMALISTES — VIE DU SITE
+   =================================== */
+
+/* Hero : dégradé qui respire lentement */
+.hero {
+  background-size: 200% 200%;
+  animation: heroShift 22s ease-in-out infinite;
+}
+@keyframes heroShift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Blobs flottants dans le hero */
+.hero-bg-shape-1 { animation: floatSlow 14s ease-in-out infinite; }
+.hero-bg-shape-2 { animation: floatSlow 18s ease-in-out -6s infinite reverse; }
+@keyframes floatSlow {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(30px,-40px) scale(1.05); }
+  66%     { transform: translate(-25px,25px) scale(0.97); }
+}
+
+/* Logo nav : pulsation ultra-douce */
+nav a[href*="index"] img,
+nav .logo img,
+nav a[href="/"] img,
+nav a[href="index.html"] img {
+  transition: transform 0.5s cubic-bezier(.2,.9,.3,1.4);
+}
+nav a[href*="index"] img:hover,
+nav .logo img:hover,
+nav a[href="/"] img:hover,
+nav a[href="index.html"] img:hover {
+  transform: rotate(-6deg) scale(1.08);
+}
+
+/* Hero cards : lift + glow au hover, entrée décalée */
+.hero-card {
+  transition: transform 0.35s cubic-bezier(.2,.7,.2,1),
+              box-shadow 0.35s ease,
+              border-color 0.25s ease,
+              background 0.25s ease;
+  will-change: transform;
+}
+.hero-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25),
+              0 0 0 1px rgba(255,255,255,0.4);
+}
+
+/* Titres : soulignement animé */
+.gradient-text {
+  background-size: 200% 100%;
+  animation: gradientPan 8s ease-in-out infinite;
+}
+@keyframes gradientPan {
+  0%,100% { background-position: 0% 50%; }
+  50%     { background-position: 100% 50%; }
+}
+
+/* Reveal-on-scroll boosté : léger blur au repos, net à l'apparition */
+.reveal {
+  filter: blur(4px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.2,1), filter 0.7s ease;
+}
+.reveal.visible { filter: blur(0); }
+
+/* Boutons CTA : léger shimmer au hover */
+.btn-primary, .cta-button, .btn-cta, .btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-primary::before, .cta-button::before, .btn-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.btn-primary:hover::before, .cta-button:hover::before, .btn-cta:hover::before {
+  transform: translateX(100%);
+}
+.btn-primary:hover, .cta-button:hover, .btn-cta:hover {
+  transform: translateY(-2px);
+}
+
+/* Cards génériques : lift discret */
+.card, .actu-card, .partenaire-card, .archive-card {
+  transition: transform 0.3s cubic-bezier(.2,.7,.2,1), box-shadow 0.3s ease;
+}
+.card:hover, .actu-card:hover, .partenaire-card:hover, .archive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(70,1,134,0.12);
+}
+
+/* Icônes nav-cards : rotation légère au hover */
+.hero-card-icon { transition: transform 0.4s cubic-bezier(.2,.9,.3,1.4); }
+.hero-card:hover .hero-card-icon { transform: rotate(-8deg) scale(1.15); }
+
+/* Indicateur scroll : plus vivant */
+.hero-scroll-line { animation-duration: 1.6s !important; }
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero, .hero-bg-shape-1, .hero-bg-shape-2,
+  .gradient-text, .btn-primary::before, .cta-button::before, .btn-cta::before {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal { filter: none; }
+}
+
+/* ===================================
    RESPONSIVE
    =================================== */
 
