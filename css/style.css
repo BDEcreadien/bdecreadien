@@ -7,7 +7,7 @@
 :root {
   --violet: #460186;
   --orange: #FF741F;
-  --gradient: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
+  --gradient: linear-gradient(135deg, #2D0057 0%, #460186 18%, #6A0F9E 35%, #9B1889 50%, #D2396D 68%, #F04A34 85%, #FF741F 100%);
   --gradient-h: linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
   --blanc: #FFFFFF;
   --noir: #0A0A0A;
