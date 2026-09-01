@@ -609,6 +609,99 @@
 
 </div>
 
+<!-- PLANNING (bureau uniquement) -->
+<div id="step-planning" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
+  <div class="stats-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;">
+    <h2 style="margin:0;">Planning bureau</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-save" onclick="plnTogglerFormEv()" id="pln-btn-nouveau-ev">+ Nouvel événement</button>
+      <button class="stats-ext-btn" onclick="plnToggleTableau()" id="pln-btn-tableau">📊 Vue tableau</button>
+    </div>
+  </div>
+
+  <!-- Formulaire création event -->
+  <div id="pln-form-ev" class="form-card" style="display:none;margin-bottom:1.5rem;">
+    <h3>Nouvel événement</h3>
+    <div class="form-grid">
+      <div class="form-row"><label>Titre *</label><input type="text" id="pln-ev-titre" placeholder="Vente de gâteaux"></div>
+      <div class="form-row"><label>Date</label><input type="date" id="pln-ev-date"></div>
+      <div class="form-row"><label>Lieu</label><input type="text" id="pln-ev-lieu" placeholder="Hall CREAD"></div>
+      <div class="form-row"><label>Catégorie budget</label>
+        <select id="pln-ev-cat">
+          <option value="">—</option>
+          <option value="soiree">Soirée</option>
+          <option value="repas">Repas/Vente</option>
+          <option value="sortie">Sortie</option>
+          <option value="reunion">Réunion prépa</option>
+          <option value="montage">Montage</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Description</label><textarea id="pln-ev-desc" rows="2" placeholder="Détails, matériel, timing…"></textarea></div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="pln-ev-interne" style="width:auto;">
+        <span>Événement interne bureau uniquement (réunion, montage) — masqué de la vue publique</span>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="plnTogglerFormEv()">Annuler</button>
+      <button class="btn-save" onclick="plnSaveEv()">Créer l'événement</button>
+    </div>
+  </div>
+
+  <!-- Vue Cards ou Tableau -->
+  <div id="pln-view-cards">
+    <h3 style="margin:1.5rem 0 0.75rem;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">À venir</h3>
+    <div id="pln-list-upcoming"></div>
+
+    <h3 style="margin:2rem 0 0.75rem;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Historique</h3>
+    <div id="pln-list-past"></div>
+  </div>
+
+  <div id="pln-view-tableau" style="display:none;overflow-x:auto;">
+    <div id="pln-tableau"></div>
+  </div>
+</div>
+
+<!-- Drawer édition dispo -->
+<div id="pln-drawer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1200;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)plnCloseDrawer()">
+  <div style="background:white;border-radius:16px;padding:2rem;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem;">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);" id="pln-drawer-date"></div>
+        <h3 style="margin:6px 0 0;" id="pln-drawer-titre"></h3>
+        <div style="font-size:13px;color:var(--gris-texte);margin-top:2px;" id="pln-drawer-lieu"></div>
+      </div>
+      <button onclick="plnCloseDrawer()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;">×</button>
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <label style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--gris-texte);">Je suis là ?</label>
+      <div style="display:flex;gap:8px;">
+        <button class="pln-statut-btn" data-statut="oui" onclick="plnSetStatut('oui')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">✓ Je viens</button>
+        <button class="pln-statut-btn" data-statut="peut_etre" onclick="plnSetStatut('peut_etre')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">? Peut-être</button>
+        <button class="pln-statut-btn" data-statut="non" onclick="plnSetStatut('non')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">✗ Absent</button>
+      </div>
+    </div>
+
+    <div class="form-row"><label>Rôle sur place (libre)</label><input type="text" id="pln-drawer-role" placeholder="ex : bar, entrée, photos, DJ…"></div>
+    <div class="form-row"><label>Créneau (libre)</label><input type="text" id="pln-drawer-creneau" placeholder="ex : 18h-22h, toute la soirée, avant l'event…"></div>
+    <div class="form-row"><label>Notes</label><textarea id="pln-drawer-notes" rows="2" placeholder="Ce que tu apportes, tes contraintes…"></textarea></div>
+
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button class="btn-cancel" onclick="plnCloseDrawer()" style="flex:1;">Fermer</button>
+      <button class="btn-save" onclick="plnSaveDispo()" style="flex:2;">Enregistrer</button>
+    </div>
+
+    <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gris-border);">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--gris-texte);">Autres membres du bureau</div>
+      <div id="pln-drawer-others" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 <div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
