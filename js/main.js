@@ -32,7 +32,7 @@ const couleurLien = { shotgun: 'var(--orange)', helloasso: '#00A078' };
   if (window.location.pathname.includes('admin')) return;
   const overlay = document.createElement('div');
   overlay.id = 'page-transition-overlay';
-  overlay.innerHTML = `<img src="assets/Logo.png" alt="BDE CREAD" width="72" height="72" style="border-radius:50%;object-fit:cover;box-shadow:0 4px 24px rgba(0,0,0,0.25);">`;
+  overlay.innerHTML = `<img src="assets/Logo.png?v=5" alt="BDE CREAD" width="72" height="72" style="border-radius:50%;object-fit:cover;box-shadow:0 4px 24px rgba(0,0,0,0.25);">`;
   overlay.style.cssText = `
     position:fixed;inset:0;z-index:99999;
     background:linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);
