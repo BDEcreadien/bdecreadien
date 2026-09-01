@@ -3695,7 +3695,9 @@ async function loadLogo() {
       const canvas = document.createElement('canvas');
       canvas.width = size; canvas.height = size;
       const ctx = canvas.getContext('2d');
-      // 1) Clip carré à coins arrondis
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      // Clip coins légèrement arrondis
       ctx.beginPath();
       ctx.moveTo(radius, 0);
       ctx.lineTo(size - radius, 0);
@@ -3708,22 +3710,12 @@ async function loadLogo() {
       ctx.quadraticCurveTo(0, 0, radius, 0);
       ctx.closePath();
       ctx.clip();
-      // 2) Fond : même dégradé que le logo (violet → magenta → orange)
-      const g = ctx.createLinearGradient(0, 0, size, size);
-      g.addColorStop(0, '#460186');
-      g.addColorStop(0.35, '#8A1A8E');
-      g.addColorStop(0.6, '#D2396D');
-      g.addColorStop(0.85, '#F04A34');
-      g.addColorStop(1, '#FF741F');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, size, size);
-      // 3) Logo rond par-dessus (les zones transparentes montrent le dégradé)
       ctx.drawImage(img, 0, 0, size, size);
       _logoDataUrl = canvas.toDataURL('image/jpeg', 0.92);
       resolve(_logoDataUrl);
     };
     img.onerror = () => resolve(null);
-    img.src = '/assets/Logo-pdf.png?v=6';
+    img.src = '/assets/Logo-pdf.png?v=7';
   });
 }
 
