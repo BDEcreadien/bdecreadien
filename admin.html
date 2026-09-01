@@ -699,6 +699,16 @@ function showStep(step, opts = {}) {
   if (finEl) finEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
+  // Sync URL : /admin sans param quand on est sur les cartes de choix,
+  // /admin?page=X sinon (permet un refresh cohérent avec ce qu'on voit)
+  try {
+    if (step === 'pages') {
+      if (location.search) history.replaceState({}, '', location.pathname);
+    } else if (['fidelite', 'newsletter', 'finances', 'stats'].includes(step)) {
+      const wanted = '?page=' + step;
+      if (location.search !== wanted) history.replaceState({}, '', location.pathname + wanted);
+    }
+  } catch (_) {}
 }
 
 function goBack() {
