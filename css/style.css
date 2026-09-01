@@ -314,24 +314,25 @@ nav.scrolled .nav-burger-line {
 .hero-bg-shape {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
+  filter: blur(90px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
 }
 
 .hero-bg-shape-1 {
-  width: 600px;
-  height: 600px;
-  background: #D2396D;
-  top: -200px;
-  left: -200px;
+  width: 650px;
+  height: 650px;
+  background: #FF2E88;
+  top: -180px;
+  left: -180px;
 }
 
 .hero-bg-shape-2 {
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 500px;
   background: #FF741F;
-  bottom: -100px;
-  right: -100px;
+  bottom: -120px;
+  right: -120px;
 }
 
 .hero-content {
