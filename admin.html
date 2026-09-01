@@ -3680,19 +3680,33 @@ async function loadLogo() {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      const size = 256;
+      const size = 320;
+      const radius = 40;
       const canvas = document.createElement('canvas');
       canvas.width = size; canvas.height = size;
       const ctx = canvas.getContext('2d');
-      // Fond blanc pour éviter le noir dû aux zones transparentes en PDF
+      // Fond blanc (les coins hors du rectangle arrondi resteront blancs, invisibles sur PDF)
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, size, size);
+      // Clip en rectangle arrondi pour effet coins légèrement arrondis
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(size - radius, 0);
+      ctx.quadraticCurveTo(size, 0, size, radius);
+      ctx.lineTo(size, size - radius);
+      ctx.quadraticCurveTo(size, size, size - radius, size);
+      ctx.lineTo(radius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.closePath();
+      ctx.clip();
       ctx.drawImage(img, 0, 0, size, size);
       _logoDataUrl = canvas.toDataURL('image/jpeg', 0.92);
       resolve(_logoDataUrl);
     };
     img.onerror = () => resolve(null);
-    img.src = '/assets/Logo-pdf.png';
+    img.src = '/assets/Logo-pdf.png?v=2';
   });
 }
 
