@@ -5,10 +5,10 @@
 /* Fonts chargées via <link rel="preload"> dans le <head> HTML pour éviter le blocage de rendu */
 
 :root {
-  --violet: #463A90;
-  --orange: #E85100;
-  --gradient: linear-gradient(135deg, #463A90 0%, #7B3FA0 40%, #E85100 100%);
-  --gradient-h: linear-gradient(90deg, #463A90 0%, #7B3FA0 50%, #E85100 100%);
+  --violet: #460186;
+  --orange: #FF741F;
+  --gradient: linear-gradient(135deg, #460186 0%, #D2396D 40%, #FF741F 100%);
+  --gradient-h: linear-gradient(90deg, #460186 0%, #D2396D 50%, #FF741F 100%);
   --blanc: #FFFFFF;
   --noir: #0A0A0A;
   --gris-clair: #F4F3F8;
@@ -321,7 +321,7 @@ nav.scrolled .nav-burger-line {
 .hero-bg-shape-1 {
   width: 600px;
   height: 600px;
-  background: #7B3FA0;
+  background: #D2396D;
   top: -200px;
   left: -200px;
 }
@@ -329,7 +329,7 @@ nav.scrolled .nav-burger-line {
 .hero-bg-shape-2 {
   width: 400px;
   height: 400px;
-  background: #FF6B20;
+  background: #FF741F;
   bottom: -100px;
   right: -100px;
 }

@@ -29,7 +29,7 @@
       + '#cookie-banner .cb-actions{display:flex;gap:8px;flex-wrap:wrap;}'
       + '#cookie-banner button{border:none;padding:9px 16px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;}'
       + '#cookie-banner .cb-refuse{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2);}'
-      + '#cookie-banner .cb-accept{background:linear-gradient(135deg,#463A90,#E85100);color:#fff;}'
+      + '#cookie-banner .cb-accept{background:linear-gradient(135deg,#460186,#FF741F);color:#fff;}'
       + '@media(max-width:480px){#cookie-banner{bottom:8px;left:8px;right:8px;padding:14px 16px;}#cookie-banner .cb-actions{width:100%;}#cookie-banner button{flex:1;}}';
     var st = document.createElement('style');
     st.textContent = css;

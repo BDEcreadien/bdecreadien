@@ -450,7 +450,7 @@ function renderEvenements(allData) {
     const month = d.toLocaleString('fr-FR', { month: 'short' });
     const slug = eventSlug(ev);
     const jeViens = _mesInscriptions.has(slug);
-    const jvBg = jeViens ? 'linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%)' : 'white';
+    const jvBg = jeViens ? 'linear-gradient(90deg,#460186 0%,#D2396D 50%,#FF741F 100%)' : 'white';
     const jvColor = jeViens ? 'white' : 'var(--violet)';
     const jvBorder = jeViens ? 'transparent' : 'var(--violet)';
     const jvLabel = jeViens
@@ -472,7 +472,7 @@ function renderEvenements(allData) {
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
             <button class="btn-je-viens" data-slug="${slug}" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;padding:6px 12px;border-radius:20px;border:1.5px solid ${jvBorder};background:${jvBg};color:${jvColor};cursor:pointer;display:inline-flex;align-items:center;">${jvLabel}</button>
-            ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%); color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
+            ${ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener noreferrer" class="btn" style="background:linear-gradient(90deg,#460186 0%,#D2396D 50%,#FF741F 100%); color:white; width:auto; font-size:11px; padding:6px 14px; box-shadow:none;">${labelLien[ev.typeLien] || 'Billetterie'}</a>` : ''}
             <button class="btn-ics" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" data-horaire="${(ev.horaire||'').replace(/"/g,'&quot;')}" data-lieu="${(ev.lieu||'').replace(/"/g,'&quot;')}" data-desc="${(ev.description||'').replace(/"/g,'&quot;')}" aria-label="Ajouter au calendrier">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             </button>
@@ -523,7 +523,7 @@ function setJeViensStyle(btn, on) {
   btn.innerHTML = on
     ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"/></svg>J\'y vais'
     : 'Je viens';
-  btn.style.background   = on ? 'linear-gradient(90deg,#463A90 0%,#7B3FA0 50%,#E85100 100%)' : 'white';
+  btn.style.background   = on ? 'linear-gradient(90deg,#460186 0%,#D2396D 50%,#FF741F 100%)' : 'white';
   btn.style.color        = on ? 'white' : 'var(--violet)';
   btn.style.borderColor  = on ? 'transparent' : 'var(--violet)';
 }
@@ -588,7 +588,7 @@ if (document.getElementById('sidebar-events')) {
       const slug = eventSlug(ev);
       const jeViens = _mesInscriptions.has(slug);
       const jvStyle = jeViens
-        ? 'background:linear-gradient(90deg,#463A90,#E85100);color:white;border-color:transparent;'
+        ? 'background:linear-gradient(90deg,#460186,#FF741F);color:white;border-color:transparent;'
         : 'background:white;color:var(--violet);border-color:var(--violet);';
       const jvLabel = jeViens ? '✓ J\'y vais' : 'Je viens';
       return `<div class="sidebar-ev-row" data-idx="${upcoming.indexOf(ev)}" style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--gris-clair);cursor:pointer;transition:background 0.2s;">
@@ -805,8 +805,8 @@ let badgeLabels = {
 };
 
 const BADGE_PALETTE = [
-  { bg: 'rgba(70,58,144,0.1)',  color: '#463A90' },
-  { bg: 'rgba(232,81,0,0.1)',   color: '#E85100' },
+  { bg: 'rgba(70,58,144,0.1)',  color: '#460186' },
+  { bg: 'rgba(232,81,0,0.1)',   color: '#FF741F' },
   { bg: 'rgba(0,160,120,0.1)', color: '#00A078' },
   { bg: 'rgba(100,100,100,0.1)', color: '#555'  },
   { bg: 'rgba(220,50,90,0.12)', color: '#C0284A' },

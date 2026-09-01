@@ -61,7 +61,7 @@ function renderFideliteList() {
           <div class="item-card-title">${c.prenom} ${c.nom}</div>
           <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
             <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
-              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;"></div>
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;"></div>
             </div>
             <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
             ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}

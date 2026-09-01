@@ -9,8 +9,8 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --violet: #463A90; --orange: #E85100;
-      --gradient: linear-gradient(135deg, #463A90, #7B3FA0, #E85100);
+      --violet: #460186; --orange: #FF741F;
+      --gradient: linear-gradient(135deg, #460186, #D2396D, #FF741F);
       --noir: #0f0f10; --gris-bg: #f5f5f7;
       --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
     }
@@ -209,7 +209,7 @@
     .stats-empty { text-align:center; padding:3rem 2rem; color:var(--gris-texte); font-size:14px; background:white; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 
   </style>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon-round.svg?v=3">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=3">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png?v=3">
   <link rel="shortcut icon" href="/favicon.ico?v=3">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=3">
@@ -490,7 +490,7 @@
 
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau">+ Nouvelle transaction</button>
-        <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg,#E85100,#8B1A6B);">+ Nouvel événement</button>
+        <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg,#FF741F,#D2396D);">+ Nouvel événement</button>
       </div>
 
       <div id="fin-form-ev" class="form-card" style="margin-bottom:1.5rem;">
@@ -609,7 +609,7 @@
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
     <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
-      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;transition:width 0.3s;"></div>
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;transition:width 0.3s;"></div>
     </div>
     <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
   </div>
@@ -2486,14 +2486,14 @@ async function loadSbStats(days) {
     body.innerHTML = `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.5rem;">
         ${tile('Membres inscrits', s.profils_total || 0, `+${s.profils_7j||0} en 7j · +${s.profils_30j||0} en 30j`)}
-        ${tile('Étudiants', s.profils_etudiant || 0, `${s.profils_membre||0} membres BDE · ${s.profils_admin||0} admin`, '#8B1A6B')}
-        ${tile('Événements à venir', evUpcoming, '', '#E85100')}
-        ${tile('Newsletter', s.newsletter_active || 0, 'abonnés actifs', '#8B1A6B')}
+        ${tile('Étudiants', s.profils_etudiant || 0, `${s.profils_membre||0} membres BDE · ${s.profils_admin||0} admin`, '#D2396D')}
+        ${tile('Événements à venir', evUpcoming, '', '#FF741F')}
+        ${tile('Newsletter', s.newsletter_active || 0, 'abonnés actifs', '#D2396D')}
       </div>
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Annonces</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        ${tile('En attente', s.annonces_pending || 0, 'à modérer', '#E85100')}
+        ${tile('En attente', s.annonces_pending || 0, 'à modérer', '#FF741F')}
         ${tile('Publiées', s.annonces_published || 0)}
         ${tile('Vendues', s.annonces_sold || 0, '', '#22c55e')}
       </div>
@@ -2507,8 +2507,8 @@ async function loadSbStats(days) {
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">À traiter</h3>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        ${tile('Feedbacks en attente', s.feedbacks_pending || 0, '', '#E85100')}
-        ${tile("Demandes d'adhésion", s.demandes_pending || 0, 'à valider', '#E85100')}
+        ${tile('Feedbacks en attente', s.feedbacks_pending || 0, '', '#FF741F')}
+        ${tile("Demandes d'adhésion", s.demandes_pending || 0, 'à valider', '#FF741F')}
         ${tile('Inscriptions événements', s.inscriptions_total || 0, 'total')}
       </div>
 
@@ -2527,7 +2527,7 @@ async function loadSbStats(days) {
           ${tile('Pages vues', t.pageviews_total || 0)}
           ${tile('Clics trackés', t.clicks_total || 0, 'boutons importants')}
           ${tile('Pages / session', t.avg_session_pages || 0, 'moyenne')}
-          ${tile('Durée session', fmtDuration(t.avg_session_seconds || 0), 'moyenne', '#8B1A6B')}
+          ${tile('Durée session', fmtDuration(t.avg_session_seconds || 0), 'moyenne', '#D2396D')}
         </div>
         ${(t.top_pages && t.top_pages.length) ? `
           <h4 style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.25rem 0 0.5rem;">Top pages</h4>
@@ -2613,8 +2613,8 @@ async function loadStorageStats() {
 
     const sbPct = (sbTotal / SB_QUOTA) * 100;
     const ghPct = (ghSize / GH_QUOTA) * 100;
-    const sbColor = sbPct > 80 ? '#C0392B' : sbPct > 50 ? '#E85100' : '#22c55e';
-    const ghColor = ghPct > 80 ? '#C0392B' : ghPct > 50 ? '#E85100' : '#22c55e';
+    const sbColor = sbPct > 80 ? '#C0392B' : sbPct > 50 ? '#FF741F' : '#22c55e';
+    const ghColor = ghPct > 80 ? '#C0392B' : ghPct > 50 ? '#FF741F' : '#22c55e';
 
     el.innerHTML = `
       <div style="text-align:center;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--gris-clair);">
@@ -2773,7 +2773,7 @@ function renderFideliteList() {
           <div class="item-card-title">${c.prenom} ${c.nom}</div>
           <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
             <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
-              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#463A90,#E85100);border-radius:99px;"></div>
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;"></div>
             </div>
             <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
             ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
@@ -3118,7 +3118,7 @@ function nlTextToHtml(txt) {
     // Bouton call-to-action : [[BTN:label|url]]
     const btn = block.match(/^\[\[BTN:([^|]+)\|([^\]]+)\]\]$/);
     if (btn && isSafeUrl(btn[2])) {
-      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
+      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg,#460186,#FF741F);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
     }
     // Image seule : ![alt](url)
     const img = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
@@ -3127,7 +3127,7 @@ function nlTextToHtml(txt) {
     }
     // Titre H2 : ## Titre
     if (/^##\s+/.test(block)) {
-      return `<h2 style="font-size:20px;color:#463A90;margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
+      return `<h2 style="font-size:20px;color:#460186;margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
     }
     // Paragraphe normal — un simple saut de ligne devient <br>
     const inner = block.split('\n').map(l => nlInline(esc(l))).join('<br>');
@@ -3141,7 +3141,7 @@ function nlInline(s) {
   s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
   // [label](url) — validation URL basique
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
-    '<a href="$2" style="color:#463A90;">$1</a>');
+    '<a href="$2" style="color:#460186;">$1</a>');
   return s;
 }
 
@@ -3161,13 +3161,13 @@ function buildNewsletterHtml(sujet, contenu) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
-        <tr><td style="background:linear-gradient(135deg,#463A90 0%,#8B1A6B 50%,#E85100 100%);padding:32px 40px;">
+        <tr><td style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:32px 40px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON</p>
           <h1 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:1px;">${escapeHtmlNl(sujet)}</h1>
         </td></tr>
         <tr><td style="padding:32px 40px;font-size:15px;color:#333;line-height:1.7;">${contenu}</td></tr>
         <tr><td style="background:#F5F4FF;padding:20px 40px;text-align:center;font-size:12px;color:#888;">
-          BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a><br>
+          BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a><br>
           <a href="{{UNSUBSCRIBE_URL}}" style="color:#888;text-decoration:underline;font-size:11px;">Se désinscrire</a>
         </td></tr>
       </table>
@@ -4020,7 +4020,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
     <div style="display:flex;gap:10px;">
       <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
-      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#463A90,#E85100);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#460186,#FF741F);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
     </div>
   </div>
 </div>

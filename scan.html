@@ -31,7 +31,7 @@
     .tampons { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
     .progress { display: flex; gap: 5px; margin-bottom: 24px; }
     .bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); }
-    .bar.active { background: linear-gradient(90deg, #463A90, #E85100); }
+    .bar.active { background: linear-gradient(90deg, #460186, #FF741F); }
     .btn {
       width: 100%;
       padding: 15px;
@@ -40,7 +40,7 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, #463A90, #7B3FA0, #E85100);
+      background: linear-gradient(135deg, #460186, #D2396D, #FF741F);
       color: white;
       margin-bottom: 10px;
       transition: opacity 0.2s;
@@ -77,14 +77,14 @@
       text-align: center;
       letter-spacing: 3px;
     }
-    input:focus { border-color: #463A90; }
+    input:focus { border-color: #460186; }
     input.field-normal { text-align: left; letter-spacing: normal; }
     .badge { display: inline-block; padding: 4px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
-    .badge-offert { background: linear-gradient(135deg, #463A90, #E85100); color: white; }
+    .badge-offert { background: linear-gradient(135deg, #460186, #FF741F); color: white; }
     .icon { font-size: 44px; margin-bottom: 10px; }
     #screen-login, #screen-carte, #screen-success, #screen-error, #screen-loading { display: none; }
   </style>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon-round.svg?v=3">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=3">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-96x96.png?v=3">
   <link rel="shortcut icon" href="/favicon.ico?v=3">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=3">
@@ -106,7 +106,7 @@
     <input type="text" id="pin-input" placeholder="••••••" autocomplete="off"
       onkeydown="if(event.key==='Enter')doLogin()" autofocus>
     <button class="btn" onclick="doLogin()">Accéder</button>
-    <p id="login-error" style="color:#e85100;font-size:13px;margin-top:-4px;display:none;">Code incorrect, réessaie.</p>
+    <p id="login-error" style="color:#FF741F;font-size:13px;margin-top:-4px;display:none;">Code incorrect, réessaie.</p>
   </div>
 
   <!-- CARTE -->

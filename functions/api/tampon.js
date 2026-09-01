@@ -110,7 +110,7 @@ async function sendRewardEmail(carte, env) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
         <tr>
-          <td style="background:linear-gradient(135deg,#463A90 0%,#8B1A6B 50%,#E85100 100%);padding:44px 40px;text-align:center;">
+          <td style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:44px 40px;text-align:center;">
             <p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON</p>
             <h1 style="margin:0;font-size:32px;font-weight:700;color:#fff;letter-spacing:1px;">Carte fidélité complète 🎉</h1>
           </td>
@@ -119,20 +119,20 @@ async function sendRewardEmail(carte, env) {
           <td style="background:#fff;padding:40px;">
             <p style="margin:0 0 20px;font-size:17px;color:#1A1A2E;">Salut ${escapeHtml(carte.prenom)},</p>
             <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.7;">Bravo, tu as rempli ta carte fidélité BDE CREAD ! 🎊<br>Ta récompense t'attend :</p>
-            <div style="background:linear-gradient(135deg,#463A90,#E85100);border-radius:14px;padding:24px;text-align:center;color:#fff;margin:20px 0;">
+            <div style="background:linear-gradient(135deg,#460186,#FF741F);border-radius:14px;padding:24px;text-align:center;color:#fff;margin:20px 0;">
               <p style="margin:0 0 6px;font-size:22px;font-weight:700;">-10% sur une soirée BDE</p>
               <p style="margin:0 0 8px;font-size:14px;opacity:0.85;">ou</p>
               <p style="margin:0;font-size:22px;font-weight:700;">Un repas offert 🍽️</p>
             </div>
             <p style="margin:20px 0;font-size:14px;color:#4A4560;line-height:1.7;">Pour en profiter, montre simplement ta carte fidélité au BDE lors du prochain événement.</p>
             <div style="text-align:center;margin-top:28px;">
-              <a href="https://bdecreadien.fr/carte.html?uid=${carte.id}" style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.5px;">Voir ma carte</a>
+              <a href="https://bdecreadien.fr/carte.html?uid=${carte.id}" style="display:inline-block;background:linear-gradient(135deg,#460186,#FF741F);color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.5px;">Voir ma carte</a>
             </div>
           </td>
         </tr>
         <tr>
           <td style="background:#F5F4FF;padding:20px 40px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#888;">BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a></p>
+            <p style="margin:0;font-size:12px;color:#888;">BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a></p>
           </td>
         </tr>
       </table>
