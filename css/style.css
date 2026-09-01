@@ -110,8 +110,8 @@ nav {
 
 nav.scrolled {
   background: rgba(255, 255, 255, 0.98);
-  border-bottom: 1px solid rgba(70, 58, 144, 0.1);
-  box-shadow: 0 4px 30px rgba(70, 58, 144, 0.08);
+  border-bottom: 1px solid rgba(70,1,134, 0.1);
+  box-shadow: 0 4px 30px rgba(70,1,134, 0.08);
 }
 @media (min-width: 769px) {
   nav.scrolled { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.95); }
@@ -226,13 +226,13 @@ nav.scrolled .nav-links a:hover {
   color: white !important;
   padding: 8px 20px;
   border-radius: 100px;
-  box-shadow: 0 4px 15px rgba(232, 81, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(255,116,31, 0.3);
 }
 
 .nav-links a[aria-current="page"]:hover,
 .nav-links a.nav-active:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(232, 81, 0, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(255,116,31, 0.4) !important;
 }
 
 .nav-links a[aria-current="page"]::after,
@@ -630,8 +630,8 @@ section {
 }
 
 .actu-item:hover {
-  border-color: rgba(70, 58, 144, 0.15);
-  box-shadow: 0 8px 30px rgba(70, 58, 144, 0.08);
+  border-color: rgba(70,1,134, 0.15);
+  box-shadow: 0 8px 30px rgba(70,1,134, 0.08);
   transform: translateX(8px);
 }
 
@@ -793,8 +793,8 @@ section {
   background: white;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(70, 58, 144, 0.1);
-  border: 1px solid rgba(70, 58, 144, 0.08);
+  box-shadow: 0 20px 60px rgba(70,1,134, 0.1);
+  border: 1px solid rgba(70,1,134, 0.08);
 }
 
 .calendar-container iframe {
@@ -814,8 +814,8 @@ section {
   background: white;
   border-radius: 20px;
   padding: 2rem;
-  border: 1px solid rgba(70, 58, 144, 0.08);
-  box-shadow: 0 8px 30px rgba(70, 58, 144, 0.05);
+  border: 1px solid rgba(70,1,134, 0.08);
+  box-shadow: 0 8px 30px rgba(70,1,134, 0.05);
 }
 
 .sidebar-card h3 {
@@ -888,13 +888,13 @@ section {
 .btn-primary {
   background: var(--gradient);
   color: white;
-  box-shadow: 0 6px 20px rgba(232, 81, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(255,116,31, 0.3);
   width: 100%;
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(232, 81, 0, 0.4);
+  box-shadow: 0 12px 30px rgba(255,116,31, 0.4);
 }
 
 .btn-outline {
@@ -1012,7 +1012,7 @@ section {
 .modal-tab.active {
   background: white;
   color: var(--violet);
-  box-shadow: 0 2px 8px rgba(70, 58, 144, 0.12);
+  box-shadow: 0 2px 8px rgba(70,1,134, 0.12);
 }
 
 .modal-tab-content {
@@ -1032,7 +1032,7 @@ section {
   color: var(--gris-texte);
   word-break: break-all;
   margin-bottom: 1rem;
-  border: 1px solid rgba(70, 58, 144, 0.1);
+  border: 1px solid rgba(70,1,134, 0.1);
 }
 
 /* ===================================
@@ -1057,8 +1057,8 @@ section {
   background: white;
   border-radius: 24px;
   padding: 2.5rem;
-  border: 1px solid rgba(70, 58, 144, 0.08);
-  box-shadow: 0 8px 30px rgba(70, 58, 144, 0.05);
+  border: 1px solid rgba(70,1,134, 0.08);
+  box-shadow: 0 8px 30px rgba(70,1,134, 0.05);
   transition: var(--transition);
   text-decoration: none;
   display: flex;
@@ -1087,7 +1087,7 @@ section {
 
 .comm-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 24px 60px rgba(70, 58, 144, 0.12);
+  box-shadow: 0 24px 60px rgba(70,1,134, 0.12);
 }
 
 .comm-card-icon {
@@ -1206,9 +1206,9 @@ section {
 }
 
 .equipe-card:hover {
-  border-color: rgba(70, 58, 144, 0.15);
+  border-color: rgba(70,1,134, 0.15);
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(70, 58, 144, 0.08);
+  box-shadow: 0 12px 30px rgba(70,1,134, 0.08);
 }
 
 .equipe-avatar {
@@ -1287,7 +1287,7 @@ section {
   font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border: 1.5px solid rgba(70, 58, 144, 0.2);
+  border: 1.5px solid rgba(70,1,134, 0.2);
   background: transparent;
   color: var(--gris-texte);
   cursor: pointer;
@@ -1312,8 +1312,8 @@ section {
   background: white;
   border-radius: 16px;
   padding: 1.25rem;
-  border: 1px solid rgba(70, 58, 144, 0.08);
-  box-shadow: 0 4px 20px rgba(70, 58, 144, 0.04);
+  border: 1px solid rgba(70,1,134, 0.08);
+  box-shadow: 0 4px 20px rgba(70,1,134, 0.04);
   transition: var(--transition);
   display: flex;
   flex-direction: column;
@@ -1331,8 +1331,8 @@ section {
 
 .annonce-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(70, 58, 144, 0.12);
-  border-color: rgba(70, 58, 144, 0.2);
+  box-shadow: 0 12px 32px rgba(70,1,134, 0.12);
+  border-color: rgba(70,1,134, 0.2);
 }
 
 .annonce-header {
@@ -1353,8 +1353,8 @@ section {
   flex-shrink: 0;
 }
 
-.badge-materiel { background: rgba(70, 58, 144, 0.1); color: var(--violet); }
-.badge-place { background: rgba(232, 81, 0, 0.1); color: var(--orange); }
+.badge-materiel { background: rgba(70,1,134, 0.1); color: var(--violet); }
+.badge-place { background: rgba(255,116,31, 0.1); color: var(--orange); }
 .badge-logement { background: rgba(0, 160, 120, 0.1); color: #00A078; }
 .badge-autre { background: rgba(100, 100, 100, 0.1); color: #666; }
 
@@ -1445,7 +1445,7 @@ section {
 
 .annonce-contact:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(232, 81, 0, 0.35);
+  box-shadow: 0 6px 16px rgba(255,116,31, 0.35);
 }
 
 /* ===== MODALE ANNONCE ===== */
@@ -1783,7 +1783,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  border: 1px solid rgba(70,58,144,0.08);
+  border: 1px solid rgba(70,1,134,0.08);
   transition: var(--transition);
   opacity: 0.75;
 }
@@ -1791,7 +1791,7 @@ footer {
 .archive-card:hover {
   opacity: 1;
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(70,58,144,0.08);
+  box-shadow: 0 8px 24px rgba(70,1,134,0.08);
 }
 
 .archive-card-date {
@@ -1840,7 +1840,7 @@ footer {
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: 100px;
-  background: rgba(70,58,144,0.08);
+  background: rgba(70,1,134,0.08);
   color: var(--gris-texte);
   display: inline-block;
   margin-top: 5px;
@@ -1875,7 +1875,7 @@ footer {
   content: '';
   flex: 1;
   height: 1px;
-  background: rgba(70,58,144,0.1);
+  background: rgba(70,1,134,0.1);
 }
 
 .pole-bureau .equipe-grid {
@@ -2053,7 +2053,7 @@ br.mobile-only { display: none; }
     background: rgba(255,255,255,0.06) !important;
   }
   .nav-links a[aria-current="page"] {
-    background: rgba(232, 81, 0, 0.15) !important;
+    background: rgba(255,116,31, 0.15) !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
     padding: 1rem 1.5rem;
@@ -2147,7 +2147,7 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
   text-transform: uppercase;
   padding: 4px 12px;
   border-radius: 99px;
-  background: rgba(70,58,144,0.12);
+  background: rgba(70,1,134,0.12);
   color: var(--violet);
   margin-bottom: 0.75rem;
 }
@@ -2161,7 +2161,7 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
   gap: 6px;
   padding: 8px 16px;
   border-radius: 99px;
-  border: 1.5px solid rgba(70,58,144,0.25);
+  border: 1.5px solid rgba(70,1,134,0.25);
   background: transparent;
   color: var(--violet);
   font-size: 13px;
@@ -2171,7 +2171,7 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
   white-space: nowrap;
 }
 .btn-share:hover {
-  background: rgba(70,58,144,0.08);
+  background: rgba(70,1,134,0.08);
   border-color: var(--violet);
 }
 .actu-featured .btn-share {
@@ -2235,7 +2235,7 @@ main, .hero, .comm-hero, .agenda-hero, .annonces-hero {
   background: white;
   border-radius: 20px;
   padding: 2.5rem;
-  box-shadow: 0 4px 32px rgba(70,58,144,0.08);
+  box-shadow: 0 4px 32px rgba(70,1,134,0.08);
 }
 .contact-form-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 0.25rem; }
 .contact-form-sub { font-size: 14px; color: var(--gris-texte); margin-bottom: 1.75rem; }
@@ -2400,7 +2400,7 @@ a.contact-info-value:hover { color: var(--violet); }
   background: white;
   border-radius: 20px;
   padding: 2rem 1.75rem;
-  box-shadow: 0 4px 20px rgba(70,58,144,0.07);
+  box-shadow: 0 4px 20px rgba(70,1,134,0.07);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2412,7 +2412,7 @@ a.contact-info-value:hover { color: var(--violet); }
 }
 .partenaire-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 36px rgba(70,58,144,0.13);
+  box-shadow: 0 12px 36px rgba(70,1,134,0.13);
 }
 .partenaire-logo {
   width: 100%;
@@ -2489,7 +2489,7 @@ a.contact-info-value:hover { color: var(--violet); }
   gap: 4px;
   padding: 5px 10px;
   border-radius: 8px;
-  border: 1.5px solid rgba(70,58,144,0.2);
+  border: 1.5px solid rgba(70,1,134,0.2);
   background: transparent;
   color: var(--violet);
   font-size: 11px;
@@ -2497,7 +2497,7 @@ a.contact-info-value:hover { color: var(--violet); }
   cursor: pointer;
   transition: background 0.15s;
 }
-.btn-ics:hover { background: rgba(70,58,144,0.07); }
+.btn-ics:hover { background: rgba(70,1,134,0.07); }
 
 @media (max-width: 768px) {
   .partenaires-grid { grid-template-columns: 1fr 1fr; }
@@ -2654,7 +2654,7 @@ a.contact-info-value:hover { color: var(--violet); }
   transform: translateX(-50%) translateY(120px);
   z-index: 9999;
   background: #1a1728;
-  border: 1px solid rgba(70,58,144,0.4);
+  border: 1px solid rgba(70,1,134,0.4);
   border-radius: 16px;
   padding: 18px 22px;
   display: flex;
@@ -2792,8 +2792,8 @@ nav.scrolled .nav-auth-link        { color: var(--gris-texte); }
   min-width: 200px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(70,58,144,0.18);
-  border: 1px solid rgba(70,58,144,0.08);
+  box-shadow: 0 10px 40px rgba(70,1,134,0.18);
+  border: 1px solid rgba(70,1,134,0.08);
   padding: 6px;
   z-index: 1001;
   display: flex;
@@ -2898,7 +2898,7 @@ nav.scrolled .nav-auth-logout       { color: var(--gris-texte); }
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
-    background: rgba(70,58,144,0.04) !important;
+    background: rgba(70,1,134,0.04) !important;
     min-width: 0 !important;
     padding: 0 !important;
     width: 100% !important;
@@ -2914,7 +2914,7 @@ nav.scrolled .nav-auth-logout       { color: var(--gris-texte); }
   }
   .nav-auth-menu button#nav-logout-btn,
   nav:not(.scrolled) .nav-auth-menu button#nav-logout-btn {
-    border-top: 1px solid rgba(70,58,144,0.1);
+    border-top: 1px solid rgba(70,1,134,0.1);
     margin-top: 0;
     padding-top: 0.75rem !important;
   }

@@ -70,8 +70,8 @@ function renderFideliteList() {
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;flex-shrink:0;justify-content:flex-end;">
           <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
-          <button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Lien</button>
-          ${historique.length ? `<button class="btn-edit" style="background:rgba(70,58,144,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
+          <button class="btn-edit" style="background:rgba(70,1,134,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Lien</button>
+          ${historique.length ? `<button class="btn-edit" style="background:rgba(70,1,134,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
           ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Reset</button>` : ''}
           <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
         </div>

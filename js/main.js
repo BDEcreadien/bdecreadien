@@ -128,7 +128,7 @@ function renderActu(data) {
       else if (days === 1) countdownHtml = `<span class="actu-countdown">Demain</span>`;
       else countdownHtml = `<span class="actu-countdown">Dans ${days} jour${days > 1 ? 's' : ''}</span>`;
     } else if (diff > -86400000) {
-      countdownHtml = `<span class="actu-countdown" style="background:rgba(232,81,0,0.15);color:var(--orange);">C'est aujourd'hui !</span>`;
+      countdownHtml = `<span class="actu-countdown" style="background:rgba(255,116,31,0.15);color:var(--orange);">C'est aujourd'hui !</span>`;
     }
   }
 
@@ -613,7 +613,7 @@ if (document.getElementById('sidebar-events')) {
         const idx = parseInt(row.dataset.idx);
         if (!isNaN(idx) && upcoming[idx] && window.openEvModal) window.openEvModal(upcoming[idx]);
       });
-      row.addEventListener('mouseenter', () => row.style.background = 'rgba(70,58,144,0.04)');
+      row.addEventListener('mouseenter', () => row.style.background = 'rgba(70,1,134,0.04)');
       row.addEventListener('mouseleave', () => row.style.background = '');
     });
   });
@@ -805,8 +805,8 @@ let badgeLabels = {
 };
 
 const BADGE_PALETTE = [
-  { bg: 'rgba(70,58,144,0.1)',  color: '#460186' },
-  { bg: 'rgba(232,81,0,0.1)',   color: '#FF741F' },
+  { bg: 'rgba(70,1,134,0.1)',  color: '#460186' },
+  { bg: 'rgba(255,116,31,0.1)',   color: '#FF741F' },
   { bg: 'rgba(0,160,120,0.1)', color: '#00A078' },
   { bg: 'rgba(100,100,100,0.1)', color: '#555'  },
   { bg: 'rgba(220,50,90,0.12)', color: '#C0284A' },
