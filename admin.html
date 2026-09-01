@@ -726,6 +726,7 @@ function goBack() {
   else if (prev === 'fidelite') { showStep('fidelite'); initFidelite(); }
   else if (prev === 'newsletter') { showStep('newsletter'); initNewsletter(); }
   else if (prev === 'finances') { showStep('finances'); initFinances(); }
+  else if (prev === 'planning') { showStep('planning'); initPlanning(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
     const type = prev.split(':')[1];
