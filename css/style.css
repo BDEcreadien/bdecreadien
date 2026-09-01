@@ -1761,16 +1761,7 @@ footer {
    ANIMATIONS MINIMALISTES — VIE DU SITE
    =================================== */
 
-/* Hero : dégradé qui respire lentement */
-.hero {
-  background-size: 200% 200%;
-  animation: heroShift 22s ease-in-out infinite;
-}
-@keyframes heroShift {
-  0%   { background-position: 0% 0%; }
-  50%  { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
+/* Hero : dégradé statique (rendu top-left → bottom-right, plus punchy) */
 
 /* Blobs flottants dans le hero */
 .hero-bg-shape-1 { animation: floatSlow 14s ease-in-out infinite; }
