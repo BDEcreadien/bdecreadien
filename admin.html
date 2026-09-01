@@ -10,7 +10,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --violet: #460186; --orange: #FF741F;
-      --gradient: linear-gradient(135deg, #460186, #D2396D, #FF741F);
+      --gradient: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
       --noir: #0f0f10; --gris-bg: #f5f5f7;
       --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
     }
@@ -490,7 +490,7 @@
 
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau">+ Nouvelle transaction</button>
-        <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg,#FF741F,#D2396D);">+ Nouvel événement</button>
+        <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg, #FF741F 0%, #F04A34 25%, #D2396D 60%, #9B1889 100%);">+ Nouvel événement</button>
       </div>
 
       <div id="fin-form-ev" class="form-card" style="margin-bottom:1.5rem;">
@@ -609,7 +609,7 @@
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
     <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
-      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;transition:width 0.3s;"></div>
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);border-radius:99px;transition:width 0.3s;"></div>
     </div>
     <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
   </div>
@@ -2773,7 +2773,7 @@ function renderFideliteList() {
           <div class="item-card-title">${c.prenom} ${c.nom}</div>
           <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
             <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
-              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;"></div>
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);border-radius:99px;"></div>
             </div>
             <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
             ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
@@ -3118,7 +3118,7 @@ function nlTextToHtml(txt) {
     // Bouton call-to-action : [[BTN:label|url]]
     const btn = block.match(/^\[\[BTN:([^|]+)\|([^\]]+)\]\]$/);
     if (btn && isSafeUrl(btn[2])) {
-      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg,#460186,#FF741F);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
+      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
     }
     // Image seule : ![alt](url)
     const img = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
@@ -3161,7 +3161,7 @@ function buildNewsletterHtml(sujet, contenu) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 8px 40px rgba(70,1,134,0.12);">
-        <tr><td style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:32px 40px;">
+        <tr><td style="background:linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);padding:32px 40px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON</p>
           <h1 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:1px;">${escapeHtmlNl(sujet)}</h1>
         </td></tr>
@@ -4020,7 +4020,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
     <div style="display:flex;gap:10px;">
       <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
-      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#460186,#FF741F);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
     </div>
   </div>
 </div>

@@ -11,7 +11,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --violet: #460186; --orange: #FF741F;
-      --gradient: linear-gradient(135deg, #460186, #D2396D, #FF741F);
+      --gradient: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
       --noir: #0f0f10; --gris-bg: #f5f5f7;
       --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
     }
@@ -437,7 +437,7 @@
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
     <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
-      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#460186,#FF741F);border-radius:99px;transition:width 0.3s;"></div>
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);border-radius:99px;transition:width 0.3s;"></div>
     </div>
     <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
   </div>
@@ -466,7 +466,7 @@
     <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
     <div style="display:flex;gap:10px;">
       <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
-      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#460186,#FF741F);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
     </div>
   </div>
 </div>
