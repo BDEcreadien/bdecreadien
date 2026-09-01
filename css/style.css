@@ -320,11 +320,11 @@ nav.scrolled .nav-burger-line {
 }
 
 .hero-bg-shape-1 {
-  width: 650px;
-  height: 650px;
+  width: 550px;
+  height: 550px;
   background: #FF2E88;
-  top: -180px;
-  left: -180px;
+  top: 40%;
+  left: -220px;
 }
 
 .hero-bg-shape-2 {
