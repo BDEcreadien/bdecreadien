@@ -3998,11 +3998,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   const profil = await Auth.getProfil();
   document.getElementById('screen-auth-check').style.display = 'none';
 
-  // Card Finances visible uniquement pour le bureau (membre/admin + bureau=true)
+  // Cards bureau-only (Finances + Planning)
   if (profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true) {
     const finCard = document.getElementById('page-card-finances');
     if (finCard) finCard.style.display = '';
+    const plnCard = document.getElementById('page-card-planning');
+    if (plnCard) plnCard.style.display = '';
   }
+  window._monProfilId = profil ? profil.id : null;
 
   // 2. Charger le token GitHub depuis Supabase (partagé entre membres BDE)
   const { data: cfg } = await Auth.sb.from('bde_config')
