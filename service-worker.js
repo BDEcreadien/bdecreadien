@@ -1,4 +1,4 @@
-const CACHE = 'bde-cread-v4';
+const CACHE = 'bde-cread-v5';
 
 self.addEventListener('install', e => {
   e.waitUntil(
