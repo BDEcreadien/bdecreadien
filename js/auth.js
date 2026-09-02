@@ -13,27 +13,56 @@
     return user;
   }
 
+  // Cache local persistant (survit à la fermeture de l'onglet)
+  function _getCachedProfil() {
+    try {
+      const s = sessionStorage.getItem('_bde_profil');
+      if (s) return JSON.parse(s);
+      const l = localStorage.getItem('_bde_profil');
+      if (l) return JSON.parse(l);
+    } catch (_) {}
+    return null;
+  }
+  function _setCachedProfil(data) {
+    try {
+      const s = JSON.stringify(data);
+      sessionStorage.setItem('_bde_profil', s);
+      localStorage.setItem('_bde_profil', s);
+    } catch (_) {}
+  }
+  function _clearCachedProfil() {
+    try {
+      sessionStorage.removeItem('_bde_profil');
+      localStorage.removeItem('_bde_profil');
+    } catch (_) {}
+  }
+
+  // Version cache-only (synchrone) : retourne le dernier profil connu sans réseau. Sert au first-paint.
+  function getProfilCached() {
+    if (_profil) return _profil;
+    const c = _getCachedProfil();
+    if (c) _profil = c;
+    return _profil;
+  }
+
   async function getProfil(forceRefresh = false) {
     if (_profil && !forceRefresh) return _profil;
-    // Cache sessionStorage pour éviter un aller-retour Supabase entre pages
     if (!forceRefresh) {
-      try {
-        const cached = sessionStorage.getItem('_bde_profil');
-        if (cached) { _profil = JSON.parse(cached); return _profil; }
-      } catch (_) {}
+      const cached = _getCachedProfil();
+      if (cached) { _profil = cached; return _profil; }
     }
     const user = await getUser();
-    if (!user) { _profil = null; sessionStorage.removeItem('_bde_profil'); return null; }
+    if (!user) { _profil = null; _clearCachedProfil(); return null; }
     const { data } = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
     if (!data) {
       // Session orpheline : l'auth user existe mais pas le profil — on déconnecte
       await sb.auth.signOut();
       _profil = null;
-      sessionStorage.removeItem('_bde_profil');
+      _clearCachedProfil();
       return null;
     }
     _profil = data;
-    try { sessionStorage.setItem('_bde_profil', JSON.stringify(data)); } catch (_) {}
+    _setCachedProfil(data);
     return _profil;
   }
 
