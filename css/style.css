@@ -2187,7 +2187,10 @@ br.mobile-only { display: none; }
     border-bottom: 1px solid rgba(255,255,255,0.05);
   }
   .nav-links .nav-auth-name {
-    display: block;
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
     width: 100%;
     padding: 1rem 1.5rem;
     font-size: 16px;
