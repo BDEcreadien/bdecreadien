@@ -179,7 +179,7 @@
   sb.auth.onAuthStateChange((event, session) => {
     if (!session || event === 'SIGNED_OUT') {
       _profil = null;
-      try { sessionStorage.removeItem('_bde_profil'); } catch (_) {}
+      _clearCachedProfil();
       // Si l'utilisateur était sur une page protégée et que la session expire,
       // redirection propre vers connexion avec message
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_OUT') {
