@@ -33,7 +33,20 @@
       'Prefer': 'return=minimal'
     };
 
+    // Rate-limit anti-spam : max 60 events/min par session
+    const RATE_MAX = 60;
+    const RATE_WINDOW_MS = 60 * 1000;
+    const _rateHits = [];
+    function withinRateLimit() {
+      const now = Date.now();
+      while (_rateHits.length && _rateHits[0] < now - RATE_WINDOW_MS) _rateHits.shift();
+      if (_rateHits.length >= RATE_MAX) return false;
+      _rateHits.push(now);
+      return true;
+    }
+
     function send(payload) {
+      if (!withinRateLimit()) return; // silencieux : dépasse le quota
       // Supabase REST exige les headers apikey + Authorization,
       // sendBeacon ne peut pas les définir → fetch keepalive
       fetch(URL_REST, {
