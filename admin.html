@@ -4189,11 +4189,13 @@ async function plnSaveEv() {
     lieu: document.getElementById('pln-ev-lieu').value.trim() || null,
     description: document.getElementById('pln-ev-desc').value.trim() || null,
     categorie_budget: document.getElementById('pln-ev-cat').value || null,
-    interne: document.getElementById('pln-ev-interne').checked,
     created_by: window._monProfilId || null
   };
-  const { error } = await Auth.sb.from('evenements').insert(payload);
-  if (error) return toast('Erreur : ' + error.message, 'error');
+  const { data, error } = await Auth.sb.from('evenements').insert(payload).select();
+  if (error) {
+    console.error('[planning] insert evenement failed', error, payload);
+    return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
+  }
   toast('Événement créé', 'success');
   plnTogglerFormEv();
   await plnReload();
