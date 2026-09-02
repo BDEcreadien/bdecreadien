@@ -955,6 +955,34 @@
       else av.textContent = (p.prenom[0] || '?').toUpperCase();
     }
 
+    // ======= INIT (positionné après _MAIN_TAB / renderHero / switchTab pour éviter la TDZ) =======
+    if (_cachedProfil) {
+      currentProfil = _cachedProfil;
+      renderHero();
+      showTabsForRole(currentProfil.role);
+      if (location.hash) switchTab(location.hash.replace('#', ''));
+    }
+
+    (async () => {
+      try {
+        currentProfil = await Auth.getProfil(_cachedProfil ? true : false);
+        if (!currentProfil) { window.location.href = '/connexion.html?next=/mon-espace.html'; return; }
+        try { currentUser = await Auth.getUser(); } catch (_) {}
+
+        renderHero();
+        showTabsForRole(currentProfil.role);
+        if (location.hash) switchTab(location.hash.replace('#', ''));
+        fillInfos();
+        renderNotifPrefs();
+        await loadAll();
+      } catch (err) {
+        console.error('Erreur init mon-espace:', err);
+        if (!_cachedProfil) {
+          document.getElementById('me-hero-name').textContent = 'Erreur de chargement';
+        }
+      }
+    })();
+
     // ======= AVATAR =======
     document.getElementById('me-avatar-input').addEventListener('change', async (e) => {
       const file = e.target.files[0];
