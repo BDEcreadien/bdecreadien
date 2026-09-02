@@ -752,7 +752,10 @@
 
     <!-- BDE MEMBRES (admin) -->
     <div id="tab-bde-membres" class="me-panel">
-      <h2 class="section-title">Gestion des membres</h2>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;">
+        <h2 class="section-title" style="margin:0;">Gestion des membres</h2>
+        <span id="users-count-badge" style="display:inline-block;padding:6px 14px;border-radius:99px;background:var(--gradient);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">— inscrits</span>
+      </div>
       <p class="section-sub">Changer les rôles, bannir ou supprimer.</p>
       <input type="search" id="users-search" class="search-input" placeholder="Rechercher un utilisateur…" oninput="filterUsers()">
       <div id="users-list" class="users-list"></div>
