@@ -1602,6 +1602,13 @@
     }
     function renderUsers(list) {
       const wrap = document.getElementById('users-list');
+      const badge = document.getElementById('users-count-badge');
+      if (badge) {
+        const total = allUsers.length;
+        badge.textContent = list.length === total
+          ? `${total} inscrit${total > 1 ? 's' : ''}`
+          : `${list.length} sur ${total}`;
+      }
       if (!list.length) { wrap.innerHTML = `<div class="empty">Aucun utilisateur.</div>`; return; }
       wrap.innerHTML = list.map((u, idx) => {
         const banni = u.banni_jusqu_a && new Date(u.banni_jusqu_a) > new Date();
