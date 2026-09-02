@@ -74,7 +74,7 @@
   </button>
 </nav>
 <script>
-(function(){var c=(location.pathname.split('/').pop()||'index.html').replace(/^$/,'index.html');document.querySelectorAll('.nav-links a').forEach(function(a){var h=a.getAttribute('href');if(h===c){a.setAttribute('aria-current','page');a.classList.add('nav-active');}});})();
+(function(){var norm=function(s){return (s||'').toLowerCase().replace(/^\//,'').replace(/\.html$/,'')||'index';};var c=norm(location.pathname.split('/').pop());document.querySelectorAll('.nav-links a').forEach(function(a){var h=norm(a.getAttribute('href'));if(h===c){a.setAttribute('aria-current','page');a.classList.add('nav-active');}});})();
 </script>
 <!-- @include nav @end -->
 
