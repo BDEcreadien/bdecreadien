@@ -168,7 +168,7 @@
     } catch (_) {}
   }
 
-  window.Auth = { getUser, getProfil, getRole, hasRole, requireRole, logout, sb, notifyBde };
+  window.Auth = { getUser, getProfil, getProfilCached, getRole, hasRole, requireRole, logout, sb, notifyBde };
 
   // Purge le cache profil quand la session change (logout, expiration, autre onglet)
   // + redirige si expiration détectée sur une page protégée
