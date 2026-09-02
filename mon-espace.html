@@ -890,10 +890,19 @@
     const _initHash = location.hash.replace('#', '');
     if (_initHash) switchTab(_initHash);
 
-    // Init async
+    // First paint : rendu instantané depuis le cache local si dispo
+    const _cachedProfil = (window.Auth && Auth.getProfilCached) ? Auth.getProfilCached() : null;
+    if (_cachedProfil) {
+      currentProfil = _cachedProfil;
+      renderHero();
+      showTabsForRole(currentProfil.role);
+      if (location.hash) switchTab(location.hash.replace('#', ''));
+    }
+
+    // Init async : rafraîchit en arrière-plan
     (async () => {
       try {
-        currentProfil = await Auth.getProfil();
+        currentProfil = await Auth.getProfil(_cachedProfil ? true : false);
         if (!currentProfil) { window.location.href = '/connexion.html?next=/mon-espace.html'; return; }
         try { currentUser = await Auth.getUser(); } catch (_) {}
 
@@ -906,7 +915,9 @@
         await loadAll();
       } catch (err) {
         console.error('Erreur init mon-espace:', err);
-        document.getElementById('me-hero-name').textContent = 'Erreur de chargement';
+        if (!_cachedProfil) {
+          document.getElementById('me-hero-name').textContent = 'Erreur de chargement';
+        }
       }
     })();
 
