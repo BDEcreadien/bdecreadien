@@ -2175,6 +2175,83 @@ br.mobile-only { display: none; }
     display: flex;
   }
 
+  /* Menu utilisateur connecté sur mobile — même style que les autres liens */
+  .nav-links .nav-auth-li {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    padding: 0;
+    gap: 0;
+    position: static;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .nav-links .nav-auth-name {
+    display: block;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: right;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background: none !important;
+    border-radius: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .nav-links .nav-auth-menu {
+    position: static;
+    background: rgba(0,0,0,0.25);
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .nav-links .nav-auth-menu[hidden] { display: none; }
+  .nav-links .nav-auth-menu a,
+  .nav-links .nav-auth-menu button,
+  nav:not(.scrolled) .nav-links .nav-auth-menu a,
+  nav:not(.scrolled) .nav-links .nav-auth-menu button {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    text-align: right;
+    color: rgba(255,255,255,0.9) !important;
+    -webkit-text-fill-color: rgba(255,255,255,0.9) !important;
+    background: none !important;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .nav-links .nav-auth-menu a:hover,
+  .nav-links .nav-auth-menu button:hover {
+    background: rgba(255,255,255,0.06) !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  .nav-links .nav-auth-menu button#nav-logout-btn,
+  nav:not(.scrolled) .nav-links .nav-auth-menu button#nav-logout-btn {
+    color: #ff8b7a !important;
+    -webkit-text-fill-color: #ff8b7a !important;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: 0;
+  }
+  .nav-links .nav-auth-bde {
+    display: inline-block;
+    margin: 0.5rem 1.5rem 0.75rem auto;
+    align-self: flex-end;
+  }
+
   /* Sections */
   section { padding: 3.5rem 1.25rem; }
   .section-header { margin-bottom: 2rem; }
