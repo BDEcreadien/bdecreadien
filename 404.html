@@ -178,7 +178,7 @@
     <button class="nb-later" onclick="dismissNotifBanner()">Plus tard</button>
     <button class="nb-subscribe" onclick="openNewsletterForm()">S'abonner</button>
   </div>
-  <form id="nb-form" onsubmit="submitNewsletterInline(event)" style="display:none;flex:1;gap:8px;">
+  <form id="nb-form" onsubmit="submitNewsletterInline(event)" style="display:none;flex:1;gap:8px;"><input type="text" name="url" id="nb-hp" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
     <input type="email" id="nb-email" required placeholder="ton@email.com"
       style="flex:1;min-width:0;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;">
     <button type="submit" class="nb-subscribe">OK</button>
@@ -202,10 +202,15 @@
     document.getElementById('nb-default-actions').style.display = 'none';
     var f = document.getElementById('nb-form');
     f.style.display = 'flex';
+    window._nbOpenedAt = Date.now();
     setTimeout(function(){ document.getElementById('nb-email').focus(); }, 50);
   }
   async function submitNewsletterInline(e) {
     e.preventDefault();
+    // Anti-bot : honeypot + délai minimum d'affichage
+    var hp = document.getElementById('nb-hp');
+    if (hp && hp.value) { console.warn('[newsletter] honeypot rempli, requête ignorée'); return; }
+    if (window._nbOpenedAt && (Date.now() - window._nbOpenedAt) < 1500) { console.warn('[newsletter] soumission trop rapide, requête ignorée'); return; }
     var email = document.getElementById('nb-email').value.trim().toLowerCase();
     if (!email) return;
     var btn = e.target.querySelector('button');
