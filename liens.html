@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Liens — BDE CREAD Lyon</title>
+  <meta name="description" content="Tous les liens utiles du BDE CREAD Lyon : réseaux sociaux, événements, adhésion, contact.">
+  <link rel="canonical" href="https://bdecreadien.fr/liens">
+  <meta property="og:title" content="Liens — BDE CREAD Lyon">
+  <meta property="og:description" content="Retrouve tous les liens du BDE CREAD Lyon.">
+  <meta property="og:image" content="https://bdecreadien.fr/assets/Logo.png">
+  <meta property="og:url" content="https://bdecreadien.fr/liens">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#460186">
+
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-v2-96x96.png">
+  <link rel="shortcut icon" href="/favicon-v2.ico">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: linear-gradient(160deg, #2D0057 0%, #460186 18%, #6A0F9E 35%, #9B1889 50%, #D2396D 68%, #F04A34 85%, #FF741F 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .bg-noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: radial-gradient(circle at 20% 30%, rgba(255,46,136,0.35) 0%, transparent 45%),
+                        radial-gradient(circle at 80% 70%, rgba(255,116,31,0.30) 0%, transparent 50%);
+      mix-blend-mode: screen;
+    }
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 4rem;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .logo {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.28), 0 0 0 3px rgba(255,255,255,0.15);
+      animation: pulse 3.5s ease-in-out infinite;
+    }
+    .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(0,0,0,0.28), 0 0 0 3px rgba(255,255,255,0.15); }
+      50%      { transform: scale(1.04); box-shadow: 0 14px 50px rgba(0,0,0,0.32), 0 0 0 4px rgba(255,255,255,0.22); }
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(30px, 7vw, 42px);
+      letter-spacing: 2px;
+      margin-top: 1rem;
+      text-align: center;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .tagline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-top: 4px;
+      text-align: center;
+    }
+    .links {
+      width: 100%;
+      display: flex; flex-direction: column; gap: 12px;
+      margin-top: 2.5rem;
+    }
+    .link-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 14px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.25s cubic-bezier(.2,.7,.2,1), background 0.25s, box-shadow 0.25s, border-color 0.25s;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      opacity: 0;
+      transform: translateY(12px);
+      animation: reveal 0.5s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    .link-card:nth-child(1) { animation-delay: 0.05s; }
+    .link-card:nth-child(2) { animation-delay: 0.12s; }
+    .link-card:nth-child(3) { animation-delay: 0.19s; }
+    .link-card:nth-child(4) { animation-delay: 0.26s; }
+    .link-card:nth-child(5) { animation-delay: 0.33s; }
+    .link-card:nth-child(6) { animation-delay: 0.40s; }
+    .link-card:nth-child(7) { animation-delay: 0.47s; }
+    .link-card:nth-child(8) { animation-delay: 0.54s; }
+    .link-card:nth-child(n+9) { animation-delay: 0.60s; }
+    @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+    .link-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      background: rgba(255,255,255,0.20);
+      border-color: rgba(255,255,255,0.35);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+    }
+    .link-card:active { transform: translateY(-1px) scale(0.995); }
+    .link-icon {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.18);
+      border-radius: 10px;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .link-title { flex: 1; }
+    .link-chevron { opacity: 0.55; font-size: 18px; }
+    .footer {
+      margin-top: 3rem;
+      font-size: 12px;
+      opacity: 0.7;
+      text-align: center;
+    }
+    .footer a { color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); }
+    .loading, .empty, .error {
+      margin-top: 2rem; padding: 1.5rem; text-align: center;
+      background: rgba(255,255,255,0.08); border-radius: 12px;
+      font-size: 14px; opacity: 0.85;
+    }
+    .error { background: rgba(220,50,50,0.18); }
+    @media (prefers-reduced-motion: reduce) {
+      .logo, .link-card { animation: none !important; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-noise" aria-hidden="true"></div>
+  <main class="wrap">
+    <div class="logo"><img src="/assets/Logo.png?v=6" alt="BDE CREAD Lyon"></div>
+    <h1>BDE CREAD Lyon</h1>
+    <p class="tagline">Tous nos liens</p>
+
+    <div id="links" class="links" role="list"></div>
+    <div id="loading" class="loading">Chargement des liens…</div>
+    <div id="empty" class="empty" style="display:none;">Aucun lien pour le moment.</div>
+    <div id="error" class="error" style="display:none;">Impossible de charger les liens.</div>
+
+    <div class="footer">
+      <a href="/">Retour au site</a> · <a href="/agenda">Agenda</a> · <a href="/contact">Contact</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    (async function () {
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      const loadingEl = document.getElementById('loading');
+      const listEl = document.getElementById('links');
+      const emptyEl = document.getElementById('empty');
+      const errorEl = document.getElementById('error');
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      try {
+        const { data, error } = await sb
+          .from('liens')
+          .select('id, titre, url, icone, ordre')
+          .eq('actif', true)
+          .order('ordre', { ascending: true })
+          .order('created_at', { ascending: true });
+
+        loadingEl.style.display = 'none';
+
+        if (error) { console.error(error); errorEl.style.display = 'block'; return; }
+        if (!data || !data.length) { emptyEl.style.display = 'block'; return; }
+
+        listEl.innerHTML = data.map(l => {
+          const icon = l.icone || '🔗';
+          const isExternal = /^https?:\/\//.test(l.url);
+          const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+          return `<a class="link-card" href="${esc(l.url)}"${targetAttr}
+                     data-track="lien:${esc(l.id)}"
+                     data-lien-titre="${esc(l.titre)}" role="listitem">
+                    <span class="link-icon" aria-hidden="true">${esc(icon)}</span>
+                    <span class="link-title">${esc(l.titre)}</span>
+                    <span class="link-chevron" aria-hidden="true">›</span>
+                  </a>`;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+      }
+    })();
+  </script>
+  <script defer src="/js/cookie-banner.js?v=8"></script>
+  <script defer src="/js/tracker.js?v=1"></script>
+</body>
+</html>
