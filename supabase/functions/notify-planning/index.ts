@@ -82,10 +82,11 @@ serve(async (req) => {
   const message = String(body.message || '').slice(0, 200);
   const url = String(body.url || 'https://bdecreadien.fr/mon-espace.html#bde-planning').slice(0, 300);
 
-  // Récupère les OneSignal IDs des membres bureau (hors appelant si souhaité)
+  // Récupère les OneSignal IDs des membres bureau qui n'ont pas désactivé les notifs push
   const { data: bureau, error: bErr } = await sbAdmin.from('profils')
     .select('id, onesignal_id')
     .eq('bureau', true)
+    .neq('notif_push', false)
     .not('onesignal_id', 'is', null);
   if (bErr) {
     return new Response(JSON.stringify({ error: 'Impossible de charger le bureau : ' + bErr.message }), {
