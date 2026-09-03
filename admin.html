@@ -866,6 +866,10 @@ function selectPage(page) {
     navStack.push('planning');
     showStep('planning');
     initPlanning();
+  } else if (page === 'liens') {
+    navStack.push('liens');
+    showStep('liens');
+    initLiens();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
