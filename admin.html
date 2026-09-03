@@ -2165,7 +2165,8 @@ async function saveEvenement() {
   const debut = document.getElementById('ev-horaire-debut').value;
   const fin = document.getElementById('ev-horaire-fin').value;
   const lieu = document.getElementById('ev-lieu').value.trim();
-  const prix = document.getElementById('ev-prix').value;
+  const rawPrix = document.getElementById('ev-prix').value.trim().replace(/€/g, '').replace(',', '.').trim();
+  const prix = rawPrix ? (rawPrix.replace('.', ',') + '€') : '';
   const description = document.getElementById('ev-description').value.trim();
   if (!titre || !date || !debut || !fin || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
   const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
