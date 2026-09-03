@@ -4698,63 +4698,66 @@ function lnkClearImage() {
 }
 
 async function lnkSave() {
-  const btn = document.querySelector('#lnk-form .btn-save');
-  if (btn && btn.disabled) return;
-  if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement…'; }
+  // 1) Récupération + validation immédiate
+  const id = document.getElementById('lnk-id').value;
+  const type = document.getElementById('lnk-type').value || 'principal';
+  const titre = document.getElementById('lnk-titre').value.trim();
+  let url = document.getElementById('lnk-url').value.trim();
+  const icone = document.getElementById('lnk-icone').value.trim() || null;
+  const image_url = document.getElementById('lnk-image-url').value.trim() || null;
+  const social_icon = document.getElementById('lnk-social-icon').value.trim() || null;
+  const actif = document.getElementById('lnk-actif').checked;
+  if (!titre) return toast('Titre obligatoire', 'error');
+  if (!url) return toast('URL obligatoire', 'error');
+  if (type === 'social' && !social_icon) return toast('Choisis une icône de réseau', 'error');
+  if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
+  const payload = { titre, url, icone, image_url, type, social_icon, actif };
+
+  // 2) Ferme immédiatement le formulaire + reset
+  document.getElementById('lnk-form').style.display = 'none';
+  document.getElementById('lnk-id').value = '';
+  document.getElementById('lnk-titre').value = '';
+  document.getElementById('lnk-url').value = '';
+  document.getElementById('lnk-icone').value = '';
+  document.getElementById('lnk-image-url').value = '';
+  document.getElementById('lnk-image-file').value = '';
+  document.getElementById('lnk-image-preview').style.display = 'none';
+  document.getElementById('lnk-social-icon').value = '';
+  document.getElementById('lnk-actif').checked = true;
+  lnkSetType('principal');
+
+  // 3) Mise à jour optimiste de la liste (visible instantanément)
+  if (id) {
+    const idx = _lnkList.findIndex(l => l.id === id);
+    if (idx >= 0) _lnkList[idx] = { ..._lnkList[idx], ...payload };
+    lnkRender(); lnkRenderStatsCounts();
+  } else {
+    const maxOrdre = _lnkList.filter(l => l.type === type).reduce((m, l) => Math.max(m, l.ordre || 0), 0);
+    _lnkList.push({ ...payload, id: 'tmp-' + Date.now(), ordre: maxOrdre + 1, created_at: new Date().toISOString() });
+    lnkRender(); lnkRenderStatsCounts();
+  }
+
+  // 4) Attente upload image en cours si nécessaire
+  if (_lnkUploadInFlight) { try { await _lnkUploadInFlight; } catch(_) {} }
+
+  // 5) Persistance DB
   try {
-    // Attendre la fin d'un upload d'image en cours
-    if (_lnkUploadInFlight) {
-      try { await _lnkUploadInFlight; } catch(_) {}
-    }
-
-    const id = document.getElementById('lnk-id').value;
-    const type = document.getElementById('lnk-type').value || 'principal';
-    const titre = document.getElementById('lnk-titre').value.trim();
-    let url = document.getElementById('lnk-url').value.trim();
-    const icone = document.getElementById('lnk-icone').value.trim() || null;
-    const image_url = document.getElementById('lnk-image-url').value.trim() || null;
-    const social_icon = document.getElementById('lnk-social-icon').value.trim() || null;
-    const actif = document.getElementById('lnk-actif').checked;
-    if (!titre) return toast('Titre obligatoire', 'error');
-    if (!url) return toast('URL obligatoire', 'error');
-    if (type === 'social' && !social_icon) return toast('Choisis une icône de réseau', 'error');
-    if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
-
-    const payload = { titre, url, icone, image_url, type, social_icon, actif };
-
     if (id) {
       const { error } = await Auth.sb.from('liens').update(payload).eq('id', id);
-      if (error) {
-        console.error('[liens] update failed', error, payload);
-        return toast('Erreur : ' + (error.message || error.code || 'inconnue'), 'error');
-      }
+      if (error) { console.error('[liens] update failed', error, payload); toast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
       toast('Lien modifié', 'success');
     } else {
-      const maxOrdre = _lnkList.filter(l => l.type === type).reduce((m, l) => Math.max(m, l.ordre || 0), 0);
+      const maxOrdre = _lnkList.filter(l => l.type === type && !String(l.id).startsWith('tmp-')).reduce((m, l) => Math.max(m, l.ordre || 0), 0);
       const insertPayload = { ...payload, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
       const { error } = await Auth.sb.from('liens').insert(insertPayload);
-      if (error) {
-        console.error('[liens] insert failed', error, insertPayload);
-        return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
-      }
+      if (error) { console.error('[liens] insert failed', error, insertPayload); toast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
       toast('Lien créé', 'success');
     }
-    // Ferme le formulaire + reload propre depuis la DB (source de vérité)
-    document.getElementById('lnk-form').style.display = 'none';
-    // Reset des champs pour la prochaine création
-    document.getElementById('lnk-id').value = '';
-    document.getElementById('lnk-titre').value = '';
-    document.getElementById('lnk-url').value = '';
-    document.getElementById('lnk-icone').value = '';
-    document.getElementById('lnk-image-url').value = '';
-    document.getElementById('lnk-image-file').value = '';
-    document.getElementById('lnk-image-preview').style.display = 'none';
-    document.getElementById('lnk-social-icon').value = '';
-    document.getElementById('lnk-actif').checked = true;
-    lnkSetType('principal');
+    await lnkLoad(); // resync
+  } catch (err) {
+    console.error(err);
+    toast('Erreur : ' + err.message, 'error');
     await lnkLoad();
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Enregistrer'; }
   }
 }
 
