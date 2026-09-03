@@ -214,7 +214,7 @@ async function loadEvenementsSb() {
     const { createClient } = window.supabase || {};
     if (!createClient) return [];
     const client = window._readSb || (window._readSb = createClient(SUPABASE_URL, SUPABASE_ANON));
-    const { data, error } = await client.from('evenements').select('*').eq('archived', false).order('date', { ascending: true });
+    const { data, error } = await client.from('evenements').select('*').order('date', { ascending: true });
     if (error || !data) return [];
     // Mappe snake_case → camelCase pour compat avec le code existant
     return data.map(e => ({
