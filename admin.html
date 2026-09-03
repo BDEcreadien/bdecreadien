@@ -682,20 +682,62 @@
   <!-- Formulaire création/édition -->
   <div id="lnk-form" class="form-card" style="display:none;margin-bottom:1.5rem;">
     <h3 id="lnk-form-titre">Nouveau lien</h3>
-    <div class="form-grid">
-      <div class="form-row"><label>Titre *</label><input type="text" id="lnk-titre" placeholder="Instagram" maxlength="80"></div>
-      <div class="form-row">
-        <label>Icône / emoji</label>
-        <input type="text" id="lnk-icone" placeholder="📷" maxlength="8" style="text-align:center;font-size:20px;">
-      </div>
-    </div>
+
+    <!-- Type de lien -->
     <div class="form-row">
-      <label style="font-size:12px;color:var(--gris-texte);">Ou choisis un emoji rapide :</label>
-      <div id="lnk-emoji-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
-        <!-- rempli par JS -->
+      <label>Type</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="lnk-type-btn" data-type="principal" onclick="lnkSetType('principal')" style="flex:1;min-width:180px;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;text-align:left;">
+          <div style="font-size:18px;">🎯 Lien principal</div>
+          <div style="font-size:11px;color:var(--gris-texte);font-weight:400;margin-top:2px;">Grande carte avec image ronde à gauche</div>
+        </button>
+        <button type="button" class="lnk-type-btn" data-type="social" onclick="lnkSetType('social')" style="flex:1;min-width:180px;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;text-align:left;">
+          <div style="font-size:18px;">📱 Réseau social</div>
+          <div style="font-size:11px;color:var(--gris-texte);font-weight:400;margin-top:2px;">Petite icône ronde dans la barre du haut</div>
+        </button>
       </div>
     </div>
-    <div class="form-row"><label>URL *</label><input type="text" id="lnk-url" placeholder="https://instagram.com/bde_cread_lyon"></div>
+
+    <div class="form-row"><label>Titre *</label><input type="text" id="lnk-titre" placeholder="Recrutement BDE" maxlength="80"></div>
+    <div class="form-row"><label>URL *</label><input type="text" id="lnk-url" placeholder="https://forms.google.com/..."></div>
+
+    <!-- Champs spécifiques "principal" -->
+    <div id="lnk-fields-principal">
+      <div class="form-row">
+        <label>Image (miniature ronde à gauche)</label>
+        <input type="file" id="lnk-image-file" accept="image/*" onchange="lnkOnImageSelected(event)">
+        <div id="lnk-image-preview" style="margin-top:8px;display:none;">
+          <img id="lnk-image-preview-img" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid var(--gris-border);">
+          <button type="button" onclick="lnkClearImage()" style="margin-left:8px;padding:4px 10px;font-size:12px;background:rgba(220,50,50,0.08);color:#c0392b;border:none;border-radius:6px;cursor:pointer;">Retirer</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label style="font-size:12px;color:var(--gris-texte);">Ou un emoji si pas d'image :</label>
+        <input type="text" id="lnk-icone" placeholder="🎉" maxlength="8" style="text-align:center;font-size:20px;width:80px;">
+        <div id="lnk-emoji-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- Champs spécifiques "social" -->
+    <div id="lnk-fields-social" style="display:none;">
+      <div class="form-row">
+        <label>Icône du réseau *</label>
+        <select id="lnk-social-icon" style="width:100%;">
+          <option value="">— Choisir —</option>
+          <option value="instagram">📷 Instagram</option>
+          <option value="tiktok">🎵 TikTok</option>
+          <option value="website">🌐 Site web</option>
+          <option value="youtube">▶️ YouTube</option>
+          <option value="discord">💬 Discord</option>
+          <option value="twitter">✕ Twitter / X</option>
+          <option value="facebook">👍 Facebook</option>
+          <option value="linkedin">💼 LinkedIn</option>
+          <option value="snapchat">👻 Snapchat</option>
+          <option value="spotify">🎧 Spotify</option>
+        </select>
+      </div>
+    </div>
+
     <div class="form-row">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
         <input type="checkbox" id="lnk-actif" checked style="width:auto;">
@@ -703,6 +745,8 @@
       </label>
     </div>
     <input type="hidden" id="lnk-id">
+    <input type="hidden" id="lnk-image-url">
+    <input type="hidden" id="lnk-type" value="principal">
     <div class="form-actions">
       <button class="btn-cancel" onclick="lnkTogglerForm()">Annuler</button>
       <button class="btn-save" onclick="lnkSave()">Enregistrer</button>
