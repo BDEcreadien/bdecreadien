@@ -4682,43 +4682,45 @@ function lnkClearImage() {
 
 async function lnkSave() {
   const id = document.getElementById('lnk-id').value;
+  const type = document.getElementById('lnk-type').value || 'principal';
   const titre = document.getElementById('lnk-titre').value.trim();
   let url = document.getElementById('lnk-url').value.trim();
   const icone = document.getElementById('lnk-icone').value.trim() || null;
+  const image_url = document.getElementById('lnk-image-url').value.trim() || null;
+  const social_icon = document.getElementById('lnk-social-icon').value.trim() || null;
   const actif = document.getElementById('lnk-actif').checked;
   if (!titre) return toast('Titre obligatoire', 'error');
   if (!url) return toast('URL obligatoire', 'error');
-  // Auto-préfixe https:// si l'utilisateur oublie
+  if (type === 'social' && !social_icon) return toast('Choisis une icône de réseau', 'error');
   if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
 
+  const payload = { titre, url, icone, image_url, type, social_icon, actif };
+
   if (id) {
-    const { data, error } = await Auth.sb.from('liens').update({ titre, url, icone, actif }).eq('id', id).select();
+    const { data, error } = await Auth.sb.from('liens').update(payload).eq('id', id).select();
     if (error) {
       console.error('[liens] update failed', error);
       return toast('Erreur : ' + (error.message || error.code || 'inconnue'), 'error');
     }
-    // Mise à jour optimiste locale
     if (data && data[0]) {
       const idx = _lnkList.findIndex(l => l.id === id);
       if (idx >= 0) _lnkList[idx] = { ..._lnkList[idx], ...data[0] };
     }
     toast('Lien modifié', 'success');
   } else {
-    const maxOrdre = _lnkList.reduce((m, l) => Math.max(m, l.ordre || 0), 0);
-    const payload = { titre, url, icone, actif, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
-    const { data, error } = await Auth.sb.from('liens').insert(payload).select();
+    const maxOrdre = _lnkList.filter(l => l.type === type).reduce((m, l) => Math.max(m, l.ordre || 0), 0);
+    const insertPayload = { ...payload, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
+    const { data, error } = await Auth.sb.from('liens').insert(insertPayload).select();
     if (error) {
-      console.error('[liens] insert failed', error, payload);
+      console.error('[liens] insert failed', error, insertPayload);
       return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
     }
-    // Ajout optimiste local (l'UI se met à jour immédiatement)
     if (data && data[0]) _lnkList.push(data[0]);
     toast('Lien créé', 'success');
   }
   lnkTogglerForm();
   lnkRender();
   lnkRenderStatsCounts();
-  // Puis reload silencieux depuis la DB pour être sûr d'être sync
   lnkLoad();
 }
 
