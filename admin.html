@@ -4275,29 +4275,404 @@ function pdfFilename(prefix) {
 // PLANNING BUREAU
 // ============================================================
 let _plnEvents = [];
-let _plnDispos = [];
-let _plnMembresBureau = [];
-let _plnCurrentEventId = null;
-let _plnCurrentEventCache = null;
+let _plnTaches = [];
+let _plnInscriptions = [];
+let _plnMembres = [];
+let _plnTemplates = [];
+let _plnCurrentTab = 'events';
+let _plnTplBuffer = [];  // buffer d'édition des tâches d'un template
 
 async function initPlanning() {
-  document.getElementById('pln-view-cards').style.display = '';
-  document.getElementById('pln-view-tableau').style.display = 'none';
-  document.getElementById('pln-form-ev').style.display = 'none';
+  _plnCurrentTab = 'events';
+  document.querySelectorAll('.pln-tab-btn').forEach(b => b.classList.toggle('pln-tab-active', b.dataset.tab === 'events'));
+  document.querySelectorAll('.pln-tab-content').forEach(c => c.style.display = c.id === 'pln-tab-events' ? '' : 'none');
   await plnReload();
 }
 
 async function plnReload() {
   const sb = Auth.sb;
-  const [evRes, dispoRes, memRes] = await Promise.all([
-    sb.from('evenements').select('id, titre, date, lieu, description, categorie_budget, budget_previsionnel, cout_reel, interne, created_at').order('date', { ascending: false, nullsFirst: false }),
-    sb.from('dispos_bureau').select('id, evenement_id, membre_id, statut, role, creneau, notes, updated_at'),
-    sb.from('profils').select('id, prenom, nom').eq('bureau', true).order('prenom')
+  const [evRes, tacheRes, inscRes, memRes, tplRes] = await Promise.all([
+    sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h, created_at').order('date', { ascending: false, nullsFirst: false }),
+    sb.from('taches_bureau').select('id, evenement_id, titre, description, capacite, ordre'),
+    sb.from('inscriptions_taches').select('id, tache_id, membre_id, created_at'),
+    sb.from('profils').select('id, prenom, nom').eq('bureau', true).order('prenom'),
+    sb.from('templates_taches').select('id, nom, taches').order('nom')
   ]);
   _plnEvents = evRes.data || [];
-  _plnDispos = dispoRes.data || [];
-  _plnMembresBureau = memRes.data || [];
-  plnRender();
+  _plnTaches = tacheRes.data || [];
+  _plnInscriptions = inscRes.data || [];
+  _plnMembres = memRes.data || [];
+  _plnTemplates = tplRes.data || [];
+  plnRenderCurrentTab();
+}
+
+function plnSwitchTab(tab) {
+  _plnCurrentTab = tab;
+  document.querySelectorAll('.pln-tab-btn').forEach(b => b.classList.toggle('pln-tab-active', b.dataset.tab === tab));
+  document.querySelectorAll('.pln-tab-content').forEach(c => c.style.display = c.id === `pln-tab-${tab}` ? '' : 'none');
+  plnRenderCurrentTab();
+}
+
+function plnRenderCurrentTab() {
+  if (_plnCurrentTab === 'events') plnRenderEvents();
+  else if (_plnCurrentTab === 'members') plnRenderMembers();
+  else if (_plnCurrentTab === 'templates') plnRenderTemplates();
+}
+
+// ============ TAB EVENTS ============
+function plnRenderEvents() {
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = _plnEvents.filter(e => !e.date || e.date >= today).sort((a,b) => (a.date||'').localeCompare(b.date||''));
+  const past = _plnEvents.filter(e => e.date && e.date < today);
+  document.getElementById('pln-events-upcoming').innerHTML = upcoming.length
+    ? upcoming.map(ev => plnEventCardHtml(ev, false)).join('')
+    : '<div class="empty-state">Aucun événement à venir. Crée-en un !</div>';
+  document.getElementById('pln-events-past').innerHTML = past.length
+    ? past.map(ev => plnEventCardHtml(ev, true)).join('')
+    : '<div class="empty-state">Pas encore d\'historique.</div>';
+}
+
+function plnEventCardHtml(ev, past) {
+  const dateFmt = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : 'Date à définir';
+  const taches = _plnTaches.filter(t => t.evenement_id === ev.id).sort((a,b) => (a.ordre||0) - (b.ordre||0));
+  const totalInscrits = _plnInscriptions.filter(i => taches.some(t => t.id === i.tache_id)).length;
+
+  const tachesHtml = taches.length ? taches.map(t => plnTacheRowHtml(t, past)).join('') : `
+    <div style="padding:14px;background:var(--gris-clair);border-radius:8px;text-align:center;font-size:13px;color:var(--gris-texte);">
+      Aucune tâche définie${!past ? ' — <a href="#" onclick="plnOpenTacheForm(null,\''+ev.id+'\');return false;" style="color:var(--violet);font-weight:600;">en ajouter</a>' : '.'}
+    </div>`;
+
+  const actions = !past ? `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-edit" onclick="plnOpenTacheForm(null,'${ev.id}')" style="padding:6px 12px;font-size:12px;">+ Tâche</button>
+      <button class="btn-edit" onclick="plnOpenEventForm('${ev.id}')" style="padding:6px 12px;font-size:12px;">Modifier</button>
+      <button class="btn-delete" onclick="plnDeleteEvent('${ev.id}')" style="padding:6px 12px;font-size:12px;">Supprimer</button>
+    </div>` : '';
+
+  return `
+    <div class="form-card visible" style="margin-bottom:14px;${past ? 'opacity:0.7;' : ''}">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">${dateFmt}</div>
+          <div style="font-weight:700;font-size:18px;margin-top:2px;">${escapeHtml(ev.titre || '—')}</div>
+          ${ev.lieu ? `<div style="font-size:13px;color:var(--gris-texte);margin-top:2px;">📍 ${escapeHtml(ev.lieu)}</div>` : ''}
+          ${ev.description ? `<div style="font-size:13px;color:var(--noir);margin-top:8px;white-space:pre-wrap;">${escapeHtml(ev.description)}</div>` : ''}
+        </div>
+        <div style="text-align:right;">
+          <span style="background:var(--violet);color:white;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;">${totalInscrits} inscri${totalInscrits > 1 ? 'ts' : 't'}</span>
+          ${ev.blocage_desinscription_h != null && !past ? `<div style="font-size:11px;color:var(--gris-texte);margin-top:4px;">Blocage désinscr. ${ev.blocage_desinscription_h}h avant</div>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;">${tachesHtml}</div>
+      ${actions ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gris-border);">${actions}</div>` : ''}
+    </div>`;
+}
+
+function plnTacheRowHtml(tache, past) {
+  const inscrits = _plnInscriptions.filter(i => i.tache_id === tache.id);
+  const isMine = inscrits.some(i => i.membre_id === window._monProfilId);
+  const full = tache.capacite != null && inscrits.length >= tache.capacite;
+  const disabled = past || (full && !isMine);
+  const noms = inscrits.map(i => {
+    const m = _plnMembres.find(x => x.id === i.membre_id);
+    return m ? `${m.prenom || ''} ${(m.nom || '').charAt(0)}.`.trim() : '?';
+  }).join(', ');
+  const compteur = tache.capacite != null ? `${inscrits.length}/${tache.capacite}` : `${inscrits.length}`;
+  return `
+    <div class="pln-tache-row ${isMine ? 'mine' : ''}">
+      <div class="pln-tache-checkbox ${isMine ? 'checked' : ''} ${disabled ? 'disabled' : ''}"
+           ${!disabled ? `onclick="plnToggleInscription('${tache.id}')"` : ''}>
+        ${isMine ? '✓' : ''}
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:14px;">${escapeHtml(tache.titre)}<span style="color:var(--gris-texte);font-weight:400;margin-left:8px;font-size:12px;">${compteur}${tache.capacite == null ? ' inscrit(s)' : ''}</span></div>
+        ${tache.description ? `<div style="font-size:12px;color:var(--gris-texte);margin-top:2px;">${escapeHtml(tache.description)}</div>` : ''}
+        ${noms ? `<div style="font-size:12px;color:var(--noir);margin-top:4px;">${escapeHtml(noms)}</div>` : ''}
+      </div>
+      ${!past ? `<div style="display:flex;gap:4px;">
+        <button onclick="plnOpenTacheForm('${tache.id}')" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;color:var(--gris-texte);">✎</button>
+        <button onclick="plnDeleteTache('${tache.id}')" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;color:#c0392b;">✕</button>
+      </div>` : ''}
+    </div>`;
+}
+
+async function plnToggleInscription(tacheId) {
+  if (!window._monProfilId) return showToast('Profil non chargé', 'error');
+  const existing = _plnInscriptions.find(i => i.tache_id === tacheId && i.membre_id === window._monProfilId);
+  if (existing) {
+    const { error } = await Auth.sb.from('inscriptions_taches').delete().eq('id', existing.id);
+    if (error) {
+      const msg = error.message || '';
+      if (msg.includes('bloquée')) return showToast(msg, 'error');
+      return showToast('Erreur : ' + msg, 'error');
+    }
+    _plnInscriptions = _plnInscriptions.filter(i => i.id !== existing.id);
+  } else {
+    const { data, error } = await Auth.sb.from('inscriptions_taches').insert({ tache_id: tacheId, membre_id: window._monProfilId }).select().single();
+    if (error) {
+      const msg = error.message || '';
+      if (msg.includes('Capacité')) return showToast(msg, 'error');
+      return showToast('Erreur : ' + msg, 'error');
+    }
+    _plnInscriptions.push(data);
+  }
+  plnRenderEvents();
+}
+
+// ============ MODAL EVENT ============
+function plnOpenEventForm(evId) {
+  const modal = document.getElementById('pln-modal-event');
+  const ev = evId ? _plnEvents.find(e => e.id === evId) : null;
+  document.getElementById('pln-ev-id').value = evId || '';
+  document.getElementById('pln-ev-titre').value = ev?.titre || '';
+  document.getElementById('pln-ev-date').value = ev?.date || '';
+  document.getElementById('pln-ev-lieu').value = ev?.lieu || '';
+  document.getElementById('pln-ev-desc').value = ev?.description || '';
+  document.getElementById('pln-ev-blocage').value = ev ? (ev.blocage_desinscription_h == null ? '' : String(ev.blocage_desinscription_h)) : '24';
+  document.getElementById('pln-modal-event-title').textContent = ev ? "Modifier l'événement" : 'Nouvel événement';
+  document.getElementById('pln-ev-save-btn').textContent = ev ? 'Enregistrer' : 'Créer';
+  // Templates : masqués en édition
+  document.getElementById('pln-ev-template-wrap').style.display = ev ? 'none' : '';
+  const tplSel = document.getElementById('pln-ev-template');
+  tplSel.innerHTML = '<option value="">— Aucun (tâches vides) —</option>' + _plnTemplates.map(t => `<option value="${t.id}">${escapeHtml(t.nom)}</option>`).join('');
+  tplSel.value = '';
+  modal.classList.add('visible');
+}
+function plnCloseEventForm() { document.getElementById('pln-modal-event').classList.remove('visible'); }
+
+async function plnSaveEvent() {
+  const id = document.getElementById('pln-ev-id').value || null;
+  const titre = document.getElementById('pln-ev-titre').value.trim();
+  if (!titre) return showToast('Titre obligatoire', 'error');
+  const blocageVal = document.getElementById('pln-ev-blocage').value;
+  const payload = {
+    titre,
+    date: document.getElementById('pln-ev-date').value || null,
+    lieu: document.getElementById('pln-ev-lieu').value.trim() || null,
+    description: document.getElementById('pln-ev-desc').value.trim() || null,
+    blocage_desinscription_h: blocageVal === '' ? null : parseInt(blocageVal, 10)
+  };
+  let evId = id;
+  if (id) {
+    const { error } = await Auth.sb.from('evenements').update(payload).eq('id', id);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+  } else {
+    payload.created_by = window._monProfilId || null;
+    const { data, error } = await Auth.sb.from('evenements').insert(payload).select().single();
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+    evId = data.id;
+    // Application du template s'il y en a un
+    const tplId = document.getElementById('pln-ev-template').value;
+    if (tplId) {
+      const tpl = _plnTemplates.find(t => t.id === tplId);
+      if (tpl && Array.isArray(tpl.taches) && tpl.taches.length) {
+        const rows = tpl.taches.map((t, i) => ({
+          evenement_id: evId,
+          titre: t.titre || 'Tâche',
+          description: t.description || null,
+          capacite: t.capacite != null ? Number(t.capacite) : null,
+          ordre: t.ordre != null ? Number(t.ordre) : i
+        }));
+        const { error: te } = await Auth.sb.from('taches_bureau').insert(rows);
+        if (te) showToast('Événement créé mais tâches du modèle non ajoutées : ' + te.message, 'error');
+      }
+    }
+  }
+  showToast(id ? 'Événement modifié' : 'Événement créé', 'success');
+  plnCloseEventForm();
+  await plnReload();
+}
+
+async function plnDeleteEvent(id) {
+  if (!confirm('Supprimer cet événement (et toutes ses tâches + inscriptions) ?')) return;
+  const { error } = await Auth.sb.from('evenements').delete().eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Supprimé', 'success');
+  await plnReload();
+}
+
+// ============ MODAL TÂCHE ============
+function plnOpenTacheForm(tacheId, eventId) {
+  const t = tacheId ? _plnTaches.find(x => x.id === tacheId) : null;
+  document.getElementById('pln-tache-id').value = tacheId || '';
+  document.getElementById('pln-tache-event-id').value = eventId || t?.evenement_id || '';
+  document.getElementById('pln-tache-titre').value = t?.titre || '';
+  document.getElementById('pln-tache-desc').value = t?.description || '';
+  document.getElementById('pln-tache-capacite').value = t?.capacite ?? '';
+  document.getElementById('pln-modal-tache-title').textContent = tacheId ? 'Modifier la tâche' : 'Nouvelle tâche';
+  document.getElementById('pln-modal-tache').classList.add('visible');
+}
+function plnCloseTacheForm() { document.getElementById('pln-modal-tache').classList.remove('visible'); }
+
+async function plnSaveTache() {
+  const id = document.getElementById('pln-tache-id').value || null;
+  const evId = document.getElementById('pln-tache-event-id').value;
+  const titre = document.getElementById('pln-tache-titre').value.trim();
+  if (!titre) return showToast('Titre obligatoire', 'error');
+  const capVal = document.getElementById('pln-tache-capacite').value;
+  const payload = {
+    titre,
+    description: document.getElementById('pln-tache-desc').value.trim() || null,
+    capacite: capVal ? parseInt(capVal, 10) : null
+  };
+  if (id) {
+    const { error } = await Auth.sb.from('taches_bureau').update(payload).eq('id', id);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+  } else {
+    payload.evenement_id = evId;
+    const currentMax = Math.max(-1, ..._plnTaches.filter(t => t.evenement_id === evId).map(t => t.ordre || 0));
+    payload.ordre = currentMax + 1;
+    const { error } = await Auth.sb.from('taches_bureau').insert(payload);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+  }
+  showToast(id ? 'Tâche modifiée' : 'Tâche ajoutée', 'success');
+  plnCloseTacheForm();
+  await plnReload();
+}
+
+async function plnDeleteTache(id) {
+  const inscrits = _plnInscriptions.filter(i => i.tache_id === id).length;
+  const msg = inscrits > 0
+    ? `Cette tâche a ${inscrits} inscription(s). Supprimer quand même ?`
+    : 'Supprimer cette tâche ?';
+  if (!confirm(msg)) return;
+  const { error } = await Auth.sb.from('taches_bureau').delete().eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Tâche supprimée', 'success');
+  await plnReload();
+}
+
+// ============ TAB MEMBRES ============
+function plnRenderMembers() {
+  const period = document.getElementById('pln-members-period').value;
+  const cutoff = period === 'all' ? null
+    : period === 'year' ? new Date(Date.now() - 365 * 86400000)
+    : period === 'quarter' ? new Date(Date.now() - 90 * 86400000)
+    : new Date(Date.now() - 30 * 86400000);
+  const inscInPeriod = cutoff
+    ? _plnInscriptions.filter(i => new Date(i.created_at) >= cutoff)
+    : _plnInscriptions;
+
+  const stats = _plnMembres.map(m => {
+    const mine = inscInPeriod.filter(i => i.membre_id === m.id);
+    const tacheIds = mine.map(i => i.tache_id);
+    const eventsIds = [...new Set(_plnTaches.filter(t => tacheIds.includes(t.id)).map(t => t.evenement_id))];
+    const events = eventsIds.map(id => _plnEvents.find(e => e.id === id)).filter(Boolean);
+    return { membre: m, nbTaches: mine.length, nbEvents: eventsIds.length, events };
+  }).sort((a,b) => b.nbTaches - a.nbTaches);
+
+  if (!stats.length) {
+    document.getElementById('pln-members-recap').innerHTML = '<div class="empty-state">Aucun membre bureau trouvé.</div>';
+    return;
+  }
+  const cellStyle = 'padding:12px;border-bottom:1px solid var(--gris-border);vertical-align:top;font-size:14px;';
+  const rows = stats.map((s, i) => {
+    const nom = `${s.membre.prenom || ''} ${s.membre.nom || ''}`.trim() || '—';
+    const evList = s.events.slice(0, 4).map(e => escapeHtml(e.titre || '—')).join(', ') + (s.events.length > 4 ? `, +${s.events.length - 4}` : '');
+    const medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
+    return `<tr>
+      <td style="${cellStyle}font-weight:600;">${medal}${escapeHtml(nom)}</td>
+      <td style="${cellStyle}text-align:center;"><span style="background:var(--violet);color:white;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;">${s.nbTaches}</span></td>
+      <td style="${cellStyle}text-align:center;">${s.nbEvents}</td>
+      <td style="${cellStyle}color:var(--gris-texte);font-size:13px;">${evList || '—'}</td>
+    </tr>`;
+  }).join('');
+  const headStyle = 'padding:10px 12px;background:var(--gris-clair);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);font-weight:700;';
+  document.getElementById('pln-members-recap').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+      <thead><tr>
+        <th style="${headStyle}">Membre</th>
+        <th style="${headStyle}text-align:center;">Tâches</th>
+        <th style="${headStyle}text-align:center;">Events</th>
+        <th style="${headStyle}">Derniers events</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ============ TAB TEMPLATES ============
+function plnRenderTemplates() {
+  if (!_plnTemplates.length) {
+    document.getElementById('pln-templates-list').innerHTML = '<div class="empty-state">Aucun modèle. Crée-en un !</div>';
+    return;
+  }
+  document.getElementById('pln-templates-list').innerHTML = _plnTemplates.map(t => {
+    const taches = Array.isArray(t.taches) ? t.taches : [];
+    const tHtml = taches.map(x => `
+      <div style="padding:6px 10px;background:var(--gris-clair);border-radius:6px;font-size:12px;">
+        ${escapeHtml(x.titre || '—')}${x.capacite != null ? ` <span style="color:var(--gris-texte);">(${x.capacite})</span>` : ''}
+      </div>`).join('');
+    return `
+      <div class="form-card visible" style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+          <div>
+            <div style="font-weight:700;font-size:16px;">${escapeHtml(t.nom)}</div>
+            <div style="font-size:12px;color:var(--gris-texte);margin-top:2px;">${taches.length} tâche${taches.length > 1 ? 's' : ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-edit" onclick="plnOpenTemplateForm('${t.id}')" style="padding:6px 12px;font-size:12px;">Modifier</button>
+            <button class="btn-delete" onclick="plnDeleteTemplate('${t.id}')" style="padding:6px 12px;font-size:12px;">Supprimer</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${tHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+function plnOpenTemplateForm(id) {
+  const t = id ? _plnTemplates.find(x => x.id === id) : null;
+  document.getElementById('pln-tpl-id').value = id || '';
+  document.getElementById('pln-tpl-nom').value = t?.nom || '';
+  _plnTplBuffer = t && Array.isArray(t.taches) ? JSON.parse(JSON.stringify(t.taches)) : [];
+  document.getElementById('pln-modal-template-title').textContent = id ? 'Modifier le modèle' : 'Nouveau modèle';
+  plnTplRenderBuffer();
+  document.getElementById('pln-modal-template').classList.add('visible');
+}
+function plnCloseTemplateForm() { document.getElementById('pln-modal-template').classList.remove('visible'); }
+
+function plnTplRenderBuffer() {
+  const cont = document.getElementById('pln-tpl-taches');
+  if (!_plnTplBuffer.length) {
+    cont.innerHTML = '<div style="padding:12px;background:var(--gris-clair);border-radius:8px;text-align:center;font-size:13px;color:var(--gris-texte);">Aucune tâche. Ajoute-en une ci-dessous.</div>';
+    return;
+  }
+  cont.innerHTML = _plnTplBuffer.map((t, i) => `
+    <div style="display:flex;gap:6px;align-items:center;">
+      <input type="text" value="${escapeHtml(t.titre || '')}" oninput="_plnTplBuffer[${i}].titre=this.value" placeholder="Titre de la tâche" style="flex:2;padding:8px 10px;border:1px solid var(--gris-border);border-radius:8px;font-size:13px;">
+      <input type="number" min="1" value="${t.capacite ?? ''}" oninput="_plnTplBuffer[${i}].capacite=this.value?parseInt(this.value,10):null" placeholder="Capa" style="width:70px;padding:8px 10px;border:1px solid var(--gris-border);border-radius:8px;font-size:13px;">
+      <button onclick="plnTplRemoveTache(${i})" style="background:none;border:1px solid var(--gris-border);border-radius:8px;padding:6px 10px;cursor:pointer;color:#c0392b;">✕</button>
+    </div>`).join('');
+}
+function plnTplAddTache() { _plnTplBuffer.push({ titre: '', description: '', capacite: null, ordre: _plnTplBuffer.length }); plnTplRenderBuffer(); }
+function plnTplRemoveTache(i) { _plnTplBuffer.splice(i, 1); _plnTplBuffer.forEach((t, k) => t.ordre = k); plnTplRenderBuffer(); }
+
+async function plnSaveTemplate() {
+  const id = document.getElementById('pln-tpl-id').value || null;
+  const nom = document.getElementById('pln-tpl-nom').value.trim();
+  if (!nom) return showToast('Nom obligatoire', 'error');
+  const taches = _plnTplBuffer.filter(t => (t.titre || '').trim()).map((t, i) => ({
+    titre: t.titre.trim(), description: t.description || '', capacite: t.capacite || null, ordre: i
+  }));
+  const payload = { nom, taches };
+  if (id) {
+    const { error } = await Auth.sb.from('templates_taches').update(payload).eq('id', id);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+  } else {
+    payload.created_by = window._monProfilId || null;
+    const { error } = await Auth.sb.from('templates_taches').insert(payload);
+    if (error) return showToast('Erreur : ' + error.message, 'error');
+  }
+  showToast(id ? 'Modèle modifié' : 'Modèle créé', 'success');
+  plnCloseTemplateForm();
+  await plnReload();
+}
+
+async function plnDeleteTemplate(id) {
+  if (!confirm('Supprimer ce modèle ?')) return;
+  const { error } = await Auth.sb.from('templates_taches').delete().eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Modèle supprimé', 'success');
+  await plnReload();
 }
 
 function plnRender() {
