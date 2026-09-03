@@ -616,53 +616,141 @@
 
 <!-- PLANNING (bureau uniquement) -->
 <div id="step-planning" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
-  <div class="stats-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:12px;">
     <h2 style="margin:0;">Planning bureau</h2>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn-save" onclick="plnTogglerFormEv()" id="pln-btn-nouveau-ev">+ Nouvel événement</button>
-      <button class="stats-ext-btn" onclick="plnToggleTableau()" id="pln-btn-tableau">📊 Vue tableau</button>
-    </div>
+    <button class="btn-save" onclick="plnOpenEventForm()">+ Nouvel événement</button>
   </div>
 
-  <!-- Formulaire création event -->
-  <div id="pln-form-ev" class="form-card" style="display:none;margin-bottom:1.5rem;">
-    <h3>Nouvel événement</h3>
+  <div style="display:flex;gap:6px;border-bottom:2px solid var(--gris-clair);margin-bottom:1.5rem;flex-wrap:wrap;">
+    <button class="pln-tab-btn pln-tab-active" data-tab="events" onclick="plnSwitchTab('events')">Événements</button>
+    <button class="pln-tab-btn" data-tab="members" onclick="plnSwitchTab('members')">Récap membres</button>
+    <button class="pln-tab-btn" data-tab="templates" onclick="plnSwitchTab('templates')">Modèles</button>
+  </div>
+
+  <div id="pln-tab-events" class="pln-tab-content">
+    <h3 style="margin:0 0 0.75rem;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">À venir</h3>
+    <div id="pln-events-upcoming"></div>
+    <h3 style="margin:2rem 0 0.75rem;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Historique</h3>
+    <div id="pln-events-past"></div>
+  </div>
+
+  <div id="pln-tab-members" class="pln-tab-content" style="display:none;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:8px;">
+      <select id="pln-members-period" onchange="plnRenderMembers()" style="padding:8px 12px;border:1px solid var(--gris-border);border-radius:8px;font-size:13px;">
+        <option value="all">Toute la période</option>
+        <option value="year">12 derniers mois</option>
+        <option value="quarter">3 derniers mois</option>
+        <option value="month">30 derniers jours</option>
+      </select>
+    </div>
+    <div id="pln-members-recap"></div>
+  </div>
+
+  <div id="pln-tab-templates" class="pln-tab-content" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:12px;">
+      <p style="margin:0;color:var(--gris-texte);font-size:13px;">Modèles réutilisables pour pré-remplir les tâches d'un événement.</p>
+      <button class="btn-save" onclick="plnOpenTemplateForm()">+ Nouveau modèle</button>
+    </div>
+    <div id="pln-templates-list"></div>
+  </div>
+</div>
+
+<!-- Modal event (création / édition) -->
+<div id="pln-modal-event" class="pln-modal-overlay" onclick="if(event.target===this)plnCloseEventForm()">
+  <div class="pln-modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3 style="margin:0;" id="pln-modal-event-title">Nouvel événement</h3>
+      <button onclick="plnCloseEventForm()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#888;line-height:1;">×</button>
+    </div>
+    <input type="hidden" id="pln-ev-id">
+    <div class="form-row"><label>Titre *</label><input type="text" id="pln-ev-titre" placeholder="Ex: Vente de crêpes"></div>
     <div class="form-grid">
-      <div class="form-row"><label>Titre *</label><input type="text" id="pln-ev-titre" placeholder="Vente de gâteaux"></div>
       <div class="form-row"><label>Date</label><input type="date" id="pln-ev-date"></div>
-      <div class="form-row"><label>Lieu</label><input type="text" id="pln-ev-lieu" placeholder="Hall CREAD"></div>
-      <div class="form-row"><label>Catégorie budget</label>
-        <select id="pln-ev-cat">
-          <option value="">—</option>
-          <option value="soiree">Soirée</option>
-          <option value="repas">Repas/Vente</option>
-          <option value="sortie">Sortie</option>
-          <option value="reunion">Réunion prépa</option>
-          <option value="montage">Montage</option>
-          <option value="autre">Autre</option>
+      <div class="form-row"><label>Lieu</label><input type="text" id="pln-ev-lieu" placeholder="Ex: Hall CREAD"></div>
+    </div>
+    <div class="form-row"><label>Description</label><textarea id="pln-ev-desc" rows="3" placeholder="Détails, matériel, timing…"></textarea></div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Blocage désinscription</label>
+        <select id="pln-ev-blocage">
+          <option value="24">24h avant (défaut)</option>
+          <option value="48">48h avant</option>
+          <option value="72">72h avant</option>
+          <option value="12">12h avant</option>
+          <option value="">Aucun blocage</option>
+        </select>
+      </div>
+      <div class="form-row" id="pln-ev-template-wrap">
+        <label>Modèle de tâches (optionnel)</label>
+        <select id="pln-ev-template">
+          <option value="">— Aucun (tâches vides) —</option>
         </select>
       </div>
     </div>
-    <div class="form-row"><label>Description</label><textarea id="pln-ev-desc" rows="2" placeholder="Détails, matériel, timing…"></textarea></div>
     <div class="form-actions">
-      <button class="btn-cancel" onclick="plnTogglerFormEv()">Annuler</button>
-      <button class="btn-save" onclick="plnSaveEv()">Créer l'événement</button>
+      <button class="btn-cancel" onclick="plnCloseEventForm()">Annuler</button>
+      <button class="btn-save" onclick="plnSaveEvent()" id="pln-ev-save-btn">Créer</button>
     </div>
   </div>
+</div>
 
-  <!-- Vue Cards ou Tableau -->
-  <div id="pln-view-cards">
-    <h3 style="margin:1.5rem 0 0.75rem;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">À venir</h3>
-    <div id="pln-list-upcoming"></div>
-
-    <h3 style="margin:2rem 0 0.75rem;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Historique</h3>
-    <div id="pln-list-past"></div>
-  </div>
-
-  <div id="pln-view-tableau" style="display:none;overflow-x:auto;">
-    <div id="pln-tableau"></div>
+<!-- Modal tâche (ajout/édition inline) -->
+<div id="pln-modal-tache" class="pln-modal-overlay" onclick="if(event.target===this)plnCloseTacheForm()">
+  <div class="pln-modal-card" style="max-width:480px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3 style="margin:0;" id="pln-modal-tache-title">Nouvelle tâche</h3>
+      <button onclick="plnCloseTacheForm()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#888;line-height:1;">×</button>
+    </div>
+    <input type="hidden" id="pln-tache-id">
+    <input type="hidden" id="pln-tache-event-id">
+    <div class="form-row"><label>Titre *</label><input type="text" id="pln-tache-titre" placeholder="Ex: Bar 22h-2h"></div>
+    <div class="form-row"><label>Description</label><textarea id="pln-tache-desc" rows="2" placeholder="Optionnel"></textarea></div>
+    <div class="form-row">
+      <label>Capacité <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(vide = illimité)</span></label>
+      <input type="number" id="pln-tache-capacite" min="1" placeholder="Ex: 4">
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="plnCloseTacheForm()">Annuler</button>
+      <button class="btn-save" onclick="plnSaveTache()">Enregistrer</button>
+    </div>
   </div>
 </div>
+
+<!-- Modal template (création/édition) -->
+<div id="pln-modal-template" class="pln-modal-overlay" onclick="if(event.target===this)plnCloseTemplateForm()">
+  <div class="pln-modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3 style="margin:0;" id="pln-modal-template-title">Nouveau modèle</h3>
+      <button onclick="plnCloseTemplateForm()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#888;line-height:1;">×</button>
+    </div>
+    <input type="hidden" id="pln-tpl-id">
+    <div class="form-row"><label>Nom du modèle *</label><input type="text" id="pln-tpl-nom" placeholder="Ex: Concert, Weekend intégration…"></div>
+    <div class="form-row">
+      <label>Tâches du modèle</label>
+      <div id="pln-tpl-taches" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+      <button type="button" onclick="plnTplAddTache()" style="background:var(--gris-clair);border:1px dashed var(--gris-border);border-radius:8px;padding:10px;cursor:pointer;font-size:13px;color:var(--violet);font-weight:600;width:100%;">+ Ajouter une tâche</button>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="plnCloseTemplateForm()">Annuler</button>
+      <button class="btn-save" onclick="plnSaveTemplate()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pln-tab-btn { background:none;border:none;padding:12px 18px;font-size:14px;font-weight:600;color:var(--gris-texte);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s, border-color .15s; }
+  .pln-tab-btn:hover { color:var(--noir); }
+  .pln-tab-btn.pln-tab-active { color:var(--violet); border-bottom-color:var(--violet); }
+  .pln-modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1200;align-items:center;justify-content:center;padding:20px; }
+  .pln-modal-overlay.visible { display:flex; }
+  .pln-modal-card { background:white;border-radius:16px;padding:2rem;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto; }
+  .pln-tache-row { display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--gris-border);border-radius:10px;background:#fafafd;margin-bottom:8px;flex-wrap:wrap; }
+  .pln-tache-row.mine { background:#f5f0ff;border-color:var(--violet); }
+  .pln-tache-checkbox { width:26px;height:26px;border:2px solid var(--gris-border);border-radius:7px;background:white;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;transition:all .15s; }
+  .pln-tache-checkbox.checked { background:var(--violet);border-color:var(--violet); }
+  .pln-tache-checkbox:not(.disabled):hover { border-color:var(--violet); }
+  .pln-tache-checkbox.disabled { opacity:.4;cursor:not-allowed; }
+</style>
 
 <!-- LIENS (bureau uniquement) -->
 <div id="step-liens" style="display:none;padding:2rem;max-width:1200px;margin:0 auto;">
