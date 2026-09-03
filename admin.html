@@ -664,6 +664,46 @@
   </div>
 </div>
 
+<!-- LIENS (bureau uniquement) -->
+<div id="step-liens" style="display:none;padding:2rem;max-width:1200px;margin:0 auto;">
+  <div class="stats-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;">
+    <h2 style="margin:0;">Page Liens <a href="/liens" target="_blank" style="font-size:13px;font-weight:400;color:var(--violet);margin-left:8px;text-decoration:none;">→ Voir en ligne</a></h2>
+    <button class="btn-save" onclick="lnkTogglerForm()" id="lnk-btn-nouveau">+ Nouveau lien</button>
+  </div>
+
+  <!-- Statistiques -->
+  <div id="lnk-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1.5rem;">
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Vues page /liens</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-views">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-views-sub">30 derniers jours</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Clics totaux</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-clicks">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-clicks-sub">30 derniers jours</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Taux de clic</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-ctr">—</div><div style="font-size:11px;color:var(--gris-texte);">clics / vues</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Liens actifs</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-active">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-total-sub">sur — total</div></div>
+  </div>
+
+  <!-- Formulaire création/édition -->
+  <div id="lnk-form" class="form-card" style="display:none;margin-bottom:1.5rem;">
+    <h3 id="lnk-form-titre">Nouveau lien</h3>
+    <div class="form-grid">
+      <div class="form-row"><label>Titre *</label><input type="text" id="lnk-titre" placeholder="Instagram" maxlength="80"></div>
+      <div class="form-row"><label>Icône / emoji</label><input type="text" id="lnk-icone" placeholder="📷" maxlength="8" style="text-align:center;font-size:20px;"></div>
+    </div>
+    <div class="form-row"><label>URL *</label><input type="url" id="lnk-url" placeholder="https://instagram.com/bde_cread_lyon"></div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="lnk-actif" checked style="width:auto;">
+        <span>Actif (visible sur /liens)</span>
+      </label>
+    </div>
+    <input type="hidden" id="lnk-id">
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="lnkTogglerForm()">Annuler</button>
+      <button class="btn-save" onclick="lnkSave()">Enregistrer</button>
+    </div>
+  </div>
+
+  <h3 style="margin:1.5rem 0 0.75rem;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Liste des liens</h3>
+  <div id="lnk-list"></div>
+</div>
+
 <!-- Drawer édition dispo -->
 <div id="pln-drawer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1200;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)plnCloseDrawer()">
   <div style="background:white;border-radius:16px;padding:2rem;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto;">
