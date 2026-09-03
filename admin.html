@@ -1805,7 +1805,32 @@ function onMembrePhotoSelected() {
   document.getElementById('mb-preview-wrap').style.display = 'block';
 }
 
+// Regénère les <option> d'un select depuis une liste {key,label}, en préservant la valeur si possible
+function rebuildSelectOptions(selectId, items, fallback) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const list = (items && items.length) ? items : (fallback || []);
+  const prev = sel.value;
+  sel.innerHTML = list.map(o => `<option value="${o.key}">${o.label}</option>`).join('');
+  if (list.some(o => o.key === prev)) sel.value = prev;
+}
+function refreshAnCategorieSelect() {
+  rebuildSelectOptions('an-categorie', data['annonces-categories'], [
+    { key:'materiel', label:'Matériel' }, { key:'place', label:'Places' },
+    { key:'logement', label:'Logement' }, { key:'autre', label:'Autre' }
+  ]);
+}
+function refreshMbPoleSelect() {
+  rebuildSelectOptions('mb-pole', data.config?.poles, [
+    { key:'bureau', label:'Bureau exécutif' },
+    { key:'evenements', label:'Pôle Événements' },
+    { key:'communication', label:'Pôle Communication' }
+  ]);
+}
+
 function showForm() {
+  if (currentType === 'annonces') refreshAnCategorieSelect();
+  if (currentType === 'equipe') refreshMbPoleSelect();
   document.getElementById('the-form').classList.add('visible');
   document.getElementById('btn-add').style.display = 'none';
   editIndex[currentType === 'evenements' ? 'evenement' : currentType === 'annonces' ? 'annonce' : currentType === 'equipe' ? 'membre' : currentType === 'archives' ? 'archive' : currentType === 'galerie' ? 'galerie' : currentType === 'partenaires' ? 'partenaire' : 'video'] = -1;
