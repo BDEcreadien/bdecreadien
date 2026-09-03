@@ -4656,33 +4656,50 @@ async function lnkOnImageSelected(e) {
   if (!file) return;
   _lnkUploadInFlight = (async () => {
     try {
-      // RLS annonces_upload_own : le premier segment du path doit être auth.uid()
-      const { data: userData, error: uErr } = await Auth.sb.auth.getUser();
-      if (uErr || !userData?.user?.id) { toast('Session expirée, reconnecte-toi', 'error'); return null; }
-      const userId = userData.user.id;
+      const { data: sessData } = await Auth.sb.auth.getSession();
+      const userId = sessData?.session?.user?.id;
+      if (!userId) { toast('Session expirée, reconnecte-toi', 'error'); return null; }
 
       let uploadFile = file;
       let ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
       if (window.imageToAvatarWebp) {
-        try { uploadFile = await window.imageToAvatarWebp(file); ext = uploadFile.type === 'image/webp' ? 'webp' : ext; } catch(_) {}
+        try {
+          const converted = await window.imageToAvatarWebp(file);
+          if (converted && converted.size > 0) {
+            uploadFile = converted;
+            ext = converted.type === 'image/webp' ? 'webp' : ext;
+          }
+        } catch (convErr) { console.warn('[liens] conversion webp échouée, on garde original', convErr); }
       }
+
+      console.log('[liens upload] file size:', uploadFile.size, 'type:', uploadFile.type, 'userId:', userId);
+
       const path = `${userId}/liens/lnk-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
       toast('Upload en cours…', 'info');
-      const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, uploadFile, { contentType: uploadFile.type, cacheControl: '31536000' });
+
+      const { data: upData, error: upErr } = await Auth.sb.storage
+        .from('annonces')
+        .upload(path, uploadFile, { contentType: uploadFile.type || 'image/jpeg', upsert: false });
+
       if (upErr) {
-        console.error('[liens upload]', upErr);
-        toast('Erreur upload : ' + (upErr.message || 'inconnue'), 'error');
+        console.error('[liens upload] FAILED', upErr, 'path:', path);
+        toast('Upload refusé : ' + (upErr.message || upErr.error || JSON.stringify(upErr)), 'error');
         return null;
       }
-      const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
+      console.log('[liens upload] OK', upData);
+
+      const { data: pub } = Auth.sb.storage.from('annonces').getPublicUrl(path);
+      const url = pub?.publicUrl;
+      if (!url) { toast('URL publique introuvable', 'error'); return null; }
+
       document.getElementById('lnk-image-url').value = url;
       document.getElementById('lnk-image-preview').style.display = 'block';
       document.getElementById('lnk-image-preview-img').src = url;
-      toast('Image ajoutée', 'success');
+      toast('Image ajoutée ✓', 'success');
       return url;
     } catch (err) {
-      console.error(err);
-      toast('Erreur upload : ' + err.message, 'error');
+      console.error('[liens upload] EXCEPTION', err);
+      toast('Erreur upload : ' + (err.message || 'inconnue'), 'error');
       return null;
     } finally {
       _lnkUploadInFlight = null;
