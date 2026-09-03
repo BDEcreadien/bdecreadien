@@ -684,9 +684,18 @@
     <h3 id="lnk-form-titre">Nouveau lien</h3>
     <div class="form-grid">
       <div class="form-row"><label>Titre *</label><input type="text" id="lnk-titre" placeholder="Instagram" maxlength="80"></div>
-      <div class="form-row"><label>Icône / emoji</label><input type="text" id="lnk-icone" placeholder="📷" maxlength="8" style="text-align:center;font-size:20px;"></div>
+      <div class="form-row">
+        <label>Icône / emoji</label>
+        <input type="text" id="lnk-icone" placeholder="📷" maxlength="8" style="text-align:center;font-size:20px;">
+      </div>
     </div>
-    <div class="form-row"><label>URL *</label><input type="url" id="lnk-url" placeholder="https://instagram.com/bde_cread_lyon"></div>
+    <div class="form-row">
+      <label style="font-size:12px;color:var(--gris-texte);">Ou choisis un emoji rapide :</label>
+      <div id="lnk-emoji-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+        <!-- rempli par JS -->
+      </div>
+    </div>
+    <div class="form-row"><label>URL *</label><input type="text" id="lnk-url" placeholder="https://instagram.com/bde_cread_lyon"></div>
     <div class="form-row">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
         <input type="checkbox" id="lnk-actif" checked style="width:auto;">
