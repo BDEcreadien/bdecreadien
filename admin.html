@@ -4492,6 +4492,37 @@ async function plnDeleteEvent(id) {
   await plnReload();
 }
 
+async function plnNotifyBureau(eventId) {
+  const ev = _plnEvents.find(e => e.id === eventId);
+  if (!ev) return;
+  if (!confirm(`Envoyer une notification push à tous les membres bureau pour "${ev.titre}" ?`)) return;
+  try {
+    const { data: sess } = await Auth.sb.auth.getSession();
+    const token = sess.session?.access_token;
+    if (!token) return showToast('Session expirée', 'error');
+    const dateStr = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'long'}) : 'date à définir';
+    const res = await fetch(`${window.SUPABASE_URL}/functions/v1/notify-planning`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'apikey': window.SUPABASE_ANON,
+      },
+      body: JSON.stringify({
+        title: `🔔 ${ev.titre}`,
+        message: `${dateStr}${ev.lieu ? ' · ' + ev.lieu : ''} — inscris-toi aux tâches`,
+        url: 'https://bdecreadien.fr/mon-espace.html#bde-planning',
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) return showToast('Erreur : ' + (body.error || res.status), 'error');
+    if (body.sent === 0) return showToast('Aucun membre abonné aux notifs (0 envoi)', 'info');
+    showToast(`Notification envoyée à ${body.sent} membre(s)`, 'success');
+  } catch (e) {
+    showToast('Erreur réseau : ' + e.message, 'error');
+  }
+}
+
 // ============ MODAL TÂCHE ============
 function plnOpenTacheForm(tacheId, eventId) {
   const t = tacheId ? _plnTaches.find(x => x.id === tacheId) : null;
