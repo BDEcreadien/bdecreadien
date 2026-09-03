@@ -1918,7 +1918,7 @@ function editItem(type, i) {
     const [hD, hF] = (ev.horaire || '').split(/\s*[–—-]\s*/);
     document.getElementById('ev-horaire-debut').value = hD ? hD.replace('h',':') : '';
     document.getElementById('ev-horaire-fin').value = hF ? hF.replace('h',':') : '';
-    document.getElementById('ev-prix').value = ev.prix || '';
+    document.getElementById('ev-prix').value = (ev.prix || '').replace(/€/g, '').trim();
     document.getElementById('ev-lieu').value = ev.lieu || '';
     document.getElementById('ev-adresse').value = ev.adresse || '';
     document.getElementById('ev-description').value = ev.description || '';
