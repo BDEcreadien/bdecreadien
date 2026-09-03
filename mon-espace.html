@@ -955,7 +955,11 @@
     function mePlnEnableNotifs() {
       if (window.loadAndSubscribeOneSignal) {
         window.loadAndSubscribeOneSignal();
-        setTimeout(() => { document.getElementById('me-pln-notif-banner').style.display = 'none'; }, 2500);
+        // Synchro robuste : attend que OneSignal ait un player_id et le pousse en base
+        setTimeout(() => {
+          if (window.syncOneSignalId) window.syncOneSignalId();
+          document.getElementById('me-pln-notif-banner').style.display = 'none';
+        }, 3000);
       } else {
         alert('Le module de notifications n\'est pas chargé. Recharge la page.');
       }
