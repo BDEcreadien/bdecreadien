@@ -14,7 +14,7 @@
   let started = false;
 
   // Pages où le tracking démarre sans bandeau de consentement (aucune donnée perso, session_id anonyme)
-  const NO_CONSENT_PAGES = /^\/(liens)(\.html)?\/?$/i;
+  const NO_CONSENT_PAGES = /^\/(liens|menu)(\.html)?\/?$/i;
   const bypassConsent = NO_CONSENT_PAGES.test(path);
 
   function startTracking() {
