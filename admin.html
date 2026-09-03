@@ -4346,6 +4346,7 @@ function plnEventCardHtml(ev, past) {
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn-edit" onclick="plnOpenTacheForm(null,'${ev.id}')" style="padding:6px 12px;font-size:12px;">+ Tâche</button>
       <button class="btn-edit" onclick="plnOpenEventForm('${ev.id}')" style="padding:6px 12px;font-size:12px;">Modifier</button>
+      <button class="btn-edit" onclick="plnNotifyBureau('${ev.id}')" style="padding:6px 12px;font-size:12px;background:#f5f0ff;color:var(--violet);border-color:var(--violet);">🔔 Prévenir le bureau</button>
       <button class="btn-delete" onclick="plnDeleteEvent('${ev.id}')" style="padding:6px 12px;font-size:12px;">Supprimer</button>
     </div>` : '';
 
