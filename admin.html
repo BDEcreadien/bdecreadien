@@ -4649,29 +4649,46 @@ function lnkEdit(id) {
   document.getElementById('lnk-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+let _lnkUploadInFlight = null;
+
 async function lnkOnImageSelected(e) {
   const file = e.target.files[0];
   if (!file) return;
-  try {
-    // Compression WebP si dispo
-    let uploadFile = file;
-    let ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-    if (window.imageToAvatarWebp) {
-      try { uploadFile = await window.imageToAvatarWebp(file); ext = uploadFile.type === 'image/webp' ? 'webp' : ext; } catch(_) {}
+  _lnkUploadInFlight = (async () => {
+    try {
+      // RLS annonces_upload_own : le premier segment du path doit être auth.uid()
+      const { data: userData, error: uErr } = await Auth.sb.auth.getUser();
+      if (uErr || !userData?.user?.id) { toast('Session expirée, reconnecte-toi', 'error'); return null; }
+      const userId = userData.user.id;
+
+      let uploadFile = file;
+      let ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      if (window.imageToAvatarWebp) {
+        try { uploadFile = await window.imageToAvatarWebp(file); ext = uploadFile.type === 'image/webp' ? 'webp' : ext; } catch(_) {}
+      }
+      const path = `${userId}/liens/lnk-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+      toast('Upload en cours…', 'info');
+      const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, uploadFile, { contentType: uploadFile.type, cacheControl: '31536000' });
+      if (upErr) {
+        console.error('[liens upload]', upErr);
+        toast('Erreur upload : ' + (upErr.message || 'inconnue'), 'error');
+        return null;
+      }
+      const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
+      document.getElementById('lnk-image-url').value = url;
+      document.getElementById('lnk-image-preview').style.display = 'block';
+      document.getElementById('lnk-image-preview-img').src = url;
+      toast('Image ajoutée', 'success');
+      return url;
+    } catch (err) {
+      console.error(err);
+      toast('Erreur upload : ' + err.message, 'error');
+      return null;
+    } finally {
+      _lnkUploadInFlight = null;
     }
-    const path = `liens/lnk-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-    toast('Upload en cours…', 'info');
-    const { error: upErr } = await Auth.sb.storage.from('annonces').upload(path, uploadFile, { contentType: uploadFile.type });
-    if (upErr) { toast('Erreur upload : ' + upErr.message, 'error'); return; }
-    const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
-    document.getElementById('lnk-image-url').value = url;
-    document.getElementById('lnk-image-preview').style.display = 'block';
-    document.getElementById('lnk-image-preview-img').src = url;
-    toast('Image ajoutée', 'success');
-  } catch (err) {
-    console.error(err);
-    toast('Erreur upload : ' + err.message, 'error');
-  }
+  })();
+  await _lnkUploadInFlight;
 }
 
 function lnkClearImage() {
