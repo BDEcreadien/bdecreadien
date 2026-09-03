@@ -845,43 +845,6 @@
   <div id="lnk-list"></div>
 </div>
 
-<!-- Drawer édition dispo -->
-<div id="pln-drawer-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1200;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)plnCloseDrawer()">
-  <div style="background:white;border-radius:16px;padding:2rem;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem;">
-      <div>
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);" id="pln-drawer-date"></div>
-        <h3 style="margin:6px 0 0;" id="pln-drawer-titre"></h3>
-        <div style="font-size:13px;color:var(--gris-texte);margin-top:2px;" id="pln-drawer-lieu"></div>
-      </div>
-      <button onclick="plnCloseDrawer()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;">×</button>
-    </div>
-
-    <div style="margin-bottom:1.25rem;">
-      <label style="display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--gris-texte);">Je suis là ?</label>
-      <div style="display:flex;gap:8px;">
-        <button class="pln-statut-btn" data-statut="oui" onclick="plnSetStatut('oui')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">✓ Je viens</button>
-        <button class="pln-statut-btn" data-statut="peut_etre" onclick="plnSetStatut('peut_etre')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">? Peut-être</button>
-        <button class="pln-statut-btn" data-statut="non" onclick="plnSetStatut('non')" style="flex:1;padding:12px;border:2px solid var(--gris-border);background:white;border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;transition:all .15s;">✗ Absent</button>
-      </div>
-    </div>
-
-    <div class="form-row"><label>Rôle sur place (libre)</label><input type="text" id="pln-drawer-role" placeholder="ex : bar, entrée, photos, DJ…"></div>
-    <div class="form-row"><label>Créneau (libre)</label><input type="text" id="pln-drawer-creneau" placeholder="ex : 18h-22h, toute la soirée, avant l'event…"></div>
-    <div class="form-row"><label>Notes</label><textarea id="pln-drawer-notes" rows="2" placeholder="Ce que tu apportes, tes contraintes…"></textarea></div>
-
-    <div style="display:flex;gap:10px;margin-top:1.25rem;">
-      <button class="btn-cancel" onclick="plnCloseDrawer()" style="flex:1;">Fermer</button>
-      <button class="btn-save" onclick="plnSaveDispo()" style="flex:2;">Enregistrer</button>
-    </div>
-
-    <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gris-border);">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--gris-texte);">Autres membres du bureau</div>
-      <div id="pln-drawer-others" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-  </div>
-</div>
-
 <div id="toast"></div>
 <div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
