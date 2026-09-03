@@ -951,7 +951,25 @@
     // ======= PLANNING BUREAU (inscription tâches) =======
     let _mePlnEvents = [], _mePlnTaches = [], _mePlnInscr = [], _mePlnMembres = [];
 
+    function mePlnEnableNotifs() {
+      if (window.loadAndSubscribeOneSignal) {
+        window.loadAndSubscribeOneSignal();
+        setTimeout(() => { document.getElementById('me-pln-notif-banner').style.display = 'none'; }, 2500);
+      } else {
+        alert('Le module de notifications n\'est pas chargé. Recharge la page.');
+      }
+    }
+
+    function mePlnCheckNotifBanner() {
+      const banner = document.getElementById('me-pln-notif-banner');
+      if (!banner) return;
+      // Si permission déjà accordée OU refusée par le navigateur → on cache
+      const perm = typeof Notification !== 'undefined' ? Notification.permission : 'denied';
+      banner.style.display = (perm === 'default') ? 'flex' : 'none';
+    }
+
     async function mePlnLoad() {
+      mePlnCheckNotifBanner();
       const cont = document.getElementById('me-pln-list');
       cont.innerHTML = '<p style="color:var(--gris-texte);font-size:13px;text-align:center;padding:20px;">Chargement…</p>';
       const sb = Auth.sb;
