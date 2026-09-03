@@ -761,6 +761,23 @@
       <div id="annuaire-list" class="users-list"></div>
     </div>
 
+    <!-- BDE PLANNING (bureau) -->
+    <div id="tab-bde-planning" class="me-panel">
+      <h2 class="section-title">Planning bureau</h2>
+      <p class="section-sub">Inscris-toi aux tâches des événements à venir. Un clic sur la case = inscription/désinscription.</p>
+      <div id="me-pln-list" style="display:flex;flex-direction:column;gap:16px;"></div>
+    </div>
+
+    <style>
+      .me-pln-card { background:white;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border:1px solid var(--gris-clair,#eee); }
+      .me-pln-tache { display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--gris-clair,#eee);border-radius:10px;background:#fafafd;margin-bottom:8px;flex-wrap:wrap; }
+      .me-pln-tache.mine { background:#f5f0ff;border-color:var(--violet); }
+      .me-pln-check { width:26px;height:26px;border:2px solid var(--gris-clair,#ccc);border-radius:7px;background:white;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;transition:all .15s; }
+      .me-pln-check.checked { background:var(--violet);border-color:var(--violet); }
+      .me-pln-check:not(.disabled):hover { border-color:var(--violet); }
+      .me-pln-check.disabled { opacity:.4;cursor:not-allowed; }
+    </style>
+
     <!-- BDE DEMANDES (admin) -->
     <div id="tab-bde-demandes" class="me-panel">
       <h2 class="section-title">Demandes d'adhésion au BDE</h2>
