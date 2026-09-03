@@ -4382,6 +4382,191 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ============================================================
+// LIENS (Linktree maison) + stats
+// ============================================================
+let _lnkList = [];
+let _lnkStats = { views: 0, clicks: 0, byId: {} };
+
+async function initLiens() {
+  document.getElementById('lnk-form').style.display = 'none';
+  await Promise.all([lnkLoad(), lnkLoadStats()]);
+}
+
+async function lnkLoad() {
+  const { data, error } = await Auth.sb.from('liens')
+    .select('id, titre, url, icone, ordre, actif, created_at')
+    .order('ordre', { ascending: true })
+    .order('created_at', { ascending: true });
+  if (error) { toast('Erreur chargement liens : ' + error.message, 'error'); return; }
+  _lnkList = data || [];
+  lnkRender();
+  lnkRenderStatsCounts();
+}
+
+async function lnkLoadStats() {
+  // 30 derniers jours
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  try {
+    const [viewsRes, clicksRes] = await Promise.all([
+      Auth.sb.from('analytics_events').select('id', { count: 'exact', head: true })
+        .eq('event_type', 'pageview').eq('path', '/liens').gte('created_at', since),
+      Auth.sb.from('analytics_events').select('label')
+        .eq('event_type', 'click').like('label', 'lien:%').gte('created_at', since)
+    ]);
+    _lnkStats.views = viewsRes.count || 0;
+    _lnkStats.clicks = (clicksRes.data || []).length;
+    _lnkStats.byId = {};
+    (clicksRes.data || []).forEach(r => {
+      const id = (r.label || '').replace(/^lien:/, '');
+      if (id) _lnkStats.byId[id] = (_lnkStats.byId[id] || 0) + 1;
+    });
+    lnkRenderStatsCounts();
+    lnkRender();
+  } catch (err) { console.warn('Stats liens:', err); }
+}
+
+function lnkRenderStatsCounts() {
+  document.getElementById('lnk-stat-views').textContent = _lnkStats.views;
+  document.getElementById('lnk-stat-clicks').textContent = _lnkStats.clicks;
+  const ctr = _lnkStats.views > 0 ? Math.round((_lnkStats.clicks / _lnkStats.views) * 100) : 0;
+  document.getElementById('lnk-stat-ctr').textContent = ctr + '%';
+  const actifs = _lnkList.filter(l => l.actif).length;
+  document.getElementById('lnk-stat-active').textContent = actifs;
+  document.getElementById('lnk-stat-total-sub').textContent = 'sur ' + _lnkList.length + ' total';
+}
+
+function lnkRender() {
+  const wrap = document.getElementById('lnk-list');
+  if (!_lnkList.length) {
+    wrap.innerHTML = '<div class="empty-state">Aucun lien créé. Clique sur "+ Nouveau lien".</div>';
+    return;
+  }
+  // Trier par vues descendantes pour le classement stats, mais on garde l'ordre d'affichage
+  const maxClicks = Math.max(1, ...Object.values(_lnkStats.byId));
+  wrap.innerHTML = _lnkList.map((l, i) => {
+    const clicks = _lnkStats.byId[l.id] || 0;
+    const barPct = Math.round((clicks / maxClicks) * 100);
+    const upDisabled = i === 0 ? 'opacity:0.3;cursor:not-allowed;' : '';
+    const downDisabled = i === _lnkList.length - 1 ? 'opacity:0.3;cursor:not-allowed;' : '';
+    const activeBadge = l.actif
+      ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">actif</span>'
+      : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">inactif</span>';
+    return `
+      <div class="form-card visible" style="margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <button onclick="lnkMove('${l.id}', -1)" title="Monter" style="${upDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▲</button>
+            <button onclick="lnkMove('${l.id}', 1)" title="Descendre" style="${downDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▼</button>
+          </div>
+          <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--gris-clair);border-radius:10px;font-size:22px;">${escapeHtml(l.icone || '🔗')}</div>
+          <div style="flex:1;min-width:180px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <strong>${escapeHtml(l.titre)}</strong>
+              ${activeBadge}
+            </div>
+            <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--gris-texte);word-break:break-all;text-decoration:none;">${escapeHtml(l.url)}</a>
+          </div>
+          <div style="min-width:120px;text-align:right;">
+            <div style="font-weight:700;color:var(--violet);font-size:18px;">${clicks}</div>
+            <div style="font-size:11px;color:var(--gris-texte);">clics (30j)</div>
+            <div style="height:4px;background:var(--gris-border);border-radius:99px;margin-top:4px;overflow:hidden;">
+              <div style="height:100%;width:${barPct}%;background:var(--gradient);border-radius:99px;"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-edit" onclick="lnkToggleActif('${l.id}')" style="padding:6px 12px;font-size:12px;">${l.actif ? 'Désactiver' : 'Activer'}</button>
+            <button class="btn-edit" onclick="lnkEdit('${l.id}')" style="padding:6px 12px;font-size:12px;">Modifier</button>
+            <button class="btn-edit" onclick="lnkDelete('${l.id}')" style="padding:6px 12px;font-size:12px;background:rgba(220,50,50,0.08);color:#c0392b;">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function lnkTogglerForm() {
+  const form = document.getElementById('lnk-form');
+  const visible = form.style.display !== 'none';
+  form.style.display = visible ? 'none' : 'block';
+  if (!visible) {
+    document.getElementById('lnk-form-titre').textContent = 'Nouveau lien';
+    document.getElementById('lnk-id').value = '';
+    document.getElementById('lnk-titre').value = '';
+    document.getElementById('lnk-url').value = '';
+    document.getElementById('lnk-icone').value = '';
+    document.getElementById('lnk-actif').checked = true;
+  }
+}
+
+function lnkEdit(id) {
+  const l = _lnkList.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('lnk-form').style.display = 'block';
+  document.getElementById('lnk-form-titre').textContent = 'Modifier le lien';
+  document.getElementById('lnk-id').value = l.id;
+  document.getElementById('lnk-titre').value = l.titre;
+  document.getElementById('lnk-url').value = l.url;
+  document.getElementById('lnk-icone').value = l.icone || '';
+  document.getElementById('lnk-actif').checked = l.actif;
+  document.getElementById('lnk-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function lnkSave() {
+  const id = document.getElementById('lnk-id').value;
+  const titre = document.getElementById('lnk-titre').value.trim();
+  const url = document.getElementById('lnk-url').value.trim();
+  const icone = document.getElementById('lnk-icone').value.trim() || null;
+  const actif = document.getElementById('lnk-actif').checked;
+  if (!titre || !url) return toast('Titre et URL obligatoires', 'error');
+  if (!/^(https?:\/\/|mailto:|tel:|\/)/.test(url)) return toast('URL invalide (doit commencer par http(s)://, mailto:, tel: ou /)', 'error');
+
+  if (id) {
+    const { error } = await Auth.sb.from('liens').update({ titre, url, icone, actif }).eq('id', id);
+    if (error) return toast('Erreur : ' + error.message, 'error');
+    toast('Lien modifié', 'success');
+  } else {
+    // Nouveau : ordre = max + 1
+    const maxOrdre = _lnkList.reduce((m, l) => Math.max(m, l.ordre || 0), 0);
+    const payload = { titre, url, icone, actif, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
+    const { error } = await Auth.sb.from('liens').insert(payload);
+    if (error) return toast('Erreur : ' + error.message, 'error');
+    toast('Lien créé', 'success');
+  }
+  lnkTogglerForm();
+  await lnkLoad();
+}
+
+async function lnkToggleActif(id) {
+  const l = _lnkList.find(x => x.id === id);
+  if (!l) return;
+  const { error } = await Auth.sb.from('liens').update({ actif: !l.actif }).eq('id', id);
+  if (error) return toast('Erreur : ' + error.message, 'error');
+  toast(l.actif ? 'Lien désactivé' : 'Lien activé', 'success');
+  await lnkLoad();
+}
+
+async function lnkDelete(id) {
+  if (!confirm('Supprimer ce lien ?')) return;
+  const { error } = await Auth.sb.from('liens').delete().eq('id', id);
+  if (error) return toast('Erreur : ' + error.message, 'error');
+  toast('Supprimé', 'success');
+  await lnkLoad();
+}
+
+async function lnkMove(id, delta) {
+  const i = _lnkList.findIndex(l => l.id === id);
+  if (i < 0) return;
+  const j = i + delta;
+  if (j < 0 || j >= _lnkList.length) return;
+  const a = _lnkList[i], b = _lnkList[j];
+  // Swap ordre
+  const { error: e1 } = await Auth.sb.from('liens').update({ ordre: b.ordre }).eq('id', a.id);
+  const { error: e2 } = await Auth.sb.from('liens').update({ ordre: a.ordre }).eq('id', b.id);
+  if (e1 || e2) return toast('Erreur réordonnancement', 'error');
+  await lnkLoad();
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout').style.display = 'none';
 
