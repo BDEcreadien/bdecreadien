@@ -266,6 +266,19 @@
       }
       // OK, on affiche le formulaire (jusque-là caché pour éviter fuite d'UI aux non-connectés)
       document.getElementById('an-card').style.display = 'block';
+      // Charge les catégories depuis le JSON (source de vérité côté admin)
+      try {
+        const res = await fetch('/_data/annonces-categories.json', { cache: 'no-cache' });
+        if (res.ok) {
+          const cats = await res.json();
+          if (Array.isArray(cats) && cats.length) {
+            const sel = document.getElementById('a-categorie');
+            const prev = sel.value;
+            sel.innerHTML = cats.map(c => `<option value="${c.key}">${c.label}</option>`).join('');
+            if (cats.some(c => c.key === prev)) sel.value = prev;
+          }
+        }
+      } catch (_) { /* fallback : options hardcodées */ }
       // Membre BDE / Admin : publication directe, pas de modération
       const isBde = currentProfil.role === 'membre' || currentProfil.role === 'admin';
       if (isBde) {
