@@ -193,6 +193,10 @@
     return PROTECTED_PAGES.some(p => location.pathname.startsWith(p));
   }
   sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      // Force re-sync du player OneSignal après reconnexion (couvre les sessions expirées)
+      syncOneSignalId();
+    }
     if (!session || event === 'SIGNED_OUT') {
       _profil = null;
       _clearCachedProfil();
