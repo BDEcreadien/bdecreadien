@@ -796,6 +796,8 @@ function showStep(step, opts = {}) {
   if (finEl) finEl.style.display = 'none';
   const plnEl = document.getElementById('step-planning');
   if (plnEl) plnEl.style.display = 'none';
+  const lnkEl = document.getElementById('step-liens');
+  if (lnkEl) lnkEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
   // Sync URL : /admin sans param quand on est sur les cartes de choix,
@@ -803,7 +805,7 @@ function showStep(step, opts = {}) {
   try {
     if (step === 'pages') {
       if (location.search) history.replaceState({}, '', location.pathname);
-    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning'].includes(step)) {
+    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'liens'].includes(step)) {
       const wanted = '?page=' + step;
       if (location.search !== wanted) history.replaceState({}, '', location.pathname + wanted);
     }
