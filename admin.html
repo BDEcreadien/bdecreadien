@@ -1103,31 +1103,37 @@ function cancelAnCatEdit(i) {
 async function saveAnCat(i) {
   const newLabel = document.getElementById(`an-cat-input-${i}`).value.trim();
   if (!newLabel) return;
+  const snapshot = JSON.parse(JSON.stringify(data['annonces-categories']));
   data['annonces-categories'][i].label = newLabel;
   data['annonces-categories'][i].key = newLabel.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-  await persistData('annonces-categories', `Renommage catégorie : ${newLabel}`);
   openEditor('annonces', false, 'Annonces', 'Annonces');
   showToast('Catégorie mise à jour !', 'success');
+  try { await persistData('annonces-categories', `Renommage catégorie : ${newLabel}`); }
+  catch(e) { data['annonces-categories'] = snapshot; openEditor('annonces', false, 'Annonces', 'Annonces'); showToast('Échec de la sauvegarde', 'error'); }
 }
 async function addAnCat() {
   const label = document.getElementById('an-cat-new-input').value.trim();
   if (!label) return showToast('Saisis un nom de catégorie', 'error');
   const key = label.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
   if (data['annonces-categories'].some(c => c.key === key)) return showToast('Cette catégorie existe déjà', 'error');
+  const snapshot = JSON.parse(JSON.stringify(data['annonces-categories']));
   data['annonces-categories'].push({ key, label });
-  await persistData('annonces-categories', `Nouvelle catégorie : ${label}`);
   openEditor('annonces', false, 'Annonces', 'Annonces');
   showToast('Catégorie ajoutée !', 'success');
+  try { await persistData('annonces-categories', `Nouvelle catégorie : ${label}`); }
+  catch(e) { data['annonces-categories'] = snapshot; openEditor('annonces', false, 'Annonces', 'Annonces'); showToast('Échec de la sauvegarde', 'error'); }
 }
 async function deleteAnCat(i) {
   const cat = data['annonces-categories'][i];
   const used = (data.annonces || []).some(a => a.categorie === cat.key);
   if (used) return showToast(`"${cat.label}" est utilisée par des annonces existantes`, 'error');
   if (!confirm(`Supprimer la catégorie "${cat.label}" ?`)) return;
+  const snapshot = JSON.parse(JSON.stringify(data['annonces-categories']));
   data['annonces-categories'].splice(i, 1);
-  await persistData('annonces-categories', `Suppression catégorie : ${cat.label}`);
   openEditor('annonces', false, 'Annonces', 'Annonces');
   showToast('Catégorie supprimée', 'success');
+  try { await persistData('annonces-categories', `Suppression catégorie : ${cat.label}`); }
+  catch(e) { data['annonces-categories'] = snapshot; openEditor('annonces', false, 'Annonces', 'Annonces'); showToast('Échec de la sauvegarde', 'error'); }
 }
 
 function buildEquipeEditor() {
