@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Liens — BDE CREAD Lyon</title>
-  <meta name="description" content="Tous les liens utiles du BDE CREAD Lyon : réseaux sociaux, événements, adhésion, contact.">
+  <meta name="description" content="Retrouvez ici tous nos réseaux sociaux et les photos de toutes nos soirées.">
   <link rel="canonical" href="https://bdecreadien.fr/liens">
   <meta property="og:title" content="Liens — BDE CREAD Lyon">
-  <meta property="og:description" content="Retrouve tous les liens du BDE CREAD Lyon.">
+  <meta property="og:description" content="Retrouvez ici tous nos réseaux sociaux et les photos de toutes nos soirées.">
   <meta property="og:image" content="https://bdecreadien.fr/assets/Logo.png">
   <meta property="og:url" content="https://bdecreadien.fr/liens">
   <meta property="og:type" content="website">
@@ -43,7 +43,7 @@
     }
     .wrap {
       position: relative; z-index: 1;
-      max-width: 520px;
+      max-width: 540px;
       margin: 0 auto;
       padding: 3rem 1.25rem 4rem;
       display: flex; flex-direction: column; align-items: center;
@@ -57,8 +57,8 @@
     }
     .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(0,0,0,0.28), 0 0 0 3px rgba(255,255,255,0.15); }
-      50%      { transform: scale(1.04); box-shadow: 0 14px 50px rgba(0,0,0,0.32), 0 0 0 4px rgba(255,255,255,0.22); }
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.04); }
     }
     h1 {
       font-family: 'Bebas Neue', sans-serif;
@@ -68,24 +68,47 @@
       text-align: center;
       text-shadow: 0 2px 12px rgba(0,0,0,0.2);
     }
-    .tagline {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 600;
-      font-size: 13px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      opacity: 0.85;
-      margin-top: 4px;
+    .intro {
+      font-size: 15px;
+      opacity: 0.92;
+      margin-top: 12px;
       text-align: center;
+      max-width: 460px;
+      line-height: 1.5;
     }
+
+    /* Barre de réseaux sociaux */
+    .socials {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .social-btn {
+      width: 42px; height: 42px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: white;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.25s cubic-bezier(.2,.7,.2,1), opacity 0.2s;
+      opacity: 0.9;
+    }
+    .social-btn:hover { transform: scale(1.15) rotate(-4deg); opacity: 1; }
+    .social-btn svg { width: 28px; height: 28px; fill: currentColor; }
+
+    /* Liste des liens principaux */
     .links {
       width: 100%;
       display: flex; flex-direction: column; gap: 12px;
-      margin-top: 2.5rem;
+      margin-top: 2rem;
     }
     .link-card {
       display: flex; align-items: center; gap: 14px;
-      padding: 16px 18px;
+      padding: 12px 18px 12px 12px;
       background: rgba(255,255,255,0.12);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -101,16 +124,15 @@
       opacity: 0;
       transform: translateY(12px);
       animation: reveal 0.5s cubic-bezier(.2,.7,.2,1) forwards;
+      position: relative;
+      overflow: hidden;
     }
     .link-card:nth-child(1) { animation-delay: 0.05s; }
     .link-card:nth-child(2) { animation-delay: 0.12s; }
     .link-card:nth-child(3) { animation-delay: 0.19s; }
     .link-card:nth-child(4) { animation-delay: 0.26s; }
     .link-card:nth-child(5) { animation-delay: 0.33s; }
-    .link-card:nth-child(6) { animation-delay: 0.40s; }
-    .link-card:nth-child(7) { animation-delay: 0.47s; }
-    .link-card:nth-child(8) { animation-delay: 0.54s; }
-    .link-card:nth-child(n+9) { animation-delay: 0.60s; }
+    .link-card:nth-child(n+6) { animation-delay: 0.40s; }
     @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
     .link-card:hover {
       transform: translateY(-3px) scale(1.01);
@@ -119,18 +141,24 @@
       box-shadow: 0 10px 26px rgba(0,0,0,0.18);
     }
     .link-card:active { transform: translateY(-1px) scale(0.995); }
-    .link-icon {
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
+    .link-thumb {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.15);
+    }
+    .link-thumb-fallback {
+      width: 48px; height: 48px;
+      border-radius: 50%;
       background: rgba(255,255,255,0.18);
-      border-radius: 10px;
-      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
       flex-shrink: 0;
     }
-    .link-title { flex: 1; }
-    .link-chevron { opacity: 0.55; font-size: 18px; }
+    .link-title { flex: 1; text-align: center; padding-right: 40px; }
     .footer {
-      margin-top: 3rem;
+      margin-top: 2.5rem;
       font-size: 12px;
       opacity: 0.7;
       text-align: center;
@@ -152,10 +180,13 @@
   <main class="wrap">
     <div class="logo"><img src="/assets/Logo.png?v=6" alt="BDE CREAD Lyon"></div>
     <h1>BDE CREAD Lyon</h1>
-    <p class="tagline">Tous nos liens</p>
+    <p class="intro">Retrouvez ici tous nos réseaux sociaux et les photos de toutes nos soirées</p>
+
+    <div id="socials" class="socials" role="list"></div>
 
     <div id="links" class="links" role="list"></div>
-    <div id="loading" class="loading">Chargement des liens…</div>
+
+    <div id="loading" class="loading">Chargement…</div>
     <div id="empty" class="empty" style="display:none;">Aucun lien pour le moment.</div>
     <div id="error" class="error" style="display:none;">Impossible de charger les liens.</div>
 
@@ -164,12 +195,37 @@
     </div>
   </main>
 
+  <script>
+    // Icônes SVG prédéfinies pour les réseaux sociaux
+    const SOCIAL_ICONS = {
+      instagram: '<svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.42.56.22.96.48 1.38.9.42.42.68.82.9 1.38.17.42.37 1.06.42 2.23.06 1.26.07 1.65.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 1.8-.42 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.17-1.06.37-2.23.42-1.26.06-1.65.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.42-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.17-.42-.37-1.06-.42-2.23-.06-1.26-.07-1.65-.07-4.85s0-3.6.07-4.85c.05-1.17.25-1.8.42-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.17 1.06-.37 2.23-.42C8.4 2.2 8.8 2.2 12 2.2M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.15.63c-.79.3-1.46.71-2.13 1.38C1.35 2.69.94 3.36.63 4.15.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.9.31.79.72 1.46 1.39 2.13.67.67 1.34 1.08 2.13 1.39.75.3 1.63.5 2.9.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.9-.56.79-.31 1.46-.72 2.13-1.39.67-.67 1.08-1.34 1.39-2.13.3-.75.5-1.63.56-2.9.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.9-.31-.79-.72-1.46-1.39-2.13-.67-.67-1.34-1.08-2.13-1.39-.75-.3-1.63-.5-2.9-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zm0 10.16a4 4 0 110-8 4 4 0 010 8zm7.85-10.4a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/></svg>',
+      tiktok: '<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-.88-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43V9.02a8.16 8.16 0 004.77 1.52V7.1a4.85 4.85 0 01-1.84-.41z"/></svg>',
+      website: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+      youtube: '<svg viewBox="0 0 24 24"><path d="M23.5 6.2c-.3-1-1-1.8-2-2C19.7 3.5 12 3.5 12 3.5s-7.7 0-9.5.7c-1 .3-1.8 1-2 2C0 8 0 12 0 12s0 4 .5 5.8c.3 1 1 1.8 2 2 1.8.7 9.5.7 9.5.7s7.7 0 9.5-.7c1-.3 1.8-1 2-2 .5-1.8.5-5.8.5-5.8s0-4-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>',
+      discord: '<svg viewBox="0 0 24 24"><path d="M20.32 4.37A19.79 19.79 0 0016.5 3a13.94 13.94 0 00-.62 1.27 18.32 18.32 0 00-5.76 0A13.53 13.53 0 009.5 3a19.75 19.75 0 00-3.83 1.37A20.32 20.32 0 002 15.94a19.9 19.9 0 006.06 3.06 15 15 0 001.29-2.1 12.9 12.9 0 01-2.03-.98c.17-.13.34-.26.5-.4a14.14 14.14 0 0012.36 0c.16.14.33.27.5.4-.65.39-1.33.72-2.03.98a15 15 0 001.29 2.1A19.9 19.9 0 0022 15.94a20.32 20.32 0 00-1.68-11.57zM8.52 14.33c-1.18 0-2.15-1.09-2.15-2.42s.96-2.43 2.15-2.43c1.19 0 2.16 1.09 2.15 2.43 0 1.33-.96 2.42-2.15 2.42zm6.96 0c-1.18 0-2.15-1.09-2.15-2.42s.96-2.43 2.15-2.43c1.19 0 2.16 1.09 2.15 2.43 0 1.33-.96 2.42-2.15 2.42z"/></svg>',
+      twitter: '<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>',
+      facebook: '<svg viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/></svg>',
+      linkedin: '<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+      snapchat: '<svg viewBox="0 0 24 24"><path d="M12.166.106c1.61-.032 3.353.518 4.6 1.641 1.049.94 1.732 2.315 1.936 3.716.15 1.037.107 2.083.06 3.126.04.14.183.192.31.24.412.15.842.245 1.244.44.362.176.803.484.71.933-.144.674-1.06.842-1.585 1.148-.297.194-.646.288-.914.517-.207.343.033.727.184 1.045.516.876 1.228 1.63 2.062 2.196.548.35 1.135.647 1.767.822.436.116.938.184 1.234.575.31.516-.06 1.13-.556 1.363-.702.335-1.483.446-2.247.586-.216.026-.31.245-.353.44-.06.24-.108.475-.202.7-.107.245-.324.406-.598.4-.4-.011-.798-.107-1.203-.16-.395-.048-.803-.086-1.198-.005-.383.086-.71.352-.977.63-1.036 1.08-2.29 1.94-3.696 2.31-.72.198-1.47.288-2.22.242-1.415-.087-2.756-.622-3.911-1.42-.514-.36-1.007-.767-1.44-1.235-.4-.32-.936-.395-1.42-.32-.535.086-1.063.24-1.6.315-.267.032-.575-.106-.7-.348-.14-.245-.19-.523-.256-.79-.036-.15-.11-.32-.28-.365-.68-.202-1.395-.324-2.055-.6-.323-.135-.674-.348-.786-.7-.19-.535.283-1.032.786-1.164 1.014-.32 2.017-.732 2.86-1.383.775-.6 1.443-1.334 1.933-2.196.174-.32.406-.7.283-1.08-.12-.323-.51-.44-.802-.575-.5-.223-1.077-.395-1.475-.79-.257-.278-.353-.7-.19-1.048.256-.454.803-.615 1.257-.783.375-.14.788-.194 1.155-.343.06-.043.15-.11.11-.202-.062-1.11-.174-2.235-.023-3.34.135-1.107.567-2.213 1.353-3.043C7.53 1.11 8.858.343 10.29.107a5.937 5.937 0 011.87-.001z"/></svg>',
+      spotify: '<svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.301.42-1.021.599-1.561.3z"/></svg>'
+    };
+
+    const SOCIAL_LABELS = {
+      instagram:'Instagram', tiktok:'TikTok', website:'Site web', youtube:'YouTube',
+      discord:'Discord', twitter:'Twitter / X', facebook:'Facebook',
+      linkedin:'LinkedIn', snapchat:'Snapchat', spotify:'Spotify'
+    };
+    window.SOCIAL_ICONS = SOCIAL_ICONS;
+    window.SOCIAL_LABELS = SOCIAL_LABELS;
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
   <script>
     (async function () {
       const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
       const loadingEl = document.getElementById('loading');
+      const socialsEl = document.getElementById('socials');
       const listEl = document.getElementById('links');
       const emptyEl = document.getElementById('empty');
       const errorEl = document.getElementById('error');
@@ -181,7 +237,7 @@
       try {
         const { data, error } = await sb
           .from('liens')
-          .select('id, titre, url, icone, ordre')
+          .select('id, titre, url, icone, image_url, type, social_icon, ordre')
           .eq('actif', true)
           .order('ordre', { ascending: true })
           .order('created_at', { ascending: true });
@@ -191,18 +247,36 @@
         if (error) { console.error(error); errorEl.style.display = 'block'; return; }
         if (!data || !data.length) { emptyEl.style.display = 'block'; return; }
 
-        listEl.innerHTML = data.map(l => {
-          const icon = l.icone || '🔗';
+        const socials = data.filter(l => l.type === 'social');
+        const principaux = data.filter(l => l.type !== 'social');
+
+        // Réseaux sociaux (icônes en tête)
+        socialsEl.innerHTML = socials.map(l => {
+          const key = (l.social_icon || '').toLowerCase();
+          const icon = SOCIAL_ICONS[key] || SOCIAL_ICONS.website;
+          const label = SOCIAL_LABELS[key] || l.titre || 'Lien';
           const isExternal = /^https?:\/\//.test(l.url);
           const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+          return `<a class="social-btn" href="${esc(l.url)}"${targetAttr}
+                     data-track="lien:${esc(l.id)}" title="${esc(label)}" aria-label="${esc(label)}"
+                     role="listitem">${icon}</a>`;
+        }).join('');
+
+        // Liens principaux (cartes)
+        listEl.innerHTML = principaux.map(l => {
+          const isExternal = /^https?:\/\//.test(l.url);
+          const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+          const thumb = l.image_url
+            ? `<img class="link-thumb" src="${esc(l.image_url)}" alt="" loading="lazy">`
+            : `<span class="link-thumb-fallback" aria-hidden="true">${esc(l.icone || '🔗')}</span>`;
           return `<a class="link-card" href="${esc(l.url)}"${targetAttr}
-                     data-track="lien:${esc(l.id)}"
-                     data-lien-titre="${esc(l.titre)}" role="listitem">
-                    <span class="link-icon" aria-hidden="true">${esc(icon)}</span>
+                     data-track="lien:${esc(l.id)}" role="listitem">
+                    ${thumb}
                     <span class="link-title">${esc(l.titre)}</span>
-                    <span class="link-chevron" aria-hidden="true">›</span>
                   </a>`;
         }).join('');
+
+        if (!socials.length && !principaux.length) emptyEl.style.display = 'block';
       } catch (err) {
         console.error(err);
         loadingEl.style.display = 'none';
