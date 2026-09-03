@@ -4513,22 +4513,44 @@ function lnkRenderStatsCounts() {
   document.getElementById('lnk-stat-total-sub').textContent = 'sur ' + _lnkList.length + ' total';
 }
 
+const LNK_SOCIAL_LABELS = {
+  instagram:'Instagram', tiktok:'TikTok', website:'Site web', youtube:'YouTube',
+  discord:'Discord', twitter:'Twitter/X', facebook:'Facebook',
+  linkedin:'LinkedIn', snapchat:'Snapchat', spotify:'Spotify'
+};
+
 function lnkRender() {
   const wrap = document.getElementById('lnk-list');
   if (!_lnkList.length) {
     wrap.innerHTML = '<div class="empty-state">Aucun lien créé. Clique sur "+ Nouveau lien".</div>';
     return;
   }
-  // Trier par vues descendantes pour le classement stats, mais on garde l'ordre d'affichage
   const maxClicks = Math.max(1, ...Object.values(_lnkStats.byId));
-  wrap.innerHTML = _lnkList.map((l, i) => {
+
+  // Grouper par type pour affichage lisible
+  const socials = _lnkList.filter(l => l.type === 'social');
+  const principaux = _lnkList.filter(l => l.type !== 'social');
+
+  function cardHtml(l, i, groupList) {
     const clicks = _lnkStats.byId[l.id] || 0;
     const barPct = Math.round((clicks / maxClicks) * 100);
     const upDisabled = i === 0 ? 'opacity:0.3;cursor:not-allowed;' : '';
-    const downDisabled = i === _lnkList.length - 1 ? 'opacity:0.3;cursor:not-allowed;' : '';
+    const downDisabled = i === groupList.length - 1 ? 'opacity:0.3;cursor:not-allowed;' : '';
     const activeBadge = l.actif
       ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">actif</span>'
       : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">inactif</span>';
+    const typeBadge = l.type === 'social'
+      ? `<span style="background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">${escapeHtml(LNK_SOCIAL_LABELS[l.social_icon] || l.social_icon || 'social')}</span>`
+      : '';
+    // Vignette : image si dispo sinon emoji sinon 🔗
+    let thumb;
+    if (l.image_url) {
+      thumb = `<img src="${escapeHtml(l.image_url)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;">`;
+    } else if (l.type === 'social') {
+      thumb = `<div style="width:48px;height:48px;background:linear-gradient(135deg,var(--violet),var(--orange));color:white;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700;flex-shrink:0;">${(l.social_icon || 's').slice(0,2).toUpperCase()}</div>`;
+    } else {
+      thumb = `<div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--gris-clair);border-radius:50%;font-size:22px;flex-shrink:0;">${escapeHtml(l.icone || '🔗')}</div>`;
+    }
     return `
       <div class="form-card visible" style="margin-bottom:10px;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
@@ -4536,11 +4558,12 @@ function lnkRender() {
             <button onclick="lnkMove('${l.id}', -1)" title="Monter" style="${upDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▲</button>
             <button onclick="lnkMove('${l.id}', 1)" title="Descendre" style="${downDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▼</button>
           </div>
-          <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--gris-clair);border-radius:10px;font-size:22px;">${escapeHtml(l.icone || '🔗')}</div>
+          ${thumb}
           <div style="flex:1;min-width:180px;">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <strong>${escapeHtml(l.titre)}</strong>
               ${activeBadge}
+              ${typeBadge}
             </div>
             <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--gris-texte);word-break:break-all;text-decoration:none;">${escapeHtml(l.url)}</a>
           </div>
@@ -4559,7 +4582,18 @@ function lnkRender() {
         </div>
       </div>
     `;
-  }).join('');
+  }
+
+  const html = [];
+  if (socials.length) {
+    html.push('<h4 style="margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Réseaux sociaux (barre du haut)</h4>');
+    html.push(socials.map((l, i) => cardHtml(l, i, socials)).join(''));
+  }
+  if (principaux.length) {
+    html.push('<h4 style="margin:20px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);">Liens principaux (cartes)</h4>');
+    html.push(principaux.map((l, i) => cardHtml(l, i, principaux)).join(''));
+  }
+  wrap.innerHTML = html.join('');
 }
 
 function lnkTogglerForm() {
