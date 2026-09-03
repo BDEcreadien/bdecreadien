@@ -4471,7 +4471,8 @@ function lnkSetEmoji(e) {
 
 async function lnkLoad() {
   const { data, error } = await Auth.sb.from('liens')
-    .select('id, titre, url, icone, ordre, actif, created_at')
+    .select('id, titre, url, icone, image_url, type, social_icon, ordre, actif, created_at')
+    .order('type', { ascending: true }) // 'principal' avant 'social'
     .order('ordre', { ascending: true })
     .order('created_at', { ascending: true });
   if (error) { toast('Erreur chargement liens : ' + error.message, 'error'); return; }
