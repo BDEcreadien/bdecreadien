@@ -135,7 +135,7 @@ function renderActu(data) {
   // Photo de couverture
   const imgUrl = typeof first.imageUrl === 'object' ? first.imageUrl?.url : first.imageUrl;
   if (imgUrl) {
-    const coverUrl = imgUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${imgUrl}` : imgUrl;
+    const coverUrl = imgUrl.startsWith('/') ? imgUrl : imgUrl;
     featured.style.setProperty('--cover-url', `url('${coverUrl}')`);
     featured.classList.add('has-cover');
   } else {
@@ -769,7 +769,7 @@ function renderEquipe(data) {
       <p class="pole-label">${pole.label}</p>
       <ul class="equipe-grid" role="list">
         ${membres.map((m, i) => {
-          const photoUrl = m.photo?.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${m.photo}` : (m.photo || '');
+          const photoUrl = m.photo?.startsWith('/') ? m.photo : (m.photo || '');
           return `<li class="equipe-card reveal ${delays[i] || ''}">
             <div class="equipe-avatar">
               ${photoUrl ? `<img src="${photoUrl}" alt="Photo de ${m.nom}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
@@ -913,7 +913,7 @@ function renderAnnonces(filtre) {
   if (empty) empty.style.display = 'none';
 
   grid.innerHTML = filtered.map((a, i) => {
-    const rawPhoto = a.photo ? (a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo) : '';
+    const rawPhoto = a.photo ? (a.photo.startsWith('/') ? a.photo : a.photo) : '';
     const photoUrl = safeURL(rawPhoto);
     const titre = escapeHTML(a.titre);
     return `
@@ -946,8 +946,8 @@ function renderAnnonces(filtre) {
 function openAnnonceModal(a) {
   const overlay = document.getElementById('an-modal-overlay');
   if (!overlay) return;
-  const photoSrc = a.photo ? (a.photo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + a.photo : a.photo) : null;
-  const photos = a.photos ? a.photos.map(p => p.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + p : p) : (photoSrc ? [photoSrc] : []);
+  const photoSrc = a.photo ? (a.photo.startsWith('/') ? a.photo : a.photo) : null;
+  const photos = a.photos ? a.photos.map(p => p) : (photoSrc ? [photoSrc] : []);
 
   const safePhoto = safeURL(photoSrc);
   document.getElementById('an-modal-media').innerHTML = safePhoto
@@ -1214,7 +1214,7 @@ function lightboxNav(dir) {
 function renderLightbox() {
   const p = galeriePhotos[lightboxIndex];
   if (!p) return;
-  const rawUrl = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
+  const rawUrl = p.url.startsWith('/') ? p.url : p.url;
   document.getElementById('lightbox-img').src = rawUrl;
   document.getElementById('lightbox-caption').textContent = p.titre || '';
   document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galeriePhotos.length}`;
@@ -1269,7 +1269,7 @@ if (_origGalerieBlock) {
       const grid = document.getElementById('galerie-grid');
       if (!galeriePhotos.length) { document.getElementById('galerie-section')?.style.setProperty('display','none'); return; }
       grid.innerHTML = galeriePhotos.map((p, i) => {
-        const url = p.url.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${p.url}` : p.url;
+        const url = p.url.startsWith('/') ? p.url : p.url;
         return `<div class="galerie-item reveal" data-index="${i}" onclick="openLightbox(${i})" role="button" tabindex="0" aria-label="Voir la photo${p.titre ? ' : ' + p.titre : ''}">
           <img src="${url}" alt="${p.titre || 'Photo BDE'}" loading="lazy" onerror="this.parentElement.style.display='none'">
           ${p.titre ? `<span class="galerie-caption">${p.titre}</span>` : ''}
@@ -1298,7 +1298,7 @@ function renderPartenaires(items) {
   if (empty) empty.style.display = 'none';
   grid.innerHTML = items.map((p, i) => {
     const logoHtml = p.logo
-      ? `<img class="partenaire-logo" src="${p.logo.startsWith('/') ? 'https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main' + p.logo : p.logo}" alt="Logo ${p.nom}" loading="lazy">`
+      ? `<img class="partenaire-logo" src="${p.logo}" alt="Logo ${p.nom}" loading="lazy">`
       : `<div class="partenaire-logo-placeholder">${(p.nom || '?').slice(0, 2).toUpperCase()}</div>`;
     const inner = `${logoHtml}
       <p class="partenaire-nom">${p.nom}</p>
@@ -1354,7 +1354,7 @@ if (document.getElementById('partenaires-grid')) {
   window.openEvModal = function (ev) {
     if (!ev) return;
     const imgUrl = typeof ev.imageUrl === 'object' ? ev.imageUrl?.url : (ev.imageUrl || '');
-    const rawUrl = imgUrl && imgUrl.startsWith('/') ? `https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main${imgUrl}` : imgUrl;
+    const rawUrl = imgUrl && imgUrl.startsWith('/') ? imgUrl : imgUrl;
 
     // Cover
     const media = document.getElementById('ev-modal-media');
