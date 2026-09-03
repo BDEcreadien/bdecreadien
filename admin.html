@@ -4547,22 +4547,29 @@ function lnkEdit(id) {
 async function lnkSave() {
   const id = document.getElementById('lnk-id').value;
   const titre = document.getElementById('lnk-titre').value.trim();
-  const url = document.getElementById('lnk-url').value.trim();
+  let url = document.getElementById('lnk-url').value.trim();
   const icone = document.getElementById('lnk-icone').value.trim() || null;
   const actif = document.getElementById('lnk-actif').checked;
-  if (!titre || !url) return toast('Titre et URL obligatoires', 'error');
-  if (!/^(https?:\/\/|mailto:|tel:|\/)/.test(url)) return toast('URL invalide (doit commencer par http(s)://, mailto:, tel: ou /)', 'error');
+  if (!titre) return toast('Titre obligatoire', 'error');
+  if (!url) return toast('URL obligatoire', 'error');
+  // Auto-préfixe https:// si l'utilisateur oublie
+  if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
 
   if (id) {
     const { error } = await Auth.sb.from('liens').update({ titre, url, icone, actif }).eq('id', id);
-    if (error) return toast('Erreur : ' + error.message, 'error');
+    if (error) {
+      console.error('[liens] update failed', error);
+      return toast('Erreur : ' + (error.message || error.code || 'inconnue'), 'error');
+    }
     toast('Lien modifié', 'success');
   } else {
-    // Nouveau : ordre = max + 1
     const maxOrdre = _lnkList.reduce((m, l) => Math.max(m, l.ordre || 0), 0);
     const payload = { titre, url, icone, actif, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
-    const { error } = await Auth.sb.from('liens').insert(payload);
-    if (error) return toast('Erreur : ' + error.message, 'error');
+    const { data, error } = await Auth.sb.from('liens').insert(payload).select();
+    if (error) {
+      console.error('[liens] insert failed', error, payload);
+      return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
+    }
     toast('Lien créé', 'success');
   }
   lnkTogglerForm();
