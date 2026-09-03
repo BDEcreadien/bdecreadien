@@ -4556,10 +4556,15 @@ async function lnkSave() {
   if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
 
   if (id) {
-    const { error } = await Auth.sb.from('liens').update({ titre, url, icone, actif }).eq('id', id);
+    const { data, error } = await Auth.sb.from('liens').update({ titre, url, icone, actif }).eq('id', id).select();
     if (error) {
       console.error('[liens] update failed', error);
       return toast('Erreur : ' + (error.message || error.code || 'inconnue'), 'error');
+    }
+    // Mise à jour optimiste locale
+    if (data && data[0]) {
+      const idx = _lnkList.findIndex(l => l.id === id);
+      if (idx >= 0) _lnkList[idx] = { ..._lnkList[idx], ...data[0] };
     }
     toast('Lien modifié', 'success');
   } else {
@@ -4570,10 +4575,15 @@ async function lnkSave() {
       console.error('[liens] insert failed', error, payload);
       return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
     }
+    // Ajout optimiste local (l'UI se met à jour immédiatement)
+    if (data && data[0]) _lnkList.push(data[0]);
     toast('Lien créé', 'success');
   }
   lnkTogglerForm();
-  await lnkLoad();
+  lnkRender();
+  lnkRenderStatsCounts();
+  // Puis reload silencieux depuis la DB pour être sûr d'être sync
+  lnkLoad();
 }
 
 async function lnkToggleActif(id) {
