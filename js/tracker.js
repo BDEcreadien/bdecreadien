@@ -13,9 +13,13 @@
 
   let started = false;
 
+  // Pages où le tracking démarre sans bandeau de consentement (aucune donnée perso, session_id anonyme)
+  const NO_CONSENT_PAGES = /^\/(liens)(\.html)?\/?$/i;
+  const bypassConsent = NO_CONSENT_PAGES.test(path);
+
   function startTracking() {
     if (started) return;
-    if (localStorage.getItem('cookie_consent') !== 'accepted') return;
+    if (!bypassConsent && localStorage.getItem('cookie_consent') !== 'accepted') return;
     started = true;
 
     // Session ID anonyme (persiste tant que l'onglet reste ouvert)
