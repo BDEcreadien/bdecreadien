@@ -1946,6 +1946,7 @@ function editItem(type, i) {
     document.getElementById('form-title').textContent = 'Modifier l\'annonce';
   }
   if (type === 'equipe') {
+    refreshMbPoleSelect();
     const mb = data.equipe[i];
     document.getElementById('mb-nom').value = mb.nom || '';
     document.getElementById('mb-initiales').value = mb.initiales || '';
