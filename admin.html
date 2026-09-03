@@ -1103,12 +1103,26 @@ function cancelAnCatEdit(i) {
 async function saveAnCat(i) {
   const newLabel = document.getElementById(`an-cat-input-${i}`).value.trim();
   if (!newLabel) return;
+  const newKey = newLabel.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  if (data['annonces-categories'].some((c, j) => j !== i && c.key === newKey)) {
+    return showToast('Ce nom existe déjà (clé identique)', 'error');
+  }
   const snapshot = JSON.parse(JSON.stringify(data['annonces-categories']));
   data['annonces-categories'][i].label = newLabel;
-  data['annonces-categories'][i].key = newLabel.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  data['annonces-categories'][i].key = newKey;
   openEditor('annonces', false, 'Annonces', 'Annonces');
   showToast('Catégorie mise à jour !', 'success');
   try { await persistData('annonces-categories', `Renommage catégorie : ${newLabel}`); }
+  catch(e) { data['annonces-categories'] = snapshot; openEditor('annonces', false, 'Annonces', 'Annonces'); showToast('Échec de la sauvegarde', 'error'); }
+}
+async function moveAnCat(i, dir) {
+  const arr = data['annonces-categories'];
+  const j = i + (dir === 'up' ? -1 : 1);
+  if (j < 0 || j >= arr.length) return;
+  const snapshot = JSON.parse(JSON.stringify(arr));
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  openEditor('annonces', false, 'Annonces', 'Annonces');
+  try { await persistData('annonces-categories', `Réordonnancement catégories`); }
   catch(e) { data['annonces-categories'] = snapshot; openEditor('annonces', false, 'Annonces', 'Annonces'); showToast('Échec de la sauvegarde', 'error'); }
 }
 async function addAnCat() {
