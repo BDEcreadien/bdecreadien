@@ -4501,12 +4501,12 @@ async function plnNotifyBureau(eventId) {
     const token = sess.session?.access_token;
     if (!token) return showToast('Session expirée', 'error');
     const dateStr = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'long'}) : 'date à définir';
-    const res = await fetch(`${window.SUPABASE_URL}/functions/v1/notify-planning`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/notify-planning`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json',
-        'apikey': window.SUPABASE_ANON,
+        'apikey': SUPABASE_ANON,
       },
       body: JSON.stringify({
         title: `🔔 ${ev.titre}`,
