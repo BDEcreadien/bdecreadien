@@ -139,15 +139,31 @@
   }
 
   async function syncOneSignalId() {
-    if (!window.OneSignalDeferred) return;
     const user = await getUser();
     if (!user) return;
-    OneSignalDeferred.push(async (OS) => {
-      const playerId = await OS.User.PushSubscription.id;
-      if (!playerId) return;
-      await sb.from('profils').update({ onesignal_id: playerId }).eq('id', user.id);
+    // Attend que la SDK OneSignal soit chargée (retry pendant 15s)
+    const start = Date.now();
+    const tryOnce = () => new Promise((resolve) => {
+      if (!window.OneSignalDeferred) { resolve(false); return; }
+      OneSignalDeferred.push(async (OS) => {
+        try {
+          const playerId = await OS.User.PushSubscription.id;
+          if (!playerId) { resolve(false); return; }
+          await sb.from('profils').update({ onesignal_id: playerId }).eq('id', user.id);
+          resolve(true);
+        } catch { resolve(false); }
+      });
     });
+    // 1re tentative immédiate
+    if (await tryOnce()) return;
+    // Puis retries toutes les 2s pendant 15s
+    while (Date.now() - start < 15000) {
+      await new Promise(r => setTimeout(r, 2000));
+      if (await tryOnce()) return;
+    }
   }
+  // Exposé pour re-sync depuis d'autres pages après activation manuelle
+  window.syncOneSignalId = syncOneSignalId;
 
   // Notifie les membres BDE d'un nouvel événement (feedback / annonce / adhésion)
   // Fire-and-forget : n'attend pas la réponse pour ne pas bloquer l'UI.
