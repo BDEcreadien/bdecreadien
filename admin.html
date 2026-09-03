@@ -1076,6 +1076,10 @@ function buildAnCategoriesPanel() {
         <button onclick="cancelAnCatEdit(${i})" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">✕</button>
       </div>
       <div class="item-card-actions">
+        <div style="display:flex;flex-direction:column;gap:2px;margin-right:4px;">
+          <button onclick="moveAnCat(${i},'up')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Monter" ${i===0?'disabled':''}>↑</button>
+          <button onclick="moveAnCat(${i},'down')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Descendre" ${i===cats.length-1?'disabled':''}>↓</button>
+        </div>
         <button class="btn-edit" onclick="startAnCatEdit(${i})">Renommer</button>
         <button class="btn-delete" onclick="deleteAnCat(${i})" ${cats.length <= 1 ? 'disabled title="Gardez au moins une catégorie"' : ''}>Supprimer</button>
       </div>
