@@ -4519,7 +4519,7 @@ async function lnkLoadStats() {
   try {
     const [viewsRes, clicksRes] = await Promise.all([
       Auth.sb.from('analytics_events').select('id', { count: 'exact', head: true })
-        .eq('event_type', 'pageview').eq('path', '/liens').gte('created_at', since),
+        .eq('event_type', 'pageview').in('path', ['/liens', '/menu']).gte('created_at', since),
       Auth.sb.from('analytics_events').select('label')
         .eq('event_type', 'click').like('label', 'lien:%').gte('created_at', since)
     ]);
