@@ -1928,6 +1928,7 @@ function editItem(type, i) {
     document.getElementById('form-title').textContent = 'Modifier l\'événement';
   }
   if (type === 'annonces') {
+    refreshAnCategorieSelect();
     const an = data.annonces[i];
     document.getElementById('an-titre').value = an.titre || '';
     document.getElementById('an-categorie').value = an.categorie || (data['annonces-categories']?.[0]?.key || 'materiel');
