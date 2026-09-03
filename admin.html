@@ -4287,7 +4287,7 @@ function plnTogglerFormEv() {
 
 async function plnSaveEv() {
   const titre = document.getElementById('pln-ev-titre').value.trim();
-  if (!titre) return toast('Le titre est obligatoire', 'error');
+  if (!titre) return showToast('Le titre est obligatoire', 'error');
   const payload = {
     titre,
     date: document.getElementById('pln-ev-date').value || null,
@@ -4299,9 +4299,9 @@ async function plnSaveEv() {
   const { data, error } = await Auth.sb.from('evenements').insert(payload).select();
   if (error) {
     console.error('[planning] insert evenement failed', error, payload);
-    return toast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
+    return showToast('Erreur création : ' + (error.message || error.code || 'inconnue'), 'error');
   }
-  toast('Événement créé', 'success');
+  showToast('Événement créé', 'success');
   plnTogglerFormEv();
   await plnReload();
 }
@@ -4309,8 +4309,8 @@ async function plnSaveEv() {
 async function plnDeleteEv(id) {
   if (!confirm('Supprimer cet événement (et toutes les dispos associées) ?')) return;
   const { error } = await Auth.sb.from('evenements').delete().eq('id', id);
-  if (error) return toast('Erreur : ' + error.message, 'error');
-  toast('Supprimé', 'success');
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Supprimé', 'success');
   await plnReload();
 }
 
@@ -4369,8 +4369,8 @@ function plnHighlightStatut(statut) {
 
 async function plnSaveDispo() {
   if (!_plnCurrentEventId) return;
-  if (!_plnPendingStatut) return toast('Choisis un statut', 'error');
-  if (!window._monProfilId) return toast('Profil non chargé', 'error');
+  if (!_plnPendingStatut) return showToast('Choisis un statut', 'error');
+  if (!window._monProfilId) return showToast('Profil non chargé', 'error');
   const payload = {
     evenement_id: _plnCurrentEventId,
     membre_id: window._monProfilId,
@@ -4380,8 +4380,8 @@ async function plnSaveDispo() {
     notes: document.getElementById('pln-drawer-notes').value.trim() || null
   };
   const { error } = await Auth.sb.from('dispos_bureau').upsert(payload, { onConflict: 'evenement_id,membre_id' });
-  if (error) return toast('Erreur : ' + error.message, 'error');
-  toast('Dispo enregistrée', 'success');
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Dispo enregistrée', 'success');
   plnCloseDrawer();
   await plnReload();
 }
@@ -4475,7 +4475,7 @@ async function lnkLoad() {
     .order('type', { ascending: true }) // 'principal' avant 'social'
     .order('ordre', { ascending: true })
     .order('created_at', { ascending: true });
-  if (error) { toast('Erreur chargement liens : ' + error.message, 'error'); return; }
+  if (error) { showToast('Erreur chargement liens : ' + error.message, 'error'); return; }
   _lnkList = data || [];
   lnkRender();
   lnkRenderStatsCounts();
@@ -4658,7 +4658,7 @@ async function lnkOnImageSelected(e) {
     try {
       const { data: sessData } = await Auth.sb.auth.getSession();
       const userId = sessData?.session?.user?.id;
-      if (!userId) { toast('Session expirée, reconnecte-toi', 'error'); return null; }
+      if (!userId) { showToast('Session expirée, reconnecte-toi', 'error'); return null; }
 
       let uploadFile = file;
       let ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
@@ -4675,7 +4675,7 @@ async function lnkOnImageSelected(e) {
       console.log('[liens upload] file size:', uploadFile.size, 'type:', uploadFile.type, 'userId:', userId);
 
       const path = `${userId}/liens/lnk-${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-      toast('Upload en cours…', 'info');
+      showToast('Upload en cours…', 'info');
 
       const { data: upData, error: upErr } = await Auth.sb.storage
         .from('annonces')
@@ -4683,23 +4683,23 @@ async function lnkOnImageSelected(e) {
 
       if (upErr) {
         console.error('[liens upload] FAILED', upErr, 'path:', path);
-        toast('Upload refusé : ' + (upErr.message || upErr.error || JSON.stringify(upErr)), 'error');
+        showToast('Upload refusé : ' + (upErr.message || upErr.error || JSON.stringify(upErr)), 'error');
         return null;
       }
       console.log('[liens upload] OK', upData);
 
       const { data: pub } = Auth.sb.storage.from('annonces').getPublicUrl(path);
       const url = pub?.publicUrl;
-      if (!url) { toast('URL publique introuvable', 'error'); return null; }
+      if (!url) { showToast('URL publique introuvable', 'error'); return null; }
 
       document.getElementById('lnk-image-url').value = url;
       document.getElementById('lnk-image-preview').style.display = 'block';
       document.getElementById('lnk-image-preview-img').src = url;
-      toast('Image ajoutée ✓', 'success');
+      showToast('Image ajoutée ✓', 'success');
       return url;
     } catch (err) {
       console.error('[liens upload] EXCEPTION', err);
-      toast('Erreur upload : ' + (err.message || 'inconnue'), 'error');
+      showToast('Erreur upload : ' + (err.message || 'inconnue'), 'error');
       return null;
     } finally {
       _lnkUploadInFlight = null;
@@ -4724,9 +4724,9 @@ async function lnkSave() {
   const image_url = document.getElementById('lnk-image-url').value.trim() || null;
   const social_icon = document.getElementById('lnk-social-icon').value.trim() || null;
   const actif = document.getElementById('lnk-actif').checked;
-  if (!titre) return toast('Titre obligatoire', 'error');
-  if (!url) return toast('URL obligatoire', 'error');
-  if (type === 'social' && !social_icon) return toast('Choisis une icône de réseau', 'error');
+  if (!titre) return showToast('Titre obligatoire', 'error');
+  if (!url) return showToast('URL obligatoire', 'error');
+  if (type === 'social' && !social_icon) return showToast('Choisis une icône de réseau', 'error');
   if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) url = 'https://' + url;
   const payload = { titre, url, icone, image_url, type, social_icon, actif };
 
@@ -4761,19 +4761,19 @@ async function lnkSave() {
   try {
     if (id) {
       const { error } = await Auth.sb.from('liens').update(payload).eq('id', id);
-      if (error) { console.error('[liens] update failed', error, payload); toast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
-      toast('Lien modifié', 'success');
+      if (error) { console.error('[liens] update failed', error, payload); showToast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
+      showToast('Lien modifié', 'success');
     } else {
       const maxOrdre = _lnkList.filter(l => l.type === type && !String(l.id).startsWith('tmp-')).reduce((m, l) => Math.max(m, l.ordre || 0), 0);
       const insertPayload = { ...payload, ordre: maxOrdre + 1, created_by: window._monProfilId || null };
       const { error } = await Auth.sb.from('liens').insert(insertPayload);
-      if (error) { console.error('[liens] insert failed', error, insertPayload); toast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
-      toast('Lien créé', 'success');
+      if (error) { console.error('[liens] insert failed', error, insertPayload); showToast('Erreur : ' + (error.message || 'inconnue'), 'error'); await lnkLoad(); return; }
+      showToast('Lien créé', 'success');
     }
     await lnkLoad(); // resync
   } catch (err) {
     console.error(err);
-    toast('Erreur : ' + err.message, 'error');
+    showToast('Erreur : ' + err.message, 'error');
     await lnkLoad();
   }
 }
@@ -4784,8 +4784,8 @@ async function lnkToggleActif(id) {
   const newActif = !l.actif;
   l.actif = newActif; lnkRender(); lnkRenderStatsCounts(); // MAJ optimiste
   const { error } = await Auth.sb.from('liens').update({ actif: newActif }).eq('id', id);
-  if (error) { l.actif = !newActif; lnkRender(); return toast('Erreur : ' + error.message, 'error'); }
-  toast(newActif ? 'Lien activé' : 'Lien désactivé', 'success');
+  if (error) { l.actif = !newActif; lnkRender(); return showToast('Erreur : ' + error.message, 'error'); }
+  showToast(newActif ? 'Lien activé' : 'Lien désactivé', 'success');
 }
 
 async function lnkDelete(id) {
@@ -4797,9 +4797,9 @@ async function lnkDelete(id) {
   if (error) {
     if (removed) _lnkList.splice(idx, 0, removed);
     lnkRender();
-    return toast('Erreur : ' + error.message, 'error');
+    return showToast('Erreur : ' + error.message, 'error');
   }
-  toast('Supprimé', 'success');
+  showToast('Supprimé', 'success');
 }
 
 async function lnkMove(id, delta) {
@@ -4815,7 +4815,7 @@ async function lnkMove(id, delta) {
   lnkRender();
   const { error: e1 } = await Auth.sb.from('liens').update({ ordre: ordreB }).eq('id', a.id);
   const { error: e2 } = await Auth.sb.from('liens').update({ ordre: ordreA }).eq('id', b.id);
-  if (e1 || e2) { toast('Erreur réordonnancement', 'error'); await lnkLoad(); }
+  if (e1 || e2) { showToast('Erreur réordonnancement', 'error'); await lnkLoad(); }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
