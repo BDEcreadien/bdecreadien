@@ -927,7 +927,8 @@
       const subs = _SUB_TABS[mainTab];
       if (subs) {
         document.querySelectorAll('.me-subtab').forEach(t => {
-          t.style.display = subs.includes(t.dataset.tab) ? '' : 'none';
+          const visible = subs.includes(t.dataset.tab) && !t.hasAttribute('data-bureau-hidden');
+          t.style.display = visible ? '' : 'none';
           t.classList.toggle('active', t.dataset.tab === name);
         });
         subtabBar.style.display = 'flex';
