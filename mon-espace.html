@@ -950,12 +950,16 @@
       const sb = Auth.sb;
       const today = new Date().toISOString().slice(0, 10);
       const [evRes, tRes, iRes, mRes] = await Promise.all([
-        sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h').or(`date.gte.${today},date.is.null`).order('date', { ascending: true, nullsFirst: true }),
+        sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h').order('date', { ascending: true, nullsFirst: true }),
         sb.from('taches_bureau').select('id, evenement_id, titre, description, capacite, ordre'),
         sb.from('inscriptions_taches').select('id, tache_id, membre_id, created_at'),
         sb.from('profils').select('id, prenom, nom').eq('bureau', true)
       ]);
-      _mePlnEvents = evRes.data || [];
+      if (evRes.error) console.error('[planning] evenements', evRes.error);
+      if (tRes.error) console.error('[planning] taches', tRes.error);
+      if (iRes.error) console.error('[planning] inscriptions', iRes.error);
+      const all = evRes.data || [];
+      _mePlnEvents = all.filter(e => !e.date || e.date >= today);
       _mePlnTaches = tRes.data || [];
       _mePlnInscr = iRes.data || [];
       _mePlnMembres = mRes.data || [];
