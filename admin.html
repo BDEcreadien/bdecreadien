@@ -4397,9 +4397,32 @@ function escapeHtml(s) {
 let _lnkList = [];
 let _lnkStats = { views: 0, clicks: 0, byId: {} };
 
+const LNK_EMOJIS_PRESETS = [
+  '📷','💬','🎉','📅','🎵','▶️','🌐','📧','📱','💰',
+  '🎓','🎨','🎭','🎬','🎮','⚽','🏃','🍕','🍺','☕',
+  '🔗','📢','📸','🎥','📝','🎁','🛍','🚀','⭐','❤️',
+  '💜','🔥','💡','🏆','🎯','🍽','🚌','🤝','💳','🛒'
+];
+
 async function initLiens() {
   document.getElementById('lnk-form').style.display = 'none';
+  lnkBuildEmojiPicker();
   await Promise.all([lnkLoad(), lnkLoadStats()]);
+}
+
+function lnkBuildEmojiPicker() {
+  const pick = document.getElementById('lnk-emoji-picker');
+  if (!pick || pick.dataset.built === '1') return;
+  pick.dataset.built = '1';
+  pick.innerHTML = LNK_EMOJIS_PRESETS.map(e =>
+    `<button type="button" onclick="lnkSetEmoji('${e}')" style="width:36px;height:36px;border:1px solid var(--gris-border);background:white;border-radius:8px;cursor:pointer;font-size:18px;padding:0;transition:transform .15s,background .15s;" onmouseover="this.style.background='var(--gris-clair)';this.style.transform='scale(1.1)';" onmouseout="this.style.background='white';this.style.transform='scale(1)';">${e}</button>`
+  ).join('');
+}
+
+function lnkSetEmoji(e) {
+  const inp = document.getElementById('lnk-icone');
+  inp.value = e;
+  inp.focus();
 }
 
 async function lnkLoad() {
