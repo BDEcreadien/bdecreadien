@@ -1858,8 +1858,6 @@ function resetForm() {
   if (currentType === 'evenements') {
     ['ev-titre','ev-date','ev-dateAffichage','ev-horaire-debut','ev-horaire-fin','ev-lieu','ev-adresse','ev-prix','ev-description','ev-lien','ev-inscrits'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const ph = document.getElementById('ev-phare'); if(ph) ph.checked = false;
-    const sel = document.getElementById('ev-prix-select'); if(sel) sel.value = '';
-    const autre = document.getElementById('ev-prix-autre'); if(autre) autre.style.display = 'none';
     const sugg = document.getElementById('lieu-suggestions'); if(sugg) sugg.style.display = 'none';
     document.getElementById('form-title').textContent = 'Nouvel événement';
   }
