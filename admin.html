@@ -2097,12 +2097,6 @@ function refreshList(type) {
 // ============================================================
 // SAVE ÉVÉNEMENT
 // ============================================================
-function onPrixChange() {
-  const sel = document.getElementById('ev-prix-select').value;
-  const autre = document.getElementById('ev-prix-autre');
-  if (sel === 'autre') { autre.style.display = 'block'; document.getElementById('ev-prix').value = ''; autre.oninput = () => document.getElementById('ev-prix').value = autre.value; }
-  else { autre.style.display = 'none'; document.getElementById('ev-prix').value = sel; }
-}
 function autoDateAffichage() {
   const val = document.getElementById('ev-date').value;
   if (!val) return;
