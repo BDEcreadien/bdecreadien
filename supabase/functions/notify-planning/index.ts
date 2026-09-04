@@ -121,13 +121,32 @@ serve(async (req) => {
     }),
   });
   const osBody = await osRes.json().catch(() => ({}));
+  console.log('[notify-planning] OneSignal response', osRes.status, JSON.stringify(osBody));
   if (!osRes.ok) {
-    return new Response(JSON.stringify({ error: 'OneSignal error', details: osBody }), {
+    return new Response(JSON.stringify({ error: 'OneSignal error', status: osRes.status, details: osBody }), {
       status: 502, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
+  // Même en 200, OneSignal peut renvoyer des "errors" (player_ids invalides / non-souscrits)
+  if (osBody.errors && osBody.errors.length) {
+    return new Response(JSON.stringify({
+      success: false,
+      sent: 0,
+      note: 'OneSignal a refusé : ' + (Array.isArray(osBody.errors) ? osBody.errors.join(', ') : JSON.stringify(osBody.errors)),
+      playerIdsTargeted: playerIds,
+      onesignalResponse: osBody,
+    }), {
+      headers: { ...CORS, 'Content-Type': 'application/json' },
+    });
+  }
 
-  return new Response(JSON.stringify({ success: true, sent: playerIds.length, recipients: osBody.recipients ?? null }), {
+  return new Response(JSON.stringify({
+    success: true,
+    sent: playerIds.length,
+    recipients: osBody.recipients ?? null,
+    playerIdsTargeted: playerIds,
+    onesignalResponse: osBody,
+  }), {
     headers: { ...CORS, 'Content-Type': 'application/json' },
   });
 });
