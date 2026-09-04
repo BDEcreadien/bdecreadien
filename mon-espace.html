@@ -946,7 +946,7 @@
       document.querySelectorAll('.me-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
       history.replaceState(null, '', '#' + name);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (name === 'bde-planning' && currentProfil?.bureau) mePlnLoad();
+      if (name === 'bde-planning' && ['membre','admin'].includes(currentProfil?.role)) mePlnLoad();
     }
 
     // ======= PLANNING BUREAU (inscription tâches) =======
