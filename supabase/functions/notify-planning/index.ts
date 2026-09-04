@@ -93,58 +93,89 @@ serve(async (req) => {
     });
   }
   const includeSelf = !!body.include_self;
-  const playerIds = (membres || [])
-    .filter(b => includeSelf ? true : b.id !== userData.user.id)
-    .map(b => b.onesignal_id).filter(Boolean) as string[];
+  const targets = (membres || []).filter(b => includeSelf ? true : b.id !== userData.user.id);
+  const playerIds = targets
+    .filter(b => b.notif_push !== false && b.onesignal_id)
+    .map(b => b.onesignal_id) as string[];
+  const emails = targets
+    .filter(b => b.email_bde_enabled !== false && b.email)
+    .map(b => ({ email: b.email, prenom: b.prenom || '' }));
 
-  if (!playerIds.length) {
-    return new Response(JSON.stringify({ success: true, sent: 0, note: 'Aucun membre BDE abonné aux notifs push (onesignal_id manquant ou notif_push désactivé)' }), {
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-    });
+  // 1) OneSignal push (si des player_ids existent)
+  let pushSent = 0, pushRecipients = null, pushError = null;
+  if (playerIds.length) {
+    try {
+      const osRes = await fetch('https://api.onesignal.com/notifications', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${ONESIGNAL_REST_KEY}`,
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: JSON.stringify({
+          app_id: ONESIGNAL_APP_ID,
+          include_player_ids: playerIds,
+          headings: { fr: title, en: title },
+          contents: { fr: message || title, en: message || title },
+          url,
+        }),
+      });
+      const osBody = await osRes.json().catch(() => ({}));
+      if (osRes.ok && (!osBody.errors || !osBody.errors.length)) {
+        pushSent = playerIds.length;
+        pushRecipients = osBody.recipients ?? null;
+      } else {
+        pushError = osBody.errors || osBody;
+      }
+    } catch (e) { pushError = String(e); }
   }
 
-  // Appel OneSignal REST API
-  const osRes = await fetch('https://api.onesignal.com/notifications', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Basic ${ONESIGNAL_REST_KEY}`,
-      'Content-Type': 'application/json',
-      'accept': 'application/json',
-    },
-    body: JSON.stringify({
-      app_id: ONESIGNAL_APP_ID,
-      include_player_ids: playerIds,
-      headings: { fr: title, en: title },
-      contents: { fr: message || title, en: message || title },
-      url,
-    }),
-  });
-  const osBody = await osRes.json().catch(() => ({}));
-  console.log('[notify-planning] OneSignal response', osRes.status, JSON.stringify(osBody));
-  if (!osRes.ok) {
-    return new Response(JSON.stringify({ error: 'OneSignal error', status: osRes.status, details: osBody }), {
-      status: 502, headers: { ...CORS, 'Content-Type': 'application/json' },
-    });
-  }
-  // Même en 200, OneSignal peut renvoyer des "errors" (player_ids invalides / non-souscrits)
-  if (osBody.errors && osBody.errors.length) {
-    return new Response(JSON.stringify({
-      success: false,
-      sent: 0,
-      note: 'OneSignal a refusé : ' + (Array.isArray(osBody.errors) ? osBody.errors.join(', ') : JSON.stringify(osBody.errors)),
-      playerIdsTargeted: playerIds,
-      onesignalResponse: osBody,
-    }), {
-      headers: { ...CORS, 'Content-Type': 'application/json' },
-    });
+  // 2) Email fallback via Resend (envoyé à TOUS les membres BDE qui n'ont pas désactivé)
+  let emailSent = 0, emailErrors = 0;
+  if (RESEND_API_KEY && emails.length) {
+    const escHtml = (s: string) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)}</title></head>
+<body style="margin:0;padding:0;background:#F0EFF8;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
+        <tr><td style="background:linear-gradient(135deg,#460186 0%,#8B1A6B 50%,#E85100 100%);padding:32px 40px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON &bull; PLANNING</p>
+          <h1 style="margin:0;font-size:24px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">${escHtml(title)}</h1>
+        </td></tr>
+        <tr><td style="background:#fff;padding:32px 40px;">
+          <p style="margin:0 0 20px;font-size:15px;color:#1A1A2E;line-height:1.6;">${escHtml(message || 'Un nouveau planning est disponible.')}</p>
+          <p style="margin:0;text-align:center;"><a href="${url}" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#460186 0%,#8B1A6B 50%,#E85100 100%);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">Voir le planning</a></p>
+        </td></tr>
+        <tr><td style="background:#F5F4FF;padding:16px 40px;text-align:center;font-size:11px;color:#888;">
+          BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+    for (const e of emails) {
+      try {
+        const r = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
+            to: [e.email],
+            subject: `[BDE] ${title}`,
+            html,
+          }),
+        });
+        if (r.ok) emailSent++; else emailErrors++;
+      } catch { emailErrors++; }
+    }
   }
 
   return new Response(JSON.stringify({
     success: true,
-    sent: playerIds.length,
-    recipients: osBody.recipients ?? null,
-    playerIdsTargeted: playerIds,
-    onesignalResponse: osBody,
+    push: { sent: pushSent, recipients: pushRecipients, error: pushError },
+    email: { sent: emailSent, errors: emailErrors },
+    totalTargets: targets.length,
   }), {
     headers: { ...CORS, 'Content-Type': 'application/json' },
   });
