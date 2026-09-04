@@ -1260,8 +1260,30 @@
       const nowOn = !el.classList.contains('on');
       el.classList.toggle('on');
       const { error } = await Auth.sb.from('profils').update({ [key]: nowOn }).eq('id', currentUser.id);
-      if (error) { alert(error.message); el.classList.toggle('on'); }
-      else currentProfil[key] = nowOn;
+      if (error) { alert(error.message); el.classList.toggle('on'); return; }
+      currentProfil[key] = nowOn;
+      // Notif push : synchronise réellement OneSignal
+      if (key === 'notif_push') {
+        if (nowOn) {
+          // Active : charge SDK + demande permission si pas déjà donnée + opt-in
+          if (window.loadAndSubscribeOneSignal) window.loadAndSubscribeOneSignal();
+          setTimeout(() => {
+            if (window.OneSignalDeferred) {
+              window.OneSignalDeferred.push(async (OS) => {
+                try { await OS.User.PushSubscription.optIn(); } catch (_) {}
+                if (window.syncOneSignalId) window.syncOneSignalId();
+              });
+            }
+          }, 500);
+        } else {
+          // Désactive : opt-out OneSignal (le user ne recevra plus rien)
+          if (window.OneSignalDeferred) {
+            window.OneSignalDeferred.push(async (OS) => {
+              try { await OS.User.PushSubscription.optOut(); } catch (_) {}
+            });
+          }
+        }
+      }
     }
 
     async function confirmDeleteAccount() {
