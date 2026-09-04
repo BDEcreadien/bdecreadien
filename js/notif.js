@@ -1,5 +1,4 @@
-// OneSignal — chargement conditionnel
-// N'importe la SDK que si (a) permission déjà accordée ou (b) user clique "Activer"
+// OneSignal — chargement + synchro robuste du player_id vers profils.onesignal_id
 (function () {
   var APP_ID = '8c4f2a28-64eb-4417-85c9-20bda4365e45';
   var loaded = false;
@@ -20,6 +19,17 @@
           message: 'Tu recevras les notifs des soirées, annonces et actus du BDE !'
         }
       });
+      // Écoute les changements d'abonnement (grant permission, désabo, changement device)
+      // et resync immédiatement le player_id vers profils.onesignal_id
+      try {
+        OneSignal.User.PushSubscription.addEventListener('change', function (event) {
+          if (event && event.current && event.current.id && window.syncOneSignalId) {
+            window.syncOneSignalId();
+          }
+        });
+      } catch (_) {}
+      // Sync immédiate au chargement (si déjà abonné)
+      if (window.syncOneSignalId) window.syncOneSignalId();
       if (afterInit) afterInit(OneSignal);
     });
     var s = document.createElement('script');
@@ -28,12 +38,12 @@
     document.head.appendChild(s);
   }
 
-  // Auto-charge si permission déjà donnée (l'utilisateur veut voir la petite cloche)
+  // Auto-charge si permission déjà donnée
   if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
     loadSDK();
   }
 
-  // Bouton "Activer 🔔" de la bannière : charge + demande la permission
+  // Bouton "Activer 🔔" : charge SDK + demande permission (listener fait le reste)
   window.loadAndSubscribeOneSignal = function () {
     loadSDK(function (OS) { OS.Notifications.requestPermission(); });
   };
