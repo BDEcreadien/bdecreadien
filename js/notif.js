@@ -14,9 +14,6 @@
       await OneSignal.init({
         appId: APP_ID,
         notifyButton: { enable: true, size: 'small', position: 'bottom-left' },
-        // Utilise le service worker du site (qui importe OneSignalSDK.sw.js)
-        serviceWorkerPath: 'service-worker.js',
-        serviceWorkerParam: { scope: '/' },
         welcomeNotification: {
           title: 'BDE CREAD Lyon',
           message: 'Tu recevras les notifs des soirées, annonces et actus du BDE !'
