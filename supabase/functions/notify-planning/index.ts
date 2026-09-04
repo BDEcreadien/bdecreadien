@@ -65,7 +65,7 @@ serve(async (req) => {
     .eq('event_type', 'click')
     .eq('label', `notify-planning:${userData.user.id}`)
     .gte('created_at', oneHourAgo);
-  if ((recentCount || 0) >= 10) {
+  if ((recentCount || 0) >= 50) {
     return new Response(JSON.stringify({ error: 'Trop d\'envois récents. Réessaie plus tard.' }), {
       status: 429, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
