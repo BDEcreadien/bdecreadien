@@ -28,6 +28,7 @@ serve(async (req) => {
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const ONESIGNAL_REST_KEY = Deno.env.get('ONESIGNAL_REST_API_KEY');
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
   if (!ONESIGNAL_REST_KEY) {
     return new Response(JSON.stringify({ error: 'ONESIGNAL_REST_API_KEY manquante' }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
