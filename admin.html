@@ -4493,10 +4493,11 @@ async function plnDeleteEvent(id) {
   await plnReload();
 }
 
-async function plnNotifyBureau(eventId) {
+async function plnNotifyBureau(eventId, includeSelf) {
   const ev = _plnEvents.find(e => e.id === eventId);
   if (!ev) return;
-  if (!confirm(`Envoyer une notification push à tous les membres BDE pour "${ev.titre}" ?`)) return;
+  const label = includeSelf ? `Test : t'envoyer une notif à toi-même pour "${ev.titre}" ?` : `Envoyer une notification push à tous les membres BDE pour "${ev.titre}" ?`;
+  if (!confirm(label)) return;
   try {
     const { data: sess } = await Auth.sb.auth.getSession();
     const token = sess.session?.access_token;
@@ -4510,14 +4511,16 @@ async function plnNotifyBureau(eventId) {
         'apikey': SUPABASE_ANON,
       },
       body: JSON.stringify({
-        title: `🔔 ${ev.titre}`,
+        title: (includeSelf ? '🧪 TEST — ' : '🔔 ') + ev.titre,
         message: `${dateStr}${ev.lieu ? ' · ' + ev.lieu : ''} — inscris-toi aux tâches`,
         url: 'https://bdecreadien.fr/mon-espace.html#bde-planning',
+        include_self: !!includeSelf,
       }),
     });
     const body = await res.json().catch(() => ({}));
+    console.log('[notify-planning] response', res.status, body);
     if (!res.ok) return showToast('Erreur : ' + (body.error || res.status), 'error');
-    if (body.sent === 0) return showToast('Aucun membre abonné aux notifs (0 envoi)', 'info');
+    if (body.sent === 0) return showToast('Aucun membre abonné aux notifs : ' + (body.note || ''), 'info');
     showToast(`Notification envoyée à ${body.sent} membre(s)`, 'success');
   } catch (e) {
     showToast('Erreur réseau : ' + e.message, 'error');
