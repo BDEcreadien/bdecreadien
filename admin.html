@@ -4521,8 +4521,10 @@ async function plnNotifyBureau(eventId, includeSelf) {
     const body = await res.json().catch(() => ({}));
     console.log('[notify-planning] response', res.status, body);
     if (!res.ok) return showToast('Erreur : ' + (body.error || res.status), 'error');
-    if (body.sent === 0) return showToast('Aucun membre abonné aux notifs : ' + (body.note || ''), 'info');
-    showToast(`Notification envoyée à ${body.sent} membre(s)`, 'success');
+    const p = body.push?.sent || 0;
+    const e = body.email?.sent || 0;
+    if (p === 0 && e === 0) return showToast('Aucun destinataire (0 envoi)', 'info');
+    showToast(`${p} push + ${e} email(s) envoyés`, 'success');
   } catch (e) {
     showToast('Erreur réseau : ' + e.message, 'error');
   }
