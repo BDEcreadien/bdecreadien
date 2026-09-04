@@ -82,23 +82,24 @@ serve(async (req) => {
   const message = String(body.message || '').slice(0, 200);
   const url = String(body.url || 'https://bdecreadien.fr/mon-espace.html#bde-planning').slice(0, 300);
 
-  // Récupère les OneSignal IDs des membres bureau qui n'ont pas désactivé les notifs push
-  const { data: bureau, error: bErr } = await sbAdmin.from('profils')
-    .select('id, onesignal_id')
-    .eq('bureau', true)
+  // Récupère les OneSignal IDs des membres BDE (membre + admin) qui n'ont pas désactivé les notifs push
+  const { data: membres, error: bErr } = await sbAdmin.from('profils')
+    .select('id, onesignal_id, role')
+    .in('role', ['membre', 'admin'])
     .neq('notif_push', false)
     .not('onesignal_id', 'is', null);
   if (bErr) {
-    return new Response(JSON.stringify({ error: 'Impossible de charger le bureau : ' + bErr.message }), {
+    return new Response(JSON.stringify({ error: 'Impossible de charger les membres BDE : ' + bErr.message }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
-  const playerIds = (bureau || [])
-    .filter(b => b.id !== userData.user.id)  // n'envoie pas à soi-même
+  const includeSelf = !!body.include_self;
+  const playerIds = (membres || [])
+    .filter(b => includeSelf ? true : b.id !== userData.user.id)
     .map(b => b.onesignal_id).filter(Boolean) as string[];
 
   if (!playerIds.length) {
-    return new Response(JSON.stringify({ success: true, sent: 0, note: 'Aucun membre bureau abonné aux notifs' }), {
+    return new Response(JSON.stringify({ success: true, sent: 0, note: 'Aucun membre BDE abonné aux notifs push (onesignal_id manquant ou notif_push désactivé)' }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
