@@ -1146,6 +1146,7 @@
         if (location.hash) switchTab(location.hash.replace('#', ''));
         fillInfos();
         renderNotifPrefs();
+        mePlnUpdateBadge();
         await loadAll();
       } catch (err) {
         console.error('Erreur init mon-espace:', err);
