@@ -1075,10 +1075,6 @@
         const min = RANG[t.dataset.role] ?? 99;
         if (rang >= min) t.style.display = '';
       });
-      // Sous-onglet Planning : bureau uniquement
-      const plnBtn = document.querySelector('.me-subtab[data-bureau="1"]');
-      if (plnBtn && currentProfil?.bureau) plnBtn.removeAttribute('data-bureau-hidden');
-      else if (plnBtn) plnBtn.setAttribute('data-bureau-hidden', '1');
       if (role === 'admin') {
         document.getElementById('qa-demandes-btn').style.display = '';
         const adminTab = document.getElementById('me-tab-admin');
