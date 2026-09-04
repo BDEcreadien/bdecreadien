@@ -954,6 +954,28 @@
     // ======= PLANNING BUREAU (inscription tâches) =======
     let _mePlnEvents = [], _mePlnTaches = [], _mePlnInscr = [], _mePlnMembres = [];
 
+    async function mePlnUpdateBadge() {
+      if (!currentProfil || !['membre','admin'].includes(currentProfil.role)) return;
+      const since = currentProfil.last_planning_view || '1970-01-01';
+      const { count } = await Auth.sb.from('evenements')
+        .select('id', { count: 'exact', head: true })
+        .gt('created_at', since);
+      const badge = document.getElementById('cnt-planning');
+      if (badge) {
+        if (count && count > 0) { badge.textContent = String(count); badge.style.display = ''; }
+        else { badge.style.display = 'none'; }
+      }
+    }
+
+    async function mePlnMarkAsSeen() {
+      if (!currentUser) return;
+      const now = new Date().toISOString();
+      await Auth.sb.from('profils').update({ last_planning_view: now }).eq('id', currentUser.id);
+      currentProfil.last_planning_view = now;
+      const badge = document.getElementById('cnt-planning');
+      if (badge) badge.style.display = 'none';
+    }
+
     function mePlnEnableNotifs() {
       if (window.loadAndSubscribeOneSignal) {
         window.loadAndSubscribeOneSignal();
