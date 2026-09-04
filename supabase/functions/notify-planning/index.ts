@@ -49,11 +49,11 @@ serve(async (req) => {
     });
   }
 
-  // Appelant doit être bureau
+  // Appelant doit être membre BDE ou admin
   const { data: caller } = await sbAdmin.from('profils')
-    .select('bureau, role').eq('id', userData.user.id).maybeSingle();
-  if (!caller?.bureau || !['membre', 'admin'].includes(caller.role)) {
-    return new Response(JSON.stringify({ error: 'Réservé aux membres bureau' }), {
+    .select('role').eq('id', userData.user.id).maybeSingle();
+  if (!caller || !['membre', 'admin'].includes(caller.role)) {
+    return new Response(JSON.stringify({ error: 'Réservé aux membres BDE' }), {
       status: 403, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
