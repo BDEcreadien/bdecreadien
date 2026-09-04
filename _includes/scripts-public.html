@@ -1,8 +1,15 @@
 <script src="js/main.js?v=6"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"868cda79a5844d4a842363b412470415"}'></script>
 <script>
+  // Nettoie l'ancien service worker du site (celui d'OneSignal prend le relais pour PWA + push)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' });
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => {
+        if (r.active && r.active.scriptURL && r.active.scriptURL.endsWith('/service-worker.js')) {
+          r.unregister();
+        }
+      });
+    }).catch(() => {});
   }
 </script>
 
