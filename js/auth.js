@@ -140,29 +140,29 @@
 
   async function syncOneSignalId() {
     const user = await getUser();
-    if (!user) return;
-    // Attend que la SDK OneSignal soit chargée (retry pendant 15s)
+    if (!user) { console.log('[syncOS] pas connecté, skip'); return; }
     const start = Date.now();
     const tryOnce = () => new Promise((resolve) => {
       if (!window.OneSignalDeferred) { resolve(false); return; }
       OneSignalDeferred.push(async (OS) => {
         try {
-          const playerId = await OS.User.PushSubscription.id;
+          const playerId = OS.User?.PushSubscription?.id;
+          console.log('[syncOS] playerId =', playerId, 'optedIn =', OS.User?.PushSubscription?.optedIn);
           if (!playerId) { resolve(false); return; }
-          await sb.from('profils').update({ onesignal_id: playerId }).eq('id', user.id);
+          const { error } = await sb.from('profils').update({ onesignal_id: playerId }).eq('id', user.id);
+          if (error) { console.error('[syncOS] update failed', error); resolve(false); return; }
+          console.log('[syncOS] onesignal_id sauvegardé:', playerId);
           resolve(true);
-        } catch { resolve(false); }
+        } catch (e) { console.error('[syncOS] exception', e); resolve(false); }
       });
     });
-    // 1re tentative immédiate
     if (await tryOnce()) return;
-    // Puis retries toutes les 2s pendant 15s
-    while (Date.now() - start < 15000) {
+    while (Date.now() - start < 30000) {
       await new Promise(r => setTimeout(r, 2000));
       if (await tryOnce()) return;
     }
+    console.warn('[syncOS] Aucun player_id après 30s (OneSignal pas prêt ou pas d\'abonnement).');
   }
-  // Exposé pour re-sync depuis d'autres pages après activation manuelle
   window.syncOneSignalId = syncOneSignalId;
 
   // Notifie les membres BDE d'un nouvel événement (feedback / annonce / adhésion)
