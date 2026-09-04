@@ -4495,7 +4495,7 @@ async function plnDeleteEvent(id) {
 async function plnNotifyBureau(eventId) {
   const ev = _plnEvents.find(e => e.id === eventId);
   if (!ev) return;
-  if (!confirm(`Envoyer une notification push à tous les membres bureau pour "${ev.titre}" ?`)) return;
+  if (!confirm(`Envoyer une notification push à tous les membres BDE pour "${ev.titre}" ?`)) return;
   try {
     const { data: sess } = await Auth.sb.auth.getSession();
     const token = sess.session?.access_token;
