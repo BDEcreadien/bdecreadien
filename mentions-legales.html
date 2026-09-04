@@ -394,7 +394,7 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js');
+      navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){if(r.active&&r.active.scriptURL&&r.active.scriptURL.endsWith('/service-worker.js'))r.unregister();});}).catch(function(){});
     }
   </script>
 
