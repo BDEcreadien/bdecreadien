@@ -83,12 +83,10 @@ serve(async (req) => {
   const message = String(body.message || '').slice(0, 200);
   const url = String(body.url || 'https://bdecreadien.fr/mon-espace.html#bde-planning').slice(0, 300);
 
-  // Récupère les OneSignal IDs des membres BDE (membre + admin) qui n'ont pas désactivé les notifs push
+  // Récupère TOUS les membres BDE pour envoyer push ET email en parallèle
   const { data: membres, error: bErr } = await sbAdmin.from('profils')
-    .select('id, onesignal_id, role')
-    .in('role', ['membre', 'admin'])
-    .neq('notif_push', false)
-    .not('onesignal_id', 'is', null);
+    .select('id, onesignal_id, email, prenom, notif_push, email_bde_enabled, role')
+    .in('role', ['membre', 'admin']);
   if (bErr) {
     return new Response(JSON.stringify({ error: 'Impossible de charger les membres BDE : ' + bErr.message }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
