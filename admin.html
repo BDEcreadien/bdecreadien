@@ -5102,6 +5102,38 @@ async function lnkMove(id, delta) {
   if (e1 || e2) { showToast('Erreur réordonnancement', 'error'); await lnkLoad(); }
 }
 
+// ============================================================
+// AUTO-LOGOUT sur inactivité (sécurité)
+// - 30 min sans activité → déconnexion
+// - 4h max même en cas d'activité continue → re-login forcé
+// ============================================================
+(function () {
+  const INACTIVITY_MS = 30 * 60 * 1000;    // 30 min
+  const HARD_CAP_MS   = 4 * 60 * 60 * 1000; // 4h
+  let inactivityTimer, hardCapTimer;
+  const sessionStart = Date.now();
+
+  function doLogout(reason) {
+    console.log('[admin] auto-logout:', reason);
+    try { localStorage.removeItem('bde_admin_token'); } catch (_) {}
+    if (window.Auth && Auth.logout) Auth.logout();
+    else window.location.href = '/connexion.html?next=/admin.html&expired=1';
+  }
+
+  function resetInactivity() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => doLogout('inactivité 30 min'), INACTIVITY_MS);
+    // Vérif hard cap à chaque activité
+    if (Date.now() - sessionStart > HARD_CAP_MS) doLogout('session > 4h');
+  }
+
+  ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(ev => {
+    document.addEventListener(ev, resetInactivity, { passive: true });
+  });
+  resetInactivity();
+  hardCapTimer = setTimeout(() => doLogout('session > 4h (timer)'), HARD_CAP_MS);
+})();
+
 window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout').style.display = 'none';
 
