@@ -952,7 +952,7 @@
     }
 
     // ======= PLANNING BUREAU (inscription tâches) =======
-    let _mePlnEvents = [], _mePlnTaches = [], _mePlnInscr = [], _mePlnMembres = [];
+    let _mePlnEvents = [], _mePlnTaches = [], _mePlnInscr = [], _mePlnMembres = [], _mePlnIsFocus = false;
 
     async function mePlnUpdateBadge() {
       if (!currentProfil || !['membre','admin'].includes(currentProfil.role)) return;
