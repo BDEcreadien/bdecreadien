@@ -1101,6 +1101,9 @@
       });
       if (role === 'admin') {
         document.getElementById('qa-demandes-btn').style.display = '';
+      }
+      // Bouton "Accès page admin" pour membres BDE et admins
+      if (role === 'membre' || role === 'admin') {
         const adminTab = document.getElementById('me-tab-admin');
         adminTab.setAttribute('href', '/admin.html');
         adminTab.style.display = 'inline-flex';
