@@ -1,3 +1,2 @@
 /liens        /menu             301
 /liens.html   /menu             301
-/event/:id    /event.html?id=:id  200
