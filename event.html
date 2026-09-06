@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Événement bureau — BDE CREAD Lyon</title>
+  <link rel="preconnect" href="https://zgscyfpqwbmwemzqtvpx.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="css/style.css?v=26">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png">
+  <style>
+    body { background: var(--gris-clair,#F5F4FF); min-height: 100vh; font-family: 'Barlow', sans-serif; margin:0; }
+    .ev-wrap { max-width: 640px; margin: 0 auto; padding: 40px 20px 60px; }
+    .ev-logo { display: flex; justify-content: center; margin-bottom: 24px; }
+    .ev-logo img { width: 56px; height: 56px; border-radius: 50%; }
+    .ev-kicker { text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--gris-texte,#888); margin-bottom: 12px; }
+    .ev-card { background: white; border-radius: 20px; padding: 32px 28px; box-shadow: 0 4px 24px rgba(70,1,134,0.08); }
+    .ev-date { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--violet,#460186); margin-bottom: 8px; }
+    .ev-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--noir,#1A1A2E); letter-spacing: 1px; line-height: 1.1; margin-bottom: 8px; }
+    .ev-lieu { font-size: 14px; color: var(--gris-texte,#666); margin-bottom: 4px; }
+    .ev-desc { font-size: 14px; color: var(--noir,#1A1A2E); margin-top: 16px; white-space: pre-wrap; line-height: 1.6; }
+    .ev-blocage { font-size: 11px; color: var(--gris-texte,#888); margin-top: 12px; padding: 8px 12px; background: var(--gris-clair,#F5F4FF); border-radius: 8px; display: inline-block; }
+    .ev-section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gris-texte,#888); margin: 28px 0 12px; }
+    .ev-tache { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--gris-clair,#eee); border-radius: 10px; background: #fafafd; margin-bottom: 8px; flex-wrap: wrap; }
+    .ev-tache.mine { background: #f5f0ff; border-color: var(--violet,#460186); }
+    .ev-check { width: 26px; height: 26px; border: 2px solid var(--gris-moyen,#ccc); border-radius: 7px; background: white; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; transition: all .15s; }
+    .ev-check.checked { background: var(--violet,#460186); border-color: var(--violet,#460186); }
+    .ev-check:not(.disabled):hover { border-color: var(--violet,#460186); }
+    .ev-check.disabled { opacity: .4; cursor: not-allowed; }
+    .ev-tache-info { flex: 1; min-width: 0; }
+    .ev-tache-titre { font-weight: 600; font-size: 14px; color: var(--noir,#1A1A2E); }
+    .ev-tache-count { color: var(--gris-texte,#888); font-weight: 400; margin-left: 8px; font-size: 12px; }
+    .ev-tache-desc { font-size: 12px; color: var(--gris-texte,#888); margin-top: 2px; }
+    .ev-tache-noms { font-size: 12px; color: var(--noir,#1A1A2E); margin-top: 4px; }
+    .ev-footer { text-align: center; margin-top: 28px; font-size: 13px; }
+    .ev-footer a { color: var(--violet,#460186); text-decoration: none; font-weight: 600; }
+    .ev-error { text-align: center; padding: 40px 20px; color: var(--gris-texte,#888); }
+    .ev-loading { text-align: center; padding: 40px; color: var(--gris-texte,#888); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="ev-wrap">
+    <div class="ev-logo"><img src="/assets/Logo-nav.png" alt="BDE CREAD Lyon"></div>
+    <div class="ev-kicker">Événement bureau</div>
+    <div id="ev-content" class="ev-card"><p class="ev-loading">Chargement…</p></div>
+    <div class="ev-footer">
+      <a href="/mon-espace.html#bde-planning">← Voir tous les événements</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js?v=10"></script>
+  <script>
+    const eventId = new URLSearchParams(location.search).get('id');
+
+    function esc(s) {
+      if (s == null) return '';
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    let _ev, _taches = [], _inscr = [], _membres = [], _profil;
+
+    async function boot() {
+      if (!eventId) return renderErr('Lien invalide (id manquant).');
+      const next = encodeURIComponent(location.pathname + location.search);
+      _profil = await Auth.getProfil();
+      if (!_profil) { location.href = '/connexion.html?next=' + next; return; }
+      if (!['membre','admin'].includes(_profil.role)) {
+        return renderErr('Cet événement est réservé aux membres BDE.');
+      }
+      await load();
+    }
+
+    async function load() {
+      const sb = Auth.sb;
+      const [evRes, tRes, iRes, mRes] = await Promise.all([
+        sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h').eq('id', eventId).maybeSingle(),
+        sb.from('taches_bureau').select('id, evenement_id, titre, description, capacite, ordre').eq('evenement_id', eventId),
+        sb.from('inscriptions_taches').select('id, tache_id, membre_id'),
+        sb.from('profils').select('id, prenom, nom').in('role', ['membre','admin'])
+      ]);
+      if (evRes.error || !evRes.data) return renderErr('Événement introuvable ou supprimé.');
+      _ev = evRes.data;
+      _taches = (tRes.data || []).sort((a,b)=>(a.ordre||0)-(b.ordre||0));
+      _inscr = iRes.data || [];
+      _membres = mRes.data || [];
+      render();
+    }
+
+    function render() {
+      const dateFmt = _ev.date
+        ? new Date(_ev.date + 'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'})
+        : 'Date à définir';
+      const totalInscrits = _inscr.filter(i => _taches.some(t => t.id === i.tache_id)).length;
+      const tHtml = _taches.length
+        ? _taches.map(t => tacheHtml(t)).join('')
+        : '<p style="padding:14px;background:var(--gris-clair,#F5F4FF);border-radius:8px;text-align:center;font-size:13px;color:var(--gris-texte,#888);margin:0;">Aucune tâche définie pour cet événement.</p>';
+      document.getElementById('ev-content').innerHTML = `
+        <div class="ev-date">${esc(dateFmt)}</div>
+        <div class="ev-title">${esc(_ev.titre || '—')}</div>
+        ${_ev.lieu ? `<div class="ev-lieu">📍 ${esc(_ev.lieu)}</div>` : ''}
+        ${_ev.description ? `<div class="ev-desc">${esc(_ev.description)}</div>` : ''}
+        ${_ev.blocage_desinscription_h != null ? `<div class="ev-blocage">Désinscription bloquée ${_ev.blocage_desinscription_h}h avant l'événement</div>` : ''}
+        <div class="ev-section-title">Inscris-toi aux tâches (${totalInscrits} inscrit${totalInscrits>1?'s':''})</div>
+        <div>${tHtml}</div>`;
+    }
+
+    function tacheHtml(tache) {
+      const inscrits = _inscr.filter(i => i.tache_id === tache.id);
+      const isMine = inscrits.some(i => i.membre_id === _profil.id);
+      const full = tache.capacite != null && inscrits.length >= tache.capacite;
+      const disabled = full && !isMine;
+      const noms = inscrits.map(i => {
+        const m = _membres.find(x => x.id === i.membre_id);
+        return m ? `${m.prenom||''} ${(m.nom||'').charAt(0)}.`.trim() : '?';
+      }).join(', ');
+      const compteur = tache.capacite != null ? `${inscrits.length}/${tache.capacite}` : `${inscrits.length} inscrit(s)`;
+      return `
+        <div class="ev-tache ${isMine ? 'mine' : ''}">
+          <div class="ev-check ${isMine ? 'checked' : ''} ${disabled ? 'disabled' : ''}" ${!disabled ? `onclick="toggle('${tache.id}')"` : ''}>${isMine ? '✓' : ''}</div>
+          <div class="ev-tache-info">
+            <div class="ev-tache-titre">${esc(tache.titre)}<span class="ev-tache-count">${compteur}</span></div>
+            ${tache.description ? `<div class="ev-tache-desc">${esc(tache.description)}</div>` : ''}
+            ${noms ? `<div class="ev-tache-noms">${esc(noms)}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    async function toggle(tacheId) {
+      const existing = _inscr.find(i => i.tache_id === tacheId && i.membre_id === _profil.id);
+      if (existing) {
+        const { error } = await Auth.sb.from('inscriptions_taches').delete().eq('id', existing.id);
+        if (error) { alert(error.message.includes('bloquée') ? error.message : 'Erreur : ' + error.message); return; }
+        _inscr = _inscr.filter(i => i.id !== existing.id);
+      } else {
+        const { data, error } = await Auth.sb.from('inscriptions_taches').insert({ tache_id: tacheId, membre_id: _profil.id }).select().single();
+        if (error) { alert(error.message.includes('Capacité') ? error.message : 'Erreur : ' + error.message); return; }
+        _inscr.push(data);
+      }
+      render();
+    }
+
+    function renderErr(msg) {
+      document.getElementById('ev-content').innerHTML = `<div class="ev-error">${esc(msg)}</div>`;
+    }
+
+    boot();
+  </script>
+</body>
+</html>
