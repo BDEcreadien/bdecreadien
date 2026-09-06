@@ -1023,7 +1023,8 @@
       _mePlnTaches = tRes.data || [];
       _mePlnInscr = iRes.data || [];
       _mePlnMembres = mRes.data || [];
-      mePlnRender(!!focusEventId);
+      _mePlnIsFocus = !!focusEventId;
+      mePlnRender();
     }
 
     function mePlnRender(isFocus) {
