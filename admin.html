@@ -4495,7 +4495,7 @@ async function plnDeleteEvent(id) {
 }
 
 function plnSharEvent(eventId) {
-  const url = `https://bdecreadien.fr/mon-espace.html?event=${eventId}#bde-planning`;
+  const url = `https://bdecreadien.fr/event/${eventId}`;
   navigator.clipboard.writeText(url).then(() => {
     showToast('Lien copié — envoie-le aux membres BDE', 'success');
   }).catch(() => {
