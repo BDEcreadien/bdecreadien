@@ -55,7 +55,10 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js?v=10"></script>
   <script>
-    const eventId = new URLSearchParams(location.search).get('id');
+    // Récupère l'id depuis ?id=xxx OU depuis /event/xxx (Cloudflare rewrite)
+    const eventId = new URLSearchParams(location.search).get('id')
+      || (location.pathname.match(/^\/event\/([^\/?#]+)/) || [])[1]
+      || null;
 
     function esc(s) {
       if (s == null) return '';
