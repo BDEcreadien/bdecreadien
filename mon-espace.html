@@ -1027,7 +1027,8 @@
       mePlnRender();
     }
 
-    function mePlnRender(isFocus) {
+    function mePlnRender() {
+      const isFocus = _mePlnIsFocus;
       const cont = document.getElementById('me-pln-list');
       if (!_mePlnEvents.length) {
         const msg = isFocus
