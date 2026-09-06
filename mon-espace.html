@@ -1026,13 +1026,21 @@
       mePlnRender(!!focusEventId);
     }
 
-    function mePlnRender() {
+    function mePlnRender(isFocus) {
       const cont = document.getElementById('me-pln-list');
       if (!_mePlnEvents.length) {
-        cont.innerHTML = '<p style="color:var(--gris-texte);font-size:14px;text-align:center;padding:40px 20px;">Aucun événement à venir pour le bureau.</p>';
+        const msg = isFocus
+          ? 'Cet événement n\'existe pas ou a été supprimé. <a href="/mon-espace.html#bde-planning" style="color:var(--violet);font-weight:600;">Voir tous les événements</a>'
+          : 'Aucun événement à venir pour le bureau.';
+        cont.innerHTML = `<p style="color:var(--gris-texte);font-size:14px;text-align:center;padding:40px 20px;">${msg}</p>`;
         return;
       }
-      cont.innerHTML = _mePlnEvents.map(ev => mePlnCardHtml(ev)).join('');
+      const banner = isFocus ? `
+        <div style="background:#f5f0ff;border:1px solid var(--violet);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px;">
+          <span>🔗 Tu vois cet événement seul (lien de partage).</span>
+          <a href="/mon-espace.html#bde-planning" style="color:var(--violet);font-weight:600;text-decoration:none;">Voir tous les événements →</a>
+        </div>` : '';
+      cont.innerHTML = banner + _mePlnEvents.map(ev => mePlnCardHtml(ev)).join('');
     }
 
     function mePlnCardHtml(ev) {
