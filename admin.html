@@ -4762,14 +4762,18 @@ async function pdfConstruireDetaille(doc) {
     if (t.montant > 0) byCat[t.categorie].rec += Number(t.montant);
     else byCat[t.categorie].dep += Math.abs(Number(t.montant));
   });
-  Object.entries(byCat).forEach(([cat, v]) => {
-    const c = FIN_CATEGORIES[cat] || { label: cat.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()) };
-    doc.setFontSize(10); doc.setTextColor(80);
-    doc.text(c.label, 20, y);
-    doc.setTextColor(34, 197, 94); doc.text('+' + v.rec.toFixed(2) + ' EUR', 130, y, { align: 'right' });
-    doc.setTextColor(220, 38, 38); doc.text('-' + v.dep.toFixed(2) + ' EUR', 190, y, { align: 'right' });
-    y += 6;
-  });
+  Object.entries(byCat)
+    .map(([cat, v]) => ({ cat, net: v.rec - v.dep }))
+    .sort((a, b) => b.net - a.net)
+    .forEach(({ cat, net }) => {
+      if (net === 0) return;
+      const c = FIN_CATEGORIES[cat] || { label: cat.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()) };
+      doc.setFontSize(10); doc.setTextColor(80);
+      doc.text(c.label, 20, y);
+      doc.setTextColor(net >= 0 ? 34 : 220, net >= 0 ? 197 : 38, net >= 0 ? 94 : 38);
+      doc.text((net >= 0 ? '+' : '') + net.toFixed(2) + ' EUR', 190, y, { align: 'right' });
+      y += 6;
+    });
   pdfFooter(doc);
 
   // P2
