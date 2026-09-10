@@ -3675,10 +3675,158 @@ let _finTransactions = [];
 let _finEditingId = null;
 let _finSoldeInitial = 0;
 
-// Recettes/Dépenses de la période courante = transactions + événements validés (gains/coûts réels)
+// ============================================================
+// TRANSACTIONS RÉCURRENTES (dépliées à la volée)
+// ============================================================
+let _finRecurrentes = [];
+
+async function finLoadRecurrentes() {
+  try {
+    const { data } = await window.Auth.sb.from('transactions_recurrentes').select('*').order('created_at', { ascending: false });
+    _finRecurrentes = data || [];
+  } catch (_) { _finRecurrentes = []; }
+}
+
+// Génère les transactions virtuelles pour chaque mois entre debut et fin
+function finExpandRecurrentes(debut, fin) {
+  if (!debut || !fin || !_finRecurrentes.length) return [];
+  const out = [];
+  for (const rc of _finRecurrentes) {
+    const start = new Date(rc.date_debut + 'T00:00:00');
+    const end = rc.date_fin ? new Date(rc.date_fin + 'T00:00:00') : null;
+    const cur = new Date(debut.getFullYear(), debut.getMonth(), 1);
+    const stop = new Date(fin.getFullYear(), fin.getMonth(), 1);
+    while (cur <= stop) {
+      const occ = new Date(cur.getFullYear(), cur.getMonth(), rc.jour_du_mois);
+      if (occ >= start && (!end || occ <= end) && occ >= debut && occ <= fin) {
+        out.push({
+          id: `rc-${rc.id}-${occ.toISOString().slice(0, 10)}`,
+          date: occ.toISOString().slice(0, 10),
+          libelle: rc.libelle,
+          categorie: rc.categorie,
+          montant: Number(rc.montant),
+          notes: rc.notes,
+          _virtuel: true,
+          _sourceId: rc.id
+        });
+      }
+      cur.setMonth(cur.getMonth() + 1);
+    }
+  }
+  return out;
+}
+
+function finRenderRecurrentes() {
+  const el = document.getElementById('fin-liste-recur');
+  if (!el) return;
+  if (!_finRecurrentes.length) {
+    el.innerHTML = '<p style="text-align:center;padding:16px;color:var(--gris-texte);font-size:13px;">Aucune transaction récurrente configurée.</p>';
+    return;
+  }
+  el.innerHTML = _finRecurrentes.map(rc => {
+    const c = FIN_CATEGORIES[rc.categorie] || { label: rc.categorie, emoji: '📌' };
+    const isRec = Number(rc.montant) > 0;
+    const finTxt = rc.date_fin ? `→ ${new Date(rc.date_fin).toLocaleDateString('fr-FR')}` : '→ indéfini';
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--gris-clair);">
+        <div style="width:34px;text-align:center;font-size:18px;flex-shrink:0;">${c.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;color:var(--noir);">${escapeHtmlNl(rc.libelle)}</div>
+          <div style="font-size:11px;color:var(--gris-texte);">${c.label} · le ${rc.jour_du_mois} du mois · depuis ${new Date(rc.date_debut).toLocaleDateString('fr-FR')} ${finTxt}</div>
+        </div>
+        <div style="font-size:15px;font-weight:800;color:${isRec ? '#22c55e' : '#dc2626'};flex-shrink:0;">${isRec ? '+' : ''}${Number(rc.montant).toFixed(2)} €<span style="font-size:10px;color:var(--gris-texte);font-weight:400;"> /mois</span></div>
+        <button onclick="finRecurEdit('${rc.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>
+        <button onclick="finRecurDelete('${rc.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:6px;font-size:14px;">🗑</button>
+      </div>
+    `;
+  }).join('');
+}
+
+let _finRecurEditingId = null;
+
+function finRecurTogglerForm() {
+  const f = document.getElementById('fin-form-recur');
+  const visible = f.classList.contains('visible');
+  if (visible) { f.classList.remove('visible'); _finRecurEditingId = null; return; }
+  _finRecurEditingId = null;
+  document.getElementById('rc-libelle').value = '';
+  document.getElementById('rc-categorie').value = 'cotisation';
+  document.getElementById('rc-type').value = 'depense';
+  document.getElementById('rc-montant').value = '';
+  document.getElementById('rc-jour').value = '1';
+  document.getElementById('rc-date-debut').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('rc-date-fin').value = '';
+  document.getElementById('rc-notes').value = '';
+  f.classList.add('visible');
+}
+
+function finRecurEdit(id) {
+  const rc = _finRecurrentes.find(x => x.id === id);
+  if (!rc) return;
+  _finRecurEditingId = id;
+  document.getElementById('rc-libelle').value = rc.libelle;
+  document.getElementById('rc-categorie').value = rc.categorie;
+  document.getElementById('rc-type').value = Number(rc.montant) >= 0 ? 'recette' : 'depense';
+  document.getElementById('rc-montant').value = Math.abs(Number(rc.montant));
+  document.getElementById('rc-jour').value = rc.jour_du_mois || 1;
+  document.getElementById('rc-date-debut').value = rc.date_debut;
+  document.getElementById('rc-date-fin').value = rc.date_fin || '';
+  document.getElementById('rc-notes').value = rc.notes || '';
+  document.getElementById('fin-form-recur').classList.add('visible');
+  document.getElementById('fin-form-recur').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function finRecurSave() {
+  const libelle = document.getElementById('rc-libelle').value.trim();
+  const categorie = document.getElementById('rc-categorie').value;
+  const type = document.getElementById('rc-type').value;
+  const montantAbs = parseFloat(document.getElementById('rc-montant').value);
+  const jour = parseInt(document.getElementById('rc-jour').value, 10) || 1;
+  const dateDebut = document.getElementById('rc-date-debut').value;
+  const dateFin = document.getElementById('rc-date-fin').value || null;
+  const notes = document.getElementById('rc-notes').value.trim() || null;
+  if (!libelle || isNaN(montantAbs) || montantAbs <= 0 || !dateDebut) {
+    showToast('Remplis libellé, montant et date de début', 'error'); return;
+  }
+  if (jour < 1 || jour > 28) { showToast('Jour du mois entre 1 et 28', 'error'); return; }
+  const montant = type === 'recette' ? montantAbs : -montantAbs;
+  const payload = { libelle, categorie, montant, jour_du_mois: jour, date_debut: dateDebut, date_fin: dateFin, notes };
+  const btn = document.getElementById('fin-btn-save-recur');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  let error;
+  if (_finRecurEditingId) {
+    ({ error } = await window.Auth.sb.from('transactions_recurrentes').update(payload).eq('id', _finRecurEditingId));
+  } else {
+    const user = await window.Auth.getUser();
+    payload.created_by = user.id;
+    ({ error } = await window.Auth.sb.from('transactions_recurrentes').insert(payload));
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast(_finRecurEditingId ? 'Récurrente modifiée' : 'Récurrente créée', 'success');
+  document.getElementById('fin-form-recur').classList.remove('visible');
+  _finRecurEditingId = null;
+  await finLoadRecurrentes();
+  finRenderRecurrentes();
+  finRefreshAll();
+}
+
+async function finRecurDelete(id) {
+  if (!confirm('Supprimer cette transaction récurrente ? Les mois passés déjà comptés disparaîtront.')) return;
+  const { error } = await window.Auth.sb.from('transactions_recurrentes').delete().eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('Récurrente supprimée', 'success');
+  await finLoadRecurrentes();
+  finRenderRecurrentes();
+  finRefreshAll();
+}
+
+// Recettes/Dépenses de la période courante = transactions + récurrentes dépliées + événements validés (réels)
 function finPeriodeRecDep() {
-  let rec = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
-  let dep = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  const virtuels = finExpandRecurrentes(_finDateDebut, _finDateFin);
+  const all = _finTransactions.concat(virtuels);
+  let rec = all.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
+  let dep = all.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
   if (_finDateDebut && _finDateFin) {
     for (const ev of _finEvenements) {
       if (!ev.valide || !ev.date) continue;
