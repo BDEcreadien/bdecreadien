@@ -4482,6 +4482,77 @@ async function pdfConstruireDetaille(doc) {
     y += 5; doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
     doc.setFontSize(12); doc.setTextColor(30); doc.text('Total prévisionnel estimé', 15, y);
     doc.setTextColor(255,116,31); doc.text(totalPrev.toFixed(2) + ' EUR', 190, y, { align: 'right' });
+    y += 12;
+  }
+
+  // ===== Tableau récapitulatif final : Prévu vs Réel sur la période courante =====
+  const ensureRoom = (min) => {
+    if (y + min > 275) { pdfFooter(doc); doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel (suite)'); y = 45; }
+  };
+  ensureRoom(60);
+  doc.setFontSize(13); doc.setTextColor(30);
+  doc.text('Bilan prévu vs réel — événements de la période', 15, y);
+  y += 7;
+  doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 6;
+
+  // Entêtes
+  doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('DATE', 15, y);
+  doc.text('ÉVÉNEMENT', 35, y);
+  doc.text('G.PRÉ', 100, y, { align: 'right' });
+  doc.text('C.PRÉ', 120, y, { align: 'right' });
+  doc.text('G.RÉEL', 142, y, { align: 'right' });
+  doc.text('C.RÉEL', 162, y, { align: 'right' });
+  doc.text('SOLDE', 185, y, { align: 'right' });
+  doc.text('OK', 194, y, { align: 'right' });
+  doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(15, y + 1.5, 195, y + 1.5); y += 6;
+
+  if (!evs.length) {
+    doc.setFontSize(9); doc.setTextColor(150);
+    doc.text('Aucun événement à récapituler pour la période.', 15, y);
+  } else {
+    let totalPrevSolde = 0, totalReelSolde = 0;
+    evs.forEach(ev => {
+      ensureRoom(8);
+      const gP = ev.gains_previsionnel != null ? Number(ev.gains_previsionnel) : null;
+      const cP = ev.budget_previsionnel != null ? Number(ev.budget_previsionnel) : null;
+      const gR = ev.gains_reel != null ? Number(ev.gains_reel) : null;
+      const cR = ev.cout_reel != null ? Number(ev.cout_reel) : null;
+      const soldeP = (gP || 0) - (cP || 0);
+      const soldeR = (gR || 0) - (cR || 0);
+      totalPrevSolde += soldeP;
+      if (gR != null || cR != null) totalReelSolde += soldeR;
+      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : '—';
+      doc.setFontSize(8); doc.setTextColor(50);
+      doc.text(d, 15, y);
+      const titreShort = (ev.titre || '').length > 32 ? ev.titre.slice(0, 30) + '…' : (ev.titre || '');
+      doc.text(titreShort, 35, y);
+      doc.text(gP != null ? gP.toFixed(2) : '—', 100, y, { align: 'right' });
+      doc.text(cP != null ? cP.toFixed(2) : '—', 120, y, { align: 'right' });
+      doc.text(gR != null ? gR.toFixed(2) : '—', 142, y, { align: 'right' });
+      doc.text(cR != null ? cR.toFixed(2) : '—', 162, y, { align: 'right' });
+      if (gR != null || cR != null) {
+        doc.setTextColor(soldeR >= 0 ? 34 : 220, soldeR >= 0 ? 197 : 38, soldeR >= 0 ? 94 : 38);
+      } else {
+        doc.setTextColor(120);
+      }
+      const soldeAff = (gR != null || cR != null) ? soldeR : soldeP;
+      doc.text((soldeAff >= 0 ? '+' : '') + soldeAff.toFixed(2), 185, y, { align: 'right' });
+      doc.setTextColor(ev.valide ? 34 : 200, ev.valide ? 197 : 150, ev.valide ? 94 : 40);
+      doc.text(ev.valide ? 'OK' : '…', 194, y, { align: 'right' });
+      y += 5;
+    });
+    // Totaux
+    y += 2;
+    doc.setDrawColor(70); doc.setLineWidth(0.3); doc.line(15, y, 195, y); y += 6;
+    doc.setFontSize(9); doc.setTextColor(30);
+    doc.text('TOTAL PRÉVU', 15, y);
+    doc.setTextColor(totalPrevSolde >= 0 ? 34 : 220, totalPrevSolde >= 0 ? 197 : 38, totalPrevSolde >= 0 ? 94 : 38);
+    doc.text((totalPrevSolde >= 0 ? '+' : '') + totalPrevSolde.toFixed(2) + ' EUR', 120, y, { align: 'right' });
+    doc.setTextColor(30);
+    doc.text('TOTAL RÉEL', 130, y);
+    doc.setTextColor(totalReelSolde >= 0 ? 34 : 220, totalReelSolde >= 0 ? 197 : 38, totalReelSolde >= 0 ? 94 : 38);
+    doc.text((totalReelSolde >= 0 ? '+' : '') + totalReelSolde.toFixed(2) + ' EUR', 195, y, { align: 'right' });
   }
   pdfFooter(doc);
 }
