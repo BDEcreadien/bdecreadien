@@ -498,6 +498,20 @@
         @media (max-width: 900px) { .fin-two-cols { grid-template-columns: 1fr; } }
       </style>
 
+      <!-- Vue annuelle : courbes Recettes / Dépenses -->
+      <div class="form-card visible" id="fin-courbe-wrap" style="margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:0.75rem;">
+          <h3 style="margin:0;">Vue annuelle — Recettes vs Dépenses</h3>
+          <select id="fin-courbe-annee" onchange="finLoadCourbeAnnuelle()" style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--gris-border);font-size:14px;font-weight:600;background:white;cursor:pointer;"></select>
+        </div>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--gris-texte);margin-bottom:10px;">
+          <span><span style="display:inline-block;width:14px;height:3px;background:#22c55e;vertical-align:middle;margin-right:6px;border-radius:2px;"></span>Recettes</span>
+          <span><span style="display:inline-block;width:14px;height:3px;background:#dc2626;vertical-align:middle;margin-right:6px;border-radius:2px;"></span>Dépenses</span>
+          <span style="color:#999;">Survole un mois pour voir le détail</span>
+        </div>
+        <div id="fin-courbe-svg" style="position:relative;width:100%;overflow-x:auto;"></div>
+      </div>
+
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau">+ Nouvelle transaction</button>
         <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev" style="background:linear-gradient(90deg, #FF741F 0%, #F04A34 25%, #D2396D 60%, #9B1889 100%);">+ Nouvel événement</button>
