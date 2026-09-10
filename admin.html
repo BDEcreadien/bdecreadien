@@ -4242,12 +4242,39 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     <svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:600px;height:auto;display:block;font-family:inherit;">
       ${grid}
       ${xTicks}
+      ${overlays}
       ${bars}
       ${soldeLine}
       ${soldeDots}
-      ${overlays}
     </svg>
     <div id="fin-courbe-tip" style="position:absolute;display:none;background:white;border:1px solid #ddd;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.14);font-size:12px;pointer-events:none;z-index:20;min-width:200px;"></div>`;
+}
+
+// Mini tooltip pour une barre seule (recette ou dépense)
+function finBarShowTip(evt, type, val, label) {
+  evt.stopPropagation();
+  const tip = document.getElementById('fin-courbe-tip');
+  const wrap = document.getElementById('fin-courbe-svg');
+  if (!tip || !wrap) return;
+  const rect = wrap.getBoundingClientRect();
+  const color = type === 'rec' ? '#22c55e' : '#dc2626';
+  const kind = type === 'rec' ? 'Recette' : 'Dépense';
+  const sign = type === 'rec' ? '+' : '-';
+  tip.innerHTML = `
+    <div style="font-weight:700;margin-bottom:4px;color:#111;">${label}</div>
+    <div style="color:${color};font-weight:700;font-size:14px;">${kind} : ${sign}${Math.abs(val).toFixed(2)} €</div>`;
+  tip.style.display = 'block';
+  const x = evt.clientX - rect.left;
+  const y = evt.clientY - rect.top;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  const left = Math.min(Math.max(x + 14, 4), wrap.clientWidth - tw - 4);
+  const top = Math.max(y - th - 12, 4);
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+function finBarHideTip() {
+  const tip = document.getElementById('fin-courbe-tip');
+  if (tip) tip.style.display = 'none';
 }
 
 function finCourbeShowTip(evt, idx, rec, dep, soldeMois, soldeCumule, prev, label) {
