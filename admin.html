@@ -4486,6 +4486,7 @@ async function pdfConstruireDetaille(doc) {
   }
 
   // ===== Tableau récapitulatif final : Prévu vs Réel sur la période courante =====
+  if (!evsPrev.length) y = 110;
   const ensureRoom = (min) => {
     if (y + min > 275) { pdfFooter(doc); doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel (suite)'); y = 45; }
   };
