@@ -3857,7 +3857,7 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   const monthFull = ['Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août'];
   const yearOfIdx = i => (i <= 3 ? yStart : yStart + 1);
 
-  const maxVal = Math.max(1, ...months.map(m => Math.max(m.recettes, m.depenses)));
+  const maxVal = Math.max(1, ...months.map(m => Math.max(m.recettes, m.depenses, Math.abs(m.prev))));
   const steps = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
   let step = 500;
   for (const s of steps) { if (maxVal / s <= 8) { step = s; break; } step = s; }
