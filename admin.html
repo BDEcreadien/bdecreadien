@@ -4112,7 +4112,7 @@ async function finSaveTransaction() {
   showToast(_finEditingId ? 'Transaction modifiée' : 'Transaction ajoutée', 'success');
   document.getElementById('fin-form').classList.remove('visible');
   _finEditingId = null;
-  finLoadTransactions();
+  finRefreshAll();
 }
 
 async function finDelete(id) {
@@ -4120,7 +4120,7 @@ async function finDelete(id) {
   const { error } = await window.Auth.sb.from('transactions').delete().eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Transaction supprimée', 'success');
-  finLoadTransactions();
+  finRefreshAll();
 }
 
 // ============================================================
