@@ -3854,61 +3854,125 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     const c = Number(ev.budget_previsionnel) || 0;
     months[idx].prev += (g - c);
   }
-  const monthShort = ['S', 'O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A'];
+  const monthShort = ['sept.', 'oct.', 'nov.', 'déc.', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août'];
   const monthFull = ['Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août'];
   const yearOfIdx = i => (i <= 3 ? yStart : yStart + 1);
 
-  const maxVal = Math.max(1, ...months.map(m => Math.max(m.recettes, m.depenses, Math.abs(m.prev))));
-  const steps = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000];
-  let step = 500;
-  for (const s of steps) { if (maxVal / s <= 8) { step = s; break; } step = s; }
-  const yMax = Math.max(step, Math.ceil(maxVal / step) * step);
-  const ticks = [];
-  for (let v = 0; v <= yMax; v += step) ticks.push(v);
+  // Solde cumulé mois par mois (démarre au solde initial)
+  const soldes = [];
+  let running = Number(_finSoldeInitial) || 0;
+  for (let i = 0; i < 12; i++) {
+    running += months[i].recettes - months[i].depenses;
+    soldes.push(running);
+  }
+  const soldeInitial = Number(_finSoldeInitial) || 0;
 
-  const w = 820, h = 340, padL = 60, padR = 24, padT = 16, padB = 44;
+  // Amplitude Y : couvre bars + courbe solde (positive et négative)
+  const maxRec = Math.max(0, ...months.map(m => m.recettes));
+  const maxDep = Math.max(0, ...months.map(m => m.depenses));
+  const maxSolde = Math.max(soldeInitial, ...soldes, 0);
+  const minSolde = Math.min(soldeInitial, ...soldes, 0);
+  const yPos = Math.max(maxRec, maxSolde, 1);
+  const yNeg = Math.max(maxDep, Math.abs(minSolde), 1);
+
+  const steps = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000];
+  const pickStep = target => { let s = 500; for (const v of steps) { if (target / v <= 5) { s = v; break; } s = v; } return s; };
+  const stepPos = pickStep(yPos);
+  const stepNeg = pickStep(yNeg);
+  const yMaxPos = Math.max(stepPos, Math.ceil(yPos / stepPos) * stepPos);
+  const yMaxNeg = Math.max(stepNeg, Math.ceil(yNeg / stepNeg) * stepNeg);
+
+  // Ticks (positif + négatif)
+  const ticks = [];
+  for (let v = stepPos; v <= yMaxPos; v += stepPos) ticks.push(v);
+  ticks.push(0);
+  for (let v = -stepNeg; v >= -yMaxNeg; v -= stepNeg) ticks.push(v);
+
+  const w = 860, h = 380, padL = 62, padR = 24, padT = 20, padB = 44;
   const chartW = w - padL - padR;
   const chartH = h - padT - padB;
-  const xStep = chartW / 11;
-  const xPos = i => padL + i * xStep;
-  const yScale = v => padT + chartH - (v / yMax) * chartH;
-  const fmt = v => v >= 1000 ? (v / 1000).toFixed(v % 1000 === 0 ? 0 : 1) + 'k' : String(v);
+  const xStep = chartW / 12;
+  const xCenter = i => padL + i * xStep + xStep / 2;
+  const yZero = padT + (yMaxPos / (yMaxPos + yMaxNeg)) * chartH;
+  const yScale = v => yZero - (v / (v >= 0 ? yMaxPos : yMaxNeg)) * (v >= 0 ? (yZero - padT) : (yZero - (padT + chartH)));
+  const fmt = v => {
+    const abs = Math.abs(v);
+    return (v < 0 ? '-' : '') + (abs >= 1000 ? (abs / 1000).toFixed(abs % 1000 === 0 ? 0 : 1) + 'k' : String(abs));
+  };
 
   const grid = ticks.map(v => {
     const y = yScale(v);
-    return `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#eee" stroke-width="1"/>
-      <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#888">${fmt(v)} €</text>`;
+    const strong = v === 0;
+    return `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="${strong ? '#bbb' : '#eee'}" stroke-width="${strong ? 1.2 : 1}"/>
+      <text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${strong ? '#666' : '#999'}" font-weight="${strong ? '600' : '400'}">${fmt(v)} €</text>`;
   }).join('');
   const xTicks = monthShort.map((lbl, i) =>
-    `<text x="${xPos(i)}" y="${h - padB + 18}" text-anchor="middle" font-size="12" fill="#555" font-weight="600">${lbl}</text>`
+    `<text x="${xCenter(i)}" y="${h - padB + 18}" text-anchor="middle" font-size="11" fill="#555" font-weight="500">${lbl}</text>
+     <text x="${xCenter(i)}" y="${h - padB + 32}" text-anchor="middle" font-size="10" fill="#888">${String(yearOfIdx(i)).slice(2)}</text>`
   ).join('');
-  const ptsRec = months.map((m, i) => `${xPos(i)},${yScale(m.recettes)}`).join(' ');
-  const ptsDep = months.map((m, i) => `${xPos(i)},${yScale(m.depenses)}`).join(' ');
-  const ptsPrev = months.map((m, i) => `${xPos(i)},${yScale(Math.max(0, m.prev))}`).join(' ');
 
+  // Bars : recettes (vert au-dessus de 0) et dépenses (rouge en dessous)
+  const barW = Math.max(4, Math.min(18, xStep * 0.28));
+  const bars = months.map((m, i) => {
+    const cx = xCenter(i);
+    let out = '';
+    if (m.recettes > 0) {
+      const y = yScale(m.recettes);
+      out += `<rect x="${cx - barW - 1}" y="${y}" width="${barW}" height="${yZero - y}" fill="#22c55e" rx="2"/>`;
+    }
+    if (m.depenses > 0) {
+      const y = yScale(-m.depenses);
+      out += `<rect x="${cx + 1}" y="${yZero}" width="${barW}" height="${y - yZero}" fill="#dc2626" rx="2"/>`;
+    }
+    return out;
+  }).join('');
+
+  // Courbe solde cumulé (smooth via Catmull-Rom-like path)
+  const soldePts = soldes.map((s, i) => ({ x: xCenter(i), y: yScale(s) }));
+  // Ajoute point de départ = solde initial (avant sept)
+  const startPt = { x: padL + xStep * 0.15, y: yScale(soldeInitial) };
+  const allPts = [startPt, ...soldePts];
+  const smoothPath = pts => {
+    if (pts.length < 2) return '';
+    let d = `M ${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[i + 2] || p2;
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+      d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
+    }
+    return d;
+  };
+  const soldeLine = `<path d="${smoothPath(allPts)}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  const soldeDots = soldePts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2563eb" stroke="white" stroke-width="1.5" pointer-events="none"/>`).join('');
+
+  // Overlays pour hover
   const overlays = months.map((m, i) => {
-    const cx = xPos(i);
-    const solde = m.recettes - m.depenses;
+    const cx = xCenter(i);
+    const solde = soldes[i];
+    const soldeMois = m.recettes - m.depenses;
     const label = `${monthFull[i]} ${yearOfIdx(i)}`;
-    const args = [i, m.recettes, m.depenses, solde, m.prev, JSON.stringify(label)].join(',');
+    const args = [i, m.recettes, m.depenses, soldeMois, solde, m.prev, JSON.stringify(label)].join(',');
     return `<rect x="${cx - xStep / 2}" y="${padT}" width="${xStep}" height="${chartH}" fill="transparent"
       onmousemove="finCourbeShowTip(event, ${args})"
-      onmouseleave="finCourbeHideTip()"></rect>
-      <circle cx="${cx}" cy="${yScale(Math.max(0, m.prev))}" r="3.5" fill="#9ca3af" stroke="white" stroke-width="1.5" pointer-events="none"/>
-      <circle cx="${cx}" cy="${yScale(m.recettes)}" r="4" fill="#22c55e" stroke="white" stroke-width="1.5" pointer-events="none"/>
-      <circle cx="${cx}" cy="${yScale(m.depenses)}" r="4" fill="#dc2626" stroke="white" stroke-width="1.5" pointer-events="none"/>`;
+      onmouseleave="finCourbeHideTip()"></rect>`;
   }).join('');
 
   document.getElementById('fin-courbe-svg').innerHTML = `
-    <svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:560px;height:auto;display:block;font-family:inherit;">
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:600px;height:auto;display:block;font-family:inherit;">
       ${grid}
       ${xTicks}
-      <polyline points="${ptsPrev}" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5,4" stroke-linejoin="round" stroke-linecap="round"/>
-      <polyline points="${ptsRec}" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-      <polyline points="${ptsDep}" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${bars}
+      ${soldeLine}
+      ${soldeDots}
       ${overlays}
     </svg>
-    <div id="fin-courbe-tip" style="position:absolute;display:none;background:white;border:1px solid #ddd;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.14);font-size:12px;pointer-events:none;z-index:20;min-width:180px;"></div>`;
+    <div id="fin-courbe-tip" style="position:absolute;display:none;background:white;border:1px solid #ddd;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.14);font-size:12px;pointer-events:none;z-index:20;min-width:200px;"></div>`;
 }
 
 function finCourbeShowTip(evt, idx, rec, dep, solde, prev, label) {
