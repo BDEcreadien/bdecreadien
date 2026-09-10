@@ -274,27 +274,28 @@
   function deconnecter() {
     clearPin();
     pin = '';
+    currentPin = '';
+    refreshPinDots();
     show('login');
-    setTimeout(() => document.getElementById('pin-input').focus(), 50);
   }
 
   async function doLogin() {
-    const p = document.getElementById('pin-input').value.trim();
-    if (!p) return;
-    // Vérification via l'API : si le code est bon, on charge la carte
+    const p = currentPin;
+    if (!p || p.length !== PIN_LEN) return;
     document.getElementById('login-error').style.display = 'none';
     show('loading');
     const res = await callApi(p);
     if (res === null) {
-      // Erreur réseau
       show('login');
       document.getElementById('login-error').textContent = 'Erreur réseau, réessaie.';
       document.getElementById('login-error').style.display = 'block';
+      keypadClear();
       return;
     }
     if (res.error === 'Code incorrect') {
       show('login');
       document.getElementById('login-error').style.display = 'block';
+      keypadClear();
       return;
     }
     savePin(p);
