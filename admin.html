@@ -4842,102 +4842,203 @@ async function pdfConstruireDetaille(doc) {
   }
   pdfFooter(doc);
 
-  // P3
-  doc.addPage(); pdfHeader(doc, 'Événements de la période');
+  // P3 — Événements validés (dans le budget réel)
+  doc.addPage(); pdfHeader(doc, 'Événements validés');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
-  if (!evs.length) {
-    doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement sur cette période.', 105, 100, { align: 'center' });
+  const evsValides = evs.filter(e => e.valide);
+  doc.setFontSize(9); doc.setTextColor(140);
+  doc.text('Événements dont les gains/coûts réels sont validés et comptés dans le budget.', 15, 68);
+  if (!evsValides.length) {
+    doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement validé sur cette période.', 105, 100, { align: 'center' });
   } else {
-    y = 72; evs.forEach(ev => {
-      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements (suite)'); y = 45; }
-      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
-      doc.setFontSize(11); doc.setTextColor(30); doc.text((ev.titre || '').slice(0, 60), 15, y);
-      doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
-      if (ev.cout_reel != null) {
-        doc.setFontSize(11); doc.setTextColor(220, 38, 38);
-        doc.text('-' + Number(ev.cout_reel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
-      } else if (ev.budget_previsionnel != null) {
-        doc.setFontSize(9); doc.setTextColor(150);
-        doc.text('(prévu ' + Number(ev.budget_previsionnel).toFixed(2) + ' EUR)', 190, y, { align: 'right' });
-      }
-      y += 12;
+    y = 78;
+    doc.setFontSize(9); doc.setTextColor(120);
+    doc.text('DATE', 15, y); doc.text('ÉVÉNEMENT', 40, y); doc.text('GAINS', 130, y, { align: 'right' }); doc.text('COÛT', 160, y, { align: 'right' }); doc.text('SOLDE', 195, y, { align: 'right' });
+    doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
+    let totRec = 0, totDep = 0;
+    evsValides.forEach(ev => {
+      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements validés (suite)'); y = 45; }
+      const gR = Number(ev.gains_reel) || 0;
+      const cR = Number(ev.cout_reel) || 0;
+      const solde = gR - cR;
+      totRec += gR; totDep += cR;
+      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+      doc.setFontSize(9); doc.setTextColor(50);
+      doc.text(dateStr, 15, y);
+      const titre = ((ev.titre || '') + (ev.lieu ? ' · ' + ev.lieu : '')).slice(0, 55);
+      doc.text(titre, 40, y);
+      doc.setTextColor(34, 197, 94); doc.text('+' + gR.toFixed(2), 130, y, { align: 'right' });
+      doc.setTextColor(220, 38, 38); doc.text('-' + cR.toFixed(2), 160, y, { align: 'right' });
+      doc.setTextColor(solde >= 0 ? 34 : 220, solde >= 0 ? 197 : 38, solde >= 0 ? 94 : 38);
+      doc.text((solde >= 0 ? '+' : '') + solde.toFixed(2), 195, y, { align: 'right' });
+      y += 6;
     });
+    y += 2;
+    doc.setDrawColor(60); doc.line(15, y, 195, y); y += 7;
+    doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+    doc.text('TOTAL VALIDÉ', 15, y);
+    doc.setTextColor(34, 197, 94); doc.text('+' + totRec.toFixed(2), 130, y, { align: 'right' });
+    doc.setTextColor(220, 38, 38); doc.text('-' + totDep.toFixed(2), 160, y, { align: 'right' });
+    const netVal = totRec - totDep;
+    doc.setTextColor(netVal >= 0 ? 34 : 220, netVal >= 0 ? 197 : 38, netVal >= 0 ? 94 : 38);
+    doc.text((netVal >= 0 ? '+' : '') + netVal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+    doc.setFont(undefined, 'normal');
   }
   pdfFooter(doc);
 
-  // P4 — Bilan prévu vs réel
-  doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel');
+  // P4 — Prévisionnel (events non-validés + récurrentes futures)
+  doc.addPage(); pdfHeader(doc, 'Prévisionnel');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
-  y = 72;
-  const ensureRoom = (min) => {
-    if (y + min > 275) { pdfFooter(doc); doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel (suite)'); y = 45; }
-  };
-  ensureRoom(60);
-  doc.setFontSize(13); doc.setTextColor(30);
-  doc.text('Événements de la période — prévu vs réel', 15, y);
-  y += 7;
-  doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 6;
+  doc.setFontSize(9); doc.setTextColor(140);
+  doc.text('Ce qui est prévu mais pas encore validé : events en attente + dépenses/recettes récurrentes.', 15, 68);
+  y = 78;
 
-  // Entêtes
-  doc.setFontSize(8); doc.setTextColor(120);
-  doc.text('DATE', 15, y);
-  doc.text('ÉVÉNEMENT', 35, y);
-  doc.text('G.PRÉ', 100, y, { align: 'right' });
-  doc.text('C.PRÉ', 120, y, { align: 'right' });
-  doc.text('G.RÉEL', 142, y, { align: 'right' });
-  doc.text('C.RÉEL', 162, y, { align: 'right' });
-  doc.text('SOLDE', 185, y, { align: 'right' });
-  doc.text('OK', 194, y, { align: 'right' });
-  doc.setDrawColor(200); doc.setLineWidth(0.2); doc.line(15, y + 1.5, 195, y + 1.5); y += 6;
-
-  if (!evs.length) {
-    doc.setFontSize(9); doc.setTextColor(150);
-    doc.text('Aucun événement à récapituler pour la période.', 15, y);
+  // Section events non-validés
+  const evsPrev = evs.filter(e => !e.valide);
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+  doc.text('Événements en attente de validation', 15, y);
+  doc.setFont(undefined, 'normal');
+  y += 4;
+  doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 5;
+  let totalPrevEv = 0;
+  if (!evsPrev.length) {
+    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucun événement en attente.', 15, y); y += 8;
   } else {
-    let totalPrevSolde = 0, totalReelSolde = 0;
-    evs.forEach(ev => {
-      ensureRoom(8);
-      const gP = ev.gains_previsionnel != null ? Number(ev.gains_previsionnel) : null;
-      const cP = ev.budget_previsionnel != null ? Number(ev.budget_previsionnel) : null;
-      const gR = ev.gains_reel != null ? Number(ev.gains_reel) : null;
-      const cR = ev.cout_reel != null ? Number(ev.cout_reel) : null;
-      const soldeP = (gP || 0) - (cP || 0);
-      const soldeR = (gR || 0) - (cR || 0);
-      totalPrevSolde += soldeP;
-      if (gR != null || cR != null) totalReelSolde += soldeR;
-      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : '—';
-      doc.setFontSize(8); doc.setTextColor(50);
-      doc.text(d, 15, y);
-      const titreShort = (ev.titre || '').length > 32 ? ev.titre.slice(0, 30) + '…' : (ev.titre || '');
-      doc.text(titreShort, 35, y);
-      doc.text(gP != null ? gP.toFixed(2) : '—', 100, y, { align: 'right' });
-      doc.text(cP != null ? cP.toFixed(2) : '—', 120, y, { align: 'right' });
-      doc.text(gR != null ? gR.toFixed(2) : '—', 142, y, { align: 'right' });
-      doc.text(cR != null ? cR.toFixed(2) : '—', 162, y, { align: 'right' });
-      if (gR != null || cR != null) {
-        doc.setTextColor(soldeR >= 0 ? 34 : 220, soldeR >= 0 ? 197 : 38, soldeR >= 0 ? 94 : 38);
-      } else {
-        doc.setTextColor(120);
-      }
-      const soldeAff = (gR != null || cR != null) ? soldeR : soldeP;
-      doc.text((soldeAff >= 0 ? '+' : '') + soldeAff.toFixed(2), 185, y, { align: 'right' });
-      doc.setTextColor(ev.valide ? 34 : 200, ev.valide ? 197 : 150, ev.valide ? 94 : 40);
-      doc.text(ev.valide ? 'OK' : '…', 194, y, { align: 'right' });
+    doc.setFontSize(8); doc.setTextColor(120);
+    doc.text('DATE', 15, y); doc.text('ÉVÉNEMENT', 40, y); doc.text('G.PRÉVU', 130, y, { align: 'right' }); doc.text('C.PRÉVU', 160, y, { align: 'right' }); doc.text('SOLDE PRÉVU', 195, y, { align: 'right' });
+    doc.setDrawColor(220); doc.line(15, y + 1.5, 195, y + 1.5); y += 5;
+    evsPrev.forEach(ev => {
+      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
+      const gP = Number(ev.gains_previsionnel) || 0;
+      const cP = Number(ev.budget_previsionnel) || 0;
+      const solde = gP - cP;
+      totalPrevEv += solde;
+      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+      doc.setFontSize(9); doc.setTextColor(50);
+      doc.text(dateStr, 15, y);
+      doc.text((ev.titre || '').slice(0, 45), 40, y);
+      doc.setTextColor(34, 197, 94); doc.text('+' + gP.toFixed(2), 130, y, { align: 'right' });
+      doc.setTextColor(220, 38, 38); doc.text('-' + cP.toFixed(2), 160, y, { align: 'right' });
+      doc.setTextColor(solde >= 0 ? 34 : 220, solde >= 0 ? 197 : 38, solde >= 0 ? 94 : 38);
+      doc.text((solde >= 0 ? '+' : '') + solde.toFixed(2), 195, y, { align: 'right' });
       y += 5;
     });
-    // Totaux
     y += 2;
-    doc.setDrawColor(70); doc.setLineWidth(0.3); doc.line(15, y, 195, y); y += 6;
-    doc.setFontSize(9); doc.setTextColor(30);
-    doc.text('TOTAL PRÉVU', 15, y);
-    doc.setTextColor(totalPrevSolde >= 0 ? 34 : 220, totalPrevSolde >= 0 ? 197 : 38, totalPrevSolde >= 0 ? 94 : 38);
-    doc.text((totalPrevSolde >= 0 ? '+' : '') + totalPrevSolde.toFixed(2) + ' EUR', 120, y, { align: 'right' });
-    doc.setTextColor(30);
-    doc.text('TOTAL RÉEL', 130, y);
-    doc.setTextColor(totalReelSolde >= 0 ? 34 : 220, totalReelSolde >= 0 ? 197 : 38, totalReelSolde >= 0 ? 94 : 38);
-    doc.text((totalReelSolde >= 0 ? '+' : '') + totalReelSolde.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+  }
+
+  // Section récurrentes actives (loyer, cotisation…)
+  y += 4;
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+  doc.text('Transactions récurrentes actives dans la période', 15, y);
+  doc.setFont(undefined, 'normal');
+  y += 4;
+  doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 5;
+
+  // Compte occurrences par récurrente dans la période
+  let totalRecur = 0;
+  const recurLignes = [];
+  for (const rc of _finRecurrentes) {
+    const start = new Date(rc.date_debut + 'T00:00:00');
+    const end = rc.date_fin ? new Date(rc.date_fin + 'T00:00:00') : null;
+    const cur = new Date(_finDateDebut.getFullYear(), _finDateDebut.getMonth(), 1);
+    const stop = new Date(_finDateFin.getFullYear(), _finDateFin.getMonth(), 1);
+    let nb = 0;
+    while (cur <= stop) {
+      const occ = new Date(cur.getFullYear(), cur.getMonth(), rc.jour_du_mois);
+      if (occ >= start && (!end || occ <= end) && occ >= _finDateDebut && occ <= _finDateFin) nb++;
+      cur.setMonth(cur.getMonth() + 1);
+    }
+    if (nb === 0) continue;
+    const totalRc = nb * Number(rc.montant);
+    totalRecur += totalRc;
+    recurLignes.push({ rc, nb, totalRc });
+  }
+  if (!recurLignes.length) {
+    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucune récurrente active sur cette période.', 15, y); y += 8;
+  } else {
+    doc.setFontSize(8); doc.setTextColor(120);
+    doc.text('LIBELLÉ', 15, y); doc.text('CATÉGORIE', 90, y); doc.text('MONTANT/MOIS', 140, y, { align: 'right' }); doc.text('×MOIS', 160, y, { align: 'right' }); doc.text('TOTAL', 195, y, { align: 'right' });
+    doc.setDrawColor(220); doc.line(15, y + 1.5, 195, y + 1.5); y += 5;
+    recurLignes.forEach(({ rc, nb, totalRc }) => {
+      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
+      const c = FIN_CATEGORIES[rc.categorie] || { label: rc.categorie };
+      doc.setFontSize(9); doc.setTextColor(50);
+      doc.text((rc.libelle || '').slice(0, 45), 15, y);
+      doc.text(c.label, 90, y);
+      const mMois = Number(rc.montant);
+      doc.setTextColor(mMois >= 0 ? 34 : 220, mMois >= 0 ? 197 : 38, mMois >= 0 ? 94 : 38);
+      doc.text((mMois >= 0 ? '+' : '') + mMois.toFixed(2), 140, y, { align: 'right' });
+      doc.setTextColor(80); doc.text(String(nb), 160, y, { align: 'right' });
+      doc.setTextColor(totalRc >= 0 ? 34 : 220, totalRc >= 0 ? 197 : 38, totalRc >= 0 ? 94 : 38);
+      doc.text((totalRc >= 0 ? '+' : '') + totalRc.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+      y += 5;
+    });
+    y += 2;
+  }
+
+  // Total prévisionnel combiné
+  y += 4;
+  doc.setDrawColor(30); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 7;
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+  doc.text('TOTAL PRÉVISIONNEL (events non validés + récurrentes)', 15, y);
+  const totalPrev = totalPrevEv + totalRecur;
+  doc.setTextColor(totalPrev >= 0 ? 34 : 220, totalPrev >= 0 ? 197 : 38, totalPrev >= 0 ? 94 : 38);
+  doc.text((totalPrev >= 0 ? '+' : '') + totalPrev.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+  doc.setFont(undefined, 'normal');
+  pdfFooter(doc);
+
+  // P5 — Graphique annuel
+  await pdfAjouterGraphique(doc);
+}
+
+// Snapshot du graphique SVG converti en image, ajouté en page 5
+async function pdfAjouterGraphique(doc) {
+  doc.addPage();
+  pdfHeader(doc, 'Vue annuelle — Recettes vs Dépenses');
+  const sel = document.getElementById('fin-courbe-annee');
+  if (sel) {
+    doc.setFontSize(10); doc.setTextColor(110);
+    doc.text('Année scolaire ' + sel.value + ' – ' + (parseInt(sel.value, 10) + 1), 15, 62);
+  }
+  const svg = document.querySelector('#fin-courbe-svg svg');
+  if (!svg) {
+    doc.setFontSize(12); doc.setTextColor(150);
+    doc.text('Graphique non disponible.', 105, 100, { align: 'center' });
+    pdfFooter(doc);
+    return;
+  }
+  try {
+    const xml = new XMLSerializer().serializeToString(svg);
+    const svg64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+    const img = new Image();
+    img.src = svg64;
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+    const canvas = document.createElement('canvas');
+    const scale = 2;
+    canvas.width = 1600; canvas.height = 700;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const png = canvas.toDataURL('image/png');
+    // Cadre A4 (largeur 210mm - marges 15mm) → 180mm large ; ratio conservé
+    const imgW = 180, imgH = imgW * (canvas.height / canvas.width);
+    doc.addImage(png, 'PNG', 15, 72, imgW, imgH);
+    // Légende
+    let y = 72 + imgH + 8;
+    doc.setFontSize(9); doc.setTextColor(80);
+    doc.setFillColor(34, 197, 94); doc.rect(15, y - 3, 4, 4, 'F');
+    doc.text('Recettes (transactions + récurrentes + events validés)', 22, y);
+    y += 6;
+    doc.setFillColor(220, 38, 38); doc.rect(15, y - 3, 4, 4, 'F');
+    doc.text('Dépenses (transactions + récurrentes + events validés)', 22, y);
+    y += 6;
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.6); doc.line(15, y - 1, 19, y - 1);
+    doc.setTextColor(80); doc.text('Solde cumulé (démarre au solde initial ' + _finSoldeInitial.toFixed(2) + ' €)', 22, y);
+  } catch (e) {
+    doc.setFontSize(11); doc.setTextColor(150);
+    doc.text('Impossible de générer le graphique : ' + (e.message || e), 105, 100, { align: 'center' });
   }
   pdfFooter(doc);
 }
