@@ -4565,17 +4565,16 @@ async function finSaveEv() {
     budget_previsionnel: budgetVal ? parseFloat(budgetVal) : null,
     gains_reel: gainsReelVal ? parseFloat(gainsReelVal) : null,
     cout_reel: coutVal ? parseFloat(coutVal) : null,
-    finance_only: true,
   };
   const btn = document.getElementById('fin-btn-save-ev');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   let error;
   if (_finEvEditingId) {
-    ({ error } = await window.Auth.sb.from('evenements').update(payload).eq('id', _finEvEditingId));
+    ({ error } = await window.Auth.sb.from('finance_evenements').update(payload).eq('id', _finEvEditingId));
   } else {
     const user = await window.Auth.getUser();
     payload.created_by = user.id;
-    ({ error } = await window.Auth.sb.from('evenements').insert(payload));
+    ({ error } = await window.Auth.sb.from('finance_evenements').insert(payload));
   }
   btn.disabled = false; btn.textContent = 'Enregistrer';
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
