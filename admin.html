@@ -3623,6 +3623,39 @@ let _finTransactions = [];
 let _finEditingId = null;
 let _finSoldeInitial = 0;
 
+// Rafraîchit en parallèle tous les éléments financiers (tuiles, chart, events, PDF)
+let _finRefreshBusy = false;
+async function finRefreshAll() {
+  if (_finRefreshBusy) return;
+  _finRefreshBusy = true;
+  finShowRefreshing(true);
+  try {
+    await Promise.all([
+      finLoadTransactions(),  // → finRender() → tuiles + liste + PDF
+      finLoadEvenements(),    // → finRenderEvenements()
+      finLoadCourbeAnnuelle() // → graphique
+    ]);
+  } finally {
+    _finRefreshBusy = false;
+    finShowRefreshing(false);
+  }
+}
+
+function finShowRefreshing(on) {
+  let el = document.getElementById('fin-refreshing');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'fin-refreshing';
+    el.style.cssText = 'position:fixed;top:70px;right:20px;background:rgba(70,1,134,0.95);color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;align-items:center;gap:8px;';
+    el.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:finSpin 0.6s linear infinite;"></span>Actualisation…';
+    document.body.appendChild(el);
+    const style = document.createElement('style');
+    style.textContent = '@keyframes finSpin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  }
+  el.style.display = on ? 'flex' : 'none';
+}
+
 async function finLoadSoldeInitial() {
   try {
     const { data } = await window.Auth.sb.from('bde_config').select('value').eq('id', 'solde_initial').maybeSingle();
