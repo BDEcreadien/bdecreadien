@@ -4680,7 +4680,7 @@ function pdfConstruireResume(doc) {
     ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
     ['Solde de la période', soldePeriode.toFixed(2) + ' EUR', soldePeriode >= 0 ? 70 : 220, soldePeriode >= 0 ? 58 : 38, soldePeriode >= 0 ? 144 : 38],
     ['Solde total', soldeTotal.toFixed(2) + ' EUR', soldeTotal >= 0 ? 70 : 220, soldeTotal >= 0 ? 58 : 38, soldeTotal >= 0 ? 144 : 38],
-    ['Nombre de transactions', String(_finTransactions.length), 100, 100, 100],
+    ['Nombre de transactions', String(_finTransactions.length + finExpandRecurrentes(_finDateDebut, _finDateFin).length), 100, 100, 100],
   ];
   let y = 90;
   rows.forEach(([label, val, r, g, b]) => {
