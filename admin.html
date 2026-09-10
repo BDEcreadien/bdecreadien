@@ -4718,7 +4718,8 @@ async function pdfConstruireDetaille(doc) {
   });
   y += 8; doc.setFontSize(14); doc.setTextColor(30); doc.text('Répartition par catégorie', 15, y); y += 8;
   const byCat = {};
-  _finTransactions.forEach(t => {
+  const virtCat = finExpandRecurrentes(_finDateDebut, _finDateFin);
+  _finTransactions.concat(virtCat).forEach(t => {
     if (!byCat[t.categorie]) byCat[t.categorie] = { rec: 0, dep: 0 };
     if (t.montant > 0) byCat[t.categorie].rec += Number(t.montant);
     else byCat[t.categorie].dep += Math.abs(Number(t.montant));
