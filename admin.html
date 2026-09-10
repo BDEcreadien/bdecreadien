@@ -4936,15 +4936,7 @@ async function pdfConstruireDetaille(doc) {
     y += 2;
   }
 
-  // Sous-total PRÉVISIONNEL UNIQUE (events non validés seuls)
-  y += 3;
-  doc.setDrawColor(180); doc.setLineWidth(0.3); doc.line(15, y, 195, y); y += 6;
-  doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
-  doc.text('PRÉVISIONNEL UNIQUE (events non validés)', 15, y);
-  doc.setTextColor(totalPrevEv >= 0 ? 34 : 220, totalPrevEv >= 0 ? 197 : 38, totalPrevEv >= 0 ? 94 : 38);
-  doc.text((totalPrevEv >= 0 ? '+' : '') + totalPrevEv.toFixed(2) + ' EUR', 195, y, { align: 'right' });
-  doc.setFont(undefined, 'normal');
-  y += 8;
+  y += 4;
 
   // Section récurrentes actives sur le mois suivant
   doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
