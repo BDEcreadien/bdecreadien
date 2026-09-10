@@ -3883,15 +3883,17 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   ).join('');
   const ptsRec = months.map((m, i) => `${xPos(i)},${yScale(m.recettes)}`).join(' ');
   const ptsDep = months.map((m, i) => `${xPos(i)},${yScale(m.depenses)}`).join(' ');
+  const ptsPrev = months.map((m, i) => `${xPos(i)},${yScale(Math.max(0, m.prev))}`).join(' ');
 
   const overlays = months.map((m, i) => {
     const cx = xPos(i);
     const solde = m.recettes - m.depenses;
     const label = `${monthFull[i]} ${yearOfIdx(i)}`;
-    const args = [i, m.recettes, m.depenses, solde, JSON.stringify(label)].join(',');
+    const args = [i, m.recettes, m.depenses, solde, m.prev, JSON.stringify(label)].join(',');
     return `<rect x="${cx - xStep / 2}" y="${padT}" width="${xStep}" height="${chartH}" fill="transparent"
       onmousemove="finCourbeShowTip(event, ${args})"
       onmouseleave="finCourbeHideTip()"></rect>
+      <circle cx="${cx}" cy="${yScale(Math.max(0, m.prev))}" r="3.5" fill="#9ca3af" stroke="white" stroke-width="1.5" pointer-events="none"/>
       <circle cx="${cx}" cy="${yScale(m.recettes)}" r="4" fill="#22c55e" stroke="white" stroke-width="1.5" pointer-events="none"/>
       <circle cx="${cx}" cy="${yScale(m.depenses)}" r="4" fill="#dc2626" stroke="white" stroke-width="1.5" pointer-events="none"/>`;
   }).join('');
@@ -3900,11 +3902,12 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     <svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:560px;height:auto;display:block;font-family:inherit;">
       ${grid}
       ${xTicks}
+      <polyline points="${ptsPrev}" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5,4" stroke-linejoin="round" stroke-linecap="round"/>
       <polyline points="${ptsRec}" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
       <polyline points="${ptsDep}" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
       ${overlays}
     </svg>
-    <div id="fin-courbe-tip" style="position:absolute;display:none;background:white;border:1px solid #ddd;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.14);font-size:12px;pointer-events:none;z-index:20;min-width:170px;"></div>`;
+    <div id="fin-courbe-tip" style="position:absolute;display:none;background:white;border:1px solid #ddd;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.14);font-size:12px;pointer-events:none;z-index:20;min-width:180px;"></div>`;
 }
 
 function finCourbeShowTip(evt, idx, rec, dep, solde, label) {
