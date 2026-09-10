@@ -3947,7 +3947,9 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   const xStep = chartW / 12;
   const xCenter = i => padL + i * xStep + xStep / 2;
   const yZero = padT + (yMaxPos / (yMaxPos + yMaxNeg)) * chartH;
-  const yScale = v => yZero - (v / (v >= 0 ? yMaxPos : yMaxNeg)) * (v >= 0 ? (yZero - padT) : (yZero - (padT + chartH)));
+  const yScale = v => v >= 0
+    ? yZero - (v / yMaxPos) * (yZero - padT)
+    : yZero + (Math.abs(v) / yMaxNeg) * ((padT + chartH) - yZero);
   const fmt = v => {
     const abs = Math.abs(v);
     return (v < 0 ? '-' : '') + (abs >= 1000 ? (abs / 1000).toFixed(abs % 1000 === 0 ? 0 : 1) + 'k' : String(abs));
