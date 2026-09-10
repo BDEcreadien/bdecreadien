@@ -4887,15 +4887,23 @@ async function pdfConstruireDetaille(doc) {
   }
   pdfFooter(doc);
 
-  // P4 — Prévisionnel (events non-validés + récurrentes futures)
-  doc.addPage(); pdfHeader(doc, 'Prévisionnel');
-  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
+  // P4 — Prévisionnel du mois SUIVANT (M+1)
+  doc.addPage(); pdfHeader(doc, 'Prévisionnel du mois suivant');
+  // Calcule mois+1 par rapport à _finDateDebut (mois de la période courante)
+  const nextStart = new Date(_finDateDebut.getFullYear(), _finDateDebut.getMonth() + 1, 1);
+  const nextEnd = new Date(nextStart.getFullYear(), nextStart.getMonth() + 1, 0);
+  const moisSuivantLabel = nextStart.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  doc.setFontSize(10); doc.setTextColor(110);
+  doc.text(`Mois de ${moisSuivantLabel} (du ${nextStart.toLocaleDateString('fr-FR')} au ${nextEnd.toLocaleDateString('fr-FR')})`, 15, 62);
   doc.setFontSize(9); doc.setTextColor(140);
-  doc.text('Ce qui est prévu mais pas encore validé : events en attente + dépenses/recettes récurrentes.', 15, 68);
+  doc.text('Ce qui est prévu pour le mois suivant : events en attente + dépenses/recettes récurrentes.', 15, 68);
   y = 78;
 
+  // Fetch events du mois suivant
+  const evsNext = await pdfChargerEvenements(nextStart, nextEnd);
+  const evsPrev = evsNext.filter(e => !e.valide);
+
   // Section events non-validés
-  const evsPrev = evs.filter(e => !e.valide);
   doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
   doc.text('Événements en attente de validation', 15, y);
   doc.setFont(undefined, 'normal');
@@ -4903,7 +4911,7 @@ async function pdfConstruireDetaille(doc) {
   doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 5;
   let totalPrevEv = 0;
   if (!evsPrev.length) {
-    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucun événement en attente.', 15, y); y += 8;
+    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucun événement en attente pour le mois suivant.', 15, y); y += 8;
   } else {
     doc.setFontSize(8); doc.setTextColor(120);
     doc.text('DATE', 15, y); doc.text('ÉVÉNEMENT', 40, y); doc.text('G.PRÉVU', 130, y, { align: 'right' }); doc.text('C.PRÉVU', 160, y, { align: 'right' }); doc.text('SOLDE PRÉVU', 195, y, { align: 'right' });
@@ -4927,61 +4935,62 @@ async function pdfConstruireDetaille(doc) {
     y += 2;
   }
 
-  // Section récurrentes actives (loyer, cotisation…)
-  y += 4;
+  // Sous-total PRÉVISIONNEL UNIQUE (events non validés seuls)
+  y += 3;
+  doc.setDrawColor(180); doc.setLineWidth(0.3); doc.line(15, y, 195, y); y += 6;
+  doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
+  doc.text('PRÉVISIONNEL UNIQUE (events non validés)', 15, y);
+  doc.setTextColor(totalPrevEv >= 0 ? 34 : 220, totalPrevEv >= 0 ? 197 : 38, totalPrevEv >= 0 ? 94 : 38);
+  doc.text((totalPrevEv >= 0 ? '+' : '') + totalPrevEv.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+  doc.setFont(undefined, 'normal');
+  y += 8;
+
+  // Section récurrentes actives sur le mois suivant
   doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
-  doc.text('Transactions récurrentes actives dans la période', 15, y);
+  doc.text('Transactions récurrentes du mois suivant', 15, y);
   doc.setFont(undefined, 'normal');
   y += 4;
   doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 5;
 
-  // Compte occurrences par récurrente dans la période
+  // Compte occurrences par récurrente dans le mois suivant
   let totalRecur = 0;
   const recurLignes = [];
   for (const rc of _finRecurrentes) {
     const start = new Date(rc.date_debut + 'T00:00:00');
     const end = rc.date_fin ? new Date(rc.date_fin + 'T00:00:00') : null;
-    const cur = new Date(_finDateDebut.getFullYear(), _finDateDebut.getMonth(), 1);
-    const stop = new Date(_finDateFin.getFullYear(), _finDateFin.getMonth(), 1);
-    let nb = 0;
-    while (cur <= stop) {
-      const occ = new Date(cur.getFullYear(), cur.getMonth(), rc.jour_du_mois);
-      if (occ >= start && (!end || occ <= end) && occ >= _finDateDebut && occ <= _finDateFin) nb++;
-      cur.setMonth(cur.getMonth() + 1);
-    }
-    if (nb === 0) continue;
-    const totalRc = nb * Number(rc.montant);
-    totalRecur += totalRc;
-    recurLignes.push({ rc, nb, totalRc });
+    const occ = new Date(nextStart.getFullYear(), nextStart.getMonth(), rc.jour_du_mois);
+    if (occ < start) continue;
+    if (end && occ > end) continue;
+    if (occ < nextStart || occ > nextEnd) continue;
+    const mMois = Number(rc.montant);
+    totalRecur += mMois;
+    recurLignes.push({ rc, occ, mMois });
   }
   if (!recurLignes.length) {
-    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucune récurrente active sur cette période.', 15, y); y += 8;
+    doc.setFontSize(9); doc.setTextColor(150); doc.text('Aucune récurrente active le mois suivant.', 15, y); y += 8;
   } else {
     doc.setFontSize(8); doc.setTextColor(120);
-    doc.text('LIBELLÉ', 15, y); doc.text('CATÉGORIE', 90, y); doc.text('MONTANT/MOIS', 140, y, { align: 'right' }); doc.text('×MOIS', 160, y, { align: 'right' }); doc.text('TOTAL', 195, y, { align: 'right' });
+    doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y); doc.text('CATÉGORIE', 120, y); doc.text('MONTANT', 195, y, { align: 'right' });
     doc.setDrawColor(220); doc.line(15, y + 1.5, 195, y + 1.5); y += 5;
-    recurLignes.forEach(({ rc, nb, totalRc }) => {
+    recurLignes.forEach(({ rc, occ, mMois }) => {
       if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
       const c = FIN_CATEGORIES[rc.categorie] || { label: rc.categorie };
       doc.setFontSize(9); doc.setTextColor(50);
-      doc.text((rc.libelle || '').slice(0, 45), 15, y);
-      doc.text(c.label, 90, y);
-      const mMois = Number(rc.montant);
+      doc.text(occ.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }), 15, y);
+      doc.text((rc.libelle || '').slice(0, 55), 40, y);
+      doc.text(c.label, 120, y);
       doc.setTextColor(mMois >= 0 ? 34 : 220, mMois >= 0 ? 197 : 38, mMois >= 0 ? 94 : 38);
-      doc.text((mMois >= 0 ? '+' : '') + mMois.toFixed(2), 140, y, { align: 'right' });
-      doc.setTextColor(80); doc.text(String(nb), 160, y, { align: 'right' });
-      doc.setTextColor(totalRc >= 0 ? 34 : 220, totalRc >= 0 ? 197 : 38, totalRc >= 0 ? 94 : 38);
-      doc.text((totalRc >= 0 ? '+' : '') + totalRc.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+      doc.text((mMois >= 0 ? '+' : '') + mMois.toFixed(2) + ' EUR', 195, y, { align: 'right' });
       y += 5;
     });
     y += 2;
   }
 
-  // Total prévisionnel combiné
+  // TOTAL PRÉVISIONNEL (unique + récurrentes)
   y += 4;
-  doc.setDrawColor(30); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 7;
+  doc.setDrawColor(30); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 7;
   doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
-  doc.text('TOTAL PRÉVISIONNEL (events non validés + récurrentes)', 15, y);
+  doc.text('PRÉVISIONNEL TOTAL (unique + récurrentes)', 15, y);
   const totalPrev = totalPrevEv + totalRecur;
   doc.setTextColor(totalPrev >= 0 ? 34 : 220, totalPrev >= 0 ? 197 : 38, totalPrev >= 0 ? 94 : 38);
   doc.text((totalPrev >= 0 ? '+' : '') + totalPrev.toFixed(2) + ' EUR', 195, y, { align: 'right' });
