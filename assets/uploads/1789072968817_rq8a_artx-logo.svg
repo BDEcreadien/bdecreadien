@@ -1,0 +1,30 @@
+<svg id="_45px" data-name="45px" xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150">
+  <defs>
+    <style>
+      .cls-a, .cls-b, .cls-c {
+        fill: none;
+        stroke: #000;
+        stroke-width: 10.227px;
+        fill-rule: evenodd;
+      }
+
+      .cls-b {
+        stroke-linecap: round;
+      }
+
+      .cls-c {
+        stroke-linejoin: bevel;
+      }
+    </style>
+  </defs>
+  <path id="X" class="cls-a" d="M82.178,145.569l62.414-62.413"/>
+  <path id="X-2" data-name="X" class="cls-a" d="M82.178,83.156l62.414,62.413"/>
+  <path id="T" class="cls-a" d="M36.269,83.156v62.413"/>
+  <path id="T-2" data-name="T" class="cls-a" d="M4.8,83.156H67.476"/>
+  <path id="R" class="cls-a" d="M123.7,5.776H82.178V68.453"/>
+  <path id="R-2" data-name="R" class="cls-a" d="M82.178,47.825H123.7"/>
+  <path id="R-3" data-name="R" class="cls-b" d="M123.638,47.867h0a20.986,20.986,0,1,0,0-41.972"/>
+  <path id="R-4" data-name="R" class="cls-a" d="M144.592,68.453L123.7,47.825"/>
+  <path id="A" class="cls-c" d="M67.476,68.453L36.269,5.775,4.8,68.453"/>
+  <path id="A-2" data-name="A" class="cls-a" d="M15.112,47.825h42.05"/>
+</svg>
