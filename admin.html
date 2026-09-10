@@ -4565,6 +4565,7 @@ async function finSaveEv() {
     budget_previsionnel: budgetVal ? parseFloat(budgetVal) : null,
     gains_reel: gainsReelVal ? parseFloat(gainsReelVal) : null,
     cout_reel: coutVal ? parseFloat(coutVal) : null,
+    finance_only: true,
   };
   const btn = document.getElementById('fin-btn-save-ev');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
