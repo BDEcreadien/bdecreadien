@@ -4078,7 +4078,10 @@ async function finLoadCourbeAnnuelle() {
     window.Auth.sb.from('evenements').select('date, gains_previsionnel, budget_previsionnel, gains_reel, cout_reel, valide').gte('date', dateDebut).lte('date', dateFin)
   ]);
   if (txRes.error) { showToast('Courbe : ' + txRes.error.message, 'error'); return; }
-  finRenderCourbeAnnuelle(txRes.data || [], evRes.data || [], yStart);
+  // Déplie les récurrentes sur l'année scolaire
+  const virtuels = finExpandRecurrentes(new Date(dateDebut + 'T00:00:00'), new Date(dateFin + 'T00:00:00'));
+  const txAll = (txRes.data || []).concat(virtuels.map(v => ({ date: v.date, montant: v.montant })));
+  finRenderCourbeAnnuelle(txAll, evRes.data || [], yStart);
 }
 
 function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
