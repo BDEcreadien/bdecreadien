@@ -3748,20 +3748,27 @@ async function finLoadTransactions() {
 function finRender() {
   const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
   const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-  const solde = recettes - depenses;
+  const soldePeriode = recettes - depenses;
+  const soldeTotal = _finSoldeInitial + soldePeriode;
 
   document.getElementById('fin-periode-label').textContent =
     `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
 
-  const tuile = (label, val, color) => `
-    <div style="background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+  const tuile = (label, val, color, extra = '') => `
+    <div style="background:white;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);position:relative;">
       <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${color};margin-bottom:6px;">${label}</div>
       <div style="font-size:28px;font-weight:800;color:var(--noir);line-height:1;">${val}</div>
+      ${extra}
     </div>`;
   document.getElementById('fin-tuiles').innerHTML =
     tuile('Recettes', recettes.toFixed(2) + ' €', '#22c55e') +
     tuile('Dépenses', depenses.toFixed(2) + ' €', '#dc2626') +
-    tuile('Solde période', solde.toFixed(2) + ' €', solde >= 0 ? 'var(--violet)' : '#dc2626') +
+    tuile(
+      'Solde total',
+      soldeTotal.toFixed(2) + ' €',
+      soldeTotal >= 0 ? 'var(--violet)' : '#dc2626',
+      `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">Initial : ${_finSoldeInitial.toFixed(2)} € <button onclick="finSaveSoldeInitial()" style="background:none;border:none;color:var(--violet);cursor:pointer;font-size:10px;text-decoration:underline;padding:0 0 0 4px;">modifier</button></div>`
+    ) +
     tuile('Nb transactions', String(_finTransactions.length), 'var(--gris-texte)');
 
   const list = document.getElementById('fin-liste');
