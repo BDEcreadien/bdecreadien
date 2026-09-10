@@ -4198,9 +4198,7 @@ async function finValiderEv(id) {
   const { error } = await window.Auth.sb.from('evenements').update({ valide: true }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Événement validé', 'success');
-  finLoadEvenements();
-  finLoadCourbeAnnuelle();
-  pdfRegenererPreview();
+  finRefreshAll();
 }
 
 async function finDevaliderEv(id) {
@@ -4208,9 +4206,7 @@ async function finDevaliderEv(id) {
   const { error } = await window.Auth.sb.from('evenements').update({ valide: false }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Validation retirée', 'success');
-  finLoadEvenements();
-  finLoadCourbeAnnuelle();
-  pdfRegenererPreview();
+  finRefreshAll();
 }
 
 function finTogglerFormEv() {
