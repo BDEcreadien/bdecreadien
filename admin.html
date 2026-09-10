@@ -3968,6 +3968,8 @@ async function initFinances() {
   document.getElementById('fin-form').classList.remove('visible');
   document.getElementById('tx-date').value = new Date().toISOString().slice(0, 10);
   await finLoadSoldeInitial();
+  await finLoadRecurrentes();
+  finRenderRecurrentes();
   finRemplirAnnees();
   if (!_finDateDebut) {
     finSetMoisCourant(new Date());
