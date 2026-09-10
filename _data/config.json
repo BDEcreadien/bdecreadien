@@ -62,6 +62,10 @@
     {
       "key": "communication",
       "label": "Pôle Communication"
+    },
+    {
+      "key": "partenariat",
+      "label": "Pôle Partenariat"
     }
   ]
 }
