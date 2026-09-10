@@ -4524,46 +4524,16 @@ async function pdfConstruireDetaille(doc) {
   }
   pdfFooter(doc);
 
-  // P4
-  doc.addPage(); pdfHeader(doc, 'Prévisionnel du mois suivant');
-  const monthAfter = new Date(_finDateFin); monthAfter.setDate(monthAfter.getDate() + 1);
-  const monthAfterEnd = new Date(monthAfter.getFullYear(), monthAfter.getMonth() + 1, 0);
-  doc.setFontSize(10); doc.setTextColor(110);
-  doc.text(`Du ${monthAfter.toLocaleDateString('fr-FR')} au ${monthAfterEnd.toLocaleDateString('fr-FR')}`, 15, 62);
-  const evsPrev = await pdfChargerEvenements(monthAfter, monthAfterEnd);
-  if (!evsPrev.length) {
-    doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucun événement planifié pour le mois suivant.', 105, 100, { align: 'center' });
-  } else {
-    y = 72; let totalPrev = 0;
-    evsPrev.forEach(ev => {
-      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
-      const d = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '(sans date)';
-      doc.setFontSize(11); doc.setTextColor(30); doc.text((ev.titre || '').slice(0, 60), 15, y);
-      doc.setFontSize(9); doc.setTextColor(120);
-      doc.text(d + (ev.lieu ? ' · ' + ev.lieu.slice(0, 30) : ''), 15, y + 5);
-      if (ev.budget_previsionnel != null) {
-        doc.setFontSize(11); doc.setTextColor(255,116,31);
-        doc.text(Number(ev.budget_previsionnel).toFixed(2) + ' EUR', 190, y, { align: 'right' });
-        totalPrev += Number(ev.budget_previsionnel);
-      } else {
-        doc.setFontSize(9); doc.setTextColor(150); doc.text('(pas de budget)', 190, y, { align: 'right' });
-      }
-      y += 12;
-    });
-    y += 5; doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
-    doc.setFontSize(12); doc.setTextColor(30); doc.text('Total prévisionnel estimé', 15, y);
-    doc.setTextColor(255,116,31); doc.text(totalPrev.toFixed(2) + ' EUR', 190, y, { align: 'right' });
-    y += 12;
-  }
-
-  // ===== Tableau récapitulatif final : Prévu vs Réel sur la période courante =====
-  if (!evsPrev.length) y = 110;
+  // P4 — Bilan prévu vs réel
+  doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel');
+  doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
+  y = 72;
   const ensureRoom = (min) => {
     if (y + min > 275) { pdfFooter(doc); doc.addPage(); pdfHeader(doc, 'Bilan prévu vs réel (suite)'); y = 45; }
   };
   ensureRoom(60);
   doc.setFontSize(13); doc.setTextColor(30);
-  doc.text('Bilan prévu vs réel — événements de la période', 15, y);
+  doc.text('Événements de la période — prévu vs réel', 15, y);
   y += 7;
   doc.setDrawColor(70); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 6;
 
