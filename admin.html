@@ -5064,7 +5064,7 @@ async function pdfChargerEvenements(debut, fin) {
   const debutStr = debut.toISOString().slice(0, 10);
   const finStr = fin.toISOString().slice(0, 10);
   try {
-    const { data } = await window.Auth.sb.from('evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
+    const { data } = await window.Auth.sb.from('evenements').select('*').eq('finance_only', true).gte('date', debutStr).lte('date', finStr).order('date');
     return data || [];
   } catch (_) { return []; }
 }
