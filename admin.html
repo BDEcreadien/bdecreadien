@@ -4736,20 +4736,24 @@ async function pdfConstruireDetaille(doc) {
   // P2
   doc.addPage(); pdfHeader(doc, 'Détail des transactions');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
-  if (!_finTransactions.length) {
+  const virtuelsPdf = finExpandRecurrentes(_finDateDebut, _finDateFin);
+  const allTxPdf = _finTransactions.concat(virtuelsPdf).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  if (!allTxPdf.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
   } else {
     y = 72;
     doc.setFontSize(9); doc.setTextColor(120);
     doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y); doc.text('CATÉGORIE', 130, y); doc.text('MONTANT', 195, y, { align: 'right' });
     doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
-    _finTransactions.forEach(tx => {
+    allTxPdf.forEach(tx => {
       if (y > 275) { doc.addPage(); pdfHeader(doc, 'Détail des transactions (suite)'); y = 45; }
       const c = FIN_CATEGORIES[tx.categorie] || { label: tx.categorie.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()) };
       const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       doc.setFontSize(9); doc.setTextColor(50);
       doc.text(dateStr, 15, y);
-      const libelleShort = tx.libelle.length > 45 ? tx.libelle.slice(0, 42) + '…' : tx.libelle;
+      const suffix = tx._virtuel ? ' [récur.]' : '';
+      const libelle = (tx.libelle || '') + suffix;
+      const libelleShort = libelle.length > 45 ? libelle.slice(0, 42) + '…' : libelle;
       doc.text(libelleShort, 40, y);
       doc.text(c.label, 130, y);
       const mNum = Number(tx.montant);
