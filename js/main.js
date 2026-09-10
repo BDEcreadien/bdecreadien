@@ -197,15 +197,9 @@ function partagerEvenement(titre, date) {
 // Charge les événements depuis Supabase (source principale) + JSON legacy (fallback)
 // Format uniforme : {id, titre, date, dateAffichage, horaire, lieu, adresse, description, prix, categorie, imageUrl, lien, typeLien, phare, inscrits}
 async function loadEvenementsMerged() {
-  const [sbEvents, jsonData] = await Promise.all([
-    loadEvenementsSb(),
-    fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] })),
-  ]);
-  const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
-  // Fusion : les événements Supabase en tête, JSON en fallback (dédupliqués par titre+date)
-  const sbKeys = new Set(sbEvents.map(e => `${(e.titre||'').toLowerCase()}|${e.date||''}`));
-  const jsonUnique = jsonEvents.filter(e => !sbKeys.has(`${(e.titre||'').toLowerCase()}|${e.date||''}`));
-  return [...sbEvents, ...jsonUnique];
+  // Source unique : la table Supabase gérée depuis /admin agenda.
+  // Le fallback statique /_data/evenements.json est désactivé pour éviter les doublons/fantômes.
+  return await loadEvenementsSb();
 }
 
 async function loadEvenementsSb() {
