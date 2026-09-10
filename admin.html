@@ -4142,16 +4142,17 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
 
   const steps = [50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000];
   const pickStep = target => { let s = 500; for (const v of steps) { if (target / v <= 5) { s = v; break; } s = v; } return s; };
-  const stepPos = pickStep(yPos);
-  const stepNeg = pickStep(yNeg);
-  const yMaxPos = Math.max(stepPos, Math.ceil(yPos / stepPos) * stepPos);
-  const yMaxNeg = Math.max(stepNeg, Math.ceil(yNeg / stepNeg) * stepNeg);
+  // Échelle symétrique : la ligne "0" est au centre pour comparer visuellement gains vs dépenses
+  const yAmp = Math.max(yPos, yNeg);
+  const step = pickStep(yAmp);
+  const yMaxPos = Math.max(step, Math.ceil(yAmp / step) * step);
+  const yMaxNeg = yMaxPos;
 
-  // Ticks (positif + négatif)
+  // Ticks symétriques
   const ticks = [];
-  for (let v = stepPos; v <= yMaxPos; v += stepPos) ticks.push(v);
+  for (let v = step; v <= yMaxPos; v += step) ticks.push(v);
   ticks.push(0);
-  for (let v = -stepNeg; v >= -yMaxNeg; v -= stepNeg) ticks.push(v);
+  for (let v = -step; v >= -yMaxNeg; v -= step) ticks.push(v);
 
   const w = 860, h = 380, padL = 62, padR = 24, padT = 20, padB = 44;
   const chartW = w - padL - padR;
