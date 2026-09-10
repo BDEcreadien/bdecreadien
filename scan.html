@@ -136,14 +136,28 @@
     <h1>Chargement…</h1>
   </div>
 
-  <!-- LOGIN — code court uniquement -->
+  <!-- LOGIN — pavé numérique 4 chiffres -->
   <div id="screen-login">
     <h1>Code de scan</h1>
-    <p class="sub">Entre le code BDE pour valider les passages. Il sera mémorisé 30 jours.</p>
-    <input type="text" id="pin-input" placeholder="••••••" autocomplete="off"
-      onkeydown="if(event.key==='Enter')doLogin()" autofocus>
-    <button class="btn" onclick="doLogin()">Accéder</button>
-    <p id="login-error" style="color:#FF741F;font-size:13px;margin-top:-4px;display:none;">Code incorrect, réessaie.</p>
+    <p class="sub">Entre le code BDE à 4 chiffres. Mémorisé jusqu'à ce soir.</p>
+    <div class="pin-display" id="pin-display">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    <div class="keypad" id="keypad">
+      <button class="key" onclick="keypadPress('1')">1</button>
+      <button class="key" onclick="keypadPress('2')">2</button>
+      <button class="key" onclick="keypadPress('3')">3</button>
+      <button class="key" onclick="keypadPress('4')">4</button>
+      <button class="key" onclick="keypadPress('5')">5</button>
+      <button class="key" onclick="keypadPress('6')">6</button>
+      <button class="key" onclick="keypadPress('7')">7</button>
+      <button class="key" onclick="keypadPress('8')">8</button>
+      <button class="key" onclick="keypadPress('9')">9</button>
+      <button class="key action" onclick="keypadClear()">C</button>
+      <button class="key" onclick="keypadPress('0')">0</button>
+      <button class="key action" onclick="keypadDelete()">⌫</button>
+    </div>
+    <p id="login-error" style="color:#FF741F;font-size:13px;margin-top:6px;display:none;">Code incorrect, réessaie.</p>
   </div>
 
   <!-- CARTE -->
