@@ -4115,10 +4115,13 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     const gP = Number(ev.gains_previsionnel) || 0;
     const cP = Number(ev.budget_previsionnel) || 0;
     months[idx].prev += (gP - cP);
-    // Events validés → leurs gains/coûts réels comptent dans les recettes/dépenses réelles
+    // Events validés → réels dans les bars ; non-validés → prévu dans des bars grises
     if (ev.valide) {
       months[idx].recettes += Number(ev.gains_reel) || 0;
       months[idx].depenses += Number(ev.cout_reel) || 0;
+    } else {
+      months[idx].prevRec = (months[idx].prevRec || 0) + gP;
+      months[idx].prevDep = (months[idx].prevDep || 0) + cP;
     }
   }
   const monthShort = ['sept.', 'oct.', 'nov.', 'déc.', 'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août'];
