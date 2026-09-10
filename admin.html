@@ -4979,14 +4979,28 @@ async function pdfConstruireDetaille(doc) {
     y += 2;
   }
 
-  // TOTAL PRÉVISIONNEL (unique + récurrentes)
+  // Sous-total PRÉVISIONNEL UNIQUE (events non validés + récurrentes du mois suivant)
+  y += 4;
+  doc.setDrawColor(180); doc.setLineWidth(0.3); doc.line(15, y, 195, y); y += 7;
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(60);
+  doc.text(`PRÉVISIONNEL UNIQUE (${moisSuivantLabel})`, 15, y);
+  const prevUnique = totalPrevEv + totalRecur;
+  doc.setTextColor(prevUnique >= 0 ? 34 : 220, prevUnique >= 0 ? 197 : 38, prevUnique >= 0 ? 94 : 38);
+  doc.text((prevUnique >= 0 ? '+' : '') + prevUnique.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+  doc.setFont(undefined, 'normal');
+  y += 8;
+
+  // PRÉVISIONNEL TOTAL = solde du compte actuel + prévisionnel unique
+  const soldeActuel = _finSoldeInitial + soldePeriode;
+  const prevTotal = soldeActuel + prevUnique;
+  doc.setFontSize(9); doc.setTextColor(120);
+  doc.text(`Solde actuel du compte : ${soldeActuel.toFixed(2)} EUR (initial ${_finSoldeInitial.toFixed(2)} + période ${soldePeriode >= 0 ? '+' : ''}${soldePeriode.toFixed(2)})`, 15, y);
   y += 4;
   doc.setDrawColor(30); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 7;
-  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
-  doc.text('PRÉVISIONNEL TOTAL (unique + récurrentes)', 15, y);
-  const totalPrev = totalPrevEv + totalRecur;
-  doc.setTextColor(totalPrev >= 0 ? 34 : 220, totalPrev >= 0 ? 197 : 38, totalPrev >= 0 ? 94 : 38);
-  doc.text((totalPrev >= 0 ? '+' : '') + totalPrev.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+  doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+  doc.text('PRÉVISIONNEL TOTAL (solde projeté fin de mois suivant)', 15, y);
+  doc.setTextColor(prevTotal >= 0 ? 34 : 220, prevTotal >= 0 ? 197 : 38, prevTotal >= 0 ? 94 : 38);
+  doc.text((prevTotal >= 0 ? '+' : '') + prevTotal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
   doc.setFont(undefined, 'normal');
   pdfFooter(doc);
 
