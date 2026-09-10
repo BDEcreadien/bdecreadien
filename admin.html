@@ -534,13 +534,40 @@
         </div>
         <div class="form-row"><label>Titre</label><input type="text" id="ev-titre" placeholder="ex: Soirée Halloween Six Brotteaux" maxlength="200"></div>
         <div class="form-row"><label>Lieu (optionnel)</label><input type="text" id="ev-lieu" placeholder="ex: Ninkasi Cordeliers" maxlength="200"></div>
+
+        <h4 style="margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);font-weight:700;">Prévisionnel</h4>
         <div class="form-grid">
           <div class="form-row">
-            <label>Budget prévisionnel (€) <span id="ev-hint-moy" style="font-size:11px;color:var(--gris-texte);font-weight:400;"></span></label>
-            <input type="number" id="ev-budget" step="0.01" min="0" placeholder="ex: 280">
+            <label>Gains prévus (€)</label>
+            <input type="number" id="ev-gains-prev" step="0.01" min="0" placeholder="ex: 100" oninput="finEvUpdateSoldes()">
           </div>
-          <div class="form-row"><label>Coût réel (€) — après l'événement</label><input type="number" id="ev-cout-reel" step="0.01" min="0" placeholder="à remplir plus tard"></div>
+          <div class="form-row">
+            <label>Coûts prévus (€) <span id="ev-hint-moy" style="font-size:11px;color:var(--gris-texte);font-weight:400;"></span></label>
+            <input type="number" id="ev-budget" step="0.01" min="0" placeholder="ex: 15" oninput="finEvUpdateSoldes()">
+          </div>
         </div>
+        <div style="font-size:12px;color:var(--gris-texte);margin:-6px 0 12px;">Solde prévu : <strong id="ev-solde-prev" style="color:var(--violet);">0,00 €</strong></div>
+
+        <h4 style="margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);font-weight:700;">Réel (après l'événement)</h4>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Gains réels (€)</label>
+            <input type="number" id="ev-gains-reel" step="0.01" min="0" placeholder="à remplir après" oninput="finEvUpdateSoldes()">
+          </div>
+          <div class="form-row">
+            <label>Coûts réels (€)</label>
+            <input type="number" id="ev-cout-reel" step="0.01" min="0" placeholder="à remplir après" oninput="finEvUpdateSoldes()">
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--gris-texte);margin:-6px 0 12px;">Solde réel : <strong id="ev-solde-reel" style="color:var(--noir);">0,00 €</strong></div>
+
+        <div class="form-row" style="display:flex;align-items:center;gap:10px;">
+          <label style="margin:0;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;color:var(--noir);">
+            <input type="checkbox" id="ev-valide" style="width:18px;height:18px;cursor:pointer;">
+            Valider les gains finaux (bloque en réel)
+          </label>
+        </div>
+
         <div class="form-row"><label>Description (optionnel)</label><textarea id="ev-desc" rows="2" placeholder="Détails, notes…" maxlength="500"></textarea></div>
         <div class="form-actions">
           <button class="btn-cancel" onclick="finTogglerFormEv()">Annuler</button>
