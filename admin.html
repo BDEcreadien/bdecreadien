@@ -4341,15 +4341,18 @@ function pdfTelecharger() {
 function pdfConstruireResume(doc) {
   const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
   const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-  const solde = recettes - depenses;
+  const soldePeriode = recettes - depenses;
+  const soldeTotal = _finSoldeInitial + soldePeriode;
   const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
   pdfHeader(doc, 'Résumé financier');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   doc.setFontSize(14); doc.setTextColor(30); doc.setFont(undefined, 'bold'); doc.text('Récapitulatif', 15, 72); doc.setFont(undefined, 'normal');
   const rows = [
+    ['Solde initial (report)', _finSoldeInitial.toFixed(2) + ' EUR', 100, 100, 100],
     ['Recettes', recettes.toFixed(2) + ' EUR', 34, 197, 94],
     ['Dépenses', depenses.toFixed(2) + ' EUR', 220, 38, 38],
-    ['Solde de la période', solde.toFixed(2) + ' EUR', solde >= 0 ? 70 : 220, solde >= 0 ? 58 : 38, solde >= 0 ? 144 : 38],
+    ['Solde de la période', soldePeriode.toFixed(2) + ' EUR', soldePeriode >= 0 ? 70 : 220, soldePeriode >= 0 ? 58 : 38, soldePeriode >= 0 ? 144 : 38],
+    ['Solde total', soldeTotal.toFixed(2) + ' EUR', soldeTotal >= 0 ? 70 : 220, soldeTotal >= 0 ? 58 : 38, soldeTotal >= 0 ? 144 : 38],
     ['Nombre de transactions', String(_finTransactions.length), 100, 100, 100],
   ];
   let y = 90;
