@@ -959,8 +959,7 @@
       const since = currentProfil.last_planning_view || '1970-01-01';
       const { count } = await Auth.sb.from('evenements')
         .select('id', { count: 'exact', head: true })
-        .or('finance_only.is.null,finance_only.eq.false')
-        .gt('created_at', since);
+                .gt('created_at', since);
       const badge = document.getElementById('cnt-planning');
       if (badge) {
         if (count && count > 0) { badge.textContent = String(count); badge.style.display = ''; }
