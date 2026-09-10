@@ -4083,9 +4083,13 @@ function finEditEv(id) {
   document.getElementById('ev-titre').value = ev.titre || '';
   document.getElementById('ev-lieu').value = ev.lieu || '';
   document.getElementById('ev-categorie').value = ev.categorie_budget || 'soiree';
+  document.getElementById('ev-gains-prev').value = ev.gains_previsionnel != null ? ev.gains_previsionnel : '';
   document.getElementById('ev-budget').value = ev.budget_previsionnel != null ? ev.budget_previsionnel : '';
+  document.getElementById('ev-gains-reel').value = ev.gains_reel != null ? ev.gains_reel : '';
   document.getElementById('ev-cout-reel').value = ev.cout_reel != null ? ev.cout_reel : '';
+  document.getElementById('ev-valide').checked = !!ev.valide;
   document.getElementById('ev-desc').value = ev.description || '';
+  finEvUpdateSoldes();
   document.getElementById('fin-form-ev').classList.add('visible');
   document.getElementById('fin-form-ev').scrollIntoView({ behavior: 'smooth' });
   finAutoEstimation();
@@ -4096,13 +4100,18 @@ async function finSaveEv() {
   const date = document.getElementById('ev-date').value || null;
   const lieu = document.getElementById('ev-lieu').value.trim() || null;
   const categorie_budget = document.getElementById('ev-categorie').value;
+  const gainsPrevVal = document.getElementById('ev-gains-prev').value;
   const budgetVal = document.getElementById('ev-budget').value;
+  const gainsReelVal = document.getElementById('ev-gains-reel').value;
   const coutVal = document.getElementById('ev-cout-reel').value;
+  const valide = document.getElementById('ev-valide').checked;
   const description = document.getElementById('ev-desc').value.trim() || null;
   if (!titre) { showToast('Titre requis', 'error'); return; }
   const payload = {
-    titre, date, lieu, categorie_budget, description,
+    titre, date, lieu, categorie_budget, description, valide,
+    gains_previsionnel: gainsPrevVal ? parseFloat(gainsPrevVal) : null,
     budget_previsionnel: budgetVal ? parseFloat(budgetVal) : null,
+    gains_reel: gainsReelVal ? parseFloat(gainsReelVal) : null,
     cout_reel: coutVal ? parseFloat(coutVal) : null,
   };
   const btn = document.getElementById('fin-btn-save-ev');
