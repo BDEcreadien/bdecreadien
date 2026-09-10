@@ -4468,7 +4468,7 @@ async function finValiderEv(id) {
   if (ev.gains_reel == null && ev.cout_reel == null) {
     if (!confirm('Aucun gain ni coût réel renseigné. Valider quand même ? (utilise 0)')) return;
   }
-  const { error } = await window.Auth.sb.from('evenements').update({ valide: true }).eq('id', id);
+  const { error } = await window.Auth.sb.from('finance_evenements').update({ valide: true }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Événement validé', 'success');
   finRefreshAll();
@@ -4476,7 +4476,7 @@ async function finValiderEv(id) {
 
 async function finDevaliderEv(id) {
   if (!confirm('Retirer la validation de cet événement ?')) return;
-  const { error } = await window.Auth.sb.from('evenements').update({ valide: false }).eq('id', id);
+  const { error } = await window.Auth.sb.from('finance_evenements').update({ valide: false }).eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Validation retirée', 'success');
   finRefreshAll();
