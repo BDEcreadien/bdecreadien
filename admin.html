@@ -3822,25 +3822,36 @@ async function finLoadCourbeAnnuelle() {
   const yStart = parseInt(sel.value, 10);
   const dateDebut = `${yStart}-09-01`;
   const dateFin = `${yStart + 1}-08-31`;
-  const { data, error } = await window.Auth.sb
-    .from('transactions')
-    .select('date, montant')
-    .gte('date', dateDebut)
-    .lte('date', dateFin);
-  if (error) { showToast('Courbe : ' + error.message, 'error'); return; }
-  finRenderCourbeAnnuelle(data || [], yStart);
+  const [txRes, evRes] = await Promise.all([
+    window.Auth.sb.from('transactions').select('date, montant').gte('date', dateDebut).lte('date', dateFin),
+    window.Auth.sb.from('evenements').select('date, gains_previsionnel, budget_previsionnel, gains_reel, cout_reel, valide').gte('date', dateDebut).lte('date', dateFin)
+  ]);
+  if (txRes.error) { showToast('Courbe : ' + txRes.error.message, 'error'); return; }
+  finRenderCourbeAnnuelle(txRes.data || [], evRes.data || [], yStart);
 }
 
-function finRenderCourbeAnnuelle(transactions, yStart) {
-  const months = Array.from({ length: 12 }, () => ({ recettes: 0, depenses: 0 }));
-  for (const t of transactions) {
-    const d = new Date(t.date + 'T00:00:00');
+function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
+  const months = Array.from({ length: 12 }, () => ({ recettes: 0, depenses: 0, prev: 0 }));
+  const idxOfDate = dstr => {
+    const d = new Date(dstr + 'T00:00:00');
     const mn = d.getMonth(), yr = d.getFullYear();
     const idx = yr === yStart ? mn - 8 : mn + 4;
-    if (idx < 0 || idx > 11) continue;
+    return (idx < 0 || idx > 11) ? -1 : idx;
+  };
+  for (const t of transactions) {
+    const idx = idxOfDate(t.date);
+    if (idx < 0) continue;
     const m = Number(t.montant) || 0;
     if (m >= 0) months[idx].recettes += m;
     else months[idx].depenses += -m;
+  }
+  for (const ev of evenements) {
+    if (!ev.date) continue;
+    const idx = idxOfDate(ev.date);
+    if (idx < 0) continue;
+    const g = Number(ev.gains_previsionnel) || 0;
+    const c = Number(ev.budget_previsionnel) || 0;
+    months[idx].prev += (g - c);
   }
   const monthShort = ['S', 'O', 'N', 'D', 'J', 'F', 'M', 'A', 'M', 'J', 'J', 'A'];
   const monthFull = ['Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août'];
