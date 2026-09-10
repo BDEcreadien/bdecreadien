@@ -4084,7 +4084,7 @@ async function finLoadCourbeAnnuelle() {
   const dateFin = `${yStart + 1}-08-31`;
   const [txRes, evRes] = await Promise.all([
     window.Auth.sb.from('transactions').select('date, montant').gte('date', dateDebut).lte('date', dateFin),
-    window.Auth.sb.from('evenements').select('date, gains_previsionnel, budget_previsionnel, gains_reel, cout_reel, valide').eq('finance_only', true).gte('date', dateDebut).lte('date', dateFin)
+    window.Auth.sb.from('finance_evenements').select('date, gains_previsionnel, budget_previsionnel, gains_reel, cout_reel, valide').gte('date', dateDebut).lte('date', dateFin)
   ]);
   if (txRes.error) { showToast('Courbe : ' + txRes.error.message, 'error'); return; }
   // Déplie les récurrentes sur l'année scolaire
