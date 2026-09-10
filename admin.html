@@ -4181,22 +4181,23 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
 
   // Bars : recettes (vert au-dessus de 0) et dépenses (rouge en dessous)
   const barW = Math.max(4, Math.min(18, xStep * 0.28));
+  const jsStr = s => `'${String(s).replace(/'/g, "\\'")}'`;
   const bars = months.map((m, i) => {
     const cx = xCenter(i);
-    const label = `${monthFull[i]} ${yearOfIdx(i)}`;
+    const lbl = jsStr(`${monthFull[i]} ${yearOfIdx(i)}`);
     let out = '';
     if (m.recettes > 0) {
       const y = yScale(m.recettes);
       out += `<rect x="${cx - barW - 1}" y="${y}" width="${barW}" height="${yZero - y}" fill="#22c55e" rx="2"
         style="cursor:pointer;"
-        onmousemove="finBarShowTip(event, 'rec', ${m.recettes}, ${JSON.stringify(label)})"
+        onmousemove="finBarShowTip(event, 'rec', ${m.recettes}, ${lbl})"
         onmouseleave="finBarHideTip()"/>`;
     }
     if (m.depenses > 0) {
       const y = yScale(-m.depenses);
       out += `<rect x="${cx + 1}" y="${yZero}" width="${barW}" height="${y - yZero}" fill="#dc2626" rx="2"
         style="cursor:pointer;"
-        onmousemove="finBarShowTip(event, 'dep', ${m.depenses}, ${JSON.stringify(label)})"
+        onmousemove="finBarShowTip(event, 'dep', ${m.depenses}, ${lbl})"
         onmouseleave="finBarHideTip()"/>`;
     }
     return out;
