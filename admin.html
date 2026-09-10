@@ -4776,11 +4776,22 @@ async function pdfConstruireDetaille(doc) {
     });
   pdfFooter(doc);
 
-  // P2
+  // P2 — Détail des transactions (aperçu global)
   doc.addPage(); pdfHeader(doc, 'Détail des transactions');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   const virtuelsPdf = finExpandRecurrentes(_finDateDebut, _finDateFin);
-  const allTxPdf = _finTransactions.concat(virtuelsPdf).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  // Ajoute events validés comme pseudo-transactions (2 lignes : gains + coût)
+  const evTxPdf = [];
+  for (const ev of _finEvenements) {
+    if (!ev.valide || !ev.date) continue;
+    const d = new Date(ev.date + 'T00:00:00');
+    if (d < _finDateDebut || d > _finDateFin) continue;
+    const gR = Number(ev.gains_reel) || 0;
+    const cR = Number(ev.cout_reel) || 0;
+    if (gR > 0) evTxPdf.push({ date: ev.date, libelle: `${ev.titre} (gains event)`, categorie: ev.categorie_budget || 'autre', montant: gR, _fromEvent: true });
+    if (cR > 0) evTxPdf.push({ date: ev.date, libelle: `${ev.titre} (coût event)`, categorie: ev.categorie_budget || 'autre', montant: -cR, _fromEvent: true });
+  }
+  const allTxPdf = _finTransactions.concat(virtuelsPdf).concat(evTxPdf).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
   if (!allTxPdf.length) {
     doc.setFontSize(12); doc.setTextColor(150); doc.text('Aucune transaction sur cette période.', 105, 100, { align: 'center' });
   } else {
@@ -4788,22 +4799,46 @@ async function pdfConstruireDetaille(doc) {
     doc.setFontSize(9); doc.setTextColor(120);
     doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y); doc.text('CATÉGORIE', 130, y); doc.text('MONTANT', 195, y, { align: 'right' });
     doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
+    let netP2 = 0;
     allTxPdf.forEach(tx => {
-      if (y > 275) { doc.addPage(); pdfHeader(doc, 'Détail des transactions (suite)'); y = 45; }
-      const c = FIN_CATEGORIES[tx.categorie] || { label: tx.categorie.replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()) };
+      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Détail des transactions (suite)'); y = 45; }
+      const c = FIN_CATEGORIES[tx.categorie] || { label: (tx.categorie || 'autre').replace(/_/g, ' ').replace(/^./, s => s.toUpperCase()) };
       const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       doc.setFontSize(9); doc.setTextColor(50);
       doc.text(dateStr, 15, y);
-      const suffix = tx._virtuel ? ' [récur.]' : '';
+      let suffix = '';
+      if (tx._virtuel) suffix = ' [récur.]';
+      else if (tx._fromEvent) suffix = ' [event]';
       const libelle = (tx.libelle || '') + suffix;
       const libelleShort = libelle.length > 45 ? libelle.slice(0, 42) + '…' : libelle;
       doc.text(libelleShort, 40, y);
       doc.text(c.label, 130, y);
       const mNum = Number(tx.montant);
+      netP2 += mNum;
       doc.setTextColor(mNum >= 0 ? 34 : 220, mNum >= 0 ? 197 : 38, mNum >= 0 ? 94 : 38);
       doc.text((mNum >= 0 ? '+' : '') + mNum.toFixed(2) + ' EUR', 195, y, { align: 'right' });
       y += 6;
     });
+    // Ligne SOLDE FINAL
+    if (y > 260) { doc.addPage(); pdfHeader(doc, 'Solde final'); y = 45; }
+    y += 3;
+    doc.setDrawColor(60); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 8;
+    doc.setFontSize(9); doc.setTextColor(100);
+    doc.text('Solde initial (report)', 15, y);
+    doc.text(_finSoldeInitial.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+    y += 6;
+    doc.setTextColor(100);
+    doc.text('Somme des mouvements période', 15, y);
+    doc.setTextColor(netP2 >= 0 ? 34 : 220, netP2 >= 0 ? 197 : 38, netP2 >= 0 ? 94 : 38);
+    doc.text((netP2 >= 0 ? '+' : '') + netP2.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+    y += 6;
+    doc.setDrawColor(30); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 8;
+    const soldeFinalP2 = _finSoldeInitial + netP2;
+    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+    doc.text('SOLDE FINAL', 15, y);
+    doc.setTextColor(soldeFinalP2 >= 0 ? 34 : 220, soldeFinalP2 >= 0 ? 197 : 38, soldeFinalP2 >= 0 ? 94 : 38);
+    doc.text((soldeFinalP2 >= 0 ? '+' : '') + soldeFinalP2.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+    doc.setFont(undefined, 'normal');
   }
   pdfFooter(doc);
 
