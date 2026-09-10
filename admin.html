@@ -3796,8 +3796,7 @@ async function finLoadTransactions() {
 }
 
 function finRender() {
-  const recettes = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
-  const depenses = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  const { rec: recettes, dep: depenses } = finPeriodeRecDep();
   const soldePeriode = recettes - depenses;
   const soldeTotal = _finSoldeInitial + soldePeriode;
 
