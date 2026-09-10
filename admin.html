@@ -627,6 +627,58 @@
         </div>
       </div>
 
+      <!-- TRANSACTIONS RÉCURRENTES -->
+      <div class="form-card visible" style="margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+          <h3 style="margin:0;">Transactions récurrentes <span style="font-size:12px;color:var(--gris-texte);font-weight:400;">(mensuelles)</span></h3>
+          <button class="btn-save" onclick="finRecurTogglerForm()" id="fin-btn-nouveau-recur" style="background:#2563eb;">+ Nouvelle récurrente</button>
+        </div>
+        <p style="font-size:12px;color:var(--gris-texte);margin:0 0 10px;">Créée une fois, comptée automatiquement chaque mois de la période dans les tuiles, le graphique et le PDF.</p>
+
+        <div id="fin-form-recur" class="form-card" style="margin-bottom:1rem;">
+          <h3>Nouvelle transaction récurrente</h3>
+          <div class="form-row"><label>Libellé</label><input type="text" id="rc-libelle" placeholder="ex: Cotisation Ninkasi mensuelle" maxlength="200"></div>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Catégorie</label>
+              <select id="rc-categorie">
+                <option value="soiree">🎉 Soirée</option>
+                <option value="repas">🍽️ Repas</option>
+                <option value="sortie">🚌 Sortie</option>
+                <option value="cotisation">💳 Cotisation</option>
+                <option value="sponsoring">🤝 Sponsoring</option>
+                <option value="virement_sumup">💰 Virement SumUp</option>
+                <option value="depense_course">🛒 Dépense course</option>
+                <option value="materiel">📦 Matériel</option>
+                <option value="autre">✨ Autre</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Type</label>
+              <select id="rc-type">
+                <option value="depense">Dépense (-)</option>
+                <option value="recette">Recette (+)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-row"><label>Montant (€)</label><input type="number" id="rc-montant" step="0.01" min="0" placeholder="ex: 50"></div>
+            <div class="form-row"><label>Jour du mois (1–28)</label><input type="number" id="rc-jour" min="1" max="28" value="1"></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-row"><label>Date de début</label><input type="date" id="rc-date-debut"></div>
+            <div class="form-row"><label>Date de fin (optionnel = indéfini)</label><input type="date" id="rc-date-fin"></div>
+          </div>
+          <div class="form-row"><label>Notes (optionnel)</label><textarea id="rc-notes" rows="2" maxlength="500"></textarea></div>
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="finRecurTogglerForm()">Annuler</button>
+            <button class="btn-save" onclick="finRecurSave()" id="fin-btn-save-recur">Enregistrer</button>
+          </div>
+        </div>
+
+        <div id="fin-liste-recur"></div>
+      </div>
+
       <!-- APERÇU PDF EN DIRECT -->
       <div class="form-card visible" style="margin-top:1.5rem;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
