@@ -4191,6 +4191,23 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     const cx = xCenter(i);
     const lbl = jsStr(`${monthFull[i]} ${yearOfIdx(i)}`);
     let out = '';
+    // Prévu (events non validés) : contour hachuré derrière la barre réelle
+    const prevRec = m.prevRec || 0;
+    const prevDep = m.prevDep || 0;
+    if (prevRec > 0) {
+      const y = yScale(prevRec);
+      out += `<rect x="${cx - barW - 1}" y="${y}" width="${barW}" height="${yZero - y}" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="3,2" rx="2"
+        style="cursor:pointer;"
+        onmousemove="finBarShowTip(event, 'prevRec', ${prevRec}, ${lbl})"
+        onmouseleave="finBarHideTip()"/>`;
+    }
+    if (prevDep > 0) {
+      const y = yScale(-prevDep);
+      out += `<rect x="${cx + 1}" y="${yZero}" width="${barW}" height="${y - yZero}" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2" rx="2"
+        style="cursor:pointer;"
+        onmousemove="finBarShowTip(event, 'prevDep', ${prevDep}, ${lbl})"
+        onmouseleave="finBarHideTip()"/>`;
+    }
     if (m.recettes > 0) {
       const y = yScale(m.recettes);
       out += `<rect x="${cx - barW - 1}" y="${y}" width="${barW}" height="${yZero - y}" fill="#22c55e" rx="2"
