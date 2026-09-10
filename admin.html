@@ -4312,8 +4312,7 @@ async function finSaveEv() {
   showToast(_finEvEditingId ? 'Événement modifié' : 'Événement ajouté', 'success');
   document.getElementById('fin-form-ev').classList.remove('visible');
   _finEvEditingId = null;
-  finLoadEvenements();
-  pdfRegenererPreview();
+  finRefreshAll();
 }
 
 async function finDeleteEv(id) {
@@ -4321,8 +4320,7 @@ async function finDeleteEv(id) {
   const { error } = await window.Auth.sb.from('evenements').delete().eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Événement supprimé', 'success');
-  finLoadEvenements();
-  pdfRegenererPreview();
+  finRefreshAll();
 }
 
 // ============================================================
