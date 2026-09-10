@@ -4407,7 +4407,7 @@ async function finLoadEvenements() {
   const debutStr = _finDateDebut.toISOString().slice(0, 10);
   const finStr = monthAfterEnd.toISOString().slice(0, 10);
   const { data, error } = await window.Auth.sb
-    .from('evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
+    .from('evenements').select('*').eq('finance_only', true).gte('date', debutStr).lte('date', finStr).order('date');
   if (error) { console.warn(error); _finEvenements = []; }
   else _finEvenements = data || [];
   finRenderEvenements();
