@@ -3673,8 +3673,7 @@ async function finSaveSoldeInitial() {
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   _finSoldeInitial = val;
   showToast('Solde initial mis à jour', 'success');
-  finRender();
-  finLoadCourbeAnnuelle();
+  finRefreshAll();
 }
 
 function finRemplirAnnees() {
