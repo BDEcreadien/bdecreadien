@@ -4039,12 +4039,26 @@ function finTogglerFormEv() {
   document.getElementById('ev-titre').value = '';
   document.getElementById('ev-lieu').value = '';
   document.getElementById('ev-categorie').value = 'soiree';
+  document.getElementById('ev-gains-prev').value = '';
   document.getElementById('ev-budget').value = '';
+  document.getElementById('ev-gains-reel').value = '';
   document.getElementById('ev-cout-reel').value = '';
+  document.getElementById('ev-valide').checked = false;
   document.getElementById('ev-desc').value = '';
+  finEvUpdateSoldes();
   f.classList.add('visible');
   finAutoEstimation();
   document.getElementById('ev-categorie').onchange = finAutoEstimation;
+}
+
+function finEvUpdateSoldes() {
+  const num = id => parseFloat(document.getElementById(id).value) || 0;
+  const sPrev = num('ev-gains-prev') - num('ev-budget');
+  const sReel = num('ev-gains-reel') - num('ev-cout-reel');
+  const elP = document.getElementById('ev-solde-prev');
+  const elR = document.getElementById('ev-solde-reel');
+  if (elP) { elP.textContent = (sPrev >= 0 ? '+' : '') + sPrev.toFixed(2) + ' €'; elP.style.color = sPrev >= 0 ? '#22c55e' : '#dc2626'; }
+  if (elR) { elR.textContent = (sReel >= 0 ? '+' : '') + sReel.toFixed(2) + ' €'; elR.style.color = sReel >= 0 ? '#22c55e' : '#dc2626'; }
 }
 
 async function finAutoEstimation() {
