@@ -4586,7 +4586,7 @@ async function finSaveEv() {
 
 async function finDeleteEv(id) {
   if (!confirm('Supprimer cet événement ?')) return;
-  const { error } = await window.Auth.sb.from('evenements').delete().eq('id', id);
+  const { error } = await window.Auth.sb.from('finance_evenements').delete().eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast('Événement supprimé', 'success');
   finRefreshAll();
