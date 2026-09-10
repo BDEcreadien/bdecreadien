@@ -3623,6 +3623,22 @@ let _finTransactions = [];
 let _finEditingId = null;
 let _finSoldeInitial = 0;
 
+// Recettes/Dépenses de la période courante = transactions + événements validés (gains/coûts réels)
+function finPeriodeRecDep() {
+  let rec = _finTransactions.filter(t => t.montant > 0).reduce((s, t) => s + Number(t.montant), 0);
+  let dep = _finTransactions.filter(t => t.montant < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+  if (_finDateDebut && _finDateFin) {
+    for (const ev of _finEvenements) {
+      if (!ev.valide || !ev.date) continue;
+      const d = new Date(ev.date + 'T00:00:00');
+      if (d < _finDateDebut || d > _finDateFin) continue;
+      rec += Number(ev.gains_reel) || 0;
+      dep += Number(ev.cout_reel) || 0;
+    }
+  }
+  return { rec, dep };
+}
+
 // Rafraîchit en parallèle tous les éléments financiers (tuiles, chart, events, PDF)
 let _finRefreshBusy = false;
 async function finRefreshAll() {
