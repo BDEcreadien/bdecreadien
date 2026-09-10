@@ -3620,6 +3620,28 @@ const FIN_CATEGORIES = {
 let _finDateDebut = null, _finDateFin = null;
 let _finTransactions = [];
 let _finEditingId = null;
+let _finSoldeInitial = 0;
+
+async function finLoadSoldeInitial() {
+  try {
+    const { data } = await window.Auth.sb.from('bde_config').select('value').eq('id', 'solde_initial').maybeSingle();
+    _finSoldeInitial = data && data.value != null ? parseFloat(data.value) || 0 : 0;
+  } catch (_) { _finSoldeInitial = 0; }
+}
+
+async function finSaveSoldeInitial() {
+  const cur = _finSoldeInitial.toFixed(2).replace('.', ',');
+  const input = prompt('Solde initial (report antérieur) en € :', cur);
+  if (input == null) return;
+  const val = parseFloat(String(input).replace(',', '.'));
+  if (isNaN(val)) { showToast('Valeur invalide', 'error'); return; }
+  const { error } = await window.Auth.sb.from('bde_config').upsert({ id: 'solde_initial', value: String(val) });
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  _finSoldeInitial = val;
+  showToast('Solde initial mis à jour', 'success');
+  finRender();
+  finLoadCourbeAnnuelle();
+}
 
 function finRemplirAnnees() {
   const sel = document.getElementById('fin-annee');
