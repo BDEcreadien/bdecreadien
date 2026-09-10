@@ -203,14 +203,25 @@
   const carteId = params.get('id');
   const uid = params.get('uid');
 
-  // PIN stocké en cookie 30 jours + localStorage
+  // PIN mémorisé jusqu'à ce soir 23h59 (fin de journée)
+  function endOfDay() {
+    const d = new Date(); d.setHours(23, 59, 59, 999);
+    return d;
+  }
   function savePin(p) {
-    try { localStorage.setItem('bde_scan_pin', p); } catch(e) {}
-    const exp = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-    document.cookie = `bde_scan_pin=${encodeURIComponent(p)};expires=${exp};path=/;Secure;SameSite=Lax`;
+    const eod = endOfDay();
+    try { localStorage.setItem('bde_scan_pin', JSON.stringify({ p, exp: eod.getTime() })); } catch(e) {}
+    document.cookie = `bde_scan_pin=${encodeURIComponent(p)};expires=${eod.toUTCString()};path=/;Secure;SameSite=Lax`;
   }
   function readPin() {
-    try { const ls = localStorage.getItem('bde_scan_pin'); if (ls) return ls; } catch(e) {}
+    try {
+      const raw = localStorage.getItem('bde_scan_pin');
+      if (raw) {
+        const { p, exp } = JSON.parse(raw);
+        if (exp && Date.now() < exp) return p;
+        localStorage.removeItem('bde_scan_pin');
+      }
+    } catch(e) {}
     const m = document.cookie.match(/(?:^|;\s*)bde_scan_pin=([^;]*)/);
     return m ? decodeURIComponent(m[1]) : '';
   }
@@ -218,6 +229,39 @@
     try { localStorage.removeItem('bde_scan_pin'); } catch(e) {}
     document.cookie = 'bde_scan_pin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax';
   }
+
+  // Pavé numérique
+  let currentPin = '';
+  const PIN_LEN = 4;
+  function refreshPinDots() {
+    document.querySelectorAll('#pin-display .pin-dot').forEach((d, i) => {
+      d.classList.toggle('filled', i < currentPin.length);
+    });
+  }
+  function keypadPress(digit) {
+    if (currentPin.length >= PIN_LEN) return;
+    currentPin += digit;
+    refreshPinDots();
+    document.getElementById('login-error').style.display = 'none';
+    if (currentPin.length === PIN_LEN) setTimeout(doLogin, 120);
+  }
+  function keypadDelete() {
+    currentPin = currentPin.slice(0, -1);
+    refreshPinDots();
+  }
+  function keypadClear() {
+    currentPin = '';
+    refreshPinDots();
+    document.getElementById('login-error').style.display = 'none';
+  }
+  // Support clavier physique en secours
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('screen-login').style.display === 'none') return;
+    if (e.key >= '0' && e.key <= '9') keypadPress(e.key);
+    else if (e.key === 'Backspace') keypadDelete();
+    else if (e.key === 'Escape') keypadClear();
+    else if (e.key === 'Enter' && currentPin.length === PIN_LEN) doLogin();
+  });
 
   let pin = readPin();
 
