@@ -4407,7 +4407,7 @@ async function finLoadEvenements() {
   const debutStr = _finDateDebut.toISOString().slice(0, 10);
   const finStr = monthAfterEnd.toISOString().slice(0, 10);
   const { data, error } = await window.Auth.sb
-    .from('evenements').select('*').eq('finance_only', true).gte('date', debutStr).lte('date', finStr).order('date');
+    .from('finance_evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
   if (error) { console.warn(error); _finEvenements = []; }
   else _finEvenements = data || [];
   finRenderEvenements();
@@ -5071,7 +5071,7 @@ async function pdfChargerEvenements(debut, fin) {
   const debutStr = debut.toISOString().slice(0, 10);
   const finStr = fin.toISOString().slice(0, 10);
   try {
-    const { data } = await window.Auth.sb.from('evenements').select('*').eq('finance_only', true).gte('date', debutStr).lte('date', finStr).order('date');
+    const { data } = await window.Auth.sb.from('finance_evenements').select('*').gte('date', debutStr).lte('date', finStr).order('date');
     return data || [];
   } catch (_) { return []; }
 }
