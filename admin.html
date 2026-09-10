@@ -4232,8 +4232,8 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     const cx = xCenter(i);
     const solde = soldes[i];
     const soldeMois = m.recettes - m.depenses;
-    const label = `${monthFull[i]} ${yearOfIdx(i)}`;
-    const args = [i, m.recettes, m.depenses, soldeMois, solde, m.prev, JSON.stringify(label)].join(',');
+    const lbl = jsStr(`${monthFull[i]} ${yearOfIdx(i)}`);
+    const args = [i, m.recettes, m.depenses, soldeMois, solde, m.prev, lbl].join(',');
     return `<rect x="${cx - xStep / 2}" y="${padT}" width="${xStep}" height="${chartH}" fill="transparent"
       onmousemove="finCourbeShowTip(event, ${args})"
       onmouseleave="finCourbeHideTip()"></rect>`;
