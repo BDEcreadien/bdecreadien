@@ -4137,9 +4137,9 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   }
   const soldeInitial = Number(_finSoldeInitial) || 0;
 
-  // Amplitude Y : couvre bars + courbe solde (positive et négative)
-  const maxRec = Math.max(0, ...months.map(m => m.recettes));
-  const maxDep = Math.max(0, ...months.map(m => m.depenses));
+  // Amplitude Y : couvre bars + courbe solde + prévisionnel (positive et négative)
+  const maxRec = Math.max(0, ...months.map(m => Math.max(m.recettes, m.prevRec || 0)));
+  const maxDep = Math.max(0, ...months.map(m => Math.max(m.depenses, m.prevDep || 0)));
   const maxSolde = Math.max(soldeInitial, ...soldes, 0);
   const minSolde = Math.min(soldeInitial, ...soldes, 0);
   const yPos = Math.max(maxRec, maxSolde, 1);
