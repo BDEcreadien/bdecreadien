@@ -4692,22 +4692,15 @@ async function pdfRegenererPreview() {
     pdfConstruireResume(doc);
     _pdfCurrentFilename = pdfFilename('resume');
   }
-  // Data URL avec paramètre #toolbar=1 pour forcer l'affichage inline sur tous les navigateurs.
-  // (blob URL cause un download automatique sur Chrome/Edge Windows)
-  const dataUrl = doc.output('datauristring');
-  _pdfCurrentUrl = dataUrl;
-  // Blob séparé pour le téléchargement (le nom de fichier ne peut pas être imposé sur une data URL)
-  if (_pdfCurrentBlobUrl) URL.revokeObjectURL(_pdfCurrentBlobUrl);
-  _pdfCurrentBlobUrl = doc.output('bloburl');
-  iframe.src = dataUrl + '#toolbar=1&view=FitH';
+  if (_pdfCurrentUrl) URL.revokeObjectURL(_pdfCurrentUrl);
+  _pdfCurrentUrl = doc.output('bloburl');
+  iframe.src = _pdfCurrentUrl + '#toolbar=1&view=FitH';
 }
 
-let _pdfCurrentBlobUrl = null;
-
 function pdfTelecharger() {
-  if (!_pdfCurrentBlobUrl || !_pdfCurrentFilename) { showToast('Aperçu pas encore prêt', 'error'); return; }
+  if (!_pdfCurrentUrl || !_pdfCurrentFilename) { showToast('Aperçu pas encore prêt', 'error'); return; }
   const a = document.createElement('a');
-  a.href = _pdfCurrentBlobUrl; a.download = _pdfCurrentFilename;
+  a.href = _pdfCurrentUrl; a.download = _pdfCurrentFilename;
   document.body.appendChild(a); a.click(); a.remove();
 }
 
