@@ -4280,12 +4280,15 @@ function finBarShowTip(evt, type, val, label) {
   const wrap = document.getElementById('fin-courbe-svg');
   if (!tip || !wrap) return;
   const rect = wrap.getBoundingClientRect();
-  const color = type === 'rec' ? '#22c55e' : '#dc2626';
-  const kind = type === 'rec' ? 'Recette' : 'Dépense';
-  const sign = type === 'rec' ? '+' : '-';
+  const isRec = type === 'rec' || type === 'prevRec';
+  const isPrev = type === 'prevRec' || type === 'prevDep';
+  const color = isRec ? '#22c55e' : '#dc2626';
+  const kind = (isPrev ? 'Prévu ' : '') + (isRec ? 'Recette' : 'Dépense');
+  const sign = isRec ? '+' : '-';
   tip.innerHTML = `
     <div style="font-weight:700;margin-bottom:4px;color:#111;">${label}</div>
-    <div style="color:${color};font-weight:700;font-size:14px;">${kind} : ${sign}${Math.abs(val).toFixed(2)} €</div>`;
+    <div style="color:${color};font-weight:700;font-size:14px;">${kind} : ${sign}${Math.abs(val).toFixed(2)} €</div>
+    ${isPrev ? '<div style="font-size:11px;color:#999;margin-top:2px;">Event non validé — pas encore compté</div>' : ''}`;
   tip.style.display = 'block';
   const x = evt.clientX - rect.left;
   const y = evt.clientY - rect.top;
