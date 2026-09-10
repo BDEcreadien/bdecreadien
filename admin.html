@@ -4020,7 +4020,7 @@ function finRender() {
       soldeTotal >= 0 ? 'var(--violet)' : '#dc2626',
       `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">Initial : ${_finSoldeInitial.toFixed(2)} € <button onclick="finSaveSoldeInitial()" style="background:none;border:none;color:var(--violet);cursor:pointer;font-size:10px;text-decoration:underline;padding:0 0 0 4px;">modifier</button></div>`
     ) +
-    tuile('Nb transactions', String(_finTransactions.length), 'var(--gris-texte)');
+    tuile('Nb transactions', String(_finTransactions.length + finExpandRecurrentes(_finDateDebut, _finDateFin).length), 'var(--gris-texte)');
 
   const list = document.getElementById('fin-liste');
   const virtuels = finExpandRecurrentes(_finDateDebut, _finDateFin);
