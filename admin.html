@@ -3849,8 +3849,10 @@ async function finRefreshAll() {
     await Promise.all([
       finLoadTransactions(),  // → finRender() → tuiles + liste + PDF
       finLoadEvenements(),    // → finRenderEvenements()
+      finLoadRecurrentes(),   // → récurrentes (impacte PDF + graphique)
       finLoadCourbeAnnuelle() // → graphique
     ]);
+    finRenderRecurrentes();
   } finally {
     _finRefreshBusy = false;
     finShowRefreshing(false);
