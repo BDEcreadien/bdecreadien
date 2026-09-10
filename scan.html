@@ -79,6 +79,43 @@
     }
     input:focus { border-color: #460186; }
     input.field-normal { text-align: left; letter-spacing: normal; }
+    /* Pavé numérique */
+    .pin-display {
+      display: flex; justify-content: center; gap: 14px;
+      margin: 8px 0 20px;
+    }
+    .pin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.25);
+      background: transparent;
+      transition: all .15s;
+    }
+    .pin-dot.filled {
+      background: linear-gradient(135deg, #460186, #FF741F);
+      border-color: transparent;
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .key {
+      padding: 18px 0;
+      border-radius: 14px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 22px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .12s, transform .06s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .key:active { background: rgba(255,255,255,0.14); transform: scale(0.96); }
+    .key.action { background: rgba(255,255,255,0.03); font-size: 18px; color: rgba(255,255,255,0.55); }
+    .key.invisible { visibility: hidden; }
     .badge { display: inline-block; padding: 4px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
     .badge-offert { background: linear-gradient(135deg, #460186, #FF741F); color: white; }
     .icon { font-size: 44px; margin-bottom: 10px; }
