@@ -4154,6 +4154,8 @@ async function finLoadEvenements() {
   if (error) { console.warn(error); _finEvenements = []; }
   else _finEvenements = data || [];
   finRenderEvenements();
+  // Rafraîchit tuiles + PDF car les recettes/dépenses dépendent aussi des events validés
+  finRender();
 }
 
 function finRenderEvenements() {
