@@ -5322,6 +5322,7 @@ async function plnSaveEvent() {
     if (error) return showToast('Erreur : ' + error.message, 'error');
   } else {
     payload.created_by = window._monProfilId || null;
+    payload.bureau_only = true;  // événement interne bureau (setup, briefing) → invisible du public
     const { data, error } = await Auth.sb.from('evenements').insert(payload).select().single();
     if (error) return showToast('Erreur : ' + error.message, 'error');
     evId = data.id;
