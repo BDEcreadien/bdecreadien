@@ -1192,6 +1192,9 @@
         mePlnLoad();
         mePlnMarkAsSeen();
       }
+      if (name === 'me-planning' && ['membre','admin'].includes(currentProfil?.role)) {
+        plpInit();
+      }
     }
 
     // ======= PLANNING BUREAU (inscription tâches) =======
