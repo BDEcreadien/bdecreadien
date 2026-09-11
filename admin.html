@@ -5154,7 +5154,7 @@ async function initPlanning() {
 async function plnReload() {
   const sb = Auth.sb;
   const [evRes, tacheRes, inscRes, memRes, tplRes] = await Promise.all([
-    sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h, created_at').order('date', { ascending: false, nullsFirst: false }),
+    sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h, created_at').or('bureau_only.is.null,bureau_only.eq.false').order('date', { ascending: false, nullsFirst: false }),
     sb.from('taches_bureau').select('id, evenement_id, titre, description, capacite, ordre'),
     sb.from('inscriptions_taches').select('id, tache_id, membre_id, created_at'),
     sb.from('profils').select('id, prenom, nom').eq('bureau', true).order('prenom'),
