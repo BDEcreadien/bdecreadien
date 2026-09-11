@@ -2196,6 +2196,519 @@
       const s = String(u).trim();
       return /^https?:\/\//i.test(s) ? escapeHtml(s) : '';
     }
+
+    // ============================================================
+    // MON PLANNING PERSO (plp*)
+    // ============================================================
+    const PLP_COLORS = ['#7C3AED','#DC2626','#EA580C','#D97706','#65A30D','#059669','#0891B2','#2563EB','#7C2D12','#BE185D','#9333EA','#4F46E5','#0284C7','#0D9488','#CA8A04'];
+    const PLP_JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    const PLP_MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    let _plpMembres = [], _plpTaches = [], _plpRecur = [], _plpSelectedMembres = null, _plpView = 'semaine', _plpCursor = new Date(), _plpEditingId = null, _plpRecurEditingId = null, _plpInited = false;
+    const plpIsBureau = () => currentProfil && (currentProfil.role === 'admin' || currentProfil.bureau === true);
+
+    function plpColorFor(membreId) {
+      const idx = _plpMembres.findIndex(m => m.id === membreId);
+      return PLP_COLORS[(idx >= 0 ? idx : 0) % PLP_COLORS.length];
+    }
+
+    async function plpInit() {
+      if (!_plpInited) {
+        _plpInited = true;
+        // Init cursor sur début semaine courante (lundi)
+        _plpCursor = plpMondayOf(new Date());
+        document.getElementById('plp-t-jour').value = new Date().toISOString().slice(0,10);
+        if (plpIsBureau()) {
+          document.getElementById('plp-role-sub').textContent = 'Tes tâches + celles de ton équipe. Tu peux assigner des tâches aux membres.';
+          document.getElementById('plp-bureau-members').style.display = 'block';
+          document.getElementById('plp-t-membre-wrap').style.display = '';
+          document.getElementById('plp-r-membre-wrap').style.display = '';
+        } else {
+          document.getElementById('plp-t-membre-wrap').style.display = 'none';
+          document.getElementById('plp-r-membre-wrap').style.display = 'none';
+        }
+      }
+      await plpLoadIcsUrl();
+      await plpLoadMembres();
+      await plpLoadTaches();
+      await plpLoadRecur();
+      plpRender();
+    }
+
+    function plpMondayOf(d) {
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      const day = (x.getDay() + 6) % 7;  // 0=lun ... 6=dim
+      x.setDate(x.getDate() - day);
+      return x;
+    }
+
+    async function plpLoadIcsUrl() {
+      const el = document.getElementById('plp-ics-url');
+      const tok = currentProfil?.ics_token;
+      if (tok) {
+        el.textContent = `${location.origin}/api/planning-ics?token=${tok}`;
+      } else {
+        // Régénère si manquant
+        try {
+          const { data } = await Auth.sb.rpc('regen_ics_token');
+          if (data) {
+            currentProfil.ics_token = data;
+            el.textContent = `${location.origin}/api/planning-ics?token=${data}`;
+          }
+        } catch (_) { el.textContent = '(indisponible)'; }
+      }
+    }
+
+    function plpCopyIcs() {
+      const url = document.getElementById('plp-ics-url').textContent;
+      navigator.clipboard.writeText(url).then(() => showToast('Lien copié dans le presse-papier ✓', 'success')).catch(() => {
+        prompt('Copie manuellement :', url);
+      });
+    }
+
+    async function plpRegenIcs() {
+      if (!confirm('Générer un nouveau lien ? L\'ancien lien cessera de fonctionner.')) return;
+      const { data } = await Auth.sb.rpc('regen_ics_token');
+      if (data) {
+        currentProfil.ics_token = data;
+        document.getElementById('plp-ics-url').textContent = `${location.origin}/api/planning-ics?token=${data}`;
+        showToast('Nouveau lien généré', 'success');
+      }
+    }
+
+    async function plpLoadMembres() {
+      const { data } = await Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom');
+      _plpMembres = data || [];
+      if (_plpSelectedMembres === null) {
+        _plpSelectedMembres = new Set(plpIsBureau() ? [currentProfil.id] : [currentProfil.id]);
+      }
+      // Chips membres (bureau)
+      if (plpIsBureau()) {
+        const wrap = document.getElementById('plp-membre-chips');
+        wrap.innerHTML = _plpMembres.map(m => {
+          const sel = _plpSelectedMembres.has(m.id);
+          return `<span class="plp-membre-chip ${sel ? 'selected' : ''}" onclick="plpToggleMembre('${m.id}')">
+            <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
+          </span>`;
+        }).join('') + `<button class="plp-membre-chip" onclick="plpSelectAllMembres(true)" style="border-style:dashed;">Tous</button>
+          <button class="plp-membre-chip" onclick="plpSelectAllMembres(false)" style="border-style:dashed;">Aucun</button>`;
+        // Assigner à : select
+        const sel = document.getElementById('plp-t-membre');
+        sel.innerHTML = _plpMembres.map(m => `<option value="${m.id}" ${m.id === currentProfil.id ? 'selected' : ''}>${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</option>`).join('');
+        const selR = document.getElementById('plp-r-membre');
+        selR.innerHTML = sel.innerHTML;
+      }
+      // Filtre pôle
+      const poles = [...new Set(_plpMembres.map(m => m.pole).filter(Boolean))].sort();
+      const polSel = document.getElementById('plp-filter-pole');
+      polSel.innerHTML = '<option value="">Tous pôles</option>' + poles.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+    }
+
+    function plpToggleMembre(id) {
+      if (_plpSelectedMembres.has(id)) _plpSelectedMembres.delete(id); else _plpSelectedMembres.add(id);
+      plpLoadMembres().then(plpRender);
+    }
+    function plpSelectAllMembres(all) {
+      _plpSelectedMembres = new Set(all ? _plpMembres.map(m => m.id) : []);
+      plpLoadMembres().then(plpRender);
+    }
+
+    async function plpLoadTaches() {
+      // Charge une fenêtre large (mois précédent → mois+2)
+      const start = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() - 1, 1);
+      const end = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() + 2, 0);
+      const s = start.toISOString().slice(0,10), e = end.toISOString().slice(0,10);
+      const { data } = await Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour');
+      _plpTaches = data || [];
+    }
+
+    async function plpLoadRecur() {
+      const { data } = await Auth.sb.from('planning_taches_recurrentes').select('*').order('created_at', { ascending: false });
+      _plpRecur = data || [];
+    }
+
+    // Génère les tâches virtuelles des récurrentes pour la période visible
+    function plpExpandRecur(startDate, endDate) {
+      const out = [];
+      for (const r of _plpRecur) {
+        const rD = new Date(r.date_debut + 'T00:00:00');
+        const rF = r.date_fin ? new Date(r.date_fin + 'T00:00:00') : null;
+        // Aligne sur lundi de startDate
+        const cur = new Date(startDate);
+        cur.setHours(0,0,0,0);
+        const dow = (cur.getDay() + 6) % 7 + 1;
+        if (dow > 1) cur.setDate(cur.getDate() - (dow - 1));
+        while (cur <= endDate) {
+          const occ = new Date(cur);
+          occ.setDate(occ.getDate() + (r.jour_semaine - 1));
+          if (occ >= rD && (!rF || occ <= rF) && occ >= startDate && occ <= endDate) {
+            out.push({
+              id: `rec-${r.id}-${occ.toISOString().slice(0,10)}`,
+              titre: r.titre + ' 🔁',
+              description: r.description,
+              jour: occ.toISOString().slice(0,10),
+              horaire_debut: r.horaire_debut,
+              horaire_fin: r.horaire_fin,
+              membre_id: r.membre_id,
+              priorite: r.priorite,
+              statut: 'a_faire',
+              notes: r.notes,
+              _virtuel: true,
+              _sourceId: r.id
+            });
+          }
+          cur.setDate(cur.getDate() + 7);
+        }
+      }
+      return out;
+    }
+
+    function plpApplyFilters() {
+      plpRender();
+    }
+
+    function plpFilteredTaches(range) {
+      const search = (document.getElementById('plp-search').value || '').toLowerCase().trim();
+      const fPole = document.getElementById('plp-filter-pole').value;
+      const fPrio = document.getElementById('plp-filter-priorite').value;
+      const fStat = document.getElementById('plp-filter-statut').value;
+      const virtuels = range ? plpExpandRecur(range[0], range[1]) : [];
+      const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
+      return _plpTaches.concat(virtuels).filter(t => {
+        if (!_plpSelectedMembres.has(t.membre_id)) return false;
+        const m = memMap[t.membre_id];
+        if (fPole && (!m || m.pole !== fPole)) return false;
+        if (fPrio && t.priorite !== fPrio) return false;
+        if (fStat && t.statut !== fStat) return false;
+        if (search) {
+          const hay = (t.titre + ' ' + (m ? m.prenom + ' ' + m.nom : '') + ' ' + (t.description || '')).toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+    }
+
+    function plpSetView(v) {
+      _plpView = v;
+      document.querySelectorAll('#plp-view-switch button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+      document.getElementById('plp-view-semaine').style.display = v === 'semaine' ? '' : 'none';
+      document.getElementById('plp-view-mois').style.display = v === 'mois' ? '' : 'none';
+      document.getElementById('plp-view-liste').style.display = v === 'liste' ? '' : 'none';
+      plpRender();
+    }
+
+    function plpNav(delta) {
+      const d = new Date(_plpCursor);
+      if (_plpView === 'semaine') d.setDate(d.getDate() + 7 * delta);
+      else if (_plpView === 'mois') d.setMonth(d.getMonth() + delta);
+      else d.setDate(d.getDate() + 30 * delta);
+      _plpCursor = _plpView === 'semaine' ? plpMondayOf(d) : d;
+      plpLoadTaches().then(plpRender);
+    }
+
+    function plpToday() {
+      _plpCursor = plpMondayOf(new Date());
+      plpLoadTaches().then(plpRender);
+    }
+
+    function plpToggleFilters() {
+      const el = document.getElementById('plp-filters');
+      el.classList.toggle('visible');
+      document.getElementById('plp-filter-btn').classList.toggle('active', el.classList.contains('visible'));
+    }
+
+    function plpRender() {
+      if (_plpView === 'semaine') plpRenderSemaine();
+      else if (_plpView === 'mois') plpRenderMois();
+      else plpRenderListe();
+    }
+
+    // ---------- Vue Semaine ----------
+    function plpRenderSemaine() {
+      const wrap = document.getElementById('plp-view-semaine');
+      const monday = plpMondayOf(_plpCursor);
+      const days = [];
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(monday); d.setDate(monday.getDate() + i);
+        days.push(d);
+      }
+      const endDay = new Date(days[5]); endDay.setHours(23,59,59);
+      document.getElementById('plp-period-label').textContent = `${days[0].toLocaleDateString('fr-FR', {day:'numeric',month:'short'})} → ${days[5].toLocaleDateString('fr-FR', {day:'numeric',month:'short',year:'numeric'})}`;
+      const taches = plpFilteredTaches([days[0], endDay]);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const byDay = {};
+      for (const t of taches) {
+        (byDay[t.jour] ||= []).push(t);
+      }
+      wrap.innerHTML = `<div class="plp-week">${days.map((d, i) => {
+        const key = d.toISOString().slice(0,10);
+        const isToday = d.getTime() === today.getTime();
+        const list = (byDay[key] || []).sort((a,b) => (a.horaire_debut || 'z').localeCompare(b.horaire_debut || 'z'));
+        return `<div class="plp-day-col ${isToday ? 'today' : ''}">
+          <div class="plp-day-header">${PLP_JOURS[i]}</div>
+          <div class="plp-day-num">${d.getDate()}</div>
+          ${list.map(t => plpTacheCard(t, d < today)).join('')}
+          <button class="plp-day-add" onclick="plpOpenTacheForm(null, '${key}')">+ Tâche</button>
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    function plpTacheCard(t, isPast) {
+      const col = plpColorFor(t.membre_id);
+      const done = t.statut === 'fait';
+      const late = isPast && !done && !t._virtuel;
+      const classes = ['plp-tache', done ? 'done' : '', late ? 'late' : '', (t.from_event_id && !t.event_confirme) ? 'event-pending' : ''].filter(Boolean).join(' ');
+      const h = t.horaire_debut ? `${t.horaire_debut.slice(0,5)}${t.horaire_fin ? '–' + t.horaire_fin.slice(0,5) : ''}` : '';
+      const badge = t.priorite === 'urgente' ? '<span class="plp-tache-badge priorite">!</span>' : '';
+      return `<div class="${classes}" style="border-left-color:${col};" onclick="plpOpenTacheForm('${t.id}')">
+        ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
+        <div class="plp-tache-t">${escapeHtml(t.titre)}</div>
+        ${badge}
+      </div>`;
+    }
+
+    // ---------- Vue Mois ----------
+    function plpRenderMois() {
+      const wrap = document.getElementById('plp-view-mois');
+      const y = _plpCursor.getFullYear(), m = _plpCursor.getMonth();
+      document.getElementById('plp-period-label').textContent = `${PLP_MOIS[m]} ${y}`;
+      const first = new Date(y, m, 1);
+      const firstDow = (first.getDay() + 6) % 7;  // 0=lun
+      const gridStart = new Date(first); gridStart.setDate(1 - firstDow);
+      const days = [];
+      for (let i = 0; i < 42; i++) {
+        const d = new Date(gridStart); d.setDate(gridStart.getDate() + i);
+        days.push(d);
+      }
+      const endDay = new Date(days[41]); endDay.setHours(23,59,59);
+      const taches = plpFilteredTaches([days[0], endDay]);
+      const byDay = {};
+      for (const t of taches) (byDay[t.jour] ||= []).push(t);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const headers = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(h => `<div class="plp-month-header">${h}</div>`).join('');
+      wrap.innerHTML = `<div class="plp-month">${headers}${days.map(d => {
+        const otherMonth = d.getMonth() !== m;
+        const isToday = d.getTime() === today.getTime();
+        const key = d.toISOString().slice(0,10);
+        const list = byDay[key] || [];
+        const mini = list.slice(0, 3).map(t => `<div class="plp-month-mini" style="background:${plpColorFor(t.membre_id)};" title="${escapeHtml(t.titre)}">${escapeHtml(t.titre)}</div>`).join('');
+        const more = list.length > 3 ? `<div class="plp-month-more">+${list.length - 3}</div>` : '';
+        return `<div class="plp-month-day ${otherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" onclick="plpOpenTacheForm(null, '${key}')">
+          <div class="plp-month-day-num">${d.getDate()}</div>
+          ${mini}${more}
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    // ---------- Vue Liste ----------
+    function plpRenderListe() {
+      const wrap = document.getElementById('plp-view-liste');
+      const y = _plpCursor.getFullYear(), m = _plpCursor.getMonth();
+      const start = new Date(y, m, 1);
+      const end = new Date(y, m + 1, 0);
+      document.getElementById('plp-period-label').textContent = `${PLP_MOIS[m]} ${y}`;
+      const taches = plpFilteredTaches([start, end]).sort((a,b) => (a.jour + (a.horaire_debut || '')).localeCompare(b.jour + (b.horaire_debut || '')));
+      if (!taches.length) { wrap.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">Aucune tâche pour cette période.</p>'; return; }
+      const memMap = Object.fromEntries(_plpMembres.map(mm => [mm.id, mm]));
+      wrap.innerHTML = `<div class="plp-list">${taches.map(t => {
+        const dObj = new Date(t.jour);
+        const dstr = dObj.toLocaleDateString('fr-FR', {weekday:'short',day:'numeric',month:'short'});
+        const h = t.horaire_debut ? ` · ${t.horaire_debut.slice(0,5)}` : '';
+        const mm = memMap[t.membre_id];
+        const col = plpColorFor(t.membre_id);
+        const statuts = {a_faire:'À faire', en_cours:'En cours', fait:'Fait'};
+        return `<div class="plp-list-item" style="border-left:4px solid ${col};" onclick="plpOpenTacheForm('${t.id}')">
+          <div class="plp-list-date">${dstr}${h}</div>
+          <div class="plp-list-title">${escapeHtml(t.titre)}${t.priorite === 'urgente' ? ' <span class="plp-list-badge" style="background:#fee2e2;color:#991b1b;">Urgent</span>' : ''}</div>
+          <div style="font-size:12px;color:#666;">${mm ? escapeHtml(mm.prenom) : ''}</div>
+          <div class="plp-list-badge">${statuts[t.statut]}</div>
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    // ---------- Form tâche ----------
+    function plpOpenTacheForm(id, defaultDay) {
+      _plpEditingId = id;
+      const modal = document.getElementById('plp-modal-tache');
+      const t = id ? _plpTaches.find(x => x.id === id) : null;
+      document.getElementById('plp-modal-title').textContent = id ? 'Modifier la tâche' : 'Nouvelle tâche';
+      document.getElementById('plp-t-id').value = id || '';
+      document.getElementById('plp-t-titre').value = t?.titre || '';
+      document.getElementById('plp-t-jour').value = t?.jour || defaultDay || new Date().toISOString().slice(0,10);
+      document.getElementById('plp-t-hdebut').value = t?.horaire_debut ? t.horaire_debut.slice(0,5) : '';
+      document.getElementById('plp-t-hfin').value = t?.horaire_fin ? t.horaire_fin.slice(0,5) : '';
+      document.getElementById('plp-t-statut').value = t?.statut || 'a_faire';
+      document.getElementById('plp-t-priorite').value = t?.priorite || 'normale';
+      document.getElementById('plp-t-desc').value = t?.description || '';
+      document.getElementById('plp-t-notes').value = t?.notes || '';
+      if (plpIsBureau()) document.getElementById('plp-t-membre').value = t?.membre_id || currentProfil.id;
+      document.getElementById('plp-t-del-btn').style.display = id ? '' : 'none';
+      // Commentaires
+      const commWrap = document.getElementById('plp-comm-wrap');
+      if (id && !String(id).startsWith('rec-')) {
+        commWrap.style.display = 'block';
+        plpLoadComments(id);
+      } else {
+        commWrap.style.display = 'none';
+      }
+      modal.classList.add('visible');
+    }
+
+    function plpCloseTacheForm() { document.getElementById('plp-modal-tache').classList.remove('visible'); }
+
+    async function plpSaveTache() {
+      const id = document.getElementById('plp-t-id').value;
+      const titre = document.getElementById('plp-t-titre').value.trim();
+      const jour = document.getElementById('plp-t-jour').value;
+      if (!titre || !jour) return showToast('Titre et jour obligatoires', 'error');
+      const hd = document.getElementById('plp-t-hdebut').value;
+      const hf = document.getElementById('plp-t-hfin').value;
+      const payload = {
+        titre, jour,
+        horaire_debut: hd || null,
+        horaire_fin: hf || null,
+        statut: document.getElementById('plp-t-statut').value,
+        priorite: document.getElementById('plp-t-priorite').value,
+        description: document.getElementById('plp-t-desc').value.trim() || null,
+        notes: document.getElementById('plp-t-notes').value.trim() || null,
+      };
+      const targetMembre = plpIsBureau() ? document.getElementById('plp-t-membre').value : currentProfil.id;
+      if (!id) {
+        payload.membre_id = targetMembre;
+        payload.assigne_par = (targetMembre !== currentProfil.id) ? currentProfil.id : null;
+        payload.created_by = currentProfil.id;
+        const { error } = await Auth.sb.from('planning_taches').insert(payload);
+        if (error) return showToast('Erreur : ' + error.message, 'error');
+        showToast('Tâche créée', 'success');
+      } else {
+        if (plpIsBureau()) {
+          payload.membre_id = targetMembre;
+        }
+        const { error } = await Auth.sb.from('planning_taches').update(payload).eq('id', id);
+        if (error) return showToast('Erreur : ' + error.message, 'error');
+        showToast('Tâche modifiée', 'success');
+      }
+      plpCloseTacheForm();
+      await plpLoadTaches();
+      plpRender();
+    }
+
+    async function plpDeleteTache() {
+      const id = document.getElementById('plp-t-id').value;
+      if (!id || !confirm('Supprimer cette tâche ?')) return;
+      const { error } = await Auth.sb.from('planning_taches').delete().eq('id', id);
+      if (error) return showToast('Erreur : ' + error.message, 'error');
+      showToast('Tâche supprimée', 'success');
+      plpCloseTacheForm();
+      await plpLoadTaches();
+      plpRender();
+    }
+
+    // ---------- Commentaires ----------
+    async function plpLoadComments(tacheId) {
+      const { data } = await Auth.sb.from('planning_taches_commentaires').select('*, profils:auteur_id(prenom,nom)').eq('tache_id', tacheId).order('created_at');
+      const list = document.getElementById('plp-comm-list');
+      list.innerHTML = (data || []).map(c => `<div class="plp-comm-item">
+        <div class="auth">${escapeHtml(c.profils?.prenom || '')} ${escapeHtml(c.profils?.nom || '')} · ${new Date(c.created_at).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+        ${escapeHtml(c.texte)}
+      </div>`).join('') || '<div style="color:#999;font-size:12px;text-align:center;padding:10px;">Aucun commentaire</div>';
+    }
+
+    async function plpAddComment() {
+      const id = document.getElementById('plp-t-id').value;
+      const input = document.getElementById('plp-comm-input');
+      const texte = input.value.trim();
+      if (!id || !texte) return;
+      const { error } = await Auth.sb.from('planning_taches_commentaires').insert({ tache_id: id, auteur_id: currentProfil.id, texte });
+      if (error) return showToast('Erreur : ' + error.message, 'error');
+      input.value = '';
+      plpLoadComments(id);
+    }
+
+    // ---------- Récurrentes ----------
+    function plpOpenRecurrentes() {
+      const wrap = document.getElementById('plp-recur-list');
+      const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
+      wrap.innerHTML = _plpRecur.length ? _plpRecur.map(r => {
+        const mm = memMap[r.membre_id];
+        return `<div style="padding:10px;border:1px solid #eee;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:600;">${escapeHtml(r.titre)}</div>
+            <div style="font-size:12px;color:#666;">${PLP_JOURS[r.jour_semaine-1]}${r.horaire_debut ? ' · ' + r.horaire_debut.slice(0,5) : ''} · ${mm ? escapeHtml(mm.prenom) : ''} ${r.priorite === 'urgente' ? '⚠️' : ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button onclick="plpOpenRecurForm('${r.id}')" style="background:transparent;border:1px solid #ddd;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">Modifier</button>
+          </div>
+        </div>`;
+      }).join('') : '<p style="color:#999;text-align:center;padding:20px;">Aucune récurrente configurée</p>';
+      document.getElementById('plp-modal-recur').classList.add('visible');
+    }
+    function plpCloseRecurrentes() { document.getElementById('plp-modal-recur').classList.remove('visible'); }
+
+    function plpOpenRecurForm(id) {
+      _plpRecurEditingId = id;
+      const r = id ? _plpRecur.find(x => x.id === id) : null;
+      document.getElementById('plp-recur-title').textContent = id ? 'Modifier la récurrente' : 'Nouvelle récurrente';
+      document.getElementById('plp-r-id').value = id || '';
+      document.getElementById('plp-r-titre').value = r?.titre || '';
+      document.getElementById('plp-r-jour').value = r?.jour_semaine || 1;
+      document.getElementById('plp-r-hdebut').value = r?.horaire_debut ? r.horaire_debut.slice(0,5) : '';
+      document.getElementById('plp-r-hfin').value = r?.horaire_fin ? r.horaire_fin.slice(0,5) : '';
+      document.getElementById('plp-r-debut').value = r?.date_debut || new Date().toISOString().slice(0,10);
+      document.getElementById('plp-r-fin').value = r?.date_fin || '';
+      document.getElementById('plp-r-priorite').value = r?.priorite || 'normale';
+      document.getElementById('plp-r-desc').value = r?.description || '';
+      if (plpIsBureau()) document.getElementById('plp-r-membre').value = r?.membre_id || currentProfil.id;
+      document.getElementById('plp-r-del-btn').style.display = id ? '' : 'none';
+      document.getElementById('plp-modal-recur-form').classList.add('visible');
+    }
+    function plpCloseRecurForm() { document.getElementById('plp-modal-recur-form').classList.remove('visible'); }
+
+    async function plpSaveRecur() {
+      const id = document.getElementById('plp-r-id').value;
+      const titre = document.getElementById('plp-r-titre').value.trim();
+      const debut = document.getElementById('plp-r-debut').value;
+      if (!titre || !debut) return showToast('Titre + date début obligatoires', 'error');
+      const payload = {
+        titre,
+        jour_semaine: parseInt(document.getElementById('plp-r-jour').value, 10),
+        horaire_debut: document.getElementById('plp-r-hdebut').value || null,
+        horaire_fin: document.getElementById('plp-r-hfin').value || null,
+        date_debut: debut,
+        date_fin: document.getElementById('plp-r-fin').value || null,
+        priorite: document.getElementById('plp-r-priorite').value,
+        description: document.getElementById('plp-r-desc').value.trim() || null,
+      };
+      const targetMembre = plpIsBureau() ? document.getElementById('plp-r-membre').value : currentProfil.id;
+      if (!id) {
+        payload.membre_id = targetMembre;
+        payload.assigne_par = (targetMembre !== currentProfil.id) ? currentProfil.id : null;
+        const { error } = await Auth.sb.from('planning_taches_recurrentes').insert(payload);
+        if (error) return showToast('Erreur : ' + error.message, 'error');
+        showToast('Récurrente créée', 'success');
+      } else {
+        payload.membre_id = targetMembre;
+        const { error } = await Auth.sb.from('planning_taches_recurrentes').update(payload).eq('id', id);
+        if (error) return showToast('Erreur : ' + error.message, 'error');
+        showToast('Récurrente modifiée', 'success');
+      }
+      plpCloseRecurForm();
+      await plpLoadRecur();
+      plpOpenRecurrentes();
+      plpRender();
+    }
+
+    async function plpDeleteRecur() {
+      const id = document.getElementById('plp-r-id').value;
+      if (!id || !confirm('Supprimer cette récurrente ? Toutes ses occurrences disparaîtront.')) return;
+      const { error } = await Auth.sb.from('planning_taches_recurrentes').delete().eq('id', id);
+      if (error) return showToast('Erreur : ' + error.message, 'error');
+      showToast('Récurrente supprimée', 'success');
+      plpCloseRecurForm();
+      await plpLoadRecur();
+      plpOpenRecurrentes();
+      plpRender();
+    }
   </script>
 <script defer src="/js/cookie-banner.js?v=1"></script>
 </body>
