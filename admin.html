@@ -6023,6 +6023,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     const lnkCard = document.getElementById('page-card-liens');
     if (lnkCard) lnkCard.style.display = '';
   }
+  // Mon planning : accessible à tous les membres BDE (pas seulement bureau)
+  if (profil && (profil.role === 'membre' || profil.role === 'admin')) {
+    const perCard = document.getElementById('page-card-planning-perso');
+    if (perCard) perCard.style.display = '';
+  }
   window._monProfilId = profil ? profil.id : null;
 
   // 2. Charger le token GitHub depuis Supabase (partagé entre membres BDE)
