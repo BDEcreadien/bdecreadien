@@ -786,6 +786,248 @@
       .me-pln-check.disabled { opacity:.4;cursor:not-allowed; }
     </style>
 
+    <!-- ============ MON PLANNING PERSO ============ -->
+    <div id="tab-me-planning" class="me-panel">
+      <style>
+        .plp-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+        .plp-view-switch { display:inline-flex; background:var(--gris-clair,#f3f4f6); border-radius:10px; padding:3px; }
+        .plp-view-switch button { padding:6px 14px; border:none; background:transparent; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px; color:#555; }
+        .plp-view-switch button.active { background:white; color:var(--violet); box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+        .plp-nav-btn { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:600; }
+        .plp-period-label { font-size:14px; font-weight:600; color:#333; padding:0 8px; min-width:220px; text-align:center; }
+        .plp-add-btn { background:var(--violet); color:white; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-weight:600; font-size:13px; margin-left:auto; }
+        .plp-add-btn:hover { background:var(--violet-hover, #5a0aa5); }
+        .plp-filters { display:none; padding:14px; background:var(--gris-clair,#f9fafb); border-radius:10px; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+        .plp-filters.visible { display:flex; }
+        .plp-filters select, .plp-filters input { padding:6px 10px; border:1px solid var(--gris-border,#e5e7eb); border-radius:6px; font-size:13px; background:white; }
+        .plp-filter-btn { background:transparent; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:13px; }
+        .plp-filter-btn.active { background:var(--violet); color:white; border-color:var(--violet); }
+        .plp-membre-chips { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+        .plp-membre-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; border:1px solid var(--gris-border,#e5e7eb); font-size:12px; cursor:pointer; background:white; }
+        .plp-membre-chip.selected { background:var(--violet); color:white; border-color:var(--violet); }
+        .plp-membre-chip .dot { width:8px; height:8px; border-radius:50%; }
+        /* Semaine grid */
+        .plp-week { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; }
+        .plp-day-col { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:10px; min-height:200px; display:flex; flex-direction:column; }
+        .plp-day-col.today { border-color:var(--violet); box-shadow:0 0 0 1px var(--violet); }
+        .plp-day-header { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#666; font-weight:700; margin-bottom:2px; }
+        .plp-day-num { font-size:20px; font-weight:700; color:#111; margin-bottom:10px; }
+        .plp-day-col.today .plp-day-num { color:var(--violet); }
+        .plp-day-add { background:transparent; border:1px dashed var(--gris-border,#e5e7eb); border-radius:6px; padding:6px; font-size:11px; color:#999; cursor:pointer; margin-top:auto; }
+        .plp-day-add:hover { border-color:var(--violet); color:var(--violet); }
+        .plp-tache { background:white; border-left:3px solid #666; border-radius:6px; padding:8px 10px; margin-bottom:6px; font-size:12px; cursor:pointer; position:relative; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+        .plp-tache:hover { box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+        .plp-tache.done { opacity:.5; text-decoration:line-through; }
+        .plp-tache.late { background:#fef2f2; border-left-color:#dc2626; }
+        .plp-tache.late.done { background:#fff; }
+        .plp-tache.event-pending { opacity:.55; border-left-style:dashed; }
+        .plp-tache-h { font-size:10px; color:#666; font-weight:600; margin-bottom:2px; }
+        .plp-tache-t { font-weight:600; color:#111; line-height:1.25; }
+        .plp-tache-badge { position:absolute; top:4px; right:4px; font-size:9px; padding:1px 5px; border-radius:8px; background:#fee2e2; color:#991b1b; font-weight:700; }
+        .plp-tache-badge.priorite { background:#fee2e2; color:#991b1b; }
+        /* Mois grid */
+        .plp-month { display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; }
+        .plp-month-header { text-align:center; font-size:11px; text-transform:uppercase; color:#666; font-weight:700; padding:6px 0; }
+        .plp-month-day { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; min-height:80px; padding:6px; cursor:pointer; display:flex; flex-direction:column; }
+        .plp-month-day:hover { border-color:var(--violet); }
+        .plp-month-day.other-month { opacity:.35; }
+        .plp-month-day.today { border-color:var(--violet); background:#f5f3ff; }
+        .plp-month-day-num { font-size:12px; font-weight:700; color:#333; margin-bottom:4px; }
+        .plp-month-mini { font-size:10px; padding:2px 5px; margin-bottom:2px; border-radius:4px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .plp-month-more { font-size:10px; color:#666; margin-top:auto; }
+        /* Liste */
+        .plp-list { display:flex; flex-direction:column; gap:8px; }
+        .plp-list-item { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; }
+        .plp-list-item:hover { border-color:var(--violet); }
+        .plp-list-date { min-width:80px; font-size:12px; color:#555; }
+        .plp-list-title { flex:1; font-weight:600; }
+        .plp-list-badge { font-size:11px; padding:2px 8px; border-radius:6px; background:var(--gris-clair,#f3f4f6); }
+        /* Modal */
+        .plp-modal-overlay { position:fixed; inset:0; background:rgba(10,8,18,0.55); display:none; align-items:center; justify-content:center; z-index:9999; padding:20px; }
+        .plp-modal-overlay.visible { display:flex; }
+        .plp-modal { background:white; border-radius:14px; padding:22px; max-width:500px; width:100%; max-height:90vh; overflow-y:auto; }
+        .plp-modal h3 { margin:0 0 16px; }
+        .plp-modal .row { display:flex; gap:10px; margin-bottom:12px; }
+        .plp-modal label { display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:4px; }
+        .plp-modal input, .plp-modal select, .plp-modal textarea { width:100%; padding:8px 12px; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; font-size:14px; font-family:inherit; background:white; }
+        .plp-modal textarea { resize:vertical; min-height:60px; }
+        .plp-modal .actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:20px; }
+        .plp-modal .btn-cancel { background:transparent; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; padding:8px 16px; cursor:pointer; }
+        .plp-modal .btn-save { background:var(--violet); color:white; border:none; border-radius:8px; padding:8px 20px; cursor:pointer; font-weight:600; }
+        .plp-modal .btn-delete { background:transparent; border:1px solid #fca5a5; color:#dc2626; border-radius:8px; padding:8px 14px; cursor:pointer; }
+        .plp-comm-list { margin-top:16px; border-top:1px solid var(--gris-border,#e5e7eb); padding-top:14px; max-height:200px; overflow-y:auto; }
+        .plp-comm-item { padding:8px 10px; background:var(--gris-clair,#f9fafb); border-radius:8px; margin-bottom:6px; font-size:13px; }
+        .plp-comm-item .auth { font-size:11px; color:#666; font-weight:600; margin-bottom:2px; }
+        .plp-comm-add { display:flex; gap:6px; margin-top:8px; }
+        .plp-comm-add input { flex:1; }
+        .plp-comm-add button { background:var(--violet); color:white; border:none; border-radius:8px; padding:6px 12px; cursor:pointer; }
+        .plp-ics-box { padding:12px 16px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; margin-bottom:12px; }
+        .plp-ics-box code { display:block; font-size:11px; word-break:break-all; padding:8px; background:white; border-radius:6px; margin-top:6px; user-select:all; }
+        @media (max-width: 900px) {
+          .plp-week { grid-template-columns:1fr; }
+          .plp-month-day { min-height:60px; }
+          .plp-toolbar { gap:6px; }
+          .plp-add-btn { margin-left:0; width:100%; }
+        }
+      </style>
+
+      <h2 class="section-title">Mon planning</h2>
+      <p class="section-sub" id="plp-role-sub">Tes tâches, horaires et corvées de la semaine.</p>
+
+      <!-- Bloc ICS abonnement -->
+      <div class="plp-ics-box">
+        <strong>📅 Abonner à mon calendrier Google/Apple</strong>
+        <div style="font-size:12px;color:#0369a1;margin:4px 0 0;">Ajoute ce lien comme "calendrier abonné" dans Google Cal / Apple Cal / Outlook. Se met à jour tout seul (env. 1×/h).</div>
+        <code id="plp-ics-url">Chargement…</code>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button onclick="plpCopyIcs()" style="background:#0369a1;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">📋 Copier le lien</button>
+          <button onclick="plpRegenIcs()" style="background:transparent;border:1px solid #0369a1;color:#0369a1;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">↻ Régénérer le lien</button>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="plp-toolbar">
+        <div class="plp-view-switch" id="plp-view-switch">
+          <button class="active" data-view="semaine" onclick="plpSetView('semaine')">Semaine</button>
+          <button data-view="mois" onclick="plpSetView('mois')">Mois</button>
+          <button data-view="liste" onclick="plpSetView('liste')">Liste</button>
+        </div>
+        <button class="plp-nav-btn" onclick="plpNav(-1)">‹</button>
+        <span class="plp-period-label" id="plp-period-label">—</span>
+        <button class="plp-nav-btn" onclick="plpNav(1)">›</button>
+        <button class="plp-nav-btn" onclick="plpToday()">Aujourd'hui</button>
+        <button class="plp-filter-btn" onclick="plpToggleFilters()" id="plp-filter-btn">Filtres</button>
+        <button class="plp-nav-btn" onclick="plpOpenRecurrentes()">🔄 Récurrentes</button>
+        <button class="plp-add-btn" onclick="plpOpenTacheForm(null)">+ Nouvelle tâche</button>
+      </div>
+
+      <!-- Filtres -->
+      <div class="plp-filters" id="plp-filters">
+        <div id="plp-bureau-members" style="width:100%;display:none;">
+          <label style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;">Voir les tâches de :</label>
+          <div class="plp-membre-chips" id="plp-membre-chips" style="margin-top:6px;"></div>
+        </div>
+        <input type="search" id="plp-search" placeholder="🔍 Recherche titre ou membre" oninput="plpApplyFilters()">
+        <select id="plp-filter-pole" onchange="plpApplyFilters()">
+          <option value="">Tous pôles</option>
+        </select>
+        <select id="plp-filter-priorite" onchange="plpApplyFilters()">
+          <option value="">Toutes priorités</option>
+          <option value="urgente">Urgente</option>
+          <option value="normale">Normale</option>
+        </select>
+        <select id="plp-filter-statut" onchange="plpApplyFilters()">
+          <option value="">Tous statuts</option>
+          <option value="a_faire">À faire</option>
+          <option value="en_cours">En cours</option>
+          <option value="fait">Fait</option>
+        </select>
+      </div>
+
+      <!-- Zones de vues -->
+      <div id="plp-view-semaine"></div>
+      <div id="plp-view-mois" style="display:none;"></div>
+      <div id="plp-view-liste" style="display:none;"></div>
+
+      <!-- Modal tâche -->
+      <div class="plp-modal-overlay" id="plp-modal-tache" onclick="if(event.target===this) plpCloseTacheForm()">
+        <div class="plp-modal">
+          <h3 id="plp-modal-title">Nouvelle tâche</h3>
+          <input type="hidden" id="plp-t-id">
+          <div><label>Titre *</label><input type="text" id="plp-t-titre" placeholder="Ex: Récupérer le matos son"></div>
+          <div class="row">
+            <div style="flex:1;"><label>Jour *</label><input type="date" id="plp-t-jour"></div>
+            <div style="flex:1;" id="plp-t-membre-wrap"><label>Assigner à</label><select id="plp-t-membre"></select></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;"><label>Horaire début (optionnel)</label><input type="time" id="plp-t-hdebut"></div>
+            <div style="flex:1;"><label>Horaire fin (optionnel)</label><input type="time" id="plp-t-hfin"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;"><label>Statut</label>
+              <select id="plp-t-statut">
+                <option value="a_faire">À faire</option>
+                <option value="en_cours">En cours</option>
+                <option value="fait">Fait</option>
+              </select>
+            </div>
+            <div style="flex:1;"><label>Priorité</label>
+              <select id="plp-t-priorite">
+                <option value="normale">Normale</option>
+                <option value="urgente">Urgente</option>
+              </select>
+            </div>
+          </div>
+          <div><label>Description (optionnel)</label><textarea id="plp-t-desc" rows="2"></textarea></div>
+          <div><label>Notes / infos utiles</label><textarea id="plp-t-notes" rows="2" placeholder="Ex: passer chez Léo pour récupérer les clés"></textarea></div>
+
+          <!-- Commentaires -->
+          <div id="plp-comm-wrap" style="display:none;">
+            <div class="plp-comm-list" id="plp-comm-list"></div>
+            <div class="plp-comm-add">
+              <input type="text" id="plp-comm-input" placeholder="Ajouter un commentaire… (ex: matos récupéré, à passer demain)">
+              <button onclick="plpAddComment()">Envoyer</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-delete" id="plp-t-del-btn" style="display:none;" onclick="plpDeleteTache()">Supprimer</button>
+            <div style="display:flex;gap:8px;margin-left:auto;">
+              <button class="btn-cancel" onclick="plpCloseTacheForm()">Annuler</button>
+              <button class="btn-save" onclick="plpSaveTache()">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal récurrentes -->
+      <div class="plp-modal-overlay" id="plp-modal-recur" onclick="if(event.target===this) plpCloseRecurrentes()">
+        <div class="plp-modal" style="max-width:640px;">
+          <h3>Tâches récurrentes</h3>
+          <p style="font-size:12px;color:#666;margin:-8px 0 12px;">Une règle par ligne. La tâche apparaît automatiquement chaque semaine au jour choisi.</p>
+          <div id="plp-recur-list"></div>
+          <button class="btn-save" onclick="plpOpenRecurForm(null)" style="margin-top:10px;">+ Nouvelle récurrente</button>
+        </div>
+      </div>
+
+      <!-- Modal récurrente form -->
+      <div class="plp-modal-overlay" id="plp-modal-recur-form" onclick="if(event.target===this) plpCloseRecurForm()">
+        <div class="plp-modal">
+          <h3 id="plp-recur-title">Nouvelle récurrente</h3>
+          <input type="hidden" id="plp-r-id">
+          <div><label>Titre *</label><input type="text" id="plp-r-titre"></div>
+          <div class="row">
+            <div style="flex:1;"><label>Jour de la semaine *</label>
+              <select id="plp-r-jour">
+                <option value="1">Lundi</option><option value="2">Mardi</option><option value="3">Mercredi</option>
+                <option value="4">Jeudi</option><option value="5">Vendredi</option><option value="6">Samedi</option>
+              </select>
+            </div>
+            <div style="flex:1;" id="plp-r-membre-wrap"><label>Assigner à</label><select id="plp-r-membre"></select></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;"><label>Horaire début</label><input type="time" id="plp-r-hdebut"></div>
+            <div style="flex:1;"><label>Horaire fin</label><input type="time" id="plp-r-hfin"></div>
+          </div>
+          <div class="row">
+            <div style="flex:1;"><label>À partir du *</label><input type="date" id="plp-r-debut"></div>
+            <div style="flex:1;"><label>Jusqu'au (optionnel)</label><input type="date" id="plp-r-fin"></div>
+          </div>
+          <div><label>Priorité</label>
+            <select id="plp-r-priorite"><option value="normale">Normale</option><option value="urgente">Urgente</option></select>
+          </div>
+          <div><label>Description</label><textarea id="plp-r-desc" rows="2"></textarea></div>
+          <div class="actions">
+            <button class="btn-delete" id="plp-r-del-btn" style="display:none;" onclick="plpDeleteRecur()">Supprimer</button>
+            <div style="display:flex;gap:8px;margin-left:auto;">
+              <button class="btn-cancel" onclick="plpCloseRecurForm()">Annuler</button>
+              <button class="btn-save" onclick="plpSaveRecur()">Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- BDE DEMANDES (admin) -->
     <div id="tab-bde-demandes" class="me-panel">
       <h2 class="section-title">Demandes d'adhésion au BDE</h2>
