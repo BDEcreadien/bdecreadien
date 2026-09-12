@@ -2603,7 +2603,7 @@
       if (!titre || !jour) return showToast('Titre et jour obligatoires', 'error');
       const hd = document.getElementById('plp-t-hdebut').value;
       const hf = document.getElementById('plp-t-hfin').value;
-      const payload = {
+      const base = {
         titre, jour,
         horaire_debut: hd || null,
         horaire_fin: hf || null,
@@ -2612,20 +2612,30 @@
         description: document.getElementById('plp-t-desc').value.trim() || null,
         notes: document.getElementById('plp-t-notes').value.trim() || null,
       };
-      const targetMembre = plpIsBureau() ? document.getElementById('plp-t-membre').value : currentProfil.id;
+      let targetMembre = plpIsBureau() ? document.getElementById('plp-t-membre').value : currentProfil.id;
+      if (!targetMembre) targetMembre = currentProfil.id;
+
       if (!id) {
-        payload.membre_id = targetMembre;
-        payload.assigne_par = (targetMembre !== currentProfil.id) ? currentProfil.id : null;
-        payload.created_by = currentProfil.id;
-        const { error } = await Auth.sb.from('planning_taches').insert(payload);
-        if (error) return showToast('Erreur : ' + error.message, 'error');
-        showToast('Tâche créée', 'success');
-      } else {
-        if (plpIsBureau()) {
-          payload.membre_id = targetMembre;
+        // Assignation à un pôle : insère une tâche par membre du pôle
+        if (String(targetMembre).startsWith('pole:')) {
+          const pole = targetMembre.slice(5);
+          const membresPole = _plpMembres.filter(m => (m.pole || 'autre') === pole);
+          if (!membresPole.length) return showToast('Aucun membre dans ce pôle', 'error');
+          const rows = membresPole.map(m => ({ ...base, membre_id: m.id, assigne_par: currentProfil.id, created_by: currentProfil.id }));
+          const { error } = await Auth.sb.from('planning_taches').insert(rows);
+          if (error) { console.error('[plp insert pole]', error, rows); return showToast('Erreur : ' + error.message, 'error'); }
+          showToast(`Tâche créée pour ${rows.length} membre(s) du pôle`, 'success');
+        } else {
+          const payload = { ...base, membre_id: targetMembre, assigne_par: (targetMembre !== currentProfil.id) ? currentProfil.id : null, created_by: currentProfil.id };
+          const { error } = await Auth.sb.from('planning_taches').insert(payload);
+          if (error) { console.error('[plp insert]', error, payload); return showToast('Erreur : ' + error.message, 'error'); }
+          showToast('Tâche créée', 'success');
         }
+      } else {
+        const payload = { ...base };
+        if (plpIsBureau() && !String(targetMembre).startsWith('pole:')) payload.membre_id = targetMembre;
         const { error } = await Auth.sb.from('planning_taches').update(payload).eq('id', id);
-        if (error) return showToast('Erreur : ' + error.message, 'error');
+        if (error) { console.error('[plp update]', error, payload); return showToast('Erreur : ' + error.message, 'error'); }
         showToast('Tâche modifiée', 'success');
       }
       plpCloseTacheForm();
