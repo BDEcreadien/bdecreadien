@@ -5173,6 +5173,36 @@ async function initPlanning() {
   await plnReload();
 }
 
+// Sync JSON → Supabase : importe les events créés depuis /admin?page=agenda
+// (stockés dans _data/evenements.json) vers la table Supabase `evenements`
+// pour qu'ils apparaissent dans Planning bureau.
+async function plnSyncJsonEvents() {
+  try {
+    const res = await fetch('/_data/evenements.json?nc=' + Date.now());
+    const raw = await res.json();
+    const jsonEvs = Array.isArray(raw) ? raw : (raw.evenements || []);
+    if (!jsonEvs.length) return;
+    // Récupère les events Supabase pour éviter les doublons
+    const { data: existing } = await Auth.sb.from('evenements').select('titre, date');
+    const key = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
+    const existingKeys = new Set((existing || []).map(key));
+    const toInsert = jsonEvs.filter(e => e.titre && !existingKeys.has(key(e))).map(e => ({
+      titre: e.titre,
+      date: e.date || null,
+      lieu: e.lieu || null,
+      description: e.description || null,
+      bureau_only: false,
+      created_by: window._monProfilId || null
+    }));
+    if (toInsert.length) {
+      const { error } = await Auth.sb.from('evenements').insert(toInsert);
+      if (error) console.warn('[pln sync JSON→Supabase]', error);
+    }
+  } catch (err) {
+    console.warn('[pln sync JSON→Supabase]', err);
+  }
+}
+
 async function plnReload() {
   const sb = Auth.sb;
   // Sync auto : importe les events du JSON (admin agenda) dans Supabase pour qu'ils
