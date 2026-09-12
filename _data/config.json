@@ -66,6 +66,10 @@
     {
       "key": "partenariat",
       "label": "Pôle Partenariat"
+    },
+    {
+      "key": "sport",
+      "label": "Pôle Sport"
     }
   ]
 }
