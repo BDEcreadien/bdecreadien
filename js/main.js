@@ -1351,6 +1351,10 @@ function renderPartenaires(items) {
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 }
 
+function _partenairesActifs(list) {
+  // Filtre les partenaires désactivés (actif === false explicite)
+  return (Array.isArray(list) ? list : []).filter(p => p.actif !== false);
+}
 if (document.getElementById('partenaires-grid')) {
   fetch('/_data/partenaires.json')
     .then(r => r.json())
