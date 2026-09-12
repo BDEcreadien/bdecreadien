@@ -2430,7 +2430,7 @@
       const fStat = document.getElementById('plp-filter-statut').value;
       const virtuels = range ? plpExpandRecur(range[0], range[1]) : [];
       const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
-      return _plpTaches.concat(virtuels).filter(t => {
+      return _plpTaches.concat(virtuels).concat(_plpInscriptions).filter(t => {
         if (!_plpSelectedMembres.has(t.membre_id)) return false;
         const m = memMap[t.membre_id];
         if (fPole && (!m || m.pole !== fPole)) return false;
