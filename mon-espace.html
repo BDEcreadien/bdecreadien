@@ -2316,28 +2316,37 @@
       const poleNames = Object.keys(poles).sort();
       const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
 
-      // Chips membres (bureau) : groupé par pôle avec en-têtes cliquables
+      // Chips membres (bureau) : groupé par pôle avec en-têtes clairs
       if (plpIsBureau()) {
         const wrap = document.getElementById('plp-membre-chips');
-        let html = '';
+        let html = '<div style="display:flex;flex-direction:column;gap:10px;width:100%;">';
         for (const p of poleNames) {
           const membresP = poles[p];
           const allSel = membresP.every(m => _plpSelectedMembres.has(m.id));
-          html += `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:${allSel ? 'rgba(124,58,237,0.08)' : 'transparent'};border-radius:8px;">
-            <button class="plp-membre-chip ${allSel ? 'selected' : ''}" onclick="plpToggleAllPole('${p}')" style="font-weight:700;">${poleLabel(p)} (${membresP.length})</button>`;
+          const someSel = membresP.some(m => _plpSelectedMembres.has(m.id));
+          html += `<div style="padding:10px 12px;background:#f9fafb;border-radius:10px;border:1px solid ${allSel ? 'var(--violet)' : '#e5e7eb'};">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:1px;">
+                <input type="checkbox" ${allSel ? 'checked' : ''} ${someSel && !allSel ? 'data-indeterminate="1"' : ''} onchange="plpToggleAllPole('${p}')" style="cursor:pointer;">
+                ${poleLabel(p)} (${membresP.length})
+              </label>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:22px;">`;
           for (const m of membresP) {
             const sel = _plpSelectedMembres.has(m.id);
             html += `<span class="plp-membre-chip ${sel ? 'selected' : ''}" onclick="plpToggleMembre('${m.id}')">
               <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
             </span>`;
           }
-          html += `</div>`;
+          html += `</div></div>`;
         }
-        html += `<div style="display:flex;gap:6px;margin-top:6px;">
-          <button class="plp-membre-chip" onclick="plpSelectAllMembres(true)" style="border-style:dashed;">Tout sélectionner</button>
-          <button class="plp-membre-chip" onclick="plpSelectAllMembres(false)" style="border-style:dashed;">Tout désélectionner</button>
-        </div>`;
+        html += `<div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="plp-membre-chip" onclick="plpSelectAllMembres(true)" style="border-style:dashed;font-size:11px;">✓ Tout sélectionner</button>
+          <button class="plp-membre-chip" onclick="plpSelectAllMembres(false)" style="border-style:dashed;font-size:11px;">✕ Tout désélectionner</button>
+        </div></div>`;
         wrap.innerHTML = html;
+        // Applique l'état indéterminé aux checkboxes de pôles partiellement sélectionnés
+        wrap.querySelectorAll('input[data-indeterminate="1"]').forEach(el => el.indeterminate = true);
 
         // Assigner à : select avec optgroups par pôle + option "Tout le pôle X"
         const sel = document.getElementById('plp-t-membre');
