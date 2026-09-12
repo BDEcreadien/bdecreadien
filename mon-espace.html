@@ -918,6 +918,19 @@
       <div id="plp-view-mois" style="display:none;"></div>
       <div id="plp-view-liste" style="display:none;"></div>
 
+      <!-- Bloc ICS abonnement (moins prioritaire → tout en bas) -->
+      <details class="plp-ics-box" style="margin-top:24px;">
+        <summary style="cursor:pointer;font-weight:600;color:#0369a1;">📅 Abonner à mon calendrier Google/Apple</summary>
+        <div style="margin-top:8px;">
+          <div style="font-size:12px;color:#0369a1;margin:4px 0 6px;">Ajoute ce lien comme "calendrier abonné" dans Google Cal / Apple Cal / Outlook. Se met à jour tout seul (env. 1×/h).</div>
+          <code id="plp-ics-url">Chargement…</code>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <button onclick="plpCopyIcs()" style="background:#0369a1;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">📋 Copier le lien</button>
+            <button onclick="plpRegenIcs()" style="background:transparent;border:1px solid #0369a1;color:#0369a1;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">↻ Régénérer le lien</button>
+          </div>
+        </div>
+      </details>
+
       <!-- Modal tâche -->
       <div class="plp-modal-overlay" id="plp-modal-tache" onclick="if(event.target===this) plpCloseTacheForm()">
         <div class="plp-modal">
