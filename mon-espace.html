@@ -2517,28 +2517,44 @@
       for (const m of _plpMembres) (poles[m.pole || 'autre'] ||= []).push(m);
       const poleNames = Object.keys(poles).sort();
       const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
+      const initials = m => `${(m.prenom||'?').charAt(0)}${(m.nom||'').charAt(0)}`.toUpperCase();
       let html = '';
       for (const p of poleNames) {
-        const memP = poles[p];
+        const memP = poles[p].slice().sort((a,b) => (a.prenom||'').localeCompare(b.prenom||'', 'fr'));
         const all = memP.every(m => set.has(m.id));
         const some = memP.some(m => set.has(m.id));
-        html += `<div style="margin-bottom:8px;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;padding:4px 0;">
-            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')" style="cursor:pointer;">
-            ${poleLabel(p)} (${memP.length})
-          </label>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:22px;margin-top:4px;">`;
+        html += `<div class="plp-assign-group">
+          <label class="plp-assign-pole-header">
+            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')">
+            <span>${poleLabel(p)}</span>
+            <span class="plp-assign-pole-count">(${memP.filter(m=>set.has(m.id)).length}/${memP.length})</span>
+          </label>`;
         for (const m of memP) {
           const sel = set.has(m.id);
-          html += `<label class="plp-membre-chip ${sel ? 'selected' : ''}" style="cursor:pointer;">
-            <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')" style="margin-right:4px;cursor:pointer;">
-            <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
+          const avatarBg = m.avatar_url
+            ? `background-image:url('${escapeHtml(m.avatar_url)}');`
+            : `background:${plpColorFor(m.id)};color:white;`;
+          html += `<label class="plp-assign-row ${sel ? 'selected' : ''}">
+            <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
+            <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
+            <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</span>
           </label>`;
         }
-        html += `</div></div>`;
+        html += `</div>`;
       }
+      html += `<div class="plp-assign-actions">
+        <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', true)">✓ Tout</button>
+        <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', false)">✕ Aucun</button>
+      </div>`;
       c.innerHTML = html;
       c.querySelectorAll('input[data-indet="1"]').forEach(el => el.indeterminate = true);
+    }
+    function plpSelectAllAssign(target, all) {
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      set.clear();
+      if (all) _plpMembres.forEach(m => set.add(m.id));
+      plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      plpUpdateBtnLabel(target);
     }
 
     function plpToggleMembreAssign(target, id) {
