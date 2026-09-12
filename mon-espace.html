@@ -2393,6 +2393,53 @@
       polSel.innerHTML = '<option value="">Tous pôles</option>' + poleNames.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(poleLabel(p))}</option>`).join('');
     }
 
+    // ---------- Picker multi-membres (modal) ----------
+    function plpRenderMembrePicker(targetSetVar, containerId) {
+      const set = targetSetVar === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      const c = document.getElementById(containerId);
+      if (!c) return;
+      const poles = {};
+      for (const m of _plpMembres) (poles[m.pole || 'autre'] ||= []).push(m);
+      const poleNames = Object.keys(poles).sort();
+      const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
+      let html = '';
+      for (const p of poleNames) {
+        const memP = poles[p];
+        const all = memP.every(m => set.has(m.id));
+        const some = memP.some(m => set.has(m.id));
+        html += `<div style="margin-bottom:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;padding:4px 0;">
+            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')" style="cursor:pointer;">
+            ${poleLabel(p)} (${memP.length})
+          </label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:22px;margin-top:4px;">`;
+        for (const m of memP) {
+          const sel = set.has(m.id);
+          html += `<label class="plp-membre-chip ${sel ? 'selected' : ''}" style="cursor:pointer;">
+            <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')" style="margin-right:4px;cursor:pointer;">
+            <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
+          </label>`;
+        }
+        html += `</div></div>`;
+      }
+      c.innerHTML = html;
+      c.querySelectorAll('input[data-indet="1"]').forEach(el => el.indeterminate = true);
+    }
+
+    function plpToggleMembreAssign(target, id) {
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      if (set.has(id)) set.delete(id); else set.add(id);
+      plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+    }
+    function plpTogglePoleAssign(target, pole) {
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      const memP = _plpMembres.filter(m => (m.pole || 'autre') === pole);
+      const all = memP.every(m => set.has(m.id));
+      if (all) memP.forEach(m => set.delete(m.id));
+      else memP.forEach(m => set.add(m.id));
+      plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+    }
+
     function plpToggleAllPole(pole) {
       const membresP = _plpMembres.filter(m => (m.pole || 'autre') === pole);
       const allSel = membresP.every(m => _plpSelectedMembres.has(m.id));
