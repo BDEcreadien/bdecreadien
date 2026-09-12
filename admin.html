@@ -2741,6 +2741,18 @@ function onPartenaireLogoSelected() {
   document.getElementById('pt-preview-wrap').style.display = 'block';
 }
 
+async function togglePartenaireActif(idx) {
+  const pt = data.partenaires[idx];
+  if (!pt) return;
+  const newActif = !(pt.actif !== false);
+  pt.actif = newActif;
+  try {
+    await persistData('partenaires', `${newActif ? 'Activation' : 'Désactivation'} partenaire : ${pt.nom}`);
+    openEditor('partenaires', false, 'Partenaires', 'Sponsors & partenaires');
+    showToast(newActif ? 'Partenaire activé' : 'Partenaire désactivé', 'success');
+  } catch (e) { pt.actif = !newActif; showToast('Erreur : ' + e.message, 'error'); }
+}
+
 async function savePartenaire() {
   const nom = document.getElementById('pt-nom').value.trim();
   if (!nom) return showToast('Le nom est obligatoire', 'error');
