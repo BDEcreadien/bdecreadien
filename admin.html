@@ -5288,6 +5288,25 @@ async function plnToggleInscription(tacheId) {
   plnRenderEvents();
 }
 
+async function plnValiderInsc(id) {
+  const { error } = await Auth.sb.from('inscriptions_taches').update({ valide: true, valide_par: window._monProfilId, valide_at: new Date().toISOString() }).eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  const insc = _plnInscriptions.find(i => i.id === id);
+  if (insc) insc.valide = true;
+  plnRenderEvents();
+  showToast('Inscription validée — visible en couleur dans Mon planning', 'success');
+}
+
+async function plnDevaliderInsc(id) {
+  if (!confirm('Retirer la validation de cette inscription ?')) return;
+  const { error } = await Auth.sb.from('inscriptions_taches').update({ valide: false, valide_par: null, valide_at: null }).eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  const insc = _plnInscriptions.find(i => i.id === id);
+  if (insc) insc.valide = false;
+  plnRenderEvents();
+  showToast('Validation retirée', 'success');
+}
+
 // ============ MODAL EVENT ============
 function plnOpenEventForm(evId) {
   const modal = document.getElementById('pln-modal-event');
