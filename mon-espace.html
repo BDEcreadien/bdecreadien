@@ -2120,20 +2120,6 @@
         const current = anneeSel.value;
         anneeSel.innerHTML = '<option value="">Toutes promotions</option>' + annees.map(a => `<option value="${escapeHtml(a)}" ${current===a?'selected':''}>${escapeHtml(a)}</option>`).join('');
       }
-      // Peuple le filtre "année scolaire d'inscription" (sept-août)
-      const annesScol = new Set();
-      for (const u of allUsers) {
-        if (!u.created_at) continue;
-        const d = new Date(u.created_at);
-        const y = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
-        annesScol.add(`${y}-${y+1}`);
-      }
-      const anScSel = document.getElementById('users-filter-annee-scolaire');
-      if (anScSel) {
-        const current = anScSel.value;
-        const list = [...annesScol].sort().reverse();
-        anScSel.innerHTML = '<option value="">Toute année scolaire</option>' + list.map(a => `<option value="${a}" ${current===a?'selected':''}>${a}</option>`).join('');
-      }
       renderUsers(allUsers);
     }
     function filterUsers() {
