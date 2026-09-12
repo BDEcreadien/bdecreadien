@@ -2742,7 +2742,9 @@ async function savePartenaire() {
   try {
     let logo = idx >= 0 ? (data.partenaires[idx].logo || '') : '';
     if (file) { const up = await uploadMedia(file); logo = up.url; }
-    const pt = { nom, description, lien, logo };
+    // Conserve le statut actif existant en modification, sinon actif par défaut
+    const actif = idx >= 0 ? (data.partenaires[idx].actif !== false) : true;
+    const pt = { nom, description, lien, logo, actif };
     if (idx >= 0) data.partenaires[idx] = pt; else data.partenaires.push(pt);
   } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
   btn.textContent = 'Ajouter'; btn.disabled = false;
