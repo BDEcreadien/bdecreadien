@@ -5375,7 +5375,8 @@ function plnOpenEventForm(evId) {
   document.getElementById('pln-modal-event-title').textContent = ev ? "Modifier l'événement" : 'Nouvel événement';
   document.getElementById('pln-ev-save-btn').textContent = ev ? 'Enregistrer' : 'Créer';
   // Templates : masqués en édition
-  document.getElementById('pln-ev-template-wrap').style.display = ev ? 'none' : '';
+  // Template : dispo aussi en édition (permet d'ajouter les tâches d'un modèle à un event existant)
+  document.getElementById('pln-ev-template-wrap').style.display = '';
   const tplSel = document.getElementById('pln-ev-template');
   tplSel.innerHTML = '<option value="">— Aucun (tâches vides) —</option>' + _plnTemplates.map(t => `<option value="${t.id}">${escapeHtml(t.nom)}</option>`).join('');
   tplSel.value = '';
