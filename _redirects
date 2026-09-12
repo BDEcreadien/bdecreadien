@@ -1,2 +1,19 @@
 /liens        /menu             301
 /liens.html   /menu             301
+
+# URLs propres pour les modules admin — chaque module a son URL dédiée
+/admin/finances          /admin.html?page=finances          200
+/admin/planning          /admin.html?page=planning          200
+/admin/agenda            /admin.html?page=agenda            200
+/admin/annonces          /admin.html?page=annonces          200
+/admin/archives          /admin.html?page=archives          200
+/admin/accueil           /admin.html?page=accueil           200
+/admin/communication     /admin.html?page=communication     200
+/admin/galerie           /admin.html?page=galerie           200
+/admin/partenaires       /admin.html?page=partenaires       200
+/admin/stats             /admin.html?page=stats             200
+/admin/fidelite          /admin.html?page=fidelite          200
+/admin/newsletter        /admin.html?page=newsletter        200
+/admin/liens             /admin.html?page=liens             200
+/admin/parametres        /admin.html?page=parametres        200
+/admin/planning-perso    /mon-espace#me-planning            302
