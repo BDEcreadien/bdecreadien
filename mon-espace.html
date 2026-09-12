@@ -2358,8 +2358,24 @@
       const start = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() - 1, 1);
       const end = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() + 2, 0);
       const s = start.toISOString().slice(0,10), e = end.toISOString().slice(0,10);
-      const { data } = await Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour');
-      _plpTaches = data || [];
+      const [tRes, iRes] = await Promise.all([
+        Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour'),
+        Auth.sb.from('inscriptions_taches').select('id, membre_id, valide, taches_bureau!inner(id, titre, evenements!inner(id, titre, date))').gte('taches_bureau.evenements.date', s).lte('taches_bureau.evenements.date', e)
+      ]);
+      _plpTaches = tRes.data || [];
+      // Convertit chaque inscription en pseudo-tâche
+      _plpInscriptions = (iRes.data || []).filter(i => i.taches_bureau && i.taches_bureau.evenements).map(i => ({
+        id: `insc-${i.id}`,
+        titre: `${i.taches_bureau.evenements.titre} — ${i.taches_bureau.titre}`,
+        jour: i.taches_bureau.evenements.date,
+        membre_id: i.membre_id,
+        statut: 'a_faire',
+        priorite: 'normale',
+        horaire_debut: null,
+        horaire_fin: null,
+        _fromInscription: true,
+        _valide: i.valide === true
+      }));
     }
 
     async function plpLoadRecur() {
