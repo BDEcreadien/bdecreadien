@@ -2889,18 +2889,23 @@
         priorite: document.getElementById('plp-r-priorite').value,
         description: document.getElementById('plp-r-desc').value.trim() || null,
       };
-      const targetMembre = plpIsBureau() ? document.getElementById('plp-r-membre').value : currentProfil.id;
+      const targets = plpIsBureau() ? [..._plpRecurAssignSet] : [currentProfil.id];
+      if (!targets.length) return showToast('Sélectionne au moins un membre', 'error');
       if (!id) {
-        payload.membre_id = targetMembre;
-        payload.assigne_par = (targetMembre !== currentProfil.id) ? currentProfil.id : null;
-        const { error } = await Auth.sb.from('planning_taches_recurrentes').insert(payload);
+        const rows = targets.map(mid => ({ ...payload, membre_id: mid, assigne_par: (mid !== currentProfil.id) ? currentProfil.id : null }));
+        const { error } = await Auth.sb.from('planning_taches_recurrentes').insert(rows);
         if (error) return showToast('Erreur : ' + error.message, 'error');
-        showToast('Récurrente créée', 'success');
+        showToast(targets.length > 1 ? `Récurrente créée pour ${targets.length} membres` : 'Récurrente créée', 'success');
       } else {
-        payload.membre_id = targetMembre;
+        payload.membre_id = targets[0];
         const { error } = await Auth.sb.from('planning_taches_recurrentes').update(payload).eq('id', id);
         if (error) return showToast('Erreur : ' + error.message, 'error');
         showToast('Récurrente modifiée', 'success');
+        if (targets.length > 1) {
+          const others = targets.slice(1);
+          const rows = others.map(mid => ({ ...payload, membre_id: mid, assigne_par: currentProfil.id }));
+          await Auth.sb.from('planning_taches_recurrentes').insert(rows);
+        }
       }
       plpCloseRecurForm();
       await plpLoadRecur();
