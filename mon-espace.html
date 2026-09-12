@@ -1013,9 +1013,13 @@
               </select>
             </div>
           </div>
-          <div id="plp-r-membre-wrap">
+          <div id="plp-r-membre-wrap" style="position:relative;">
             <label>Assigner à (1 ou plusieurs) *</label>
-            <div id="plp-r-membre-picker" style="max-height:200px;overflow-y:auto;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;padding:8px;background:#fafafa;"></div>
+            <button type="button" id="plp-r-membre-btn" onclick="plpToggleMembreDropdown('recur')" style="width:100%;padding:8px 12px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;background:white;text-align:left;cursor:pointer;font-family:inherit;font-size:14px;display:flex;justify-content:space-between;align-items:center;">
+              <span id="plp-r-membre-btn-label" style="flex:1;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choisir…</span>
+              <span style="color:#999;">▾</span>
+            </button>
+            <div id="plp-r-membre-picker" style="display:none;position:absolute;left:0;right:0;top:100%;margin-top:4px;max-height:220px;overflow-y:auto;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;padding:8px;background:white;box-shadow:0 8px 20px rgba(0,0,0,0.1);z-index:100;"></div>
           </div>
           <div class="row">
             <div style="flex:1;"><label>Horaire début</label><input type="time" id="plp-r-hdebut"></div>
