@@ -815,10 +815,12 @@ function renderEquipe(data, configPoles) {
 }
 
 if (document.getElementById('equipe-container')) {
-  fetch('/_data/equipe.json')
-    .then(r => r.json())
-    .then(data => renderEquipe(Array.isArray(data) ? data : []))
-    .catch(() => renderEquipe([]));
+  Promise.all([
+    fetch('/_data/equipe.json').then(r => r.json()).catch(() => []),
+    fetch('/_data/config.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([equipe, cfg]) => {
+    renderEquipe(Array.isArray(equipe) ? equipe : [], cfg?.poles || null);
+  });
 }
 
 // ===================================
