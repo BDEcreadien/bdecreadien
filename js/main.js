@@ -639,10 +639,28 @@ function renderArchives(data) {
 }
 
 if (document.getElementById('archives-grid')) {
-  fetch('/_data/archives.json')
-    .then(r => r.json())
-    .then(data => renderArchives(Array.isArray(data) ? data : []))
-    .catch(() => renderArchives([]));
+  // Les événements passés de la table `evenements` (agenda) deviennent automatiquement
+  // des archives dès que leur date < aujourd'hui. Fusionnés avec l'ancien archives.json.
+  Promise.all([
+    loadEvenementsSb().then(evs => {
+      const today = new Date(); today.setHours(0,0,0,0);
+      return evs.filter(e => e.date && new Date(e.date) < today).map(e => {
+        const d = new Date(e.date);
+        return {
+          titre: e.titre || '',
+          lieu: e.lieu || '',
+          tag: e.categorie || 'Événement',
+          day: String(d.getDate()).padStart(2, '0'),
+          month: d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')
+        };
+      });
+    }).catch(() => []),
+    fetch('/_data/archives.json').then(r => r.json()).catch(() => [])
+  ]).then(([evsPast, staticArchives]) => {
+    const merged = [...evsPast, ...(Array.isArray(staticArchives) ? staticArchives : [])];
+    // Trie par date récente en premier (pas parfait car staticArchives n'ont pas de date iso mais OK)
+    renderArchives(merged);
+  });
 }
 
 // ===================================
