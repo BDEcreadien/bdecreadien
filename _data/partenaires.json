@@ -6,17 +6,17 @@
     "logo": "/assets/uploads/1789072898969_w3a0_unnamed.jpg"
   },
   {
-    "nom": "Architextures",
-    "description": "",
-    "lien": "https://architextures.org",
-    "logo": "/assets/uploads/1789072968817_rq8a_artx-logo.svg"
-  },
-  {
     "nom": "Airbnb",
     "description": "",
     "lien": "https://www.airbnb.fr",
     "logo": "/assets/uploads/1789231998951_89f7_airbnb_vertical_lockup_web.png",
     "actif": true
+  },
+  {
+    "nom": "Architextures",
+    "description": "",
+    "lien": "https://architextures.org",
+    "logo": "/assets/uploads/1789072968817_rq8a_artx-logo.svg"
   },
   {
     "nom": "Flam's",
