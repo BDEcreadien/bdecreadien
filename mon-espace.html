@@ -2728,7 +2728,13 @@
       document.getElementById('plp-t-priorite').value = t?.priorite || 'normale';
       document.getElementById('plp-t-desc').value = t?.description || '';
       document.getElementById('plp-t-notes').value = t?.notes || '';
-      if (plpIsBureau()) document.getElementById('plp-t-membre').value = t?.membre_id || currentProfil.id;
+      // Multi-membre picker : init la sélection
+      _plpAssignSet = new Set();
+      if (plpIsBureau()) {
+        if (t?.membre_id) _plpAssignSet.add(t.membre_id);
+        else _plpAssignSet.add(currentProfil.id);
+        plpRenderMembrePicker('t', 'plp-t-membre-picker');
+      }
       document.getElementById('plp-t-del-btn').style.display = id ? '' : 'none';
       // Commentaires
       const commWrap = document.getElementById('plp-comm-wrap');
