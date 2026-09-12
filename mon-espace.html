@@ -2119,8 +2119,16 @@
       const cartesByUid = {};
       (cartesRes.data || []).forEach(c => { cartesByUid[c.user_id] = c; });
       allUsers = (profilsRes.data || []).map(u => ({ ...u, carte: cartesByUid[u.id] || null }));
-      // Peuple le filtre "année" (promotion) dynamiquement
-      const annees = [...new Set(allUsers.map(u => u.annee).filter(Boolean))].sort();
+      // Peuple le filtre "année" (promotion) depuis la colonne Supabase profils.annee
+      const anneeRankFn = a => {
+        if (!a) return 999;
+        const s = String(a).toLowerCase();
+        if (s.includes('admin') || s.includes('prof')) return 100;
+        const m = s.match(/(\d+)/);
+        return m ? parseInt(m[1], 10) : 999;
+      };
+      const annees = [...new Set(allUsers.map(u => u.annee).filter(Boolean))]
+        .sort((a, b) => anneeRankFn(a) - anneeRankFn(b));
       const anneeSel = document.getElementById('users-filter-annee');
       if (anneeSel) {
         const current = anneeSel.value;
