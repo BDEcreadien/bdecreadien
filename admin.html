@@ -5239,8 +5239,13 @@ function plnTacheRowHtml(tache, past) {
   const disabled = past || (full && !isMine);
   const noms = inscrits.map(i => {
     const m = _plnMembres.find(x => x.id === i.membre_id);
-    return m ? `${m.prenom || ''} ${(m.nom || '').charAt(0)}.`.trim() : '?';
-  }).join(', ');
+    const label = m ? `${m.prenom || ''} ${(m.nom || '').charAt(0)}.`.trim() : '?';
+    // Bouton valider/dévalider pour bureau
+    const btn = i.valide
+      ? `<button onclick="plnDevaliderInsc('${i.id}')" title="Retirer validation" style="background:#dcfce7;border:1px solid #16a34a;color:#15803d;border-radius:10px;padding:1px 6px;font-size:10px;cursor:pointer;margin-left:3px;">✓</button>`
+      : `<button onclick="plnValiderInsc('${i.id}')" title="Valider cette inscription (apparaîtra en couleur dans Mon planning)" style="background:transparent;border:1px dashed #9ca3af;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:10px;cursor:pointer;margin-left:3px;">Valider</button>`;
+    return `<span style="display:inline-flex;align-items:center;">${label}${btn}</span>`;
+  }).join(' &nbsp; ');
   const compteur = tache.capacite != null ? `${inscrits.length}/${tache.capacite}` : `${inscrits.length}`;
   return `
     <div class="pln-tache-row ${isMine ? 'mine' : ''}">
