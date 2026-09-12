@@ -10,5 +10,12 @@
     "description": "",
     "lien": "https://architextures.org",
     "logo": "/assets/uploads/1789072968817_rq8a_artx-logo.svg"
+  },
+  {
+    "nom": "Flam's",
+    "description": "",
+    "lien": "https://flams.fr",
+    "logo": "/assets/uploads/1789231463593_39n9_images.jpeg",
+    "actif": true
   }
 ]
