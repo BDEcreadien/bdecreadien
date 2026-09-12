@@ -2459,6 +2459,7 @@
       const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
       if (set.has(id)) set.delete(id); else set.add(id);
       plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      plpUpdateBtnLabel(target);
     }
     function plpTogglePoleAssign(target, pole) {
       const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
@@ -2467,6 +2468,7 @@
       if (all) memP.forEach(m => set.delete(m.id));
       else memP.forEach(m => set.add(m.id));
       plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      plpUpdateBtnLabel(target);
     }
 
     function plpToggleAllPole(pole) {
