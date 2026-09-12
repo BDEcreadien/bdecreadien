@@ -940,10 +940,13 @@
           <div class="row">
             <div style="flex:1;"><label>Jour *</label><input type="date" id="plp-t-jour"></div>
           </div>
-          <div id="plp-t-membre-wrap">
+          <div id="plp-t-membre-wrap" style="position:relative;">
             <label>Assigner à (1 ou plusieurs) *</label>
-            <div id="plp-t-membre-picker" style="max-height:240px;overflow-y:auto;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;padding:8px;background:#fafafa;"></div>
-            <div style="font-size:11px;color:#666;margin-top:4px;">Coche des membres individuels ou "Tout le pôle" pour cocher/décocher le groupe.</div>
+            <button type="button" id="plp-t-membre-btn" onclick="plpToggleMembreDropdown('t')" style="width:100%;padding:8px 12px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;background:white;text-align:left;cursor:pointer;font-family:inherit;font-size:14px;display:flex;justify-content:space-between;align-items:center;">
+              <span id="plp-t-membre-btn-label" style="flex:1;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choisir…</span>
+              <span style="color:#999;">▾</span>
+            </button>
+            <div id="plp-t-membre-picker" style="display:none;position:absolute;left:0;right:0;top:100%;margin-top:4px;max-height:260px;overflow-y:auto;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;padding:8px;background:white;box-shadow:0 8px 20px rgba(0,0,0,0.1);z-index:100;"></div>
           </div>
           <div class="row">
             <div style="flex:1;"><label>Horaire début (optionnel)</label><input type="time" id="plp-t-hdebut"></div>
