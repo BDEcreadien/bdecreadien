@@ -1652,14 +1652,25 @@ function buildEditor(type) {
         if (type === 'equipe') return '';
 
         const archiveBtn = type === 'evenements' ? `<button class="btn-edit" onclick="archiveEvenement(${i})" style="background:#f5f0ff;color:var(--violet);border-color:#d4c4f5;" title="Déplacer en archives">Archiver</button>` : '';
-        return `<div class="item-card">
-          <div class="item-card-info"><div class="item-card-title">${title}</div><div class="item-card-sub">${sub}</div></div>
+        // Bouton activer/désactiver pour partenaires
+        const isPartenaire = type === 'partenaires';
+        const isActif = isPartenaire ? (item.actif !== false) : true;
+        const toggleBtn = isPartenaire
+          ? (isActif
+              ? `<button class="btn-edit" onclick="togglePartenaireActif(${i})" style="background:#fef3c7;color:#a16207;border-color:#fde68a;" title="Désactiver (invisible sur le site)">Désactiver</button>`
+              : `<button class="btn-edit" onclick="togglePartenaireActif(${i})" style="background:#dcfce7;color:#166534;border-color:#bbf7d0;" title="Activer (visible sur le site)">Activer</button>`)
+          : '';
+        const inactifStyle = isPartenaire && !isActif ? 'opacity:0.55;background:#f9fafb;' : '';
+        const inactifBadge = isPartenaire && !isActif ? ' <span style="background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Désactivé</span>' : '';
+        return `<div class="item-card" style="${inactifStyle}">
+          <div class="item-card-info"><div class="item-card-title">${title}${inactifBadge}</div><div class="item-card-sub">${sub}</div></div>
           <div class="item-card-actions">
             <div style="display:flex;flex-direction:column;gap:2px;margin-right:4px;">
               <button onclick="moveItem('${type}',${i},'up')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Monter">↑</button>
               <button onclick="moveItem('${type}',${i},'down')" style="background:none;border:1px solid var(--gris-border);border-radius:4px;padding:1px 5px;cursor:pointer;font-size:11px;color:var(--gris-texte);" title="Descendre">↓</button>
             </div>
             ${archiveBtn}
+            ${toggleBtn}
             <button class="btn-edit" onclick="editItem('${type}',${i})">Modifier</button>
             <button class="btn-delete" onclick="deleteItem('${type}',${i})">Supprimer</button>
           </div></div>`;
