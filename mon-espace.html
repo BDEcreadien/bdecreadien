@@ -2518,45 +2518,67 @@
       btn.style.color = '#111';
     }
 
-    function plpRenderMembrePicker(targetSetVar, containerId) {
+    function plpRenderMembrePicker(targetSetVar, containerId, keepFocus) {
       const set = targetSetVar === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
       const c = document.getElementById(containerId);
       if (!c) return;
+      const q = (_plpAssignSearch[targetSetVar] || '').toLowerCase().trim();
+      const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const nq = norm(q);
+      const filtered = nq
+        ? _plpMembres.filter(m => norm(`${m.prenom||''} ${m.nom||''}`).includes(nq))
+        : _plpMembres;
       const poles = {};
-      for (const m of _plpMembres) (poles[m.pole || 'autre'] ||= []).push(m);
+      for (const m of filtered) (poles[m.pole || 'autre'] ||= []).push(m);
       const poleNames = Object.keys(poles).sort();
       const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
       const initials = m => `${(m.prenom||'?').charAt(0)}${(m.nom||'').charAt(0)}`.toUpperCase();
-      let html = '';
+      let body = '';
+      if (!filtered.length) {
+        body = `<div style="padding:24px 12px;text-align:center;color:#999;font-size:13px;">Aucun membre trouvé.</div>`;
+      }
       for (const p of poleNames) {
         const memP = poles[p].slice().sort((a,b) => (a.prenom||'').localeCompare(b.prenom||'', 'fr'));
-        const all = memP.every(m => set.has(m.id));
-        const some = memP.some(m => set.has(m.id));
-        html += `<div class="plp-assign-group">
+        const memAllInPole = _plpMembres.filter(m => (m.pole || 'autre') === p);
+        const all = memAllInPole.every(m => set.has(m.id));
+        const some = memAllInPole.some(m => set.has(m.id));
+        body += `<div class="plp-assign-group">
           <label class="plp-assign-pole-header">
             <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')">
             <span>${poleLabel(p)}</span>
-            <span class="plp-assign-pole-count">(${memP.filter(m=>set.has(m.id)).length}/${memP.length})</span>
+            <span class="plp-assign-pole-count">(${memAllInPole.filter(m=>set.has(m.id)).length}/${memAllInPole.length})</span>
           </label>`;
         for (const m of memP) {
           const sel = set.has(m.id);
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          html += `<label class="plp-assign-row ${sel ? 'selected' : ''}">
+          body += `<label class="plp-assign-row ${sel ? 'selected' : ''}">
             <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
             <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
             <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</span>
           </label>`;
         }
-        html += `</div>`;
+        body += `</div>`;
       }
-      html += `<div class="plp-assign-actions">
-        <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', true)">✓ Tout</button>
-        <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', false)">✕ Aucun</button>
-      </div>`;
-      c.innerHTML = html;
+      const totalSelected = set.size;
+      c.innerHTML = `
+        <div style="padding:10px 10px 8px;border-bottom:1px solid #eee;background:#fafafa;flex-shrink:0;">
+          <input type="text" id="plp-assign-search-${targetSetVar}" placeholder="Rechercher un membre…" value="${escapeHtml(_plpAssignSearch[targetSetVar]||'')}"
+            oninput="plpAssignSetSearch('${targetSetVar}', this.value)"
+            style="width:100%;padding:7px 10px;border:1px solid var(--gris-border,#e5e7eb);border-radius:6px;font-size:13px;box-sizing:border-box;">
+          <div style="font-size:11px;color:#666;margin-top:6px;">${_plpMembres.length} membres disponibles · ${totalSelected} sélectionné${totalSelected>1?'s':''}</div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:8px;">${body}</div>
+        <div class="plp-assign-actions" style="flex-shrink:0;margin-top:0;">
+          <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', true)">✓ Tout</button>
+          <button type="button" onclick="plpSelectAllAssign('${targetSetVar}', false)">✕ Aucun</button>
+        </div>`;
       c.querySelectorAll('input[data-indet="1"]').forEach(el => el.indeterminate = true);
+      if (keepFocus) {
+        const s = document.getElementById(`plp-assign-search-${targetSetVar}`);
+        if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+      }
     }
     function plpSelectAllAssign(target, all) {
       const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
