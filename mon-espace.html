@@ -2106,7 +2106,7 @@
     // ======= MEMBRES (admin) =======
     async function loadUsers() {
       const [profilsRes, cartesRes] = await Promise.all([
-        Auth.sb.from('profils').select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone, bureau').order('created_at', { ascending: true }),
+        Auth.sb.from('profils').select('id, prenom, nom, email, annee, role, avatar_url, banni_jusqu_a, telephone, bureau, created_at').order('created_at', { ascending: false }),
         Auth.sb.from('cartes_fidelite').select('user_id, tampons, total, historique')
       ]);
       if (profilsRes.error) throw profilsRes.error;
