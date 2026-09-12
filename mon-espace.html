@@ -2358,24 +2358,47 @@
       const start = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() - 1, 1);
       const end = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() + 2, 0);
       const s = start.toISOString().slice(0,10), e = end.toISOString().slice(0,10);
-      const [tRes, iRes] = await Promise.all([
-        Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour'),
-        Auth.sb.from('inscriptions_taches').select('id, membre_id, valide, taches_bureau!inner(id, titre, evenements!inner(id, titre, date))').gte('taches_bureau.evenements.date', s).lte('taches_bureau.evenements.date', e)
-      ]);
+      const tRes = await Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour');
+      if (tRes.error) console.error('[plp taches]', tRes.error);
       _plpTaches = tRes.data || [];
-      // Convertit chaque inscription en pseudo-tâche
-      _plpInscriptions = (iRes.data || []).filter(i => i.taches_bureau && i.taches_bureau.evenements).map(i => ({
-        id: `insc-${i.id}`,
-        titre: `${i.taches_bureau.evenements.titre} — ${i.taches_bureau.titre}`,
-        jour: i.taches_bureau.evenements.date,
-        membre_id: i.membre_id,
-        statut: 'a_faire',
-        priorite: 'normale',
-        horaire_debut: null,
-        horaire_fin: null,
-        _fromInscription: true,
-        _valide: i.valide === true
-      }));
+
+      // Inscriptions events : chargées en 3 requêtes simples pour éviter tout join fragile
+      _plpInscriptions = [];
+      try {
+        const iRes = await Auth.sb.from('inscriptions_taches').select('id, membre_id, valide, tache_id');
+        if (iRes.error) throw iRes.error;
+        const inscs = iRes.data || [];
+        if (inscs.length) {
+          const tacheIds = [...new Set(inscs.map(i => i.tache_id))];
+          const tbRes = await Auth.sb.from('taches_bureau').select('id, titre, evenement_id').in('id', tacheIds);
+          const tbList = tbRes.data || [];
+          const evIds = [...new Set(tbList.map(t => t.evenement_id).filter(Boolean))];
+          const evRes = evIds.length ? await Auth.sb.from('evenements').select('id, titre, date').in('id', evIds) : { data: [] };
+          const tbMap = Object.fromEntries(tbList.map(t => [t.id, t]));
+          const evMap = Object.fromEntries((evRes.data || []).map(e => [e.id, e]));
+          _plpInscriptions = inscs.map(i => {
+            const tb = tbMap[i.tache_id];
+            if (!tb) return null;
+            const ev = evMap[tb.evenement_id];
+            if (!ev || !ev.date) return null;
+            const d = new Date(ev.date);
+            if (d < start || d > end) return null;
+            return {
+              id: `insc-${i.id}`,
+              titre: `${ev.titre} — ${tb.titre}`,
+              jour: ev.date,
+              membre_id: i.membre_id,
+              statut: 'a_faire',
+              priorite: 'normale',
+              horaire_debut: null, horaire_fin: null,
+              _fromInscription: true,
+              _valide: i.valide === true
+            };
+          }).filter(Boolean);
+        }
+      } catch (err) {
+        console.error('[plp inscriptions]', err);
+      }
     }
 
     async function plpLoadRecur() {
