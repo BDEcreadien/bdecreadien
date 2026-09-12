@@ -5175,6 +5175,9 @@ async function initPlanning() {
 
 async function plnReload() {
   const sb = Auth.sb;
+  // Sync auto : importe les events du JSON (admin agenda) dans Supabase pour qu'ils
+  // soient visibles dans Planning bureau. Upsert par titre+date.
+  await plnSyncJsonEvents();
   const [evRes, tacheRes, inscRes, memRes, tplRes] = await Promise.all([
     sb.from('evenements').select('id, titre, date, lieu, description, blocage_desinscription_h, created_at, bureau_only').order('date', { ascending: false, nullsFirst: false }),
     sb.from('taches_bureau').select('id, evenement_id, titre, description, capacite, ordre'),
