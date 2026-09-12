@@ -17,5 +17,12 @@
     "lien": "https://flams.fr",
     "logo": "/assets/uploads/1789231463593_39n9_images.jpeg",
     "actif": false
+  },
+  {
+    "nom": "Airbnb",
+    "description": "",
+    "lien": "https://www.airbnb.fr",
+    "logo": "/assets/uploads/1789231998951_89f7_airbnb_vertical_lockup_web.png",
+    "actif": true
   }
 ]
