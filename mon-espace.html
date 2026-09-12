@@ -2281,28 +2281,67 @@
       const { data } = await Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom');
       _plpMembres = data || [];
       if (_plpSelectedMembres === null) {
-        _plpSelectedMembres = new Set(plpIsBureau() ? [currentProfil.id] : [currentProfil.id]);
+        _plpSelectedMembres = new Set([currentProfil.id]);
       }
-      // Chips membres (bureau)
+      // Groupe par pôle
+      const poles = {};
+      for (const m of _plpMembres) {
+        const p = m.pole || 'autre';
+        (poles[p] ||= []).push(m);
+      }
+      const poleNames = Object.keys(poles).sort();
+      const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
+
+      // Chips membres (bureau) : groupé par pôle avec en-têtes cliquables
       if (plpIsBureau()) {
         const wrap = document.getElementById('plp-membre-chips');
-        wrap.innerHTML = _plpMembres.map(m => {
-          const sel = _plpSelectedMembres.has(m.id);
-          return `<span class="plp-membre-chip ${sel ? 'selected' : ''}" onclick="plpToggleMembre('${m.id}')">
-            <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
-          </span>`;
-        }).join('') + `<button class="plp-membre-chip" onclick="plpSelectAllMembres(true)" style="border-style:dashed;">Tous</button>
-          <button class="plp-membre-chip" onclick="plpSelectAllMembres(false)" style="border-style:dashed;">Aucun</button>`;
-        // Assigner à : select
+        let html = '';
+        for (const p of poleNames) {
+          const membresP = poles[p];
+          const allSel = membresP.every(m => _plpSelectedMembres.has(m.id));
+          html += `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;background:${allSel ? 'rgba(124,58,237,0.08)' : 'transparent'};border-radius:8px;">
+            <button class="plp-membre-chip ${allSel ? 'selected' : ''}" onclick="plpToggleAllPole('${p}')" style="font-weight:700;">${poleLabel(p)} (${membresP.length})</button>`;
+          for (const m of membresP) {
+            const sel = _plpSelectedMembres.has(m.id);
+            html += `<span class="plp-membre-chip ${sel ? 'selected' : ''}" onclick="plpToggleMembre('${m.id}')">
+              <span class="dot" style="background:${plpColorFor(m.id)};"></span>${escapeHtml(m.prenom || '')} ${escapeHtml((m.nom||'').charAt(0))}.
+            </span>`;
+          }
+          html += `</div>`;
+        }
+        html += `<div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="plp-membre-chip" onclick="plpSelectAllMembres(true)" style="border-style:dashed;">Tout sélectionner</button>
+          <button class="plp-membre-chip" onclick="plpSelectAllMembres(false)" style="border-style:dashed;">Tout désélectionner</button>
+        </div>`;
+        wrap.innerHTML = html;
+
+        // Assigner à : select avec optgroups par pôle + option "Tout le pôle X"
         const sel = document.getElementById('plp-t-membre');
-        sel.innerHTML = _plpMembres.map(m => `<option value="${m.id}" ${m.id === currentProfil.id ? 'selected' : ''}>${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</option>`).join('');
-        const selR = document.getElementById('plp-r-membre');
-        selR.innerHTML = sel.innerHTML;
+        let optHtml = '';
+        for (const p of poleNames) {
+          optHtml += `<optgroup label="${escapeHtml(poleLabel(p))}">`;
+          optHtml += `<option value="pole:${escapeHtml(p)}">👥 Tout le pôle ${escapeHtml(poleLabel(p).replace(/^\S+\s/, ''))} (${poles[p].length})</option>`;
+          for (const m of poles[p]) {
+            optHtml += `<option value="${m.id}">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</option>`;
+          }
+          optHtml += `</optgroup>`;
+        }
+        sel.innerHTML = optHtml;
+        sel.value = currentProfil.id;
+        document.getElementById('plp-r-membre').innerHTML = optHtml;
+        document.getElementById('plp-r-membre').value = currentProfil.id;
       }
       // Filtre pôle
-      const poles = [...new Set(_plpMembres.map(m => m.pole).filter(Boolean))].sort();
       const polSel = document.getElementById('plp-filter-pole');
-      polSel.innerHTML = '<option value="">Tous pôles</option>' + poles.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+      polSel.innerHTML = '<option value="">Tous pôles</option>' + poleNames.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(poleLabel(p))}</option>`).join('');
+    }
+
+    function plpToggleAllPole(pole) {
+      const membresP = _plpMembres.filter(m => (m.pole || 'autre') === pole);
+      const allSel = membresP.every(m => _plpSelectedMembres.has(m.id));
+      if (allSel) membresP.forEach(m => _plpSelectedMembres.delete(m.id));
+      else membresP.forEach(m => _plpSelectedMembres.add(m.id));
+      plpLoadMembres().then(plpRender);
     }
 
     function plpToggleMembre(id) {
