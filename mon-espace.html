@@ -2223,7 +2223,9 @@
     const PLP_COLORS = ['#7C3AED','#DC2626','#EA580C','#D97706','#65A30D','#059669','#0891B2','#2563EB','#7C2D12','#BE185D','#9333EA','#4F46E5','#0284C7','#0D9488','#CA8A04'];
     const PLP_JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
     const PLP_MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-    let _plpMembres = [], _plpTaches = [], _plpRecur = [], _plpInscriptions = [], _plpSelectedMembres = null, _plpView = 'semaine', _plpCursor = new Date(), _plpEditingId = null, _plpRecurEditingId = null, _plpInited = false;
+    // var (pas let) pour éviter le TDZ si switchTab('me-planning') est appelé
+    // par le hash d'URL AVANT que le parseur atteigne cette ligne.
+    var _plpMembres = [], _plpTaches = [], _plpRecur = [], _plpInscriptions = [], _plpSelectedMembres = null, _plpView = 'semaine', _plpCursor = new Date(), _plpEditingId = null, _plpRecurEditingId = null, _plpInited = false;
     const PLP_POLES_LABELS = { bureau:'🎓 Bureau', communication:'📣 Communication', partenariat:'🤝 Partenariat', evenementiel:'🎉 Événementiel', tresorerie:'💰 Trésorerie' };
     const plpIsBureau = () => currentProfil && (currentProfil.role === 'admin' || currentProfil.bureau === true);
 
