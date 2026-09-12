@@ -107,6 +107,10 @@ function renderActu(data) {
   const list = document.getElementById('actu-list');
   if (!featured || !list) return;
 
+  // Auto-archive : n'affiche que les événements à venir (date >= aujourd'hui)
+  const today = new Date(); today.setHours(0,0,0,0);
+  data = (data || []).filter(e => !e.date || new Date(e.date) >= today);
+
   if (!data.length) {
     featured.innerHTML = '<span class="actu-featured-tag">Événement phare</span><h3 class="actu-featured-title">Aucun événement</h3>';
     return;
