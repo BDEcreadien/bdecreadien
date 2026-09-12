@@ -2863,7 +2863,12 @@
       document.getElementById('plp-r-fin').value = r?.date_fin || '';
       document.getElementById('plp-r-priorite').value = r?.priorite || 'normale';
       document.getElementById('plp-r-desc').value = r?.description || '';
-      if (plpIsBureau()) document.getElementById('plp-r-membre').value = r?.membre_id || currentProfil.id;
+      _plpRecurAssignSet = new Set();
+      if (plpIsBureau()) {
+        if (r?.membre_id) _plpRecurAssignSet.add(r.membre_id);
+        else _plpRecurAssignSet.add(currentProfil.id);
+        plpRenderMembrePicker('recur', 'plp-r-membre-picker');
+      }
       document.getElementById('plp-r-del-btn').style.display = id ? '' : 'none';
       document.getElementById('plp-modal-recur-form').classList.add('visible');
     }
