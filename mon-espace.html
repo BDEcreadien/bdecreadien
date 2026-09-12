@@ -1059,6 +1059,23 @@
       </div>
       <p class="section-sub">Changer les rôles, bannir ou supprimer.</p>
       <input type="search" id="users-search" class="search-input" placeholder="Rechercher un utilisateur…" oninput="filterUsers()">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 14px;">
+        <select id="users-filter-role" onchange="filterUsers()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--gris-border,#e5e7eb);background:white;font-size:13px;">
+          <option value="">Tous les rôles</option>
+          <option value="admin">Admin</option>
+          <option value="membre">Membre BDE</option>
+          <option value="etudiant">Étudiant</option>
+        </select>
+        <select id="users-filter-annee" onchange="filterUsers()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--gris-border,#e5e7eb);background:white;font-size:13px;">
+          <option value="">Toutes années</option>
+        </select>
+        <select id="users-sort" onchange="filterUsers()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--gris-border,#e5e7eb);background:white;font-size:13px;">
+          <option value="date-desc">📅 Plus récents</option>
+          <option value="date-asc">📅 Plus anciens</option>
+          <option value="alpha">🔠 Alphabétique</option>
+          <option value="role">🎓 Par rôle</option>
+        </select>
+      </div>
       <div id="users-list" class="users-list"></div>
     </div>
 
