@@ -1358,7 +1358,7 @@ function _partenairesActifs(list) {
 if (document.getElementById('partenaires-grid')) {
   fetch('/_data/partenaires.json')
     .then(r => r.json())
-    .then(data => renderPartenaires(Array.isArray(data) ? data : []))
+    .then(data => renderPartenaires(_partenairesActifs(data)))
     .catch(() => renderPartenaires([]));
 }
 
