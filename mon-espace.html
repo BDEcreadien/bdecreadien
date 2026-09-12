@@ -2137,11 +2137,18 @@
         return true;
       });
       const rolRang = r => ({ admin:3, membre:2, etudiant:1 }[r] || 0);
+      const anneeRang = a => {
+        if (!a) return 999;
+        const s = String(a).toLowerCase();
+        if (s.includes('admin') || s.includes('prof')) return 100;
+        const m = s.match(/(\d+)/);
+        return m ? parseInt(m[1], 10) : 999;
+      };
       const cmp = {
-        'date-desc': (a,b) => (b.created_at || '').localeCompare(a.created_at || ''),
-        'date-asc':  (a,b) => (a.created_at || '').localeCompare(b.created_at || ''),
-        'alpha':     (a,b) => (`${a.prenom||''} ${a.nom||''}`).localeCompare(`${b.prenom||''} ${b.nom||''}`, 'fr'),
-        'role':      (a,b) => rolRang(b.role) - rolRang(a.role) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr')
+        'annee-asc':  (a,b) => anneeRang(a.annee) - anneeRang(b.annee) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr'),
+        'annee-desc': (a,b) => anneeRang(b.annee) - anneeRang(a.annee) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr'),
+        'alpha':      (a,b) => (`${a.prenom||''} ${a.nom||''}`).localeCompare(`${b.prenom||''} ${b.nom||''}`, 'fr'),
+        'role':       (a,b) => rolRang(b.role) - rolRang(a.role) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr')
       }[sort];
       if (cmp) filtered = [...filtered].sort(cmp);
       renderUsers(filtered);
