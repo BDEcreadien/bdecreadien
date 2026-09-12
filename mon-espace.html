@@ -2140,7 +2140,7 @@
       const q = (document.getElementById('users-search').value || '').toLowerCase().trim();
       const fRole = (document.getElementById('users-filter-role')?.value) || '';
       const fAnnee = (document.getElementById('users-filter-annee')?.value) || '';
-      const sort = (document.getElementById('users-sort')?.value) || 'annee-asc';
+      const sort = (document.getElementById('users-sort')?.value) || 'date-desc';
       let filtered = allUsers.filter(u => {
         if (fRole && u.role !== fRole) return false;
         if (fAnnee && u.annee !== fAnnee) return false;
