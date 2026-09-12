@@ -2200,6 +2200,26 @@
     // ============================================================
     // MON PLANNING PERSO (plp*)
     // ============================================================
+
+    // Toast local si pas déjà défini globalement
+    if (typeof window.showToast !== 'function') {
+      window.showToast = function(msg, type) {
+        let t = document.getElementById('plp-toast');
+        if (!t) {
+          t = document.createElement('div');
+          t.id = 'plp-toast';
+          t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 20px;border-radius:10px;color:white;font-size:14px;font-weight:600;z-index:99999;box-shadow:0 8px 30px rgba(0,0,0,0.2);opacity:0;transition:opacity .2s;max-width:90vw;text-align:center;';
+          document.body.appendChild(t);
+        }
+        t.style.background = type === 'error' ? '#dc2626' : (type === 'success' ? '#16a34a' : '#2563eb');
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._hideTo);
+        t._hideTo = setTimeout(() => { t.style.opacity = '0'; }, 3500);
+      };
+    }
+    const showToast = window.showToast;
+
     const PLP_COLORS = ['#7C3AED','#DC2626','#EA580C','#D97706','#65A30D','#059669','#0891B2','#2563EB','#7C2D12','#BE185D','#9333EA','#4F46E5','#0284C7','#0D9488','#CA8A04'];
     const PLP_JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
     const PLP_MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
