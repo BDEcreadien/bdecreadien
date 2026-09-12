@@ -2895,7 +2895,7 @@
       if (plpIsBureau()) {
         if (r?.membre_id) _plpRecurAssignSet.add(r.membre_id);
         else _plpRecurAssignSet.add(currentProfil.id);
-        plpRenderMembrePicker('recur', 'plp-r-membre-picker');
+        plpUpdateBtnLabel('recur');
       }
       document.getElementById('plp-r-del-btn').style.display = id ? '' : 'none';
       document.getElementById('plp-modal-recur-form').classList.add('visible');
