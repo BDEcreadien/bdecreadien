@@ -2079,6 +2079,12 @@
       if (error) { alert(error.message); return; }
       await loadDemandes(); renderKpiBde();
     }
+    async function deleteDemande(demandeId) {
+      if (!confirm('Supprimer définitivement cette demande ? (l\'étudiant pourra en refaire une)')) return;
+      const { error } = await Auth.sb.from('demandes_membre_bde').delete().eq('id', demandeId);
+      if (error) { alert('Erreur : ' + error.message); return; }
+      await loadDemandes(); renderKpiBde();
+    }
 
     // ======= MEMBRES (admin) =======
     async function loadUsers() {
