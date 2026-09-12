@@ -2386,7 +2386,7 @@
 
     async function plpLoadMembres() {
       const [profilsRes, equipeRes] = await Promise.all([
-        Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom'),
+        Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').or('role.in.(membre,admin),bureau.eq.true').order('prenom'),
         fetch('/_data/equipe.json').then(r => r.json()).catch(() => [])
       ]);
       if (profilsRes.error) { console.error('[plp membres]', profilsRes.error); showToast('Chargement membres : ' + profilsRes.error.message, 'error'); }
