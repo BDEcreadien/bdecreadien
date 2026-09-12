@@ -770,16 +770,24 @@ fetch(`/_data/config.json?t=${Date.now()}`)
 // ÉQUIPE — Chargement & Rendu
 // ===================================
 
-function renderEquipe(data) {
+function renderEquipe(data, configPoles) {
   const container = document.getElementById('equipe-container');
   if (!container) return;
   if (!data.length) { container.innerHTML = '<p style="color:var(--gris-texte);text-align:center;padding:2rem;">Aucun membre pour le moment.</p>'; return; }
 
-  const poles = [
-    { key: 'bureau', label: 'Bureau exécutif' },
-    { key: 'evenements', label: 'Pôle Événements' },
-    { key: 'communication', label: 'Pôle Communication' }
-  ];
+  // Pôles connus (config.json) + fallback + tout pôle utilisé dans equipe.json qui n'est pas dans la config
+  const knownPoles = Array.isArray(configPoles) && configPoles.length
+    ? configPoles
+    : [
+        { key: 'bureau', label: 'Bureau exécutif' },
+        { key: 'evenements', label: 'Pôle Événements' },
+        { key: 'communication', label: 'Pôle Communication' },
+        { key: 'partenariat', label: 'Pôle Partenariat' }
+      ];
+  const usedKeys = new Set(data.map(m => m.pole).filter(Boolean));
+  const knownKeys = new Set(knownPoles.map(p => p.key));
+  const extraPoles = [...usedKeys].filter(k => !knownKeys.has(k)).map(k => ({ key: k, label: 'Pôle ' + k.charAt(0).toUpperCase() + k.slice(1) }));
+  const poles = [...knownPoles, ...extraPoles];
   const delays = ['reveal-delay-1','reveal-delay-2','reveal-delay-3','reveal-delay-4'];
 
   container.innerHTML = poles.map(pole => {
