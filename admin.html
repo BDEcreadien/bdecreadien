@@ -2746,11 +2746,17 @@ async function togglePartenaireActif(idx) {
   if (!pt) return;
   const newActif = !(pt.actif !== false);
   pt.actif = newActif;
+  // Re-render immédiat (optimiste) pour feedback visuel instantané
+  openEditor('partenaires', false, 'Partenaires', 'Sponsors & partenaires');
+  showToast(newActif ? 'Partenaire activé…' : 'Partenaire désactivé…', 'info');
   try {
     await persistData('partenaires', `${newActif ? 'Activation' : 'Désactivation'} partenaire : ${pt.nom}`);
+    showToast(newActif ? 'Partenaire activé ✓' : 'Partenaire désactivé ✓', 'success');
+  } catch (e) {
+    pt.actif = !newActif;
     openEditor('partenaires', false, 'Partenaires', 'Sponsors & partenaires');
-    showToast(newActif ? 'Partenaire activé' : 'Partenaire désactivé', 'success');
-  } catch (e) { pt.actif = !newActif; showToast('Erreur : ' + e.message, 'error'); }
+    showToast('Erreur : ' + e.message, 'error');
+  }
 }
 
 async function savePartenaire() {
