@@ -655,24 +655,26 @@ function renderArchives(data) {
 }
 
 if (document.getElementById('archives-grid')) {
-  // Les événements passés de la table `evenements` (agenda) deviennent automatiquement
-  // des archives dès que leur date < aujourd'hui. Fusionnés avec l'ancien archives.json.
+  // Auto-archive : tout event dont date < aujourd'hui (Supabase OU _data/evenements.json)
+  // apparaît automatiquement ici. Fusionné avec l'ancien archives.json statique.
+  const today = new Date(); today.setHours(0,0,0,0);
+  const toArchive = e => {
+    const d = new Date(e.date);
+    return {
+      titre: e.titre || '',
+      lieu: e.lieu || '',
+      tag: e.categorie || 'Événement',
+      day: String(d.getDate()).padStart(2, '0'),
+      month: d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', ''),
+      _isoDate: e.date
+    };
+  };
   Promise.all([
-    loadEvenementsSb().then(evs => {
-      const today = new Date(); today.setHours(0,0,0,0);
-      return evs.filter(e => e.date && new Date(e.date) < today).map(e => {
-        const d = new Date(e.date);
-        return {
-          titre: e.titre || '',
-          lieu: e.lieu || '',
-          tag: e.categorie || 'Événement',
-          day: String(d.getDate()).padStart(2, '0'),
-          month: d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '')
-        };
-      });
-    }).catch(() => []),
+    loadEvenementsMerged().then(evs => evs.filter(e => e.date && new Date(e.date) < today).map(toArchive)).catch(() => []),
     fetch('/_data/archives.json').then(r => r.json()).catch(() => [])
   ]).then(([evsPast, staticArchives]) => {
+    // Trie les events auto (date iso récente en premier) + append les archives statiques
+    evsPast.sort((a, b) => (b._isoDate || '').localeCompare(a._isoDate || ''));
     const merged = [...evsPast, ...(Array.isArray(staticArchives) ? staticArchives : [])];
     // Trie par date récente en premier (pas parfait car staticArchives n'ont pas de date iso mais OK)
     renderArchives(merged);
