@@ -2402,25 +2402,28 @@
     }
 
     async function plpLoadMembres() {
+      // On charge TOUS les profils (pas de filtre role) — on filtrera ensuite localement
+      // pour inclure : role=membre/admin OU bureau=true OU nom présent dans equipe.json (source /communication)
       const [profilsRes, equipeRes] = await Promise.all([
-        Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').or('role.in.(membre,admin),bureau.eq.true').order('prenom'),
+        Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').order('prenom'),
         fetch('/_data/equipe.json').then(r => r.json()).catch(() => [])
       ]);
       if (profilsRes.error) { console.error('[plp membres]', profilsRes.error); showToast('Chargement membres : ' + profilsRes.error.message, 'error'); }
-      _plpMembres = profilsRes.data || [];
-      // Sync auto : chaque entrée equipe.json enrichit le profil correspondant (matché par nom complet)
-      // → le pole affiché dans "Assigner à" reflète la page /bde.html sans double saisie
+      const allProfils = profilsRes.data || [];
       const equipe = Array.isArray(equipeRes) ? equipeRes : [];
       const norm = s => (s || '').toLowerCase().replace(/[\s\-'']+/g, '').normalize('NFD').replace(/[̀-ͯ]/g, '');
-      for (const m of _plpMembres) {
+      // Enrichit chaque profil : pole depuis equipe.json + flag _inEquipe si présent sur /communication
+      for (const m of allProfils) {
         const fullName = norm(`${m.prenom || ''}${m.nom || ''}`);
         const match = equipe.find(e => norm(e.nom) === fullName || norm(e.nom).endsWith(fullName) || fullName.endsWith(norm(e.nom)));
         if (match) {
-          if (match.pole && !m.pole) m.pole = match.pole;
-          else if (match.pole) m.pole = match.pole;  // equipe.json = source de vérité
+          if (match.pole) m.pole = match.pole; // equipe.json = source de vérité
           if (match.role) m._roleEquipe = match.role;
+          m._inEquipe = true;
         }
       }
+      // Filtre final : membre/admin OU bureau=true OU dans equipe.json
+      _plpMembres = allProfils.filter(m => ['membre','admin'].includes(m.role) || m.bureau === true || m._inEquipe);
       // Filet de sécurité : s'assure d'avoir au moins le profil courant
       if (!_plpMembres.length && currentProfil) _plpMembres = [currentProfil];
       else if (!_plpMembres.some(m => m.id === currentProfil.id) && currentProfil) _plpMembres.unshift(currentProfil);
