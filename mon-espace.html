@@ -806,6 +806,23 @@
         .plp-membre-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; border:1px solid var(--gris-border,#e5e7eb); font-size:12px; cursor:pointer; background:white; }
         .plp-membre-chip.selected { background:var(--violet); color:white; border-color:var(--violet); }
         .plp-membre-chip .dot { width:8px; height:8px; border-radius:50%; }
+        /* Assigner à — picker en liste (rows) */
+        .plp-assign-group { margin-bottom:6px; }
+        .plp-assign-group + .plp-assign-group { border-top:1px solid #f0f0f0; padding-top:6px; }
+        .plp-assign-pole-header { display:flex; align-items:center; gap:8px; padding:6px 8px 4px; font-size:11px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:1px; cursor:pointer; user-select:none; }
+        .plp-assign-pole-header input { cursor:pointer; }
+        .plp-assign-pole-count { color:#999; font-weight:500; }
+        .plp-assign-row { display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:8px; cursor:pointer; transition:background .12s; }
+        .plp-assign-row:hover { background:#f5f5f5; }
+        .plp-assign-row.selected { background:rgba(124,58,237,.08); }
+        .plp-assign-row input[type=checkbox] { cursor:pointer; margin:0; }
+        .plp-assign-avatar { width:28px; height:28px; border-radius:50%; background-size:cover; background-position:center; background-color:#e5e7eb; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#555; border:2px solid transparent; }
+        .plp-assign-row.selected .plp-assign-avatar { border-color:var(--violet,#7c3aed); }
+        .plp-assign-name { flex:1; font-size:13px; color:#111; line-height:1.2; }
+        .plp-assign-name small { display:block; color:#888; font-size:11px; }
+        .plp-assign-actions { display:flex; gap:6px; padding:8px; border-top:1px solid #eee; margin-top:6px; }
+        .plp-assign-actions button { flex:1; padding:6px; font-size:11px; border:1px dashed var(--gris-border,#e5e7eb); background:transparent; border-radius:6px; cursor:pointer; color:#666; }
+        .plp-assign-actions button:hover { border-style:solid; color:var(--violet,#7c3aed); border-color:var(--violet,#7c3aed); }
         /* Semaine grid */
         .plp-week { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; }
         .plp-day-col { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:10px; min-height:200px; display:flex; flex-direction:column; }
