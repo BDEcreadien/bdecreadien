@@ -2478,17 +2478,23 @@
     }
 
     // ---------- Dropdown compact multi-membres (modal) ----------
+    var _plpAssignSearch = { t: '', recur: '' };
     function plpToggleMembreDropdown(target) {
       const id = target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker';
       const el = document.getElementById(id);
       if (!el) return;
       const showing = el.style.display !== 'none';
-      // Ferme les autres dropdowns d'abord
       ['plp-t-membre-picker','plp-r-membre-picker'].forEach(x => { const e = document.getElementById(x); if (e) e.style.display = 'none'; });
       if (!showing) {
-        el.style.display = 'block';
+        el.style.display = 'flex';
+        _plpAssignSearch[target] = '';
         plpRenderMembrePicker(target, id);
+        setTimeout(() => { const s = document.getElementById(`plp-assign-search-${target}`); if (s) s.focus(); }, 30);
       }
+    }
+    function plpAssignSetSearch(target, val) {
+      _plpAssignSearch[target] = val;
+      plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker', true);
     }
     // Clic hors dropdown → ferme
     document.addEventListener('click', (evt) => {
