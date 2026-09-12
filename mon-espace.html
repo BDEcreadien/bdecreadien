@@ -2375,21 +2375,6 @@
         // Applique l'état indéterminé aux checkboxes de pôles partiellement sélectionnés
         wrap.querySelectorAll('input[data-indeterminate="1"]').forEach(el => el.indeterminate = true);
 
-        // Assigner à : select avec optgroups par pôle + option "Tout le pôle X"
-        const sel = document.getElementById('plp-t-membre');
-        let optHtml = '';
-        for (const p of poleNames) {
-          optHtml += `<optgroup label="${escapeHtml(poleLabel(p))}">`;
-          optHtml += `<option value="pole:${escapeHtml(p)}">👥 Tout le pôle ${escapeHtml(poleLabel(p).replace(/^\S+\s/, ''))} (${poles[p].length})</option>`;
-          for (const m of poles[p]) {
-            optHtml += `<option value="${m.id}">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</option>`;
-          }
-          optHtml += `</optgroup>`;
-        }
-        sel.innerHTML = optHtml;
-        sel.value = currentProfil.id;
-        document.getElementById('plp-r-membre').innerHTML = optHtml;
-        document.getElementById('plp-r-membre').value = currentProfil.id;
       }
       // Filtre pôle
       const polSel = document.getElementById('plp-filter-pole');
