@@ -2278,8 +2278,12 @@
     }
 
     async function plpLoadMembres() {
-      const { data } = await Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom');
+      const { data, error } = await Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom');
+      if (error) { console.error('[plp membres]', error); showToast('Chargement membres : ' + error.message, 'error'); }
       _plpMembres = data || [];
+      // Filet de sécurité : s'assure d'avoir au moins le profil courant
+      if (!_plpMembres.length && currentProfil) _plpMembres = [currentProfil];
+      else if (!_plpMembres.some(m => m.id === currentProfil.id) && currentProfil) _plpMembres.unshift(currentProfil);
       if (_plpSelectedMembres === null) {
         _plpSelectedMembres = new Set([currentProfil.id]);
       }
