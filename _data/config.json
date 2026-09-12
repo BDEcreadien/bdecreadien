@@ -70,6 +70,10 @@
     {
       "key": "sport",
       "label": "Pôle Sport"
+    },
+    {
+      "key": "organisation",
+      "label": "Pôle Organisation"
     }
   ]
 }
