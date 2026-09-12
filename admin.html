@@ -5406,21 +5406,23 @@ async function plnSaveEvent() {
     const { data, error } = await Auth.sb.from('evenements').insert(payload).select().single();
     if (error) return showToast('Erreur : ' + error.message, 'error');
     evId = data.id;
-    // Application du template s'il y en a un
-    const tplId = document.getElementById('pln-ev-template').value;
-    if (tplId) {
-      const tpl = _plnTemplates.find(t => t.id === tplId);
-      if (tpl && Array.isArray(tpl.taches) && tpl.taches.length) {
-        const rows = tpl.taches.map((t, i) => ({
-          evenement_id: evId,
-          titre: t.titre || 'Tâche',
-          description: t.description || null,
-          capacite: t.capacite != null ? Number(t.capacite) : null,
-          ordre: t.ordre != null ? Number(t.ordre) : i
-        }));
-        const { error: te } = await Auth.sb.from('taches_bureau').insert(rows);
-        if (te) showToast('Événement créé mais tâches du modèle non ajoutées : ' + te.message, 'error');
-      }
+  }
+  // Application du template s'il y en a un (marche pour création ET édition)
+  const tplId = document.getElementById('pln-ev-template').value;
+  if (tplId && evId) {
+    const tpl = _plnTemplates.find(t => t.id === tplId);
+    if (tpl && Array.isArray(tpl.taches) && tpl.taches.length) {
+      // Compte les tâches existantes pour ordre
+      const existing = _plnTaches.filter(t => t.evenement_id === evId).length;
+      const rows = tpl.taches.map((t, i) => ({
+        evenement_id: evId,
+        titre: t.titre || 'Tâche',
+        description: t.description || null,
+        capacite: t.capacite != null ? Number(t.capacite) : null,
+        ordre: t.ordre != null ? Number(t.ordre) + existing : existing + i
+      }));
+      const { error: te } = await Auth.sb.from('taches_bureau').insert(rows);
+      if (te) showToast('Événement enregistré mais tâches du modèle non ajoutées : ' + te.message, 'error');
     }
   }
   showToast(id ? 'Événement modifié' : 'Événement créé', 'success');
