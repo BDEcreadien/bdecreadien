@@ -2113,17 +2113,38 @@
       const cartesByUid = {};
       (cartesRes.data || []).forEach(c => { cartesByUid[c.user_id] = c; });
       allUsers = (profilsRes.data || []).map(u => ({ ...u, carte: cartesByUid[u.id] || null }));
+      // Peuple le filtre "année" dynamiquement
+      const annees = [...new Set(allUsers.map(u => u.annee).filter(Boolean))].sort();
+      const anneeSel = document.getElementById('users-filter-annee');
+      if (anneeSel) {
+        const current = anneeSel.value;
+        anneeSel.innerHTML = '<option value="">Toutes années</option>' + annees.map(a => `<option value="${escapeHtml(a)}" ${current===a?'selected':''}>${escapeHtml(a)}</option>`).join('');
+      }
       renderUsers(allUsers);
     }
     function filterUsers() {
-      const q = document.getElementById('users-search').value.toLowerCase().trim();
-      if (!q) return renderUsers(allUsers);
-      renderUsers(allUsers.filter(u =>
-        (u.prenom || '').toLowerCase().includes(q) ||
-        (u.nom || '').toLowerCase().includes(q) ||
-        (u.email || '').toLowerCase().includes(q) ||
-        (u.telephone || '').toLowerCase().includes(q)
-      ));
+      const q = (document.getElementById('users-search').value || '').toLowerCase().trim();
+      const fRole = (document.getElementById('users-filter-role')?.value) || '';
+      const fAnnee = (document.getElementById('users-filter-annee')?.value) || '';
+      const sort = (document.getElementById('users-sort')?.value) || 'date-desc';
+      let filtered = allUsers.filter(u => {
+        if (fRole && u.role !== fRole) return false;
+        if (fAnnee && u.annee !== fAnnee) return false;
+        if (q) {
+          const hay = ((u.prenom || '') + ' ' + (u.nom || '') + ' ' + (u.email || '') + ' ' + (u.telephone || '')).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+      const rolRang = r => ({ admin:3, membre:2, etudiant:1 }[r] || 0);
+      const cmp = {
+        'date-desc': (a,b) => (b.created_at || '').localeCompare(a.created_at || ''),
+        'date-asc':  (a,b) => (a.created_at || '').localeCompare(b.created_at || ''),
+        'alpha':     (a,b) => (`${a.prenom||''} ${a.nom||''}`).localeCompare(`${b.prenom||''} ${b.nom||''}`, 'fr'),
+        'role':      (a,b) => rolRang(b.role) - rolRang(a.role) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr')
+      }[sort];
+      if (cmp) filtered = [...filtered].sort(cmp);
+      renderUsers(filtered);
     }
     function renderUsers(list) {
       const wrap = document.getElementById('users-list');
