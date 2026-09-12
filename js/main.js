@@ -389,6 +389,10 @@ let _eventsCache = [];
 const CAT_LABELS = { soiree: 'Soirée', sortie: 'Sortie', atelier: 'Atelier', autre: 'Autre' };
 
 function renderEvenements(allData) {
+  // Auto-archive : n'affiche que les événements à venir (date >= aujourd'hui)
+  const today = new Date(); today.setHours(0,0,0,0);
+  allData = (allData || []).filter(e => !e.date || new Date(e.date) >= today);
+
   _eventsCache = allData;
   const container = document.getElementById('evenements-list');
   if (!container) return;
