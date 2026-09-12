@@ -2512,13 +2512,17 @@
     function plpTacheCard(t, isPast) {
       const col = plpColorFor(t.membre_id);
       const done = t.statut === 'fait';
-      const late = isPast && !done && !t._virtuel;
-      const classes = ['plp-tache', done ? 'done' : '', late ? 'late' : '', (t.from_event_id && !t.event_confirme) ? 'event-pending' : ''].filter(Boolean).join(' ');
+      const late = isPast && !done && !t._virtuel && !t._fromInscription;
+      // Inscription non validée = gris (opacity + border grise)
+      const isInscrPending = t._fromInscription && !t._valide;
+      const cardColor = isInscrPending ? '#9ca3af' : col;
+      const classes = ['plp-tache', done ? 'done' : '', late ? 'late' : '', (t.from_event_id && !t.event_confirme) ? 'event-pending' : '', isInscrPending ? 'event-pending' : ''].filter(Boolean).join(' ');
       const h = t.horaire_debut ? `${t.horaire_debut.slice(0,5)}${t.horaire_fin ? '–' + t.horaire_fin.slice(0,5) : ''}` : '';
       const badge = t.priorite === 'urgente' ? '<span class="plp-tache-badge priorite">!</span>' : '';
-      return `<div class="${classes}" style="border-left-color:${col};" onclick="plpOpenTacheForm('${t.id}')">
+      const clickable = !t._fromInscription;
+      return `<div class="${classes}" style="border-left-color:${cardColor};${isInscrPending ? 'background:#f9fafb;' : ''}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
-        <div class="plp-tache-t">${escapeHtml(t.titre)}</div>
+        <div class="plp-tache-t">${escapeHtml(t.titre)}${t._fromInscription ? (isInscrPending ? ' ⏳' : ' ✓') : ''}</div>
         ${badge}
       </div>`;
     }
