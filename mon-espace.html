@@ -2046,8 +2046,10 @@
         const date    = new Date(d.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
         const actions = d.statut === 'pending'
           ? `<button class="btn success small" onclick="acceptDemande('${d.id}','${d.user_id}')">Accepter</button>
-             <button class="btn danger small" onclick="rejectDemande('${d.id}')">Refuser</button>`
-          : `<span style="font-size:12px;color:var(--gris-texte);">Traitée</span>`;
+             <button class="btn danger small" onclick="rejectDemande('${d.id}')">Refuser</button>
+             <button class="btn danger small" onclick="deleteDemande('${d.id}')" title="Supprimer la demande">🗑</button>`
+          : `<span style="font-size:12px;color:var(--gris-texte);">Traitée</span>
+             <button class="btn danger small" onclick="deleteDemande('${d.id}')" title="Supprimer la demande">🗑</button>`;
         return `
           <div class="fb-item">
             <div class="fb-item-header">
