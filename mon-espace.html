@@ -2302,9 +2302,25 @@
     }
 
     async function plpLoadMembres() {
-      const { data, error } = await Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom');
-      if (error) { console.error('[plp membres]', error); showToast('Chargement membres : ' + error.message, 'error'); }
-      _plpMembres = data || [];
+      const [profilsRes, equipeRes] = await Promise.all([
+        Auth.sb.from('profils').select('id, prenom, nom, pole, role, bureau, avatar_url').in('role', ['membre','admin']).order('prenom'),
+        fetch('/_data/equipe.json').then(r => r.json()).catch(() => [])
+      ]);
+      if (profilsRes.error) { console.error('[plp membres]', profilsRes.error); showToast('Chargement membres : ' + profilsRes.error.message, 'error'); }
+      _plpMembres = profilsRes.data || [];
+      // Sync auto : chaque entrée equipe.json enrichit le profil correspondant (matché par nom complet)
+      // → le pole affiché dans "Assigner à" reflète la page /bde.html sans double saisie
+      const equipe = Array.isArray(equipeRes) ? equipeRes : [];
+      const norm = s => (s || '').toLowerCase().replace(/[\s\-'']+/g, '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+      for (const m of _plpMembres) {
+        const fullName = norm(`${m.prenom || ''}${m.nom || ''}`);
+        const match = equipe.find(e => norm(e.nom) === fullName || norm(e.nom).endsWith(fullName) || fullName.endsWith(norm(e.nom)));
+        if (match) {
+          if (match.pole && !m.pole) m.pole = match.pole;
+          else if (match.pole) m.pole = match.pole;  // equipe.json = source de vérité
+          if (match.role) m._roleEquipe = match.role;
+        }
+      }
       // Filet de sécurité : s'assure d'avoir au moins le profil courant
       if (!_plpMembres.length && currentProfil) _plpMembres = [currentProfil];
       else if (!_plpMembres.some(m => m.id === currentProfil.id) && currentProfil) _plpMembres.unshift(currentProfil);
