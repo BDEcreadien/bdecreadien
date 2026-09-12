@@ -2388,7 +2388,41 @@
       polSel.innerHTML = '<option value="">Tous pôles</option>' + poleNames.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(poleLabel(p))}</option>`).join('');
     }
 
-    // ---------- Picker multi-membres (modal) ----------
+    // ---------- Dropdown compact multi-membres (modal) ----------
+    function plpToggleMembreDropdown(target) {
+      const id = target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker';
+      const el = document.getElementById(id);
+      if (!el) return;
+      const showing = el.style.display !== 'none';
+      // Ferme les autres dropdowns d'abord
+      ['plp-t-membre-picker','plp-r-membre-picker'].forEach(x => { const e = document.getElementById(x); if (e) e.style.display = 'none'; });
+      if (!showing) {
+        el.style.display = 'block';
+        plpRenderMembrePicker(target, id);
+      }
+    }
+    // Clic hors dropdown → ferme
+    document.addEventListener('click', (evt) => {
+      ['t','recur'].forEach(target => {
+        const wrap = document.getElementById(target === 'recur' ? 'plp-r-membre-wrap' : 'plp-t-membre-wrap');
+        if (wrap && !wrap.contains(evt.target)) {
+          const el = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+          if (el) el.style.display = 'none';
+        }
+      });
+    });
+
+    function plpUpdateBtnLabel(target) {
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      const btn = document.getElementById(target === 'recur' ? 'plp-r-membre-btn-label' : 'plp-t-membre-btn-label');
+      if (!btn) return;
+      if (!set.size) { btn.textContent = 'Choisir…'; btn.style.color = '#999'; return; }
+      const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
+      const names = [...set].map(id => memMap[id]).filter(Boolean).map(m => `${m.prenom || ''} ${(m.nom||'').charAt(0)}.`.trim());
+      btn.textContent = names.length > 3 ? `${names.length} membres sélectionnés` : names.join(', ');
+      btn.style.color = '#111';
+    }
+
     function plpRenderMembrePicker(targetSetVar, containerId) {
       const set = targetSetVar === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
       const c = document.getElementById(containerId);
