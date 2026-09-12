@@ -2159,6 +2159,8 @@
         return m ? parseInt(m[1], 10) : 999;
       };
       const cmp = {
+        'date-desc':  (a,b) => (b.created_at || '').localeCompare(a.created_at || ''),
+        'date-asc':   (a,b) => (a.created_at || '').localeCompare(b.created_at || ''),
         'annee-asc':  (a,b) => anneeRang(a.annee) - anneeRang(b.annee) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr'),
         'annee-desc': (a,b) => anneeRang(b.annee) - anneeRang(a.annee) || (`${a.prenom||''}`).localeCompare(`${b.prenom||''}`, 'fr'),
         'alpha':      (a,b) => (`${a.prenom||''} ${a.nom||''}`).localeCompare(`${b.prenom||''} ${b.nom||''}`, 'fr'),
