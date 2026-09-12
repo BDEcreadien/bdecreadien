@@ -1070,10 +1070,13 @@
           <option value="">Toutes années</option>
         </select>
         <select id="users-sort" onchange="filterUsers()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--gris-border,#e5e7eb);background:white;font-size:13px;">
-          <option value="date-desc">📅 Plus récents</option>
-          <option value="date-asc">📅 Plus anciens</option>
-          <option value="alpha">🔠 Alphabétique</option>
-          <option value="role">🎓 Par rôle</option>
+          <option value="date-desc">Plus récents</option>
+          <option value="date-asc">Plus anciens</option>
+          <option value="alpha">Alphabétique</option>
+          <option value="role">Par rôle</option>
+        </select>
+        <select id="users-filter-annee-scolaire" onchange="filterUsers()" style="padding:8px 12px;border-radius:8px;border:1px solid var(--gris-border,#e5e7eb);background:white;font-size:13px;">
+          <option value="">Toute année scolaire</option>
         </select>
       </div>
       <div id="users-list" class="users-list"></div>
