@@ -2764,7 +2764,7 @@
       if (plpIsBureau()) {
         if (t?.membre_id) _plpAssignSet.add(t.membre_id);
         else _plpAssignSet.add(currentProfil.id);
-        plpRenderMembrePicker('t', 'plp-t-membre-picker');
+        plpUpdateBtnLabel('t');
       }
       document.getElementById('plp-t-del-btn').style.display = id ? '' : 'none';
       // Commentaires
