@@ -3104,6 +3104,7 @@
         plpUpdateBtnLabel('recur');
       }
       document.getElementById('plp-r-del-btn').style.display = id ? '' : 'none';
+      plpFillQuickTimeSelects();
       document.getElementById('plp-modal-recur-form').classList.add('visible');
     }
     function plpCloseRecurForm() { document.getElementById('plp-modal-recur-form').classList.remove('visible'); }
