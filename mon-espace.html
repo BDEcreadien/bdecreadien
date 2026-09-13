@@ -2608,9 +2608,8 @@
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          const cbId = `${cbName}-${m.id}`;
-          body += `<label class="plp-mem-row" for="${cbId}" data-mid="${escapeHtml(m.id)}" data-pole="${escapeHtml(m.pole || 'autre')}">
-            <input type="checkbox" id="${cbId}" name="${cbName}" value="${escapeHtml(m.id)}" data-target="${targetSetVar}" data-pole="${escapeHtml(m.pole || 'autre')}" onchange="plpOnMemberCheckboxChange(this)" ${sel ? 'checked' : ''}>
+          body += `<label class="plp-mem-row" data-mid="${escapeHtml(m.id)}" data-pole="${escapeHtml(m.pole || 'autre')}">
+            <input type="checkbox" name="${cbName}" value="${escapeHtml(m.id)}" data-target="${targetSetVar}" data-pole="${escapeHtml(m.pole || 'autre')}" onchange="plpOnMemberCheckboxChange(this)" ${sel ? 'checked' : ''}>
             <span class="plp-mem-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
             <span class="plp-mem-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
           </label>`;
