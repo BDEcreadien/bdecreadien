@@ -806,7 +806,20 @@
         .plp-membre-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; border:1px solid var(--gris-border,#e5e7eb); font-size:12px; cursor:pointer; background:white; }
         .plp-membre-chip.selected { background:var(--violet); color:white; border-color:var(--violet); }
         .plp-membre-chip .dot { width:8px; height:8px; border-radius:50%; }
-        /* Assigner à — picker en boutons (100% cliquables) */
+        /* Nouveau picker natif — checkboxes HTML pures */
+        .plp-modal .plp-mem-group { margin:0 0 8px; padding:0; }
+        .plp-modal .plp-mem-pole-header { display:flex; align-items:center; gap:8px; padding:10px 12px 6px; margin:0 !important; font-size:11px; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:1.2px; background:#faf5ff; border-radius:6px; }
+        .plp-modal .plp-mem-pole-header input[type=checkbox] { cursor:pointer; margin:0 !important; padding:0 !important; width:16px !important; height:16px !important; accent-color:#7c3aed; }
+        .plp-modal .plp-mem-pole-count { color:#9ca3af; font-weight:600; font-size:10px; margin-left:auto; }
+        .plp-modal .plp-mem-row { display:flex !important; align-items:center; gap:12px; padding:8px 12px; margin:2px 0 !important; border-radius:8px; cursor:pointer; transition:background .12s; border:1px solid transparent; background:white; user-select:none; font-size:14px; color:#111; font-weight:normal; }
+        .plp-modal .plp-mem-row:hover { background:#f5f5f7; }
+        .plp-modal .plp-mem-row.selected { background:#f3ecff; border-color:#7c3aed; }
+        .plp-modal .plp-mem-row input[type=checkbox] { cursor:pointer; margin:0 !important; padding:0 !important; width:18px !important; height:18px !important; accent-color:#7c3aed; flex-shrink:0; }
+        .plp-modal .plp-mem-avatar { width:36px; height:36px; border-radius:50%; background-size:cover; background-position:center; background-color:#e5e7eb; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; border:2px solid transparent; box-sizing:border-box; }
+        .plp-modal .plp-mem-row.selected .plp-mem-avatar { border-color:#7c3aed; }
+        .plp-modal .plp-mem-name { flex:1; font-size:14px; line-height:1.2; font-weight:500; }
+        .plp-modal .plp-mem-name small { display:block; color:#888; font-size:11px; margin-top:2px; font-weight:400; }
+        /* Assigner à — legacy picker (styles conservés pour compat, plus utilisés) */
         .plp-modal .plp-assign-group { margin:0 0 4px; padding:0; }
         .plp-modal .plp-assign-pole-header { display:flex !important; align-items:center; gap:8px; padding:10px 12px 6px; margin:0 !important; font-size:11px; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:1.2px; cursor:pointer; user-select:none; background:#faf5ff; border-radius:6px; width:100%; border:none; text-align:left; font-family:inherit; }
         .plp-modal .plp-assign-pole-header:hover { background:#f3e8ff; }
