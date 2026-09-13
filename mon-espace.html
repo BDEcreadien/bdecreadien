@@ -3131,10 +3131,24 @@
 
     async function plpDeleteTache() {
       const id = document.getElementById('plp-t-id').value;
-      if (!id || !confirm('Supprimer cette tâche ?')) return;
-      const { error } = await Auth.sb.from('planning_taches').delete().eq('id', id);
+      if (!id) return;
+      // Trouve les tâches sœurs (même titre + jour + horaires)
+      const orig = _plpTaches.find(x => x.id === id);
+      const sisters = orig ? _plpTaches.filter(x =>
+        x.titre === orig.titre &&
+        x.jour === orig.jour &&
+        (x.horaire_debut || null) === (orig.horaire_debut || null) &&
+        (x.horaire_fin || null) === (orig.horaire_fin || null)
+      ) : [{ id }];
+      const nb = sisters.length;
+      const msg = nb > 1
+        ? `Supprimer cette tâche pour les ${nb} membres concernés ?`
+        : 'Supprimer cette tâche ?';
+      if (!confirm(msg)) return;
+      const ids = sisters.map(s => s.id);
+      const { error } = await Auth.sb.from('planning_taches').delete().in('id', ids);
       if (error) return showToast('Erreur : ' + error.message, 'error');
-      showToast('Tâche supprimée', 'success');
+      showToast(nb > 1 ? `Tâche supprimée pour ${nb} membres` : 'Tâche supprimée', 'success');
       plpCloseTacheForm();
       await plpLoadTaches();
       plpRender();
