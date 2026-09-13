@@ -201,17 +201,38 @@ function partagerEvenement(titre, date) {
 // Charge les événements depuis Supabase (source principale) + JSON legacy (fallback)
 // Format uniforme : {id, titre, date, dateAffichage, horaire, lieu, adresse, description, prix, categorie, imageUrl, lien, typeLien, phare, inscrits}
 async function loadEvenementsMerged() {
-  // /admin?page=agenda écrit dans _data/evenements.json (via GitHub) — la source principale.
-  // La table Supabase `evenements` est utilisée pour le planning bureau + share links (non
-  // pour l'agenda public). On fusionne les 2 pour éviter tout événement invisible.
+  // /admin?page=agenda écrit dans _data/evenements.json (via GitHub) — source riche (image, lien, prix…).
+  // La table Supabase `evenements` sert au planning bureau. On fusionne : pour un event présent dans
+  // les 2 sources, on complète le Supabase avec les champs manquants venant du JSON.
   const [sbEvents, jsonData] = await Promise.all([
     loadEvenementsSb(),
     fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] }))
   ]);
   const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
-  const sbKeys = new Set(sbEvents.map(e => `${(e.titre||'').toLowerCase()}|${e.date||''}`));
-  const jsonUnique = jsonEvents.filter(e => !sbKeys.has(`${(e.titre||'').toLowerCase()}|${e.date||''}`));
-  return [...sbEvents, ...jsonUnique];
+  const keyFn = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
+  const jsonByKey = new Map(jsonEvents.map(e => [keyFn(e), e]));
+  const enrichedSb = sbEvents.map(sb => {
+    const j = jsonByKey.get(keyFn(sb));
+    if (!j) return sb;
+    // Remplit chaque champ vide du Supabase avec la valeur du JSON
+    const jImg = typeof j.imageUrl === 'object' ? j.imageUrl?.url : j.imageUrl;
+    return {
+      ...sb,
+      imageUrl: sb.imageUrl || jImg || null,
+      lien: sb.lien || j.lien || null,
+      typeLien: sb.typeLien || j.typeLien || null,
+      horaire: sb.horaire || j.horaire || null,
+      prix: sb.prix || j.prix || null,
+      categorie: sb.categorie || j.categorie || null,
+      phare: sb.phare || j.phare === true,
+      adresse: sb.adresse || j.adresse || null,
+      dateAffichage: sb.dateAffichage || j.dateAffichage || null,
+      inscrits: sb.inscrits || j.inscrits || null,
+    };
+  });
+  const sbKeys = new Set(sbEvents.map(keyFn));
+  const jsonUnique = jsonEvents.filter(e => !sbKeys.has(keyFn(e)));
+  return [...enrichedSb, ...jsonUnique];
 }
 
 async function loadEvenementsSb() {
