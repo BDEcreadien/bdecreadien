@@ -2610,8 +2610,8 @@
         const memAllInPole = _plpMembres.filter(m => (m.pole || 'autre') === p);
         const all = memAllInPole.every(m => set.has(m.id));
         const some = memAllInPole.some(m => set.has(m.id));
-        body += `<div class="plp-assign-group">
-          <button type="button" class="plp-assign-pole-header" onclick="plpTogglePoleAssign('${targetSetVar}','${p}'); return false;">
+        body += `<div class="plp-assign-group" data-pole="${escapeHtml(p)}">
+          <button type="button" class="plp-assign-pole-header" data-pole="${escapeHtml(p)}" onclick="plpTogglePoleAssign('${targetSetVar}','${p}'); return false;">
             <span class="plp-assign-cb">${all ? '☑' : (some ? '◐' : '☐')}</span>
             <span>${poleLabel(p)}</span>
             <span class="plp-assign-pole-count">(${memAllInPole.filter(m=>set.has(m.id)).length}/${memAllInPole.length})</span>
@@ -2621,7 +2621,7 @@
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          body += `<button type="button" class="plp-assign-row ${sel ? 'selected' : ''}" onclick="plpToggleMembreAssign('${targetSetVar}','${m.id}'); return false;">
+          body += `<button type="button" class="plp-assign-row ${sel ? 'selected' : ''}" data-mid="${escapeHtml(m.id)}" data-pole="${escapeHtml(m.pole || 'autre')}" onclick="plpToggleMembreAssign('${targetSetVar}','${m.id}'); return false;">
             <span class="plp-assign-cb">${sel ? '☑' : '☐'}</span>
             <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
             <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
