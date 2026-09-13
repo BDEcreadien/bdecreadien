@@ -2402,6 +2402,29 @@
       x.setDate(x.getDate() - day);
       return x;
     }
+    // Applique une valeur de créneau rapide dans un input time
+    function plpApplyQuickTime(inputId, val) {
+      if (!val) return;
+      const el = document.getElementById(inputId);
+      if (el) el.value = val;
+    }
+    // Peuple les selects de créneaux rapides (07:00 → 22:00 par 15 min)
+    function plpFillQuickTimeSelects() {
+      const opts = [];
+      for (let h = 7; h <= 22; h++) {
+        for (let m = 0; m < 60; m += 15) {
+          const hh = String(h).padStart(2,'0'), mm = String(m).padStart(2,'0');
+          opts.push(`<option value="${hh}:${mm}">${hh}:${mm}</option>`);
+        }
+      }
+      const optsHtml = '<option value="">⏱ Rapide</option>' + opts.join('');
+      ['plp-t-hdebut','plp-t-hfin','plp-r-hdebut','plp-r-hfin'].forEach(id => {
+        const inp = document.getElementById(id);
+        if (!inp) return;
+        const sel = inp.parentElement.querySelector('select');
+        if (sel && sel.options.length < 3) sel.innerHTML = optsHtml;
+      });
+    }
     // Formatte une Date locale en YYYY-MM-DD (évite le décalage UTC de toISOString)
     function plpYmd(d) {
       const y = d.getFullYear();
