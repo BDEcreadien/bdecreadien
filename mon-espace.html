@@ -2549,21 +2549,21 @@
         const all = memAllInPole.every(m => set.has(m.id));
         const some = memAllInPole.some(m => set.has(m.id));
         body += `<div class="plp-assign-group">
-          <label class="plp-assign-pole-header">
-            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')">
+          <div class="plp-assign-pole-header" onclick="plpTogglePoleAssign('${targetSetVar}','${p}')">
+            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} tabindex="-1" style="pointer-events:none;">
             <span>${poleLabel(p)}</span>
             <span class="plp-assign-pole-count">(${memAllInPole.filter(m=>set.has(m.id)).length}/${memAllInPole.length})</span>
-          </label>`;
+          </div>`;
         for (const m of memP) {
           const sel = set.has(m.id);
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          body += `<label class="plp-assign-row ${sel ? 'selected' : ''}">
-            <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
+          body += `<div class="plp-assign-row ${sel ? 'selected' : ''}" onclick="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
+            <input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1" style="pointer-events:none;">
             <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
             <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
-          </label>`;
+          </div>`;
         }
         body += `</div>`;
       }
