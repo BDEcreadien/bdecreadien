@@ -2640,7 +2640,7 @@
       // Charge une fenêtre large (mois précédent → mois+2)
       const start = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() - 1, 1);
       const end = new Date(_plpCursor.getFullYear(), _plpCursor.getMonth() + 2, 0);
-      const s = start.toISOString().slice(0,10), e = end.toISOString().slice(0,10);
+      const s = plpYmd(start), e = plpYmd(end);
       const tRes = await Auth.sb.from('planning_taches').select('*').gte('jour', s).lte('jour', e).order('jour');
       if (tRes.error) console.error('[plp taches]', tRes.error);
       _plpTaches = tRes.data || [];
