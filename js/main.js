@@ -206,7 +206,7 @@ async function loadEvenementsMerged() {
   // les 2 sources, on complète le Supabase avec les champs manquants venant du JSON.
   const [sbEvents, jsonData] = await Promise.all([
     loadEvenementsSb(),
-    fetch('/_data/evenements.json').then(r => r.json()).catch(() => ({ evenements: [] }))
+    fetch('/_data/evenements.json?nc=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({ evenements: [] }))
   ]);
   const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
   const keyFn = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
