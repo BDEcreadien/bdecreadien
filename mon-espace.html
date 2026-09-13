@@ -2502,27 +2502,6 @@
       if (!showing) {
         el.style.display = 'flex';
         _plpAssignSearch[target] = '';
-        // Délégation d'événement attachée UNE SEULE FOIS sur le container
-        const delegatedKey = target === 'recur' ? '_plpPickerDelegatedR' : '_plpPickerDelegatedT';
-        if (!window[delegatedKey]) {
-          window[delegatedKey] = true;
-          el.addEventListener('click', (e) => {
-            const row = e.target.closest('.plp-assign-row');
-            if (row) {
-              e.preventDefault(); e.stopPropagation();
-              const mid = row.getAttribute('data-plp-mid');
-              if (mid) plpToggleMembreAssign(target, mid);
-              return;
-            }
-            const hdr = e.target.closest('.plp-assign-pole-header');
-            if (hdr) {
-              e.preventDefault(); e.stopPropagation();
-              const p = hdr.getAttribute('data-plp-pole');
-              if (p) plpTogglePoleAssign(target, p);
-              return;
-            }
-          });
-        }
         plpRenderMembrePicker(target, id);
         setTimeout(() => { const s = document.getElementById(`plp-assign-search-${target}`); if (s) s.focus(); }, 30);
       }
