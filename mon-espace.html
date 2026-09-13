@@ -2578,22 +2578,24 @@
         const memAllInPole = _plpMembres.filter(m => (m.pole || 'autre') === p);
         const all = memAllInPole.every(m => set.has(m.id));
         const some = memAllInPole.some(m => set.has(m.id));
+        const poleCbId = `pole-${targetSetVar}-${p}`;
         body += `<div class="plp-assign-group">
-          <div class="plp-assign-pole-header" data-plp-pole="${escapeHtml(p)}">
-            <input type="checkbox" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} tabindex="-1" style="pointer-events:none;">
+          <label class="plp-assign-pole-header" for="${poleCbId}">
+            <input type="checkbox" id="${poleCbId}" ${all ? 'checked' : ''} ${some && !all ? 'data-indet="1"' : ''} onchange="plpTogglePoleAssign('${targetSetVar}','${p}')">
             <span>${poleLabel(p)}</span>
             <span class="plp-assign-pole-count">(${memAllInPole.filter(m=>set.has(m.id)).length}/${memAllInPole.length})</span>
-          </div>`;
+          </label>`;
         for (const m of memP) {
           const sel = set.has(m.id);
+          const cbId = `mcb-${targetSetVar}-${m.id}`;
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          body += `<div class="plp-assign-row ${sel ? 'selected' : ''}" data-plp-mid="${escapeHtml(m.id)}">
-            <input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1" style="pointer-events:none;">
+          body += `<label class="plp-assign-row ${sel ? 'selected' : ''}" for="${cbId}">
+            <input type="checkbox" id="${cbId}" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
             <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
             <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
-          </div>`;
+          </label>`;
         }
         body += `</div>`;
       }
