@@ -2,7 +2,7 @@
 // (un seul SW peut être enregistré au scope /, donc on fusionne les deux)
 try { importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js'); } catch (_) {}
 
-const CACHE = 'bde-cread-v9';
+const CACHE = 'bde-cread-v10';
 
 self.addEventListener('install', e => {
   e.waitUntil(
