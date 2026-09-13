@@ -2849,7 +2849,7 @@
       const fStat = document.getElementById('plp-filter-statut').value;
       const virtuels = range ? plpExpandRecur(range[0], range[1]) : [];
       const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
-      return _plpTaches.concat(virtuels).concat(_plpInscriptions).filter(t => {
+      const filtered = _plpTaches.concat(virtuels).concat(_plpInscriptions).filter(t => {
         if (!_plpSelectedMembres.has(t.membre_id)) return false;
         const m = memMap[t.membre_id];
         if (fPole && (!m || m.pole !== fPole)) return false;
@@ -2861,6 +2861,24 @@
         }
         return true;
       });
+      // Dédupe des tâches sœurs (même titre + jour + horaires) : on garde une seule carte
+      // qui listera tous les membres assignés. Les inscriptions et les virtuelles rec- ne sont pas dédupées.
+      const groups = new Map();
+      const single = [];
+      for (const t of filtered) {
+        if (t._fromInscription || String(t.id).startsWith('rec-')) { single.push(t); continue; }
+        const key = `${t.titre}|${t.jour}|${t.horaire_debut || ''}|${t.horaire_fin || ''}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(t);
+      }
+      const deduped = [];
+      for (const grp of groups.values()) {
+        const rep = grp[0];
+        rep._allMembres = grp.map(g => g.membre_id);
+        rep._sisterIds = grp.map(g => g.id);
+        deduped.push(rep);
+      }
+      return deduped.concat(single);
     }
 
     function plpSetView(v) {
