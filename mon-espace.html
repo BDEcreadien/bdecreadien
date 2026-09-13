@@ -2960,9 +2960,20 @@
       const clickable = !t._fromInscription;
       // La languette suit le statut (via classe CSS) sauf pour les inscriptions en attente qui restent grises
       const styleOverride = isInscrPending ? `border-left-color:${cardColor};background:#f9fafb;` : '';
+      // Badges des membres assignés : plusieurs pastilles colorées si tâche partagée
+      let membresBadges = '';
+      if (Array.isArray(t._allMembres) && t._allMembres.length > 1) {
+        const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
+        membresBadges = `<div class="plp-tache-members">${t._allMembres.slice(0, 5).map(mid => {
+          const m = memMap[mid];
+          const initial = m ? (m.prenom || '?').charAt(0).toUpperCase() : '?';
+          return `<span class="plp-tache-dot" title="${escapeHtml((m?.prenom || '') + ' ' + (m?.nom || ''))}" style="background:${plpColorFor(mid)};">${initial}</span>`;
+        }).join('')}${t._allMembres.length > 5 ? `<span class="plp-tache-dot plp-tache-dot-more">+${t._allMembres.length - 5}</span>` : ''}</div>`;
+      }
       return `<div class="${classes}" ${styleOverride ? `style="${styleOverride}"` : ''} ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
         <div class="plp-tache-t">${escapeHtml(t.titre)}${t._fromInscription ? (isInscrPending ? ' ⏳' : ' ✓') : ''}</div>
+        ${membresBadges}
         ${badge}
       </div>`;
     }
