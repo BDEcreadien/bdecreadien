@@ -2812,11 +2812,14 @@
       // Inscription non validée = gris (opacity + border grise)
       const isInscrPending = t._fromInscription && !t._valide;
       const cardColor = isInscrPending ? '#9ca3af' : col;
-      const classes = ['plp-tache', done ? 'done' : '', late ? 'late' : '', (t.from_event_id && !t.event_confirme) ? 'event-pending' : '', isInscrPending ? 'event-pending' : ''].filter(Boolean).join(' ');
+      const statutClass = t.statut ? `statut-${t.statut}` : 'statut-a_faire';
+      const classes = ['plp-tache', statutClass, done ? 'done' : '', late ? 'late' : '', (t.from_event_id && !t.event_confirme) ? 'event-pending' : '', isInscrPending ? 'event-pending' : ''].filter(Boolean).join(' ');
       const h = t.horaire_debut ? `${t.horaire_debut.slice(0,5)}${t.horaire_fin ? '–' + t.horaire_fin.slice(0,5) : ''}` : '';
       const badge = t.priorite === 'urgente' ? '<span class="plp-tache-badge priorite">!</span>' : '';
       const clickable = !t._fromInscription;
-      return `<div class="${classes}" style="border-left-color:${cardColor};${isInscrPending ? 'background:#f9fafb;' : ''}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
+      // La languette suit le statut (via classe CSS) sauf pour les inscriptions en attente qui restent grises
+      const styleOverride = isInscrPending ? `border-left-color:${cardColor};background:#f9fafb;` : '';
+      return `<div class="${classes}" ${styleOverride ? `style="${styleOverride}"` : ''} ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
         <div class="plp-tache-t">${escapeHtml(t.titre)}${t._fromInscription ? (isInscrPending ? ' ⏳' : ' ✓') : ''}</div>
         ${badge}
