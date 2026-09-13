@@ -2903,7 +2903,7 @@
       document.getElementById('plp-modal-title').textContent = id ? 'Modifier la tâche' : 'Nouvelle tâche';
       document.getElementById('plp-t-id').value = id || '';
       document.getElementById('plp-t-titre').value = t?.titre || '';
-      document.getElementById('plp-t-jour').value = t?.jour || defaultDay || new Date().toISOString().slice(0,10);
+      document.getElementById('plp-t-jour').value = t?.jour || defaultDay || plpYmd(new Date());
       document.getElementById('plp-t-hdebut').value = t?.horaire_debut ? t.horaire_debut.slice(0,5) : '';
       document.getElementById('plp-t-hfin').value = t?.horaire_fin ? t.horaire_fin.slice(0,5) : '';
       document.getElementById('plp-t-statut').value = t?.statut || 'a_faire';
