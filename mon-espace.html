@@ -871,7 +871,8 @@
         .plp-modal h3 { margin:0 0 16px; }
         .plp-modal .row { display:flex; gap:10px; margin-bottom:12px; }
         .plp-modal label { display:block; font-size:12px; font-weight:600; color:#555; margin-bottom:4px; }
-        .plp-modal input, .plp-modal select, .plp-modal textarea { width:100%; padding:8px 12px; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; font-size:14px; font-family:inherit; background:white; }
+        .plp-modal input, .plp-modal select, .plp-modal textarea { width:100%; padding:8px 12px; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; font-size:14px; font-family:inherit; background:white; outline:none; transition:border-color .15s, box-shadow .15s; }
+        .plp-modal input:focus, .plp-modal select:focus, .plp-modal textarea:focus { outline:none; border-color:var(--violet,#7c3aed); box-shadow:0 0 0 3px rgba(124,58,237,.15); }
         .plp-modal textarea { resize:vertical; min-height:60px; }
         .plp-modal .actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:20px; }
         .plp-modal .btn-cancel { background:transparent; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; padding:8px 16px; cursor:pointer; }
