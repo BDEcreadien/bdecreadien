@@ -5217,14 +5217,29 @@ async function plnSyncJsonEvents() {
     const { data: existing } = await Auth.sb.from('evenements').select('titre, date');
     const key = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
     const existingKeys = new Set((existing || []).map(key));
-    const toInsert = jsonEvs.filter(e => e.titre && !existingKeys.has(key(e))).map(e => ({
-      titre: e.titre,
-      date: e.date || null,
-      lieu: e.lieu || null,
-      description: e.description || null,
-      bureau_only: false,
-      created_by: window._monProfilId || null
-    }));
+    const toInsert = jsonEvs.filter(e => e.titre && !existingKeys.has(key(e))).map(e => {
+      const img = typeof e.imageUrl === 'object' ? e.imageUrl?.url : e.imageUrl;
+      return {
+        titre: e.titre,
+        date: e.date || null,
+        date_affichage: e.dateAffichage || null,
+        horaire: e.horaire || null,
+        horaire_debut: e.horaireDebut || null,
+        horaire_fin: e.horaireFin || null,
+        lieu: e.lieu || null,
+        adresse: e.adresse || null,
+        description: e.description || null,
+        prix: e.prix || null,
+        categorie: e.categorie || null,
+        image_url: img || null,
+        lien: e.lien || null,
+        type_lien: e.typeLien || null,
+        phare: e.phare === true,
+        inscrits: e.inscrits || null,
+        bureau_only: false,
+        created_by: window._monProfilId || null
+      };
+    });
     if (toInsert.length) {
       const { error } = await Auth.sb.from('evenements').insert(toInsert);
       if (error) console.warn('[pln sync JSON→Supabase]', error);
