@@ -806,23 +806,24 @@
         .plp-membre-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; border:1px solid var(--gris-border,#e5e7eb); font-size:12px; cursor:pointer; background:white; }
         .plp-membre-chip.selected { background:var(--violet); color:white; border-color:var(--violet); }
         .plp-membre-chip .dot { width:8px; height:8px; border-radius:50%; }
-        /* Assigner à — picker en liste (rows) */
-        .plp-assign-group { margin-bottom:6px; }
-        .plp-assign-group + .plp-assign-group { border-top:1px solid #f0f0f0; padding-top:6px; }
-        .plp-assign-pole-header { display:flex; align-items:center; gap:8px; padding:6px 8px 4px; font-size:11px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:1px; cursor:pointer; user-select:none; }
-        .plp-assign-pole-header input { cursor:pointer; }
-        .plp-assign-pole-count { color:#999; font-weight:500; }
-        .plp-assign-row { display:flex; align-items:center; gap:10px; padding:6px 8px; border-radius:8px; cursor:pointer; transition:background .12s; }
-        .plp-assign-row:hover { background:#f5f5f5; }
-        .plp-assign-row.selected { background:rgba(124,58,237,.08); }
-        .plp-assign-row input[type=checkbox] { cursor:pointer; margin:0; }
-        .plp-assign-avatar { width:28px; height:28px; border-radius:50%; background-size:cover; background-position:center; background-color:#e5e7eb; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#555; border:2px solid transparent; }
-        .plp-assign-row.selected .plp-assign-avatar { border-color:var(--violet,#7c3aed); }
-        .plp-assign-name { flex:1; font-size:13px; color:#111; line-height:1.2; }
-        .plp-assign-name small { display:block; color:#888; font-size:11px; }
-        .plp-assign-actions { display:flex; gap:6px; padding:8px; border-top:1px solid #eee; margin-top:6px; }
-        .plp-assign-actions button { flex:1; padding:6px; font-size:11px; border:1px dashed var(--gris-border,#e5e7eb); background:transparent; border-radius:6px; cursor:pointer; color:#666; }
-        .plp-assign-actions button:hover { border-style:solid; color:var(--violet,#7c3aed); border-color:var(--violet,#7c3aed); }
+        /* Assigner à — picker visuel (rows) */
+        .plp-modal .plp-assign-group { margin:0 0 4px; padding:0; }
+        .plp-modal .plp-assign-pole-header { display:flex !important; align-items:center; gap:8px; padding:10px 12px 6px; margin:0 !important; font-size:11px; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:1.2px; cursor:pointer; user-select:none; background:#faf5ff; border-radius:6px; }
+        .plp-modal .plp-assign-pole-header input { cursor:pointer; margin:0; width:14px; height:14px; accent-color:#7c3aed; }
+        .plp-modal .plp-assign-pole-header span:not(.plp-assign-pole-count) { flex:1; }
+        .plp-modal .plp-assign-pole-count { color:#9ca3af; font-weight:600; font-size:10px; }
+        .plp-modal .plp-assign-row { display:flex !important; align-items:center; gap:12px; padding:8px 12px; margin:2px 0 !important; border-radius:8px; cursor:pointer; transition:background .12s, transform .12s; border:1px solid transparent; }
+        .plp-modal .plp-assign-row:hover { background:#f5f5f7; }
+        .plp-modal .plp-assign-row.selected { background:#f3ecff; border-color:#7c3aed; }
+        .plp-modal .plp-assign-row input[type=checkbox] { cursor:pointer; margin:0; width:18px; height:18px; accent-color:#7c3aed; flex-shrink:0; }
+        .plp-modal .plp-assign-avatar { width:36px; height:36px; border-radius:50%; background-size:cover; background-position:center; background-color:#e5e7eb; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; border:2px solid #e5e7eb; box-sizing:border-box; }
+        .plp-modal .plp-assign-row.selected .plp-assign-avatar { border-color:#7c3aed; box-shadow:0 0 0 2px rgba(124,58,237,.15); }
+        .plp-modal .plp-assign-name { flex:1; font-size:14px; color:#111; line-height:1.2; font-weight:500; margin:0; }
+        .plp-modal .plp-assign-name small { display:block; color:#888; font-size:11px; margin-top:2px; font-weight:400; }
+        .plp-modal .plp-assign-actions { display:flex; gap:8px; padding:10px 12px; border-top:1px solid #eee; background:#fafafa; }
+        .plp-modal .plp-assign-actions button { flex:1; padding:8px; font-size:12px; font-weight:600; border:1px solid var(--gris-border,#e5e7eb); background:white; border-radius:6px; cursor:pointer; color:#666; transition:all .12s; }
+        .plp-modal .plp-assign-actions button:hover { color:#7c3aed; border-color:#7c3aed; background:#faf5ff; }
+        .plp-modal .plp-assign-search:focus { outline:none !important; border-color:#7c3aed !important; box-shadow:0 0 0 3px rgba(124,58,237,.15); }
         /* Semaine grid */
         .plp-week { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; }
         .plp-day-col { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:10px; min-height:200px; display:flex; flex-direction:column; }
