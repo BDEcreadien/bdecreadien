@@ -2743,67 +2743,8 @@
       plpUpdateBtnLabel(target);
     }
 
-    // Toggle in-place : ne re-render PAS tout le picker, met à jour uniquement les éléments concernés
-    function plpToggleMembreAssign(target, id) {
-      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
-      if (set.has(id)) set.delete(id); else set.add(id);
-      plpUpdatePickerInPlace(target, id);
-      plpUpdateBtnLabel(target);
-    }
-    function plpTogglePoleAssign(target, pole) {
-      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
-      const memP = _plpMembres.filter(m => (m.pole || 'autre') === pole);
-      const all = memP.every(m => set.has(m.id));
-      if (all) memP.forEach(m => set.delete(m.id));
-      else memP.forEach(m => set.add(m.id));
-      // Update tous les rows de ce pôle en place
-      const containerId = target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker';
-      const container = document.getElementById(containerId);
-      if (container) {
-        memP.forEach(m => plpRefreshRowState(container, m.id, set.has(m.id)));
-        plpRefreshPoleHeader(container, pole, memP, set);
-        plpRefreshCounter(container, set.size);
-      }
-      plpUpdateBtnLabel(target);
-    }
-    // Met à jour visuellement UN row + le header de son pôle + le compteur global
-    function plpUpdatePickerInPlace(target, id) {
-      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
-      const containerId = target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker';
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      const isSelected = set.has(id);
-      plpRefreshRowState(container, id, isSelected);
-      // Retrouve le pôle du membre pour rafraîchir son header
-      const m = _plpMembres.find(x => x.id === id);
-      if (m) {
-        const pole = m.pole || 'autre';
-        const memP = _plpMembres.filter(x => (x.pole || 'autre') === pole);
-        plpRefreshPoleHeader(container, pole, memP, set);
-      }
-      plpRefreshCounter(container, set.size);
-    }
-    function plpRefreshRowState(container, id, selected) {
-      const btn = container.querySelector(`button.plp-assign-row[data-mid="${CSS.escape(id)}"]`);
-      if (!btn) return;
-      btn.classList.toggle('selected', selected);
-      const cb = btn.querySelector('.plp-assign-cb');
-      if (cb) cb.textContent = selected ? '☑' : '☐';
-    }
-    function plpRefreshPoleHeader(container, pole, memP, set) {
-      const hdr = container.querySelector(`button.plp-assign-pole-header[data-pole="${CSS.escape(pole)}"]`);
-      if (!hdr) return;
-      const allSel = memP.every(m => set.has(m.id));
-      const someSel = memP.some(m => set.has(m.id));
-      const cb = hdr.querySelector('.plp-assign-cb');
-      if (cb) cb.textContent = allSel ? '☑' : (someSel ? '◐' : '☐');
-      const cnt = hdr.querySelector('.plp-assign-pole-count');
-      if (cnt) cnt.textContent = `(${memP.filter(m => set.has(m.id)).length}/${memP.length})`;
-    }
-    function plpRefreshCounter(container, count) {
-      const el = container.querySelector('.plp-assign-counter');
-      if (el) el.textContent = count;
-    }
+    // (les toggles sont maintenant gérés par plpOnMemberCheckboxChange/plpOnPoleCheckboxChange
+    //  et les checkboxes natives elles-mêmes stockent l'état)
 
     function plpToggleAllPole(pole) {
       const membresP = _plpMembres.filter(m => (m.pole || 'autre') === pole);
