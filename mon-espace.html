@@ -2803,7 +2803,7 @@
         (byDay[t.jour] ||= []).push(t);
       }
       wrap.innerHTML = `<div class="plp-week">${days.map((d, i) => {
-        const key = d.toISOString().slice(0,10);
+        const key = plpYmd(d);
         const isToday = d.getTime() === today.getTime();
         const list = (byDay[key] || []).sort((a,b) => (a.horaire_debut || 'z').localeCompare(b.horaire_debut || 'z'));
         return `<div class="plp-day-col ${isToday ? 'today' : ''}">
