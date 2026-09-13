@@ -2492,6 +2492,7 @@
 
     // ---------- Dropdown compact multi-membres (modal) ----------
     var _plpAssignSearch = { t: '', recur: '' };
+    var _plpPickerDelegatedT = false, _plpPickerDelegatedR = false;
     function plpToggleMembreDropdown(target) {
       const id = target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker';
       const el = document.getElementById(id);
@@ -2501,6 +2502,27 @@
       if (!showing) {
         el.style.display = 'flex';
         _plpAssignSearch[target] = '';
+        // Délégation d'événement attachée UNE SEULE FOIS sur le container
+        const delegatedKey = target === 'recur' ? '_plpPickerDelegatedR' : '_plpPickerDelegatedT';
+        if (!window[delegatedKey]) {
+          window[delegatedKey] = true;
+          el.addEventListener('click', (e) => {
+            const row = e.target.closest('.plp-assign-row');
+            if (row) {
+              e.preventDefault(); e.stopPropagation();
+              const mid = row.getAttribute('data-plp-mid');
+              if (mid) plpToggleMembreAssign(target, mid);
+              return;
+            }
+            const hdr = e.target.closest('.plp-assign-pole-header');
+            if (hdr) {
+              e.preventDefault(); e.stopPropagation();
+              const p = hdr.getAttribute('data-plp-pole');
+              if (p) plpTogglePoleAssign(target, p);
+              return;
+            }
+          });
+        }
         plpRenderMembrePicker(target, id);
         setTimeout(() => { const s = document.getElementById(`plp-assign-search-${target}`); if (s) s.focus(); }, 30);
       }
@@ -2509,10 +2531,9 @@
       _plpAssignSearch[target] = val;
       plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker', true);
     }
-    // Clic hors dropdown → ferme (on ignore les clics qui viennent de l'intérieur, même si le DOM a été re-rendu)
-    document.addEventListener('click', (evt) => {
-      // Ignore les clics à l'intérieur des pickers (data-plp-picker)
-      if (evt.target.closest && evt.target.closest('[data-plp-picker]')) return;
+    // Fermeture du picker : uniquement clic dehors du wrap (pas via document listener qui interfère)
+    // Le picker se ferme quand on reclique sur le bouton, ou quand on clique n'importe où d'autre dans le modal
+    document.addEventListener('mousedown', (evt) => {
       ['t','recur'].forEach(target => {
         const wrap = document.getElementById(target === 'recur' ? 'plp-r-membre-wrap' : 'plp-t-membre-wrap');
         if (wrap && !wrap.contains(evt.target)) {
