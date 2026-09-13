@@ -2372,6 +2372,13 @@
       x.setDate(x.getDate() - day);
       return x;
     }
+    // Formatte une Date locale en YYYY-MM-DD (évite le décalage UTC de toISOString)
+    function plpYmd(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
 
     async function plpLoadIcsUrl() {
       const el = document.getElementById('plp-ics-url');
