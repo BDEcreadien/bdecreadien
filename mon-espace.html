@@ -3038,7 +3038,7 @@
       document.getElementById('plp-r-jour').value = r?.jour_semaine || 1;
       document.getElementById('plp-r-hdebut').value = r?.horaire_debut ? r.horaire_debut.slice(0,5) : '';
       document.getElementById('plp-r-hfin').value = r?.horaire_fin ? r.horaire_fin.slice(0,5) : '';
-      document.getElementById('plp-r-debut').value = r?.date_debut || new Date().toISOString().slice(0,10);
+      document.getElementById('plp-r-debut').value = r?.date_debut || plpYmd(new Date());
       document.getElementById('plp-r-fin').value = r?.date_fin || '';
       document.getElementById('plp-r-priorite').value = r?.priorite || 'normale';
       document.getElementById('plp-r-desc').value = r?.description || '';
