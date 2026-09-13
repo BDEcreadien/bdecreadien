@@ -2653,6 +2653,8 @@
       plpRefreshPoleState(target, pole);
       plpRefreshTotalCounter(target);
       plpUpdateBtnLabel(target);
+      // Debug visible : toast qui confirme le clic
+      try { showToast(`✓ ${set.size} membre${set.size > 1 ? 's' : ''} sélectionné${set.size > 1 ? 's' : ''}`, 'info'); } catch (_) {}
     }
     // Quand la checkbox d'un pôle change, coche/décoche tous les membres de ce pôle
     function plpOnPoleCheckboxChange(cb) {
