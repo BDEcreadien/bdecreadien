@@ -2586,10 +2586,12 @@
       btn.style.color = '#111';
     }
 
+    // Nouveau picker : état stocké DIRECTEMENT dans les checkboxes du DOM
+    // Aucun Set JS à synchroniser, aucun re-render au clic
     function plpRenderMembrePicker(targetSetVar, containerId, keepFocus) {
-      const set = targetSetVar === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
       const c = document.getElementById(containerId);
       if (!c) return;
+      const preselectedSet = targetSetVar === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
       const q = (_plpAssignSearch[targetSetVar] || '').toLowerCase().trim();
       const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
       const nq = norm(q);
@@ -2601,53 +2603,137 @@
       const poleNames = Object.keys(poles).sort();
       const poleLabel = p => PLP_POLES_LABELS[p] || (p.charAt(0).toUpperCase() + p.slice(1));
       const initials = m => `${(m.prenom||'?').charAt(0)}${(m.nom||'').charAt(0)}`.toUpperCase();
+      const cbName = `plp-mem-${targetSetVar}`;
       let body = '';
       if (!filtered.length) {
         body = `<div style="padding:24px 12px;text-align:center;color:#999;font-size:13px;">Aucun membre trouvé.</div>`;
       }
       for (const p of poleNames) {
         const memP = poles[p].slice().sort((a,b) => (a.prenom||'').localeCompare(b.prenom||'', 'fr'));
-        const memAllInPole = _plpMembres.filter(m => (m.pole || 'autre') === p);
-        const all = memAllInPole.every(m => set.has(m.id));
-        const some = memAllInPole.some(m => set.has(m.id));
-        body += `<div class="plp-assign-group" data-pole="${escapeHtml(p)}">
-          <button type="button" class="plp-assign-pole-header" data-pole="${escapeHtml(p)}" onclick="plpTogglePoleAssign('${targetSetVar}','${p}'); return false;">
-            <span class="plp-assign-cb">${all ? '☑' : (some ? '◐' : '☐')}</span>
-            <span>${poleLabel(p)}</span>
-            <span class="plp-assign-pole-count">(${memAllInPole.filter(m=>set.has(m.id)).length}/${memAllInPole.length})</span>
-          </button>`;
+        body += `<div class="plp-mem-group" data-pole="${escapeHtml(p)}">
+          <div class="plp-mem-pole-header">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;margin:0;font:inherit;color:inherit;">
+              <input type="checkbox" class="plp-mem-pole-cb" data-pole="${escapeHtml(p)}" data-target="${targetSetVar}" onchange="plpOnPoleCheckboxChange(this)">
+              <span>${poleLabel(p)}</span>
+            </label>
+            <span class="plp-mem-pole-count" data-pole="${escapeHtml(p)}" data-target="${targetSetVar}">0/${memP.length}</span>
+          </div>`;
         for (const m of memP) {
-          const sel = set.has(m.id);
+          const sel = preselectedSet.has(m.id);
           const avatarBg = m.avatar_url
             ? `background-image:url('${escapeHtml(m.avatar_url)}');`
             : `background:${plpColorFor(m.id)};color:white;`;
-          body += `<button type="button" class="plp-assign-row ${sel ? 'selected' : ''}" data-mid="${escapeHtml(m.id)}" data-pole="${escapeHtml(m.pole || 'autre')}" onclick="plpToggleMembreAssign('${targetSetVar}','${m.id}'); return false;">
-            <span class="plp-assign-cb">${sel ? '☑' : '☐'}</span>
-            <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
-            <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
-          </button>`;
+          const cbId = `${cbName}-${m.id}`;
+          body += `<label class="plp-mem-row" for="${cbId}" data-mid="${escapeHtml(m.id)}" data-pole="${escapeHtml(m.pole || 'autre')}">
+            <input type="checkbox" id="${cbId}" name="${cbName}" value="${escapeHtml(m.id)}" data-target="${targetSetVar}" data-pole="${escapeHtml(m.pole || 'autre')}" onchange="plpOnMemberCheckboxChange(this)" ${sel ? 'checked' : ''}>
+            <span class="plp-mem-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
+            <span class="plp-mem-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
+          </label>`;
         }
         body += `</div>`;
       }
-      const totalSelected = set.size;
+      const totalSelected = preselectedSet.size;
       c.innerHTML = `
         <div style="padding:10px 10px 8px;border-bottom:1px solid #eee;background:#fafafa;flex-shrink:0;">
           <input type="text" id="plp-assign-search-${targetSetVar}" class="plp-assign-search" placeholder="🔍 Rechercher un membre…" value="${escapeHtml(_plpAssignSearch[targetSetVar]||'')}"
             oninput="plpAssignSetSearch('${targetSetVar}', this.value)"
-            style="width:100%;padding:9px 12px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;font-size:13px;box-sizing:border-box;transition:border-color .15s, box-shadow .15s;">
-          <div style="font-size:11px;color:#666;margin-top:6px;">${_plpMembres.length} membres disponibles · <span class="plp-assign-counter" data-target="${targetSetVar}">${totalSelected}</span> sélectionné${totalSelected>1?'s':''}</div>
+            style="width:100%;padding:9px 12px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;font-size:13px;box-sizing:border-box;">
+          <div style="font-size:11px;color:#666;margin-top:6px;">${_plpMembres.length} membres disponibles · <span class="plp-mem-counter" data-target="${targetSetVar}">${totalSelected}</span> sélectionné${totalSelected>1?'s':''}</div>
         </div>
         <div style="flex:1;overflow-y:auto;padding:8px;">${body}</div>
         <div class="plp-assign-actions" style="flex-shrink:0;margin-top:0;">
-          <button type="button" onclick="event.stopPropagation(); plpSelectAllAssign('${targetSetVar}', true)">✓ Tout</button>
-          <button type="button" onclick="event.stopPropagation(); plpSelectAllAssign('${targetSetVar}', false)">✕ Aucun</button>
+          <button type="button" onclick="plpSelectAllMembers('${targetSetVar}', true); return false;">✓ Tout</button>
+          <button type="button" onclick="plpSelectAllMembers('${targetSetVar}', false); return false;">✕ Aucun</button>
         </div>`;
-      c.querySelectorAll('input[data-indet="1"]').forEach(el => el.indeterminate = true);
-      // Les clics sur les rows/headers sont gérés par délégation sur le container (voir plpToggleMembreDropdown)
+      // Rafraîchit les compteurs de pôles + états indéterminés
+      plpRefreshAllPoleStates(targetSetVar);
       if (keepFocus) {
         const s = document.getElementById(`plp-assign-search-${targetSetVar}`);
         if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
       }
+    }
+    // Quand une checkbox membre change, met à jour l'état pole + compteur
+    function plpOnMemberCheckboxChange(cb) {
+      const target = cb.getAttribute('data-target');
+      const pole = cb.getAttribute('data-pole');
+      // Sync le Set JS pour les autres parties du code qui l'utilisent au save
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      if (cb.checked) set.add(cb.value);
+      else set.delete(cb.value);
+      // Update la row visuelle
+      const row = cb.closest('.plp-mem-row');
+      if (row) row.classList.toggle('selected', cb.checked);
+      // Update le pole header + compteur global
+      plpRefreshPoleState(target, pole);
+      plpRefreshTotalCounter(target);
+      plpUpdateBtnLabel(target);
+    }
+    // Quand la checkbox d'un pôle change, coche/décoche tous les membres de ce pôle
+    function plpOnPoleCheckboxChange(cb) {
+      const target = cb.getAttribute('data-target');
+      const pole = cb.getAttribute('data-pole');
+      const checked = cb.checked;
+      const container = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      if (!container) return;
+      container.querySelectorAll(`input[type=checkbox][name="plp-mem-${target}"][data-pole="${CSS.escape(pole)}"]`).forEach(memberCb => {
+        memberCb.checked = checked;
+        const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+        if (checked) set.add(memberCb.value);
+        else set.delete(memberCb.value);
+        const row = memberCb.closest('.plp-mem-row');
+        if (row) row.classList.toggle('selected', checked);
+      });
+      plpRefreshPoleState(target, pole);
+      plpRefreshTotalCounter(target);
+      plpUpdateBtnLabel(target);
+    }
+    function plpRefreshPoleState(target, pole) {
+      const container = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      if (!container) return;
+      const memberCbs = container.querySelectorAll(`input[type=checkbox][name="plp-mem-${target}"][data-pole="${CSS.escape(pole)}"]`);
+      const total = memberCbs.length;
+      const checkedCount = [...memberCbs].filter(c => c.checked).length;
+      const poleCb = container.querySelector(`input.plp-mem-pole-cb[data-target="${CSS.escape(target)}"][data-pole="${CSS.escape(pole)}"]`);
+      if (poleCb) {
+        poleCb.checked = checkedCount === total && total > 0;
+        poleCb.indeterminate = checkedCount > 0 && checkedCount < total;
+      }
+      const cnt = container.querySelector(`.plp-mem-pole-count[data-target="${CSS.escape(target)}"][data-pole="${CSS.escape(pole)}"]`);
+      if (cnt) cnt.textContent = `${checkedCount}/${total}`;
+    }
+    function plpRefreshAllPoleStates(target) {
+      const container = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      if (!container) return;
+      const poles = new Set();
+      container.querySelectorAll('.plp-mem-group').forEach(g => poles.add(g.getAttribute('data-pole')));
+      poles.forEach(p => plpRefreshPoleState(target, p));
+      // Marquer les rows initialement checked
+      container.querySelectorAll(`input[type=checkbox][name="plp-mem-${target}"]`).forEach(cb => {
+        const row = cb.closest('.plp-mem-row');
+        if (row) row.classList.toggle('selected', cb.checked);
+      });
+    }
+    function plpRefreshTotalCounter(target) {
+      const container = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      if (!container) return;
+      const cnt = container.querySelectorAll(`input[type=checkbox][name="plp-mem-${target}"]:checked`).length;
+      const el = container.querySelector(`.plp-mem-counter[data-target="${CSS.escape(target)}"]`);
+      if (el) el.textContent = cnt;
+    }
+    function plpSelectAllMembers(target, all) {
+      const container = document.getElementById(target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker');
+      if (!container) return;
+      const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
+      set.clear();
+      container.querySelectorAll(`input[type=checkbox][name="plp-mem-${target}"]`).forEach(cb => {
+        cb.checked = all;
+        if (all) set.add(cb.value);
+        const row = cb.closest('.plp-mem-row');
+        if (row) row.classList.toggle('selected', all);
+      });
+      plpRefreshAllPoleStates(target);
+      plpRefreshTotalCounter(target);
+      plpUpdateBtnLabel(target);
     }
     function plpSelectAllAssign(target, all) {
       const set = target === 'recur' ? _plpRecurAssignSet : _plpAssignSet;
