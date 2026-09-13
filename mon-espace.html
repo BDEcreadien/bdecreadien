@@ -2359,7 +2359,9 @@
     // par le hash d'URL AVANT que le parseur atteigne cette ligne.
     var _plpMembres = [], _plpTaches = [], _plpRecur = [], _plpInscriptions = [], _plpSelectedMembres = null, _plpView = 'semaine', _plpCursor = new Date(), _plpEditingId = null, _plpRecurEditingId = null, _plpInited = false, _plpAssignSet = new Set(), _plpRecurAssignSet = new Set();
     const PLP_POLES_LABELS = { bureau:'🎓 Bureau', communication:'📣 Communication', partenariat:'🤝 Partenariat', evenementiel:'🎉 Événementiel', tresorerie:'💰 Trésorerie' };
-    const plpIsBureau = () => currentProfil && (currentProfil.role === 'admin' || currentProfil.bureau === true);
+    // Déclaration de fonction (hoistée) pour éviter le TDZ si switchTab('me-planning')
+    // est appelé par le hash d'URL AVANT que le parseur atteigne cette ligne.
+    function plpIsBureau() { return currentProfil && (currentProfil.role === 'admin' || currentProfil.bureau === true); }
 
     function plpColorFor(membreId) {
       const idx = _plpMembres.findIndex(m => m.id === membreId);
