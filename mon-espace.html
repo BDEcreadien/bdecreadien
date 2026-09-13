@@ -3084,7 +3084,13 @@
           const others = targets.filter(m => m !== originalMembre);
           if (others.length) {
             const rows = others.map(mid => ({ ...base, membre_id: mid, assigne_par: currentProfil.id, created_by: currentProfil.id }));
-            await Auth.sb.from('planning_taches').insert(rows);
+            const { error: e2 } = await Auth.sb.from('planning_taches').insert(rows);
+            if (e2) {
+              console.error('[plp insert others]', e2, rows);
+              showToast('Erreur ajout autres membres : ' + e2.message, 'error');
+            } else {
+              showToast(`Tâche ajoutée aussi à ${others.length} autre${others.length > 1 ? 's' : ''} membre${others.length > 1 ? 's' : ''}`, 'success');
+            }
           }
         }
       }
