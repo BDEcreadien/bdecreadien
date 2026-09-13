@@ -2611,21 +2611,7 @@
           <button type="button" onclick="event.stopPropagation(); plpSelectAllAssign('${targetSetVar}', false)">✕ Aucun</button>
         </div>`;
       c.querySelectorAll('input[data-indet="1"]').forEach(el => el.indeterminate = true);
-      // Attache les handlers manuellement (plus fiable que onclick inline pour les re-renders)
-      c.querySelectorAll('.plp-assign-row').forEach(row => {
-        row.addEventListener('click', (e) => {
-          e.preventDefault(); e.stopPropagation();
-          const mid = row.getAttribute('data-plp-mid');
-          if (mid) plpToggleMembreAssign(targetSetVar, mid);
-        });
-      });
-      c.querySelectorAll('.plp-assign-pole-header').forEach(hdr => {
-        hdr.addEventListener('click', (e) => {
-          e.preventDefault(); e.stopPropagation();
-          const p = hdr.getAttribute('data-plp-pole');
-          if (p) plpTogglePoleAssign(targetSetVar, p);
-        });
-      });
+      // Les clics sur les rows/headers sont gérés par délégation sur le container (voir plpToggleMembreDropdown)
       if (keepFocus) {
         const s = document.getElementById(`plp-assign-search-${targetSetVar}`);
         if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
