@@ -2705,10 +2705,10 @@
           occ.setDate(occ.getDate() + (r.jour_semaine - 1));
           if (occ >= rD && (!rF || occ <= rF) && occ >= startDate && occ <= endDate) {
             out.push({
-              id: `rec-${r.id}-${occ.toISOString().slice(0,10)}`,
+              id: `rec-${r.id}-${plpYmd(occ)}`,
               titre: r.titre + ' 🔁',
               description: r.description,
-              jour: occ.toISOString().slice(0,10),
+              jour: plpYmd(occ),
               horaire_debut: r.horaire_debut,
               horaire_fin: r.horaire_fin,
               membre_id: r.membre_id,
