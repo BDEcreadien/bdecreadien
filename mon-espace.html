@@ -2565,9 +2565,9 @@
       const totalSelected = set.size;
       c.innerHTML = `
         <div style="padding:10px 10px 8px;border-bottom:1px solid #eee;background:#fafafa;flex-shrink:0;">
-          <input type="text" id="plp-assign-search-${targetSetVar}" placeholder="Rechercher un membre…" value="${escapeHtml(_plpAssignSearch[targetSetVar]||'')}"
+          <input type="text" id="plp-assign-search-${targetSetVar}" class="plp-assign-search" placeholder="🔍 Rechercher un membre…" value="${escapeHtml(_plpAssignSearch[targetSetVar]||'')}"
             oninput="plpAssignSetSearch('${targetSetVar}', this.value)"
-            style="width:100%;padding:7px 10px;border:1px solid var(--gris-border,#e5e7eb);border-radius:6px;font-size:13px;box-sizing:border-box;">
+            style="width:100%;padding:9px 12px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;font-size:13px;box-sizing:border-box;transition:border-color .15s, box-shadow .15s;">
           <div style="font-size:11px;color:#666;margin-top:6px;">${_plpMembres.length} membres disponibles · ${totalSelected} sélectionné${totalSelected>1?'s':''}</div>
         </div>
         <div style="flex:1;overflow-y:auto;padding:8px;">${body}</div>
