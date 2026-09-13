@@ -2502,8 +2502,10 @@
       _plpAssignSearch[target] = val;
       plpRenderMembrePicker(target, target === 'recur' ? 'plp-r-membre-picker' : 'plp-t-membre-picker', true);
     }
-    // Clic hors dropdown → ferme
+    // Clic hors dropdown → ferme (on ignore les clics qui viennent de l'intérieur, même si le DOM a été re-rendu)
     document.addEventListener('click', (evt) => {
+      // Ignore les clics à l'intérieur des pickers (data-plp-picker)
+      if (evt.target.closest && evt.target.closest('[data-plp-picker]')) return;
       ['t','recur'].forEach(target => {
         const wrap = document.getElementById(target === 'recur' ? 'plp-r-membre-wrap' : 'plp-t-membre-wrap');
         if (wrap && !wrap.contains(evt.target)) {
