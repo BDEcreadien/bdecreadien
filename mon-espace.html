@@ -2557,7 +2557,7 @@
           body += `<label class="plp-assign-row ${sel ? 'selected' : ''}">
             <input type="checkbox" ${sel ? 'checked' : ''} onchange="plpToggleMembreAssign('${targetSetVar}','${m.id}')">
             <span class="plp-assign-avatar" style="${avatarBg}">${m.avatar_url ? '' : escapeHtml(initials(m))}</span>
-            <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}</span>
+            <span class="plp-assign-name">${escapeHtml(m.prenom || '')} ${escapeHtml(m.nom || '')}<small>${escapeHtml(poleLabel(m.pole || 'autre'))}${m._roleEquipe ? ' · ' + escapeHtml(m._roleEquipe) : ''}</small></span>
           </label>`;
         }
         body += `</div>`;
