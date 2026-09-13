@@ -3085,25 +3085,43 @@
         if (error) { console.error('[plp insert]', error, rows); return showToast('Erreur : ' + error.message, 'error'); }
         showToast(targets.length > 1 ? `Tâche créée pour ${targets.length} membres` : 'Tâche créée', 'success');
       } else {
+        // EDIT : trouver les tâches sœurs (même titre/jour/horaires que celle qu'on édite)
+        const original = _plpTaches.find(x => x.id === id);
+        const sisters = original ? _plpTaches.filter(x =>
+          x.titre === original.titre &&
+          x.jour === original.jour &&
+          (x.horaire_debut || null) === (original.horaire_debut || null) &&
+          (x.horaire_fin || null) === (original.horaire_fin || null)
+        ) : [];
+        const sisterIds = sisters.map(s => s.id);
+        const currentMembers = new Set(sisters.map(s => s.membre_id));
+        // 1. Update les champs communs sur TOUTES les sœurs (pour garder la synchro)
         const payload = { ...base };
-        if (plpIsBureau() && targets.length === 1) payload.membre_id = targets[0];
-        const { error } = await Auth.sb.from('planning_taches').update(payload).eq('id', id);
-        if (error) { console.error('[plp update]', error, payload); return showToast('Erreur : ' + error.message, 'error'); }
-        showToast('Tâche modifiée', 'success');
-        // Si le bureau a coché plusieurs membres en édition, duplique pour les autres
-        if (plpIsBureau() && targets.length > 1) {
-          const originalMembre = _plpTaches.find(x => x.id === id)?.membre_id;
-          const others = targets.filter(m => m !== originalMembre);
-          if (others.length) {
-            const rows = others.map(mid => ({ ...base, membre_id: mid, assigne_par: currentProfil.id, created_by: currentProfil.id }));
+        if (sisterIds.length) {
+          const { error } = await Auth.sb.from('planning_taches').update(payload).in('id', sisterIds);
+          if (error) { console.error('[plp update sisters]', error, payload); return showToast('Erreur : ' + error.message, 'error'); }
+        }
+        if (plpIsBureau()) {
+          // 2. Ajouter les membres nouvellement cochés (nouveau targets \ currentMembers)
+          const toAdd = targets.filter(m => !currentMembers.has(m));
+          if (toAdd.length) {
+            const rows = toAdd.map(mid => ({ ...base, membre_id: mid, assigne_par: currentProfil.id, created_by: currentProfil.id }));
             const { error: e2 } = await Auth.sb.from('planning_taches').insert(rows);
-            if (e2) {
-              console.error('[plp insert others]', e2, rows);
-              showToast('Erreur ajout autres membres : ' + e2.message, 'error');
-            } else {
-              showToast(`Tâche ajoutée aussi à ${others.length} autre${others.length > 1 ? 's' : ''} membre${others.length > 1 ? 's' : ''}`, 'success');
+            if (e2) { console.error('[plp insert others]', e2, rows); showToast('Erreur ajout : ' + e2.message, 'error'); }
+          }
+          // 3. Retirer les membres qui étaient là mais qui ont été décochés
+          const toRemove = [...currentMembers].filter(m => !targets.includes(m));
+          if (toRemove.length) {
+            const idsToDel = sisters.filter(s => toRemove.includes(s.membre_id)).map(s => s.id);
+            if (idsToDel.length) {
+              const { error: e3 } = await Auth.sb.from('planning_taches').delete().in('id', idsToDel);
+              if (e3) { console.error('[plp del sisters]', e3); showToast('Erreur retrait : ' + e3.message, 'error'); }
             }
           }
+          const diff = (toAdd.length ? '+' + toAdd.length : '') + (toRemove.length ? ' -' + toRemove.length : '');
+          showToast(`Tâche modifiée (${targets.length} membre${targets.length > 1 ? 's' : ''}${diff ? ' · ' + diff : ''})`, 'success');
+        } else {
+          showToast('Tâche modifiée', 'success');
         }
       }
       plpCloseTacheForm();
