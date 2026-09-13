@@ -988,22 +988,13 @@
           </div>
           <div class="row">
             <div style="flex:1;"><label>Horaire début (optionnel)</label>
-              <div style="display:flex;gap:6px;">
-                <input type="time" id="plp-t-hdebut" step="900" style="flex:1;">
-                <select onchange="plpApplyQuickTime('plp-t-hdebut', this.value); this.value='';" style="max-width:110px;" title="Créneaux rapides">
-                  <option value="">⏱ Rapide</option>
-                </select>
-              </div>
+              <input type="text" id="plp-t-hdebut" list="plp-time-options" placeholder="HH:MM" autocomplete="off" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$">
             </div>
             <div style="flex:1;"><label>Horaire fin (optionnel)</label>
-              <div style="display:flex;gap:6px;">
-                <input type="time" id="plp-t-hfin" step="900" style="flex:1;">
-                <select onchange="plpApplyQuickTime('plp-t-hfin', this.value); this.value='';" style="max-width:110px;" title="Créneaux rapides">
-                  <option value="">⏱ Rapide</option>
-                </select>
-              </div>
+              <input type="text" id="plp-t-hfin" list="plp-time-options" placeholder="HH:MM" autocomplete="off" pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$">
             </div>
           </div>
+          <datalist id="plp-time-options"></datalist>
           <div class="row">
             <div style="flex:1;"><label>Statut</label>
               <select id="plp-t-statut">
