@@ -2858,7 +2858,7 @@
       wrap.innerHTML = `<div class="plp-month">${headers}${days.map(d => {
         const otherMonth = d.getMonth() !== m;
         const isToday = d.getTime() === today.getTime();
-        const key = d.toISOString().slice(0,10);
+        const key = plpYmd(d);
         const list = byDay[key] || [];
         const mini = list.slice(0, 3).map(t => `<div class="plp-month-mini" style="background:${plpColorFor(t.membre_id)};" title="${escapeHtml(t.titre)}">${escapeHtml(t.titre)}</div>`).join('');
         const more = list.length > 3 ? `<div class="plp-month-more">+${list.length - 3}</div>` : '';
