@@ -2979,7 +2979,8 @@
           return `<span class="plp-tache-dot" title="${escapeHtml((m?.prenom || '') + ' ' + (m?.nom || ''))}" style="background:${plpColorFor(mid)};">${initial}</span>`;
         }).join('')}${t._allMembres.length > 5 ? `<span class="plp-tache-dot plp-tache-dot-more">+${t._allMembres.length - 5}</span>` : ''}</div>`;
       }
-      return `<div class="${classes}" ${styleOverride ? `style="${styleOverride}"` : ''} ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
+      return `<div class="${classes}" style="${styleOverride}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
+        ${statutDot}
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
         <div class="plp-tache-t">${escapeHtml(t.titre)}${t._fromInscription ? (isInscrPending ? ' ⏳' : ' ✓') : ''}</div>
         ${membresBadges}
