@@ -974,8 +974,22 @@
             <div id="plp-t-membre-picker" data-plp-picker style="display:none;position:absolute;left:0;right:0;top:100%;margin-top:4px;max-height:420px;overflow:hidden;border:1px solid var(--gris-border,#e5e7eb);border-radius:10px;background:white;box-shadow:0 12px 30px rgba(0,0,0,0.15);z-index:100;flex-direction:column;"></div>
           </div>
           <div class="row">
-            <div style="flex:1;"><label>Horaire début (optionnel)</label><input type="time" id="plp-t-hdebut"></div>
-            <div style="flex:1;"><label>Horaire fin (optionnel)</label><input type="time" id="plp-t-hfin"></div>
+            <div style="flex:1;"><label>Horaire début (optionnel)</label>
+              <div style="display:flex;gap:6px;">
+                <input type="time" id="plp-t-hdebut" step="900" style="flex:1;">
+                <select onchange="plpApplyQuickTime('plp-t-hdebut', this.value); this.value='';" style="max-width:110px;" title="Créneaux rapides">
+                  <option value="">⏱ Rapide</option>
+                </select>
+              </div>
+            </div>
+            <div style="flex:1;"><label>Horaire fin (optionnel)</label>
+              <div style="display:flex;gap:6px;">
+                <input type="time" id="plp-t-hfin" step="900" style="flex:1;">
+                <select onchange="plpApplyQuickTime('plp-t-hfin', this.value); this.value='';" style="max-width:110px;" title="Créneaux rapides">
+                  <option value="">⏱ Rapide</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div style="flex:1;"><label>Statut</label>
