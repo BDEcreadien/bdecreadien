@@ -3083,9 +3083,14 @@
         if (error) { console.error('[plp insert]', error, rows); return showToast('Erreur : ' + error.message, 'error'); }
         showToast(targets.length > 1 ? `Tâche créée pour ${targets.length} membres` : 'Tâche créée', 'success');
       } else {
-        // EDIT : trouver les tâches sœurs (même titre/jour/horaires que celle qu'on édite)
+        // Bloquer l'édit d'une occurrence virtuelle de récurrente
+        if (String(id).startsWith('rec-')) {
+          return showToast('Ceci est une occurrence d\'une récurrente. Modifie la règle via Récurrentes.', 'info');
+        }
+        // EDIT : trouver les tâches sœurs RÉELLES (même titre/jour/horaires que celle qu'on édite)
         const original = _plpTaches.find(x => x.id === id);
         const sisters = original ? _plpTaches.filter(x =>
+          isRealTacheId(x.id) &&
           x.titre === original.titre &&
           x.jour === original.jour &&
           (x.horaire_debut || null) === (original.horaire_debut || null) &&
