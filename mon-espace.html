@@ -3127,23 +3127,32 @@
       plpRender();
     }
 
+    // Vraie UUID (exclut les IDs virtuels rec-... et insc-...)
+    const isRealTacheId = id => typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     async function plpDeleteTache() {
       const id = document.getElementById('plp-t-id').value;
       if (!id) return;
-      // Trouve les tâches sœurs (même titre + jour + horaires)
+      // Récurrente virtuelle → renvoie vers la gestion des récurrentes
+      if (String(id).startsWith('rec-')) {
+        showToast('Ceci est une occurrence d\'une tâche récurrente. Modifie-la via Récurrentes.', 'info');
+        return;
+      }
+      // Trouve les tâches sœurs RÉELLES (même titre + jour + horaires)
       const orig = _plpTaches.find(x => x.id === id);
       const sisters = orig ? _plpTaches.filter(x =>
+        isRealTacheId(x.id) &&
         x.titre === orig.titre &&
         x.jour === orig.jour &&
         (x.horaire_debut || null) === (orig.horaire_debut || null) &&
         (x.horaire_fin || null) === (orig.horaire_fin || null)
-      ) : [{ id }];
-      const nb = sisters.length;
+      ) : [];
+      const ids = sisters.map(s => s.id).filter(isRealTacheId);
+      if (!ids.length) return showToast('Erreur : tâche introuvable', 'error');
+      const nb = ids.length;
       const msg = nb > 1
         ? `Supprimer cette tâche pour les ${nb} membres concernés ?`
         : 'Supprimer cette tâche ?';
       if (!confirm(msg)) return;
-      const ids = sisters.map(s => s.id);
       const { error } = await Auth.sb.from('planning_taches').delete().in('id', ids);
       if (error) return showToast('Erreur : ' + error.message, 'error');
       showToast(nb > 1 ? `Tâche supprimée pour ${nb} membres` : 'Tâche supprimée', 'success');
