@@ -3026,10 +3026,22 @@
       document.getElementById('plp-t-desc').value = t?.description || '';
       document.getElementById('plp-t-notes').value = t?.notes || '';
       // Multi-membre picker : init la sélection
+      // Sur EDIT, on regroupe les tâches sœurs (même titre + jour + horaire_debut + horaire_fin)
+      // pour pré-cocher tous les membres qui partagent cette même tâche.
       _plpAssignSet = new Set();
       if (plpIsBureau()) {
-        if (t?.membre_id) _plpAssignSet.add(t.membre_id);
-        else _plpAssignSet.add(currentProfil.id);
+        if (t) {
+          const sisters = _plpTaches.filter(x =>
+            x.titre === t.titre &&
+            x.jour === t.jour &&
+            (x.horaire_debut || null) === (t.horaire_debut || null) &&
+            (x.horaire_fin || null) === (t.horaire_fin || null)
+          );
+          sisters.forEach(s => { if (s.membre_id) _plpAssignSet.add(s.membre_id); });
+          if (!_plpAssignSet.size) _plpAssignSet.add(currentProfil.id);
+        } else {
+          _plpAssignSet.add(currentProfil.id);
+        }
         plpUpdateBtnLabel('t');
       }
       document.getElementById('plp-t-del-btn').style.display = id ? '' : 'none';
