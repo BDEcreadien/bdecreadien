@@ -2347,7 +2347,7 @@
         _plpInited = true;
         // Init cursor sur début semaine courante (lundi)
         _plpCursor = plpMondayOf(new Date());
-        document.getElementById('plp-t-jour').value = new Date().toISOString().slice(0,10);
+        document.getElementById('plp-t-jour').value = plpYmd(new Date());
         if (plpIsBureau()) {
           document.getElementById('plp-role-sub').textContent = 'Tes tâches + celles de ton équipe. Tu peux assigner des tâches aux membres.';
           document.getElementById('plp-bureau-members').style.display = 'block';
