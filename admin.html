@@ -4636,7 +4636,18 @@ function finEditEv(id) {
   document.getElementById('ev-date').value = ev.date || '';
   document.getElementById('ev-titre').value = ev.titre || '';
   document.getElementById('ev-lieu').value = ev.lieu || '';
-  document.getElementById('ev-categorie').value = ev.categorie_budget || 'soiree';
+  const evCatSel = document.getElementById('ev-categorie');
+  const evCatInput = document.getElementById('ev-categorie-custom');
+  const evKnown = [...evCatSel.options].some(o => o.value === (ev.categorie_budget || 'soiree'));
+  if (evKnown) {
+    evCatSel.value = ev.categorie_budget || 'soiree';
+    evCatInput.style.display = 'none';
+    evCatInput.value = '';
+  } else {
+    evCatSel.value = '__custom__';
+    evCatInput.style.display = 'block';
+    evCatInput.value = ev.categorie_budget || '';
+  }
   document.getElementById('ev-gains-prev').value = ev.gains_previsionnel != null ? ev.gains_previsionnel : '';
   document.getElementById('ev-budget').value = ev.budget_previsionnel != null ? ev.budget_previsionnel : '';
   document.getElementById('ev-gains-reel').value = ev.gains_reel != null ? ev.gains_reel : '';
