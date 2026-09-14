@@ -2957,11 +2957,12 @@
         return true;
       });
       // Dédupe des tâches sœurs (même titre + jour + horaires) : on garde une seule carte
-      // qui listera tous les membres assignés. Les inscriptions et les virtuelles rec- ne sont pas dédupées.
+      // qui listera tous les membres assignés. S'applique aussi aux occurrences récurrentes partagées.
+      // Les inscriptions événements ne sont pas dédupées (chaque inscription reste individuelle).
       const groups = new Map();
       const single = [];
       for (const t of filtered) {
-        if (t._fromInscription || String(t.id).startsWith('rec-')) { single.push(t); continue; }
+        if (t._fromInscription) { single.push(t); continue; }
         const key = `${t.titre}|${t.jour}|${t.horaire_debut || ''}|${t.horaire_fin || ''}`;
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(t);
