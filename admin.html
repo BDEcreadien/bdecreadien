@@ -551,13 +551,15 @@
           <div class="form-row"><label>Date</label><input type="date" id="ev-date"></div>
           <div class="form-row">
             <label>Catégorie budget</label>
-            <select id="ev-categorie">
+            <select id="ev-categorie" onchange="finEvCatChange()">
               <option value="soiree">🎉 Soirée</option>
               <option value="repas">🍽️ Repas</option>
               <option value="sortie">🚌 Sortie</option>
               <option value="materiel">📦 Matériel</option>
               <option value="autre">✨ Autre</option>
+              <option value="__custom__">✏️ Personnalisée…</option>
             </select>
+            <input type="text" id="ev-categorie-custom" placeholder="Nom de la catégorie" maxlength="60" style="display:none;margin-top:8px;">
           </div>
         </div>
         <div class="form-row"><label>Titre</label><input type="text" id="ev-titre" placeholder="ex: Soirée Halloween Six Brotteaux" maxlength="200"></div>
