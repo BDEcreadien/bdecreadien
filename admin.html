@@ -4418,6 +4418,7 @@ function finEdit(id) {
   _finEditingId = id;
   document.getElementById('tx-date').value = tx.date;
   document.getElementById('tx-libelle').value = tx.libelle;
+  document.getElementById('tx-fournisseur').value = tx.fournisseur || '';
   const catSel = document.getElementById('tx-categorie');
   const catInput = document.getElementById('tx-categorie-custom');
   const known = [...catSel.options].some(o => o.value === tx.categorie);
