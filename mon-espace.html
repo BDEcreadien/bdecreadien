@@ -1053,12 +1053,34 @@
           <h3 id="plp-recur-title">Nouvelle récurrente</h3>
           <input type="hidden" id="plp-r-id">
           <div><label>Titre *</label><input type="text" id="plp-r-titre"></div>
-          <div class="row">
+          <div><label>Répétition *</label>
+            <select id="plp-r-type" onchange="plpUpdateRecurUI()">
+              <option value="hebdo-1">Toutes les semaines</option>
+              <option value="hebdo-2">Toutes les 2 semaines</option>
+              <option value="hebdo-3">Toutes les 3 semaines</option>
+              <option value="hebdo-4">Toutes les 4 semaines</option>
+              <option value="ouvre">Tous les jours ouvrés (lun-ven)</option>
+              <option value="quotidien">Tous les jours</option>
+              <option value="mdow-1">Le 1er [jour] de chaque mois</option>
+              <option value="mdow-2">Le 2ème [jour] de chaque mois</option>
+              <option value="mdow-3">Le 3ème [jour] de chaque mois</option>
+              <option value="mdow-4">Le 4ème [jour] de chaque mois</option>
+              <option value="mdow--1">Le dernier [jour] de chaque mois</option>
+              <option value="mdom">Un jour fixe du mois (ex: le 15)</option>
+            </select>
+          </div>
+          <div class="row" id="plp-r-jour-wrap">
             <div style="flex:1;"><label>Jour de la semaine *</label>
               <select id="plp-r-jour">
                 <option value="1">Lundi</option><option value="2">Mardi</option><option value="3">Mercredi</option>
                 <option value="4">Jeudi</option><option value="5">Vendredi</option><option value="6">Samedi</option>
+                <option value="7">Dimanche</option>
               </select>
+            </div>
+          </div>
+          <div class="row" id="plp-r-jourmois-wrap" style="display:none;">
+            <div style="flex:1;"><label>Jour du mois (1-31) *</label>
+              <input type="number" id="plp-r-jourmois" min="1" max="31" placeholder="Ex: 15">
             </div>
           </div>
           <div id="plp-r-membre-wrap" style="position:relative;">
