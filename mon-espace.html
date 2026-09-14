@@ -3359,9 +3359,19 @@
       const titre = document.getElementById('plp-r-titre').value.trim();
       const debut = document.getElementById('plp-r-debut').value;
       if (!titre || !debut) return showToast('Titre + date début obligatoires', 'error');
+      const typeCode = document.getElementById('plp-r-type').value;
+      const typeCols = plpRecurCodeToPayload(typeCode);
+      const needsJourSemaine = typeCode.startsWith('hebdo-') || typeCode.startsWith('mdow-');
+      const needsJourMois = typeCode === 'mdom';
+      if (needsJourMois) {
+        const jm = parseInt(document.getElementById('plp-r-jourmois').value, 10);
+        if (!jm || jm < 1 || jm > 31) return showToast('Indique un jour du mois entre 1 et 31', 'error');
+        typeCols.jour_mois = jm;
+      }
       const payload = {
         titre,
-        jour_semaine: parseInt(document.getElementById('plp-r-jour').value, 10),
+        ...typeCols,
+        jour_semaine: needsJourSemaine ? parseInt(document.getElementById('plp-r-jour').value, 10) : null,
         horaire_debut: document.getElementById('plp-r-hdebut').value || null,
         horaire_fin: document.getElementById('plp-r-hfin').value || null,
         date_debut: debut,
@@ -3377,15 +3387,46 @@
         if (error) return showToast('Erreur : ' + error.message, 'error');
         showToast(targets.length > 1 ? `Récurrente créée pour ${targets.length} membres` : 'Récurrente créée', 'success');
       } else {
-        payload.membre_id = targets[0];
-        const { error } = await Auth.sb.from('planning_taches_recurrentes').update(payload).eq('id', id);
-        if (error) return showToast('Erreur : ' + error.message, 'error');
-        showToast('Récurrente modifiée', 'success');
-        if (targets.length > 1) {
-          const others = targets.slice(1);
-          const rows = others.map(mid => ({ ...payload, membre_id: mid, assigne_par: currentProfil.id }));
-          await Auth.sb.from('planning_taches_recurrentes').insert(rows);
+        // Récupère les récurrentes sœurs (même titre + même règle)
+        const orig = _plpRecur.find(x => x.id === id);
+        const sisters = orig ? _plpRecur.filter(x =>
+          x.titre === orig.titre &&
+          (x.type_recur || 'hebdomadaire') === (orig.type_recur || 'hebdomadaire') &&
+          (x.intervalle || 1) === (orig.intervalle || 1) &&
+          (x.n_semaine_mois || null) === (orig.n_semaine_mois || null) &&
+          (x.jour_mois || null) === (orig.jour_mois || null) &&
+          (x.jour_semaine || null) === (orig.jour_semaine || null) &&
+          (x.horaire_debut || null) === (orig.horaire_debut || null) &&
+          (x.horaire_fin || null) === (orig.horaire_fin || null) &&
+          (x.date_debut || null) === (orig.date_debut || null) &&
+          (x.date_fin || null) === (orig.date_fin || null)
+        ) : [];
+        const sisterIds = sisters.map(s => s.id);
+        const currentMembers = new Set(sisters.map(s => s.membre_id));
+        // 1. Update les champs sur toutes les sœurs
+        if (sisterIds.length) {
+          const { error } = await Auth.sb.from('planning_taches_recurrentes').update(payload).in('id', sisterIds);
+          if (error) return showToast('Erreur : ' + error.message, 'error');
         }
+        if (plpIsBureau()) {
+          // 2. Ajout des nouveaux membres
+          const toAdd = targets.filter(m => !currentMembers.has(m));
+          if (toAdd.length) {
+            const rows = toAdd.map(mid => ({ ...payload, membre_id: mid, assigne_par: currentProfil.id }));
+            const { error } = await Auth.sb.from('planning_taches_recurrentes').insert(rows);
+            if (error) { showToast('Erreur ajout : ' + error.message, 'error'); }
+          }
+          // 3. Retrait des membres décochés
+          const toRemove = [...currentMembers].filter(m => !targets.includes(m));
+          if (toRemove.length) {
+            const idsToDel = sisters.filter(s => toRemove.includes(s.membre_id)).map(s => s.id);
+            if (idsToDel.length) {
+              const { error } = await Auth.sb.from('planning_taches_recurrentes').delete().in('id', idsToDel);
+              if (error) { showToast('Erreur retrait : ' + error.message, 'error'); }
+            }
+          }
+        }
+        showToast(`Récurrente modifiée (${targets.length} membre${targets.length > 1 ? 's' : ''})`, 'success');
       }
       plpCloseRecurForm();
       await plpLoadRecur();
@@ -3395,10 +3436,30 @@
 
     async function plpDeleteRecur() {
       const id = document.getElementById('plp-r-id').value;
-      if (!id || !confirm('Supprimer cette récurrente ? Toutes ses occurrences disparaîtront.')) return;
-      const { error } = await Auth.sb.from('planning_taches_recurrentes').delete().eq('id', id);
+      if (!id) return;
+      // Cherche les sœurs pour tout supprimer d'un coup
+      const orig = _plpRecur.find(x => x.id === id);
+      const sisters = orig ? _plpRecur.filter(x =>
+        x.titre === orig.titre &&
+        (x.type_recur || 'hebdomadaire') === (orig.type_recur || 'hebdomadaire') &&
+        (x.intervalle || 1) === (orig.intervalle || 1) &&
+        (x.n_semaine_mois || null) === (orig.n_semaine_mois || null) &&
+        (x.jour_mois || null) === (orig.jour_mois || null) &&
+        (x.jour_semaine || null) === (orig.jour_semaine || null) &&
+        (x.horaire_debut || null) === (orig.horaire_debut || null) &&
+        (x.horaire_fin || null) === (orig.horaire_fin || null) &&
+        (x.date_debut || null) === (orig.date_debut || null) &&
+        (x.date_fin || null) === (orig.date_fin || null)
+      ) : [{ id }];
+      const nb = sisters.length;
+      const msg = nb > 1
+        ? `Supprimer cette récurrente pour les ${nb} membres concernés ?`
+        : 'Supprimer cette récurrente ? Toutes ses occurrences disparaîtront.';
+      if (!confirm(msg)) return;
+      const ids = sisters.map(s => s.id);
+      const { error } = await Auth.sb.from('planning_taches_recurrentes').delete().in('id', ids);
       if (error) return showToast('Erreur : ' + error.message, 'error');
-      showToast('Récurrente supprimée', 'success');
+      showToast(nb > 1 ? `Récurrente supprimée pour ${nb} membres` : 'Récurrente supprimée', 'success');
       plpCloseRecurForm();
       await plpLoadRecur();
       plpOpenRecurrentes();
