@@ -841,8 +841,12 @@
         .plp-modal .plp-assign-search:focus { outline:none !important; border-color:#7c3aed !important; box-shadow:0 0 0 3px rgba(124,58,237,.15); }
         /* Semaine grid */
         .plp-week { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; }
-        .plp-day-col { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:10px; min-height:200px; display:flex; flex-direction:column; }
+        .plp-day-col { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; padding:10px; min-height:200px; display:flex; flex-direction:column; transition:background .12s, border-color .12s; }
         .plp-day-col.today { border-color:var(--violet); box-shadow:0 0 0 1px var(--violet); }
+        .plp-day-col.plp-drag-over { background:#f3ecff; border-color:#7c3aed; border-style:dashed; }
+        .plp-tache[draggable="true"] { cursor:grab; }
+        .plp-tache[draggable="true"]:active { cursor:grabbing; }
+        .plp-tache.plp-dragging { opacity:.45; transform:scale(.97); }
         .plp-day-header { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#666; font-weight:700; margin-bottom:2px; }
         .plp-day-num { font-size:20px; font-weight:700; color:#111; margin-bottom:10px; }
         .plp-day-col.today .plp-day-num { color:var(--violet); }
