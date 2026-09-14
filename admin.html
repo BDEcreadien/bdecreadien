@@ -4769,8 +4769,10 @@ function pdfChangerType(type) {
 }
 
 async function pdfRegenererPreview() {
-  const obj = document.getElementById('pdf-preview-obj');
-  if (!obj) return;
+  const iframe = document.getElementById('pdf-preview-iframe');
+  const loader = document.getElementById('pdf-preview-loading');
+  if (!iframe) return;
+  if (loader) loader.style.display = 'flex';
   await loadJsPdf();
   await loadLogo();
   const { jsPDF } = window.jspdf;
@@ -4783,11 +4785,12 @@ async function pdfRegenererPreview() {
     _pdfCurrentFilename = pdfFilename('resume');
   }
   if (_pdfCurrentUrl) URL.revokeObjectURL(_pdfCurrentUrl);
-  // On construit un vrai blob application/pdf pour que Windows n'auto-télécharge pas
+  // On construit un vrai blob application/pdf (type explicite pour éviter que Windows auto-télécharge)
   const pdfBlob = doc.output('blob');
   const typedBlob = pdfBlob.type === 'application/pdf' ? pdfBlob : new Blob([pdfBlob], { type: 'application/pdf' });
   _pdfCurrentUrl = URL.createObjectURL(typedBlob);
-  obj.data = _pdfCurrentUrl;
+  iframe.src = _pdfCurrentUrl;
+  if (loader) loader.style.display = 'none';
 }
 
 function pdfTelecharger() {
