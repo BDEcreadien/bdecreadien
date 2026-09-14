@@ -3168,11 +3168,12 @@
         const list = byDay[key] || [];
         const mini = list.slice(0, 3).map(t => `<div class="plp-month-mini" style="background:${plpColorFor(t.membre_id)};" title="${escapeHtml(t.titre)}">${escapeHtml(t.titre)}</div>`).join('');
         const more = list.length > 3 ? `<div class="plp-month-more">+${list.length - 3}</div>` : '';
-        return `<div class="plp-month-day ${otherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" onclick="plpOpenTacheForm(null, '${key}')">
+        return `<div class="plp-month-day ${otherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}" onclick="plpOpenTacheForm(null, '${key}')" ondragover="plpDayDragOver(event)" ondragleave="plpDayDragLeave(event)" ondrop="plpDayDrop(event, '${key}')">
           <div class="plp-month-day-num">${d.getDate()}</div>
           ${mini}${more}
         </div>`;
       }).join('')}</div>`;
+      plpBindDragTaches();
     }
 
     // ---------- Vue Liste ----------
