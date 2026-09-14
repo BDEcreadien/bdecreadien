@@ -4019,6 +4019,18 @@ function finTxCatChange() {
   }
 }
 
+function finEvCatChange() {
+  const sel = document.getElementById('ev-categorie');
+  const input = document.getElementById('ev-categorie-custom');
+  if (sel.value === '__custom__') {
+    input.style.display = 'block';
+    setTimeout(() => input.focus(), 50);
+  } else {
+    input.style.display = 'none';
+    input.value = '';
+  }
+}
+
 async function initFinances() {
   document.getElementById('fin-non-autorise').style.display = 'none';
   document.getElementById('fin-content').style.display = 'none';
