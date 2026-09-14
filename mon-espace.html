@@ -2965,8 +2965,6 @@
       const badge = t.priorite === 'urgente' ? '<span class="plp-tache-badge priorite">!</span>' : '';
       const statutDot = `<span class="plp-tache-statut-dot ${t.statut || 'a_faire'}" title="${t.statut === 'fait' ? 'Fait' : (t.statut === 'en_cours' ? 'En cours' : 'À faire')}"></span>`;
       const clickable = !t._fromInscription;
-      // La languette = couleur du membre (ou gradient multi-membre) via CSS custom property
-      const styleOverride = `--member-color:${cardColor};${gradientStyle}${isInscrPending ? 'background:#f9fafb;' : ''}`;
       // Noms des membres assignés (lisibles) + gradient multi-couleur si tâche partagée
       let membresLine = '';
       let gradientStyle = '';
@@ -2984,6 +2982,8 @@
         }).join(', ');
         gradientStyle = `border-left-color:transparent;background-image:linear-gradient(white,white),linear-gradient(to bottom, ${stops});background-origin:border-box;background-clip:padding-box,border-box;border-left-width:5px;`;
       }
+      // La languette = couleur du membre (ou gradient multi-membre) via CSS custom property
+      const styleOverride = `--member-color:${cardColor};${gradientStyle}${isInscrPending ? 'background:#f9fafb;' : ''}`;
       return `<div class="${classes}" style="${styleOverride}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${statutDot}
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
