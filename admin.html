@@ -4449,13 +4449,14 @@ async function finSaveTransaction() {
   const montantAbs = parseFloat(document.getElementById('tx-montant').value);
   const type = document.getElementById('tx-type').value;
   const notes = document.getElementById('tx-notes').value.trim() || null;
+  const fournisseur = document.getElementById('tx-fournisseur').value.trim() || null;
   if (!date || !libelle || isNaN(montantAbs) || montantAbs < 0) {
     showToast('Remplis tous les champs correctement', 'error'); return;
   }
   const montant = type === 'recette' ? montantAbs : -montantAbs;
   const btn = document.getElementById('fin-btn-save');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const payload = { date, libelle, categorie, montant, notes };
+  const payload = { date, libelle, categorie, montant, notes, fournisseur };
   let error;
   if (_finEditingId) {
     ({ error } = await window.Auth.sb.from('transactions').update(payload).eq('id', _finEditingId));
