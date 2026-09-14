@@ -874,7 +874,8 @@
         /* Mois grid */
         .plp-month { display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; }
         .plp-month-header { text-align:center; font-size:11px; text-transform:uppercase; color:#666; font-weight:700; padding:6px 0; }
-        .plp-month-day { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; min-height:80px; padding:6px; cursor:pointer; display:flex; flex-direction:column; }
+        .plp-month-day { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:8px; min-height:80px; padding:6px; cursor:pointer; display:flex; flex-direction:column; transition:background .12s, border-color .12s; }
+        .plp-month-day.plp-drag-over { background:#f3ecff; border-color:#7c3aed; border-style:dashed; }
         .plp-month-day:hover { border-color:var(--violet); }
         .plp-month-day.other-month { opacity:.35; }
         .plp-month-day.today { border-color:var(--violet); background:#f5f3ff; }
