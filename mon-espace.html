@@ -3075,7 +3075,10 @@
       }
       // La languette = couleur du membre (ou gradient multi-membre) via CSS custom property
       const styleOverride = `--member-color:${cardColor};${gradientStyle}${isInscrPending ? 'background:#f9fafb;' : ''}`;
-      return `<div class="${classes}" style="${styleOverride}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
+      // Drag & drop : uniquement pour les vraies tâches (pas rec- ni inscriptions)
+      const canDrag = clickable && !t._virtuel && !String(t.id).startsWith('rec-');
+      const dragAttrs = canDrag ? `draggable="true" data-plp-tache-id="${escapeHtml(t.id)}" data-plp-sister-ids="${escapeHtml((t._sisterIds || [t.id]).join(','))}"` : '';
+      return `<div class="${classes}" ${dragAttrs} style="${styleOverride}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${statutDot}
         ${h ? `<div class="plp-tache-h">${h}</div>` : ''}
         <div class="plp-tache-t">${escapeHtml(t.titre)}${t._fromInscription ? (isInscrPending ? ' ⏳' : ' ✓') : ''}</div>
