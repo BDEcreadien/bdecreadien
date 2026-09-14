@@ -3033,13 +3033,14 @@
         const key = plpYmd(d);
         const isToday = d.getTime() === today.getTime();
         const list = (byDay[key] || []).sort((a,b) => (a.horaire_debut || 'z').localeCompare(b.horaire_debut || 'z'));
-        return `<div class="plp-day-col ${isToday ? 'today' : ''}">
+        return `<div class="plp-day-col ${isToday ? 'today' : ''}" data-plp-day="${key}" ondragover="plpDayDragOver(event)" ondragleave="plpDayDragLeave(event)" ondrop="plpDayDrop(event, '${key}')">
           <div class="plp-day-header">${PLP_JOURS[i]}</div>
           <div class="plp-day-num">${d.getDate()}</div>
           ${list.map(t => plpTacheCard(t, d < today)).join('')}
           <button class="plp-day-add" onclick="plpOpenTacheForm(null, '${key}')">+ Tâche</button>
         </div>`;
       }).join('')}</div>`;
+      plpBindDragTaches();
     }
 
     function plpTacheCard(t, isPast) {
