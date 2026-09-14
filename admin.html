@@ -4616,9 +4616,13 @@ function finEvUpdateSoldes() {
 }
 
 async function finAutoEstimation() {
-  const cat = document.getElementById('ev-categorie').value;
+  let cat = document.getElementById('ev-categorie').value;
+  if (cat === '__custom__') {
+    cat = document.getElementById('ev-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
+  }
   const hint = document.getElementById('ev-hint-moy');
   hint.textContent = '';
+  if (!cat) return;
   try {
     const { data } = await window.Auth.sb.rpc('moyenne_cout_categorie', { p_categorie: cat, p_limit: 5 });
     if (data != null) {
