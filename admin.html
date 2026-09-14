@@ -717,10 +717,9 @@
             <button class="stats-ext-btn" onclick="pdfTelecharger()" style="background:var(--gradient);color:white;border:none;font-weight:600;">⬇ Télécharger</button>
           </div>
         </div>
-        <div id="pdf-preview-wrap" style="background:#3a3a3a;border-radius:12px;padding:20px;display:flex;justify-content:center;overflow:auto;">
-          <object id="pdf-preview-obj" type="application/pdf" style="width:210mm;height:297mm;border:none;box-shadow:0 8px 30px rgba(0,0,0,0.4);background:white;" data="">
-            <div style="padding:40px;text-align:center;color:#666;font-size:14px;">Ton navigateur ne peut pas afficher le PDF inline.<br><br><button onclick="pdfTelecharger()" style="margin-top:12px;padding:10px 20px;background:var(--violet);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Télécharger le PDF</button></div>
-          </object>
+        <div id="pdf-preview-wrap" style="background:#3a3a3a;border-radius:12px;padding:20px;display:flex;justify-content:center;overflow:auto;position:relative;">
+          <div id="pdf-preview-loading" style="position:absolute;inset:20px;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;pointer-events:none;">Génération de l'aperçu…</div>
+          <iframe id="pdf-preview-iframe" style="width:210mm;height:297mm;border:none;box-shadow:0 8px 30px rgba(0,0,0,0.4);background:white;" title="Aperçu PDF"></iframe>
         </div>
         <p style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;text-align:center;">Aperçu A4 réel mis à jour à chaque modification</p>
       </div>
