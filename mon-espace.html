@@ -2941,6 +2941,57 @@
       plpRender();
     }
 
+    // ---------- Drag & drop des tâches entre jours ----------
+    var _plpDragTacheData = null;
+    function plpBindDragTaches() {
+      document.querySelectorAll('.plp-tache[draggable="true"]').forEach(el => {
+        el.addEventListener('dragstart', (e) => {
+          const id = el.getAttribute('data-plp-tache-id');
+          const sisters = (el.getAttribute('data-plp-sister-ids') || '').split(',').filter(Boolean);
+          _plpDragTacheData = { id, sisters };
+          el.classList.add('plp-dragging');
+          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); } catch (_) {}
+        });
+        el.addEventListener('dragend', () => {
+          el.classList.remove('plp-dragging');
+          document.querySelectorAll('.plp-day-col.plp-drag-over').forEach(c => c.classList.remove('plp-drag-over'));
+        });
+      });
+    }
+    function plpDayDragOver(e) {
+      if (!_plpDragTacheData) return;
+      e.preventDefault();
+      try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+      const col = e.currentTarget;
+      col.classList.add('plp-drag-over');
+    }
+    function plpDayDragLeave(e) {
+      const col = e.currentTarget;
+      // Ne retire que si on quitte vraiment la colonne (pas juste survol d'un enfant)
+      if (!col.contains(e.relatedTarget)) col.classList.remove('plp-drag-over');
+    }
+    async function plpDayDrop(e, newJour) {
+      e.preventDefault();
+      const col = e.currentTarget;
+      col.classList.remove('plp-drag-over');
+      const data = _plpDragTacheData;
+      _plpDragTacheData = null;
+      if (!data) return;
+      // Trouve la tâche originale + ses sœurs pour tout déplacer d'un coup
+      const orig = _plpTaches.find(x => x.id === data.id);
+      if (!orig) return;
+      if (orig.jour === newJour) return;
+      const idsToUpdate = (data.sisters && data.sisters.length) ? data.sisters : [data.id];
+      // Filtre les IDs qui sont vraiment des UUIDs (safety : pas de rec- ou insc-)
+      const realIds = idsToUpdate.filter(id => isRealTacheId && isRealTacheId(id));
+      if (!realIds.length) return showToast('Impossible de déplacer cette tâche', 'error');
+      const { error } = await Auth.sb.from('planning_taches').update({ jour: newJour }).in('id', realIds);
+      if (error) return showToast('Erreur déplacement : ' + error.message, 'error');
+      showToast(realIds.length > 1 ? `Tâche déplacée pour ${realIds.length} membres` : 'Tâche déplacée', 'success');
+      await plpLoadTaches();
+      plpRender();
+    }
+
     function plpFilteredTaches(range) {
       const search = (document.getElementById('plp-search').value || '').toLowerCase().trim();
       const fPole = document.getElementById('plp-filter-pole').value;
