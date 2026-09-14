@@ -2833,34 +2833,101 @@
     // Génère les tâches virtuelles des récurrentes pour la période visible
     function plpExpandRecur(startDate, endDate) {
       const out = [];
+      const pushOcc = (r, occ) => {
+        out.push({
+          id: `rec-${r.id}-${plpYmd(occ)}`,
+          titre: r.titre + ' 🔁',
+          description: r.description,
+          jour: plpYmd(occ),
+          horaire_debut: r.horaire_debut,
+          horaire_fin: r.horaire_fin,
+          membre_id: r.membre_id,
+          priorite: r.priorite,
+          statut: 'a_faire',
+          notes: r.notes,
+          _virtuel: true,
+          _sourceId: r.id
+        });
+      };
+      // Convertit un dow JS (0=dim..6=sam) vers notre code (1=lun..7=dim)
+      const jsDowToCode = d => d === 0 ? 7 : d;
       for (const r of _plpRecur) {
         const rD = new Date(r.date_debut + 'T00:00:00');
         const rF = r.date_fin ? new Date(r.date_fin + 'T00:00:00') : null;
-        // Aligne sur lundi de startDate
-        const cur = new Date(startDate);
-        cur.setHours(0,0,0,0);
-        const dow = (cur.getDay() + 6) % 7 + 1;
-        if (dow > 1) cur.setDate(cur.getDate() - (dow - 1));
-        while (cur <= endDate) {
-          const occ = new Date(cur);
-          occ.setDate(occ.getDate() + (r.jour_semaine - 1));
-          if (occ >= rD && (!rF || occ <= rF) && occ >= startDate && occ <= endDate) {
-            out.push({
-              id: `rec-${r.id}-${plpYmd(occ)}`,
-              titre: r.titre + ' 🔁',
-              description: r.description,
-              jour: plpYmd(occ),
-              horaire_debut: r.horaire_debut,
-              horaire_fin: r.horaire_fin,
-              membre_id: r.membre_id,
-              priorite: r.priorite,
-              statut: 'a_faire',
-              notes: r.notes,
-              _virtuel: true,
-              _sourceId: r.id
-            });
+        const rangeStart = new Date(Math.max(rD.getTime(), startDate.getTime()));
+        rangeStart.setHours(0,0,0,0);
+        const rangeEnd = new Date(Math.min(rF ? rF.getTime() : endDate.getTime(), endDate.getTime()));
+        rangeEnd.setHours(23,59,59);
+        const type = r.type_recur || 'hebdomadaire';
+        const interval = r.intervalle || 1;
+
+        if (type === 'quotidien') {
+          for (let d = new Date(rD); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
+            if (d >= rangeStart) pushOcc(r, d);
           }
-          cur.setDate(cur.getDate() + 7);
+        } else if (type === 'ouvre') {
+          // Lundi à vendredi (1-5)
+          for (let d = new Date(rD); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
+            if (d < rangeStart) continue;
+            const jsD = d.getDay();
+            if (jsD >= 1 && jsD <= 5) pushOcc(r, d);
+          }
+        } else if (type === 'mensuel_dom') {
+          // Le jour_mois de chaque mois
+          const jm = r.jour_mois || 1;
+          const startY = rangeStart.getFullYear(), startM = rangeStart.getMonth();
+          const endY = rangeEnd.getFullYear(), endM = rangeEnd.getMonth();
+          for (let y = startY; y <= endY; y++) {
+            const mStart = (y === startY) ? startM : 0;
+            const mEnd = (y === endY) ? endM : 11;
+            for (let m = mStart; m <= mEnd; m++) {
+              const daysInMonth = new Date(y, m + 1, 0).getDate();
+              const day = Math.min(jm, daysInMonth);
+              const occ = new Date(y, m, day);
+              if (occ >= rD && (!rF || occ <= rF) && occ >= rangeStart && occ <= rangeEnd) pushOcc(r, occ);
+            }
+          }
+        } else if (type === 'mensuel_dow') {
+          // Le Nième jour_semaine du mois (n_semaine_mois=-1 = dernier)
+          const targetDowCode = r.jour_semaine || 1;
+          const targetJsD = targetDowCode === 7 ? 0 : targetDowCode; // 1=lun→1, 7=dim→0
+          const nWeek = r.n_semaine_mois || 1;
+          const startY = rangeStart.getFullYear(), startM = rangeStart.getMonth();
+          const endY = rangeEnd.getFullYear(), endM = rangeEnd.getMonth();
+          for (let y = startY; y <= endY; y++) {
+            const mStart = (y === startY) ? startM : 0;
+            const mEnd = (y === endY) ? endM : 11;
+            for (let m = mStart; m <= mEnd; m++) {
+              let occ;
+              if (nWeek === -1) {
+                // Dernier jour_semaine du mois
+                const lastDay = new Date(y, m + 1, 0);
+                const shift = (lastDay.getDay() - targetJsD + 7) % 7;
+                occ = new Date(y, m, lastDay.getDate() - shift);
+              } else {
+                // Nième jour_semaine du mois
+                const first = new Date(y, m, 1);
+                const shift = (targetJsD - first.getDay() + 7) % 7;
+                const day = 1 + shift + (nWeek - 1) * 7;
+                if (day > new Date(y, m + 1, 0).getDate()) continue; // dépasse le mois
+                occ = new Date(y, m, day);
+              }
+              if (occ >= rD && (!rF || occ <= rF) && occ >= rangeStart && occ <= rangeEnd) pushOcc(r, occ);
+            }
+          }
+        } else {
+          // Hebdomadaire (avec intervalle N semaines)
+          const targetDowCode = r.jour_semaine || 1;
+          // Trouve la première occurrence >= rD au bon jour de semaine
+          const first = new Date(rD);
+          const firstJsD = jsDowToCode(first.getDay());
+          const diff = (targetDowCode - firstJsD + 7) % 7;
+          first.setDate(first.getDate() + diff);
+          const stepDays = 7 * interval;
+          for (let d = new Date(first); d <= rangeEnd; d.setDate(d.getDate() + stepDays)) {
+            if (d < rangeStart) continue;
+            if (d >= rD && (!rF || d <= rF)) pushOcc(r, d);
+          }
         }
       }
       return out;
