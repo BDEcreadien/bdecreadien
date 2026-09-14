@@ -428,7 +428,7 @@
       const prix = buildPrix();
       const contact = buildContact();
 
-      if (!titre || !description) { showMsg('Titre et description sont obligatoires.', 'error'); return; }
+      if (!titre) { showMsg('Le titre est obligatoire.', 'error'); document.getElementById('a-titre').focus(); return; }
       if (!contact) { showMsg('Coche au moins une méthode de contact et remplis-la.', 'error'); return; }
 
       const btn = document.getElementById('a-submit');
