@@ -3273,13 +3273,51 @@
     }
     function plpCloseRecurrentes() { document.getElementById('plp-modal-recur').classList.remove('visible'); }
 
+    // Mapping DB → valeur du select "Répétition"
+    function plpRecurTypeCode(r) {
+      if (!r) return 'hebdo-1';
+      const t = r.type_recur || 'hebdomadaire';
+      if (t === 'ouvre') return 'ouvre';
+      if (t === 'quotidien') return 'quotidien';
+      if (t === 'mensuel_dom') return 'mdom';
+      if (t === 'mensuel_dow') return 'mdow-' + (r.n_semaine_mois || 1);
+      // hebdomadaire
+      return 'hebdo-' + (r.intervalle || 1);
+    }
+    // Mapping valeur select → colonnes DB
+    function plpRecurCodeToPayload(code) {
+      if (code === 'ouvre') return { type_recur: 'ouvre', intervalle: 1, n_semaine_mois: null, jour_mois: null };
+      if (code === 'quotidien') return { type_recur: 'quotidien', intervalle: 1, n_semaine_mois: null, jour_mois: null };
+      if (code === 'mdom') return { type_recur: 'mensuel_dom', intervalle: 1, n_semaine_mois: null };
+      if (code.startsWith('mdow-')) {
+        const n = parseInt(code.slice(5), 10);
+        return { type_recur: 'mensuel_dow', intervalle: 1, n_semaine_mois: n, jour_mois: null };
+      }
+      // hebdo-N
+      const interval = parseInt(code.slice(6), 10) || 1;
+      return { type_recur: 'hebdomadaire', intervalle: interval, n_semaine_mois: null, jour_mois: null };
+    }
+    // Affiche/masque les champs selon le type choisi
+    function plpUpdateRecurUI() {
+      const code = document.getElementById('plp-r-type').value;
+      const jourWrap = document.getElementById('plp-r-jour-wrap');
+      const jourMoisWrap = document.getElementById('plp-r-jourmois-wrap');
+      // Cas où jour_semaine sert : hebdomadaire, mensuel_dow
+      const needsJourSemaine = code.startsWith('hebdo-') || code.startsWith('mdow-');
+      // Cas où jour_mois sert : mensuel_dom
+      const needsJourMois = code === 'mdom';
+      jourWrap.style.display = needsJourSemaine ? '' : 'none';
+      jourMoisWrap.style.display = needsJourMois ? '' : 'none';
+    }
     function plpOpenRecurForm(id) {
       _plpRecurEditingId = id;
       const r = id ? _plpRecur.find(x => x.id === id) : null;
       document.getElementById('plp-recur-title').textContent = id ? 'Modifier la récurrente' : 'Nouvelle récurrente';
       document.getElementById('plp-r-id').value = id || '';
       document.getElementById('plp-r-titre').value = r?.titre || '';
+      document.getElementById('plp-r-type').value = plpRecurTypeCode(r);
       document.getElementById('plp-r-jour').value = r?.jour_semaine || 1;
+      document.getElementById('plp-r-jourmois').value = r?.jour_mois || '';
       document.getElementById('plp-r-hdebut').value = r?.horaire_debut ? r.horaire_debut.slice(0,5) : '';
       document.getElementById('plp-r-hfin').value = r?.horaire_fin ? r.horaire_fin.slice(0,5) : '';
       document.getElementById('plp-r-debut').value = r?.date_debut || plpYmd(new Date());
@@ -3288,12 +3326,30 @@
       document.getElementById('plp-r-desc').value = r?.description || '';
       _plpRecurAssignSet = new Set();
       if (plpIsBureau()) {
-        if (r?.membre_id) _plpRecurAssignSet.add(r.membre_id);
-        else _plpRecurAssignSet.add(currentProfil.id);
+        // Regroupe les récurrentes sœurs (même titre/type/horaires/dates)
+        if (r) {
+          const sisters = _plpRecur.filter(x =>
+            x.titre === r.titre &&
+            (x.type_recur || 'hebdomadaire') === (r.type_recur || 'hebdomadaire') &&
+            (x.intervalle || 1) === (r.intervalle || 1) &&
+            (x.n_semaine_mois || null) === (r.n_semaine_mois || null) &&
+            (x.jour_mois || null) === (r.jour_mois || null) &&
+            (x.jour_semaine || null) === (r.jour_semaine || null) &&
+            (x.horaire_debut || null) === (r.horaire_debut || null) &&
+            (x.horaire_fin || null) === (r.horaire_fin || null) &&
+            (x.date_debut || null) === (r.date_debut || null) &&
+            (x.date_fin || null) === (r.date_fin || null)
+          );
+          sisters.forEach(s => { if (s.membre_id) _plpRecurAssignSet.add(s.membre_id); });
+          if (!_plpRecurAssignSet.size) _plpRecurAssignSet.add(currentProfil.id);
+        } else {
+          _plpRecurAssignSet.add(currentProfil.id);
+        }
         plpUpdateBtnLabel('recur');
       }
       document.getElementById('plp-r-del-btn').style.display = id ? '' : 'none';
       plpFillQuickTimeSelects();
+      plpUpdateRecurUI();
       document.getElementById('plp-modal-recur-form').classList.add('visible');
     }
     function plpCloseRecurForm() { document.getElementById('plp-modal-recur-form').classList.remove('visible'); }
