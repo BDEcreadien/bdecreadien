@@ -4730,7 +4730,9 @@ async function loadLogo() {
 
 // Ouvre le PDF dans un modal pour aperçu avant téléchargement
 function pdfPreview(doc, filename) {
-  const url = doc.output('bloburl');
+  const pdfBlob = doc.output('blob');
+  const typedBlob = pdfBlob.type === 'application/pdf' ? pdfBlob : new Blob([pdfBlob], { type: 'application/pdf' });
+  const url = URL.createObjectURL(typedBlob);
   const modal = document.createElement('div');
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   modal.innerHTML = `
@@ -4739,10 +4741,12 @@ function pdfPreview(doc, filename) {
         <h3 style="margin:0;font-size:16px;">Aperçu du PDF — ${filename}</h3>
         <div style="display:flex;gap:8px;">
           <button onclick="this.closest('.pdf-preview-modal').remove()" style="padding:8px 14px;background:none;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">Fermer</button>
-          <a href="${url}" download="${filename}" style="padding:8px 14px;background:var(--gradient);color:white;border:none;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">⬇ Télécharger</a>
+          <button onclick="(function(u,f){const a=document.createElement('a');a.href=u;a.download=f;document.body.appendChild(a);a.click();a.remove();})('${url}','${filename}')" style="padding:8px 14px;background:var(--gradient);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">⬇ Télécharger</button>
         </div>
       </div>
-      <iframe src="${url}" style="flex:1;width:100%;border:none;"></iframe>
+      <object data="${url}" type="application/pdf" style="flex:1;width:100%;border:none;">
+        <div style="padding:40px;text-align:center;color:#666;">Aperçu impossible dans ce navigateur. Utilise "Télécharger" ci-dessus.</div>
+      </object>
     </div>
   `;
   modal.className = 'pdf-preview-modal';
