@@ -2969,15 +2969,22 @@
       const clickable = !t._fromInscription;
       // La languette = couleur du membre (via CSS custom property)
       const styleOverride = `--member-color:${cardColor};${isInscrPending ? 'background:#f9fafb;' : ''}`;
-      // Badges des membres assignés : plusieurs pastilles colorées si tâche partagée
-      let membresBadges = '';
-      if (Array.isArray(t._allMembres) && t._allMembres.length > 1) {
+      // Noms des membres assignés (lisibles) + gradient multi-couleur si tâche partagée
+      let membresLine = '';
+      let gradientStyle = '';
+      const allMids = Array.isArray(t._allMembres) && t._allMembres.length ? t._allMembres : [t.membre_id];
+      if (allMids.length > 1) {
         const memMap = Object.fromEntries(_plpMembres.map(m => [m.id, m]));
-        membresBadges = `<div class="plp-tache-members">${t._allMembres.slice(0, 5).map(mid => {
-          const m = memMap[mid];
-          const initial = m ? (m.prenom || '?').charAt(0).toUpperCase() : '?';
-          return `<span class="plp-tache-dot" title="${escapeHtml((m?.prenom || '') + ' ' + (m?.nom || ''))}" style="background:${plpColorFor(mid)};">${initial}</span>`;
-        }).join('')}${t._allMembres.length > 5 ? `<span class="plp-tache-dot plp-tache-dot-more">+${t._allMembres.length - 5}</span>` : ''}</div>`;
+        const noms = allMids.map(mid => memMap[mid]?.prenom || '?');
+        membresLine = `<div class="plp-tache-noms">👥 ${noms.map(n => escapeHtml(n)).join(', ')}</div>`;
+        // Gradient sur la languette : chaque membre a une portion égale
+        const colors = allMids.map(mid => plpColorFor(mid));
+        const stops = colors.map((c, i) => {
+          const start = (i / colors.length) * 100;
+          const end = ((i + 1) / colors.length) * 100;
+          return `${c} ${start}%, ${c} ${end}%`;
+        }).join(', ');
+        gradientStyle = `border-left-color:transparent;background-image:linear-gradient(white,white),linear-gradient(to bottom, ${stops});background-origin:border-box;background-clip:padding-box,border-box;border-left-width:5px;`;
       }
       return `<div class="${classes}" style="${styleOverride}" ${clickable ? `onclick="plpOpenTacheForm('${t.id}')"` : `title="Inscription à un événement bureau${isInscrPending ? ' (en attente de validation par le bureau)' : ' (validée)'}"`}>
         ${statutDot}
