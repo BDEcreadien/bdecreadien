@@ -4903,8 +4903,9 @@ async function pdfConstruireDetaille(doc) {
       let suffix = '';
       if (tx._virtuel) suffix = ' [récur.]';
       else if (tx._fromEvent) suffix = ' [event]';
-      const libelle = (tx.libelle || '') + suffix;
-      const libelleShort = libelle.length > 45 ? libelle.slice(0, 42) + '…' : libelle;
+      const libelleBase = (tx.libelle || '') + suffix;
+      const libelleAvecFournisseur = tx.fournisseur ? `${libelleBase} — ${tx.fournisseur}` : libelleBase;
+      const libelleShort = libelleAvecFournisseur.length > 45 ? libelleAvecFournisseur.slice(0, 42) + '…' : libelleAvecFournisseur;
       doc.text(libelleShort, 40, y);
       doc.text(c.label, 130, y);
       const mNum = Number(tx.montant);
