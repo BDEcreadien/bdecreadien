@@ -4811,16 +4811,54 @@ async function finSaveEv() {
   };
   const btn = document.getElementById('fin-btn-save-ev');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  let error;
+  let error, savedId = _finEvEditingId;
   if (_finEvEditingId) {
     ({ error } = await window.Auth.sb.from('finance_evenements').update(payload).eq('id', _finEvEditingId));
   } else {
     const user = await window.Auth.getUser();
     payload.created_by = user.id;
-    ({ error } = await window.Auth.sb.from('finance_evenements').insert(payload));
+    const { data, error: e2 } = await window.Auth.sb.from('finance_evenements').insert(payload).select('id').single();
+    error = e2;
+    if (data) savedId = data.id;
   }
+  if (error) { btn.disabled = false; btn.textContent = 'Enregistrer'; showToast('Erreur : ' + error.message, 'error'); return; }
+
+  // Sync des transactions liées à cet event
+  try {
+    const checkedIds = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')]
+      .map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
+    // 1. Détache toutes les transactions non-espèces qui étaient liées mais ne le sont plus
+    const currentlyLinked = _finTransactions.filter(t => t.finance_evenement_id === savedId && t.moyen_paiement !== 'especes');
+    const toDetach = currentlyLinked.filter(t => !checkedIds.includes(t.id)).map(t => t.id);
+    if (toDetach.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: null }).in('id', toDetach);
+    // 2. Lie les nouvelles transactions cochées
+    if (checkedIds.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: savedId }).in('id', checkedIds);
+    // 3. Espèces : upsert d'une transaction dédiée
+    const especeRec = parseFloat(document.getElementById('ev-especes-recette').value) || 0;
+    const especeDep = parseFloat(document.getElementById('ev-especes-depense').value) || 0;
+    const existingCash = _finTransactions.filter(t => t.finance_evenement_id === savedId && t.moyen_paiement === 'especes');
+    const user = await window.Auth.getUser();
+    // Recette espèces
+    const cashRec = existingCash.find(t => Number(t.montant) > 0);
+    if (especeRec > 0) {
+      const p = { moyen_paiement:'especes', libelle:`Espèces reçues — ${titre}`, categorie: categorie_budget || 'autre', montant: especeRec, date: date || new Date().toISOString().slice(0,10), finance_evenement_id: savedId };
+      if (cashRec) await window.Auth.sb.from('transactions').update(p).eq('id', cashRec.id);
+      else await window.Auth.sb.from('transactions').insert({ ...p, created_by: user.id });
+    } else if (cashRec) {
+      await window.Auth.sb.from('transactions').delete().eq('id', cashRec.id);
+    }
+    // Dépense espèces
+    const cashDep = existingCash.find(t => Number(t.montant) < 0);
+    if (especeDep > 0) {
+      const p = { moyen_paiement:'especes', libelle:`Espèces payées — ${titre}`, categorie: categorie_budget || 'autre', montant: -especeDep, date: date || new Date().toISOString().slice(0,10), finance_evenement_id: savedId };
+      if (cashDep) await window.Auth.sb.from('transactions').update(p).eq('id', cashDep.id);
+      else await window.Auth.sb.from('transactions').insert({ ...p, created_by: user.id });
+    } else if (cashDep) {
+      await window.Auth.sb.from('transactions').delete().eq('id', cashDep.id);
+    }
+  } catch (err) { console.error('[fin ev tx sync]', err); showToast('Événement OK mais erreur sur les transactions liées : ' + err.message, 'error'); }
+
   btn.disabled = false; btn.textContent = 'Enregistrer';
-  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   showToast(_finEvEditingId ? 'Événement modifié' : 'Événement ajouté', 'success');
   document.getElementById('fin-form-ev').classList.remove('visible');
   _finEvEditingId = null;
