@@ -4663,14 +4663,66 @@ function finTogglerFormEv() {
   document.getElementById('ev-categorie').onchange = () => { finEvCatChange(); finAutoEstimation(); };
 }
 
+function finMoyenLabel(m) {
+  return ({ cb:'💳 CB', virement:'🔁 Virement', especes:'💵 Espèces', cheque:'📝 Chèque', autre:'✨ Autre' })[m || 'autre'] || '✨ Autre';
+}
 function finEvUpdateSoldes() {
   const num = id => parseFloat(document.getElementById(id).value) || 0;
+  // Réel = somme des transactions cochées (côté recette et dépense) + espèces
+  const wrapR = document.getElementById('ev-tx-recettes-list');
+  const wrapD = document.getElementById('ev-tx-depenses-list');
+  let sumRec = 0, sumDep = 0;
+  if (wrapR) wrapR.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumRec += Math.abs(parseFloat(cb.dataset.montant) || 0); });
+  if (wrapD) wrapD.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumDep += Math.abs(parseFloat(cb.dataset.montant) || 0); });
+  const especesRec = num('ev-especes-recette');
+  const especesDep = num('ev-especes-depense');
+  const gainsReel = sumRec + especesRec;
+  const coutReel = sumDep + especesDep;
+  const hidGains = document.getElementById('ev-gains-reel');
+  const hidCout = document.getElementById('ev-cout-reel');
+  if (hidGains) hidGains.value = gainsReel > 0 ? gainsReel.toFixed(2) : '';
+  if (hidCout) hidCout.value = coutReel > 0 ? coutReel.toFixed(2) : '';
+  const affG = document.getElementById('ev-gains-reel-affiche');
+  const affC = document.getElementById('ev-cout-reel-affiche');
+  if (affG) affG.textContent = gainsReel.toFixed(2) + ' €';
+  if (affC) affC.textContent = coutReel.toFixed(2) + ' €';
   const sPrev = num('ev-gains-prev') - num('ev-budget');
-  const sReel = num('ev-gains-reel') - num('ev-cout-reel');
+  const sReel = gainsReel - coutReel;
   const elP = document.getElementById('ev-solde-prev');
   const elR = document.getElementById('ev-solde-reel');
   if (elP) { elP.textContent = (sPrev >= 0 ? '+' : '') + sPrev.toFixed(2) + ' €'; elP.style.color = sPrev >= 0 ? '#22c55e' : '#dc2626'; }
   if (elR) { elR.textContent = (sReel >= 0 ? '+' : '') + sReel.toFixed(2) + ' €'; elR.style.color = sReel >= 0 ? '#22c55e' : '#dc2626'; }
+}
+// Remplit les listes de transactions du mois affiché avec des checkboxes
+// preselectedIds = tableau d'ids déjà liés à l'événement (pour édition)
+function finRenderEvTxSelectors(preselectedIds) {
+  const preSet = new Set(preselectedIds || []);
+  const evId = _finEvEditingId;
+  // Filtre : transactions du mois affiché OU déjà liées à cet event
+  const monthTx = _finTransactions.filter(t => {
+    if (evId && t.finance_evenement_id === evId) return true;
+    if (!t.date) return false;
+    const d = new Date(t.date + 'T00:00:00');
+    return d >= _finDateDebut && d <= _finDateFin;
+  }).sort((a,b) => (a.date || '').localeCompare(b.date || ''));
+  const recettes = monthTx.filter(t => Number(t.montant) > 0);
+  const depenses = monthTx.filter(t => Number(t.montant) < 0);
+  const render = (list, kind) => list.map(t => {
+    const isPreset = preSet.has(t.id) || (evId && t.finance_evenement_id === evId);
+    const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
+    const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
+    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}">
+      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()">
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+        <strong>${escapeHtmlNl(t.libelle)}</strong>
+        <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
+        ${linkedElsewhere ? '<span style="color:#dc2626;font-size:11px;"> · (déjà lié à un autre event)</span>' : ''}
+      </span>
+      <span style="font-weight:700;color:${kind === 'recette' ? '#16a34a' : '#dc2626'};flex-shrink:0;">${Number(t.montant).toFixed(2)} €</span>
+    </label>`;
+  }).join('') || `<div style="color:var(--gris-texte);font-size:12px;padding:8px;text-align:center;">Aucune transaction ${kind} ce mois-ci.</div>`;
+  document.getElementById('ev-tx-recettes-list').innerHTML = render(recettes, 'recette');
+  document.getElementById('ev-tx-depenses-list').innerHTML = render(depenses, 'depense');
 }
 
 async function finAutoEstimation() {
