@@ -1097,7 +1097,7 @@ function showStep(step, opts = {}) {
   try {
     if (step === 'pages') {
       if (location.search) history.replaceState({}, '', location.pathname);
-    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'liens'].includes(step)) {
+    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'planning-semaine', 'liens'].includes(step)) {
       const wanted = '?page=' + step;
       if (location.search !== wanted) history.replaceState({}, '', location.pathname + wanted);
     }
