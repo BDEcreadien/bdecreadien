@@ -917,6 +917,26 @@
           .plp-toolbar { gap:6px; }
           .plp-add-btn { margin-left:0; width:100%; }
         }
+        /* Mobile: iOS n'auto-zoome pas si font-size >= 16px sur les inputs */
+        @media (max-width: 640px) {
+          .plp-modal input, .plp-modal select, .plp-modal textarea { font-size:16px !important; }
+          .plp-filters select, .plp-filters input { font-size:16px; }
+          /* Toolbar en 3 lignes : (1) Semaine/Mois/Liste  (2) ‹ mois ›  (3) Aujourd'hui / Personnes / Récurrentes  puis + Nouvelle tâche pleine largeur */
+          .plp-toolbar { display:grid; grid-template-columns:1fr; gap:8px; }
+          .plp-view-switch { justify-self:stretch; display:grid; grid-template-columns:1fr 1fr 1fr; }
+          .plp-view-switch button { text-align:center; }
+          .plp-toolbar-row-nav { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; }
+          .plp-toolbar-row-actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+          .plp-toolbar-row-actions .plp-nav-btn, .plp-toolbar-row-actions .plp-filter-btn { width:100%; text-align:center; padding:8px 4px; }
+          .plp-period-label { min-width:0; font-size:13px; }
+          /* Vue mois : empêche l'overflow qui fait dézoomer la page */
+          .plp-month { gap:2px; }
+          .plp-month-header { font-size:9px; padding:4px 0; }
+          .plp-month-day { min-height:52px; padding:3px; overflow:hidden; }
+          .plp-month-day-num { font-size:11px; margin-bottom:2px; }
+          .plp-month-mini { font-size:8px; padding:1px 3px; margin-bottom:1px; border-radius:3px; }
+          .plp-month-more { font-size:8px; }
+        }
       </style>
 
       <h2 class="section-title">Mon planning</h2>
