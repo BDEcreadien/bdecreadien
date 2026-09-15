@@ -4655,8 +4655,11 @@ function finTogglerFormEv() {
   document.getElementById('ev-budget').value = '';
   document.getElementById('ev-gains-reel').value = '';
   document.getElementById('ev-cout-reel').value = '';
+  document.getElementById('ev-especes-recette').value = '';
+  document.getElementById('ev-especes-depense').value = '';
   document.getElementById('ev-valide').checked = false;
   document.getElementById('ev-desc').value = '';
+  finRenderEvTxSelectors([]);
   finEvUpdateSoldes();
   f.classList.add('visible');
   finAutoEstimation();
