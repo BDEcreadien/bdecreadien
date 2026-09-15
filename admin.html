@@ -4715,7 +4715,7 @@ function finRenderEvTxSelectors(preselectedIds) {
     const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
     const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
     return `<label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;border-radius:6px;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}">
-      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()" style="flex-shrink:0;">
+      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()" style="flex-shrink:0;width:18px !important;height:18px !important;padding:0 !important;margin:0 !important;border:1px solid #999 !important;border-radius:3px !important;accent-color:#7c3aed;">
       <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
         <strong style="color:var(--noir);">${escapeHtmlNl(t.libelle)}</strong>
         <span style="color:var(--gris-texte);font-size:11px;font-weight:normal;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
