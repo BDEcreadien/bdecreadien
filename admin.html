@@ -4831,16 +4831,19 @@ async function finSaveEv() {
   try {
     const checkedIds = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')]
       .map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
-    // 1. Détache toutes les transactions non-espèces qui étaient liées mais ne le sont plus
-    const currentlyLinked = _finTransactions.filter(t => t.finance_evenement_id === savedId && t.moyen_paiement !== 'especes');
+    // Une transaction est "auto-créée" si son libellé commence par "Espèces reçues — " ou "Espèces payées — "
+    const isAutoCash = t => t.moyen_paiement === 'especes' &&
+      ((t.libelle || '').startsWith('Espèces reçues — ') || (t.libelle || '').startsWith('Espèces payées — '));
+    // 1. Détache toutes les transactions liées (hors auto-cash) qui ne sont plus cochées
+    const currentlyLinked = _finTransactions.filter(t => t.finance_evenement_id === savedId && !isAutoCash(t));
     const toDetach = currentlyLinked.filter(t => !checkedIds.includes(t.id)).map(t => t.id);
     if (toDetach.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: null }).in('id', toDetach);
     // 2. Lie les nouvelles transactions cochées
     if (checkedIds.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: savedId }).in('id', checkedIds);
-    // 3. Espèces : upsert d'une transaction dédiée
+    // 3. Espèces AUTO : upsert d'une transaction dédiée (n'affecte pas les espèces manuelles cochées)
     const especeRec = parseFloat(document.getElementById('ev-especes-recette').value) || 0;
     const especeDep = parseFloat(document.getElementById('ev-especes-depense').value) || 0;
-    const existingCash = _finTransactions.filter(t => t.finance_evenement_id === savedId && t.moyen_paiement === 'especes');
+    const existingCash = _finTransactions.filter(t => t.finance_evenement_id === savedId && isAutoCash(t));
     const user = await window.Auth.getUser();
     // Recette espèces
     const cashRec = existingCash.find(t => Number(t.montant) > 0);
