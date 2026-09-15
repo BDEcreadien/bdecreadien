@@ -4771,6 +4771,15 @@ function finEditEv(id) {
   document.getElementById('ev-cout-reel').value = ev.cout_reel != null ? ev.cout_reel : '';
   document.getElementById('ev-valide').checked = !!ev.valide;
   document.getElementById('ev-desc').value = ev.description || '';
+  // Pré-coche les transactions déjà liées à cet event + calcule les espèces auto
+  const lies = _finTransactions.filter(t => t.finance_evenement_id === ev.id);
+  const especeRec = lies.filter(t => t.moyen_paiement === 'especes' && Number(t.montant) > 0).reduce((s,t) => s + Number(t.montant), 0);
+  const especeDep = lies.filter(t => t.moyen_paiement === 'especes' && Number(t.montant) < 0).reduce((s,t) => s + Math.abs(Number(t.montant)), 0);
+  document.getElementById('ev-especes-recette').value = especeRec > 0 ? especeRec.toFixed(2) : '';
+  document.getElementById('ev-especes-depense').value = especeDep > 0 ? especeDep.toFixed(2) : '';
+  // On ne pré-coche PAS les transactions "espèces" (elles alimentent déjà les inputs espèces)
+  const preselectedIds = lies.filter(t => t.moyen_paiement !== 'especes').map(t => t.id);
+  finRenderEvTxSelectors(preselectedIds);
   finEvUpdateSoldes();
   document.getElementById('fin-form-ev').classList.add('visible');
   document.getElementById('fin-form-ev').scrollIntoView({ behavior: 'smooth' });
