@@ -4501,13 +4501,14 @@ async function finSaveTransaction() {
   const type = document.getElementById('tx-type').value;
   const notes = document.getElementById('tx-notes').value.trim() || null;
   const fournisseur = document.getElementById('tx-fournisseur').value.trim() || null;
+  const moyen_paiement = document.getElementById('tx-moyen').value || 'autre';
   if (!date || !libelle || isNaN(montantAbs) || montantAbs < 0) {
     showToast('Remplis tous les champs correctement', 'error'); return;
   }
   const montant = type === 'recette' ? montantAbs : -montantAbs;
   const btn = document.getElementById('fin-btn-save');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const payload = { date, libelle, categorie, montant, notes, fournisseur };
+  const payload = { date, libelle, categorie, montant, notes, fournisseur, moyen_paiement };
   let error;
   if (_finEditingId) {
     ({ error } = await window.Auth.sb.from('transactions').update(payload).eq('id', _finEditingId));
