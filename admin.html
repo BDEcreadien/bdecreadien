@@ -649,6 +649,16 @@
           </div>
           <div class="form-row"><label>Montant (€)</label><input type="number" id="tx-montant" step="0.01" min="0" placeholder="ex: 240.50"></div>
         </div>
+        <div class="form-row">
+          <label>Moyen de paiement</label>
+          <select id="tx-moyen">
+            <option value="cb">💳 Carte bancaire</option>
+            <option value="virement">🔁 Virement</option>
+            <option value="especes">💵 Espèces</option>
+            <option value="cheque">📝 Chèque</option>
+            <option value="autre">✨ Autre</option>
+          </select>
+        </div>
         <div class="form-row"><label>Notes (optionnel)</label><textarea id="tx-notes" rows="2" placeholder="Détails…" maxlength="500"></textarea></div>
         <div class="form-actions">
           <button class="btn-cancel" onclick="finTogglerForm()">Annuler</button>
