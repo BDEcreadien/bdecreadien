@@ -949,12 +949,16 @@
           <button data-view="mois" onclick="plpSetView('mois')">Mois</button>
           <button data-view="liste" onclick="plpSetView('liste')">Liste</button>
         </div>
-        <button class="plp-nav-btn" onclick="plpNav(-1)">‹</button>
-        <span class="plp-period-label" id="plp-period-label">—</span>
-        <button class="plp-nav-btn" onclick="plpNav(1)">›</button>
-        <button class="plp-nav-btn" onclick="plpToday()">Aujourd'hui</button>
-        <button class="plp-filter-btn" onclick="plpToggleFilters()" id="plp-filter-btn">Personnes</button>
-        <button class="plp-nav-btn" onclick="plpOpenRecurrentes()">Récurrentes</button>
+        <div class="plp-toolbar-row-nav">
+          <button class="plp-nav-btn" onclick="plpNav(-1)">‹</button>
+          <span class="plp-period-label" id="plp-period-label">—</span>
+          <button class="plp-nav-btn" onclick="plpNav(1)">›</button>
+        </div>
+        <div class="plp-toolbar-row-actions">
+          <button class="plp-nav-btn" onclick="plpToday()">Aujourd'hui</button>
+          <button class="plp-filter-btn" onclick="plpToggleFilters()" id="plp-filter-btn">Personnes</button>
+          <button class="plp-nav-btn" onclick="plpOpenRecurrentes()">Récurrentes</button>
+        </div>
         <button class="plp-add-btn" onclick="plpOpenTacheForm(null)">+ Nouvelle tâche</button>
       </div>
 
