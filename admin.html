@@ -4592,19 +4592,19 @@ function finRenderEvenements() {
       ? `<button onclick="finValiderEv('${ev.id}')" title="Valider les gains finaux" style="background:#22c55e;color:white;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;font-weight:600;">✓</button>`
       : `<button onclick="finDevaliderEv('${ev.id}')" title="Dévalider" style="background:#f3f4f6;color:#666;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;">↺</button>`;
     return `
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--gris-clair);">
-        <div style="width:38px;text-align:center;font-size:20px;flex-shrink:0;">${cat.emoji}</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 8px 10px 6px;border-bottom:1px solid var(--gris-clair);">
+        <div style="width:22px;text-align:center;font-size:18px;flex-shrink:0;">${cat.emoji}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:var(--noir);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${escapeHtmlNl(ev.titre)} ${badgeValide}</div>
-          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${cat.label}${ev.lieu ? ' · ' + escapeHtmlNl(ev.lieu) : ''}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--noir);display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.25;">${escapeHtmlNl(ev.titre)} ${badgeValide}</div>
+          <div style="font-size:11px;color:var(--gris-texte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${dateStr} · ${cat.label}${ev.lieu ? ' · ' + escapeHtmlNl(ev.lieu) : ''}</div>
         </div>
-        <div style="text-align:right;font-size:12px;flex-shrink:0;min-width:130px;">
-          <div style="color:var(--gris-texte);">Prévu : <strong style="color:${soldePrev != null && soldePrev >= 0 ? 'var(--violet)' : '#dc2626'};">${soldePrevTxt}</strong></div>
-          <div style="color:var(--gris-texte);">Réel : <strong style="color:${soldeReel == null ? '#999' : (soldeReel >= 0 ? '#22c55e' : '#dc2626')};">${soldeReelTxt}</strong></div>
+        <div style="text-align:right;font-size:11px;flex-shrink:0;min-width:88px;line-height:1.4;">
+          <div style="color:var(--gris-texte);">P: <strong style="color:${soldePrev != null && soldePrev >= 0 ? 'var(--violet)' : '#dc2626'};">${soldePrevTxt}</strong></div>
+          <div style="color:var(--gris-texte);">R: <strong style="color:${soldeReel == null ? '#999' : (soldeReel >= 0 ? '#22c55e' : '#dc2626')};">${soldeReelTxt}</strong></div>
         </div>
         ${btnValider}
-        <button onclick="finEditEv('${ev.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>
-        <button onclick="finDeleteEv('${ev.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:6px;font-size:14px;">🗑</button>
+        <button onclick="finEditEv('${ev.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:4px;font-size:13px;">✎</button>
+        <button onclick="finDeleteEv('${ev.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:4px;font-size:13px;">🗑</button>
       </div>
     `;
   }).join('');
