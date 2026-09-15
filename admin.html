@@ -4714,12 +4714,12 @@ function finRenderEvTxSelectors(preselectedIds) {
     const isPreset = preSet.has(t.id) || (evId && t.finance_evenement_id === evId);
     const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
     const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
-    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}">
-      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()">
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-        <strong>${escapeHtmlNl(t.libelle)}</strong>
-        <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
-        ${linkedElsewhere ? '<span style="color:#dc2626;font-size:11px;"> · (déjà lié à un autre event)</span>' : ''}
+    return `<label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;border-radius:6px;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}">
+      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()" style="flex-shrink:0;">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+        <strong style="color:var(--noir);">${escapeHtmlNl(t.libelle)}</strong>
+        <span style="color:var(--gris-texte);font-size:11px;font-weight:normal;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
+        ${linkedElsewhere ? '<span style="color:#dc2626;font-size:11px;font-weight:normal;"> · (déjà lié à un autre event)</span>' : ''}
       </span>
       <span style="font-weight:700;color:${kind === 'recette' ? '#16a34a' : '#dc2626'};flex-shrink:0;">${Number(t.montant).toFixed(2)} €</span>
     </label>`;
