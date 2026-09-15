@@ -4661,16 +4661,14 @@ function finMoyenLabel(m) {
 }
 function finEvUpdateSoldes() {
   const num = id => parseFloat(document.getElementById(id).value) || 0;
-  // Réel = somme des transactions cochées (côté recette et dépense) + espèces
+  // Réel = somme des transactions cochées uniquement
   const wrapR = document.getElementById('ev-tx-recettes-list');
   const wrapD = document.getElementById('ev-tx-depenses-list');
   let sumRec = 0, sumDep = 0;
   if (wrapR) wrapR.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumRec += Math.abs(parseFloat(cb.dataset.montant) || 0); });
   if (wrapD) wrapD.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumDep += Math.abs(parseFloat(cb.dataset.montant) || 0); });
-  const especesRec = num('ev-especes-recette');
-  const especesDep = num('ev-especes-depense');
-  const gainsReel = sumRec + especesRec;
-  const coutReel = sumDep + especesDep;
+  const gainsReel = sumRec;
+  const coutReel = sumDep;
   const hidGains = document.getElementById('ev-gains-reel');
   const hidCout = document.getElementById('ev-cout-reel');
   if (hidGains) hidGains.value = gainsReel > 0 ? gainsReel.toFixed(2) : '';
