@@ -4162,13 +4162,13 @@ function finRender() {
       : `<button onclick="finEdit('${tx.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>
          <button onclick="finDelete('${tx.id}')" title="Supprimer" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:6px;font-size:14px;">🗑</button>`;
     return `
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--gris-clair);${isVirt ? 'background:#f8fafc;' : ''}">
-        <div style="width:38px;text-align:center;font-size:20px;flex-shrink:0;">${c.emoji}</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 8px 10px 6px;border-bottom:1px solid var(--gris-clair);${isVirt ? 'background:#f8fafc;' : ''}">
+        <div style="width:22px;text-align:center;font-size:18px;flex-shrink:0;">${c.emoji}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-size:14px;font-weight:600;color:var(--noir);">${escapeHtmlNl(tx.libelle)}${badge}</div>
-          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${c.label}${tx.moyen_paiement ? ' · ' + finMoyenLabel(tx.moyen_paiement) : ''}${tx.fournisseur ? ' · <strong>' + escapeHtmlNl(tx.fournisseur) + '</strong>' : ''}${tx.notes ? ' · ' + escapeHtmlNl(tx.notes).slice(0, 60) : ''}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--noir);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtmlNl(tx.libelle)}${badge}</div>
+          <div style="font-size:11px;color:var(--gris-texte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${dateStr} · ${c.label}${tx.moyen_paiement ? ' · ' + finMoyenLabel(tx.moyen_paiement) : ''}${tx.fournisseur ? ' · <strong>' + escapeHtmlNl(tx.fournisseur) + '</strong>' : ''}${tx.notes ? ' · ' + escapeHtmlNl(tx.notes).slice(0, 60) : ''}</div>
         </div>
-        <div style="font-size:16px;font-weight:800;color:${isRecette ? '#22c55e' : '#dc2626'};flex-shrink:0;">${isRecette ? '+' : ''}${Number(tx.montant).toFixed(2)} €</div>
+        <div style="font-size:14px;font-weight:800;color:${isRecette ? '#22c55e' : '#dc2626'};flex-shrink:0;">${isRecette ? '+' : ''}${Number(tx.montant).toFixed(2)} €</div>
         ${actions}
       </div>
     `;
