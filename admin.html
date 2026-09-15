@@ -4469,6 +4469,7 @@ function finEdit(id) {
   document.getElementById('tx-date').value = tx.date;
   document.getElementById('tx-libelle').value = tx.libelle;
   document.getElementById('tx-fournisseur').value = tx.fournisseur || '';
+  document.getElementById('tx-moyen').value = tx.moyen_paiement || 'autre';
   const catSel = document.getElementById('tx-categorie');
   const catInput = document.getElementById('tx-categorie-custom');
   const known = [...catSel.options].some(o => o.value === tx.categorie);
