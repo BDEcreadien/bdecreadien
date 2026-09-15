@@ -4771,14 +4771,18 @@ function finEditEv(id) {
   document.getElementById('ev-cout-reel').value = ev.cout_reel != null ? ev.cout_reel : '';
   document.getElementById('ev-valide').checked = !!ev.valide;
   document.getElementById('ev-desc').value = ev.description || '';
-  // Pré-coche les transactions déjà liées à cet event + calcule les espèces auto
+  // Pré-coche les transactions déjà liées à cet event
   const lies = _finTransactions.filter(t => t.finance_evenement_id === ev.id);
-  const especeRec = lies.filter(t => t.moyen_paiement === 'especes' && Number(t.montant) > 0).reduce((s,t) => s + Number(t.montant), 0);
-  const especeDep = lies.filter(t => t.moyen_paiement === 'especes' && Number(t.montant) < 0).reduce((s,t) => s + Math.abs(Number(t.montant)), 0);
+  // Distingue les transactions espèces AUTO-CRÉÉES par le formulaire (libellé "Espèces reçues/payées — …")
+  // des espèces MANUELLES saisies par le user (Déco fluo, etc.) qui restent des transactions normales.
+  const isAutoCash = t => t.moyen_paiement === 'especes' &&
+    (t.libelle || '').startsWith('Espèces reçues — ') || (t.libelle || '').startsWith('Espèces payées — ');
+  const especeRec = lies.filter(t => isAutoCash(t) && Number(t.montant) > 0).reduce((s,t) => s + Number(t.montant), 0);
+  const especeDep = lies.filter(t => isAutoCash(t) && Number(t.montant) < 0).reduce((s,t) => s + Math.abs(Number(t.montant)), 0);
   document.getElementById('ev-especes-recette').value = especeRec > 0 ? especeRec.toFixed(2) : '';
   document.getElementById('ev-especes-depense').value = especeDep > 0 ? especeDep.toFixed(2) : '';
-  // On ne pré-coche PAS les transactions "espèces" (elles alimentent déjà les inputs espèces)
-  const preselectedIds = lies.filter(t => t.moyen_paiement !== 'especes').map(t => t.id);
+  // Pré-cocher : toutes les transactions liées sauf celles auto-créées par le formulaire
+  const preselectedIds = lies.filter(t => !isAutoCash(t)).map(t => t.id);
   finRenderEvTxSelectors(preselectedIds);
   finEvUpdateSoldes();
   document.getElementById('fin-form-ev').classList.add('visible');
