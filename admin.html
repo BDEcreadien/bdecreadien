@@ -4157,7 +4157,7 @@ function finRender() {
         <div style="width:38px;text-align:center;font-size:20px;flex-shrink:0;">${c.emoji}</div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;font-weight:600;color:var(--noir);">${escapeHtmlNl(tx.libelle)}${badge}</div>
-          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${c.label}${tx.fournisseur ? ' · <strong>' + escapeHtmlNl(tx.fournisseur) + '</strong>' : ''}${tx.notes ? ' · ' + escapeHtmlNl(tx.notes).slice(0, 60) : ''}</div>
+          <div style="font-size:12px;color:var(--gris-texte);">${dateStr} · ${c.label}${tx.moyen_paiement ? ' · ' + finMoyenLabel(tx.moyen_paiement) : ''}${tx.fournisseur ? ' · <strong>' + escapeHtmlNl(tx.fournisseur) + '</strong>' : ''}${tx.notes ? ' · ' + escapeHtmlNl(tx.notes).slice(0, 60) : ''}</div>
         </div>
         <div style="font-size:16px;font-weight:800;color:${isRecette ? '#22c55e' : '#dc2626'};flex-shrink:0;">${isRecette ? '+' : ''}${Number(tx.montant).toFixed(2)} €</div>
         ${actions}
