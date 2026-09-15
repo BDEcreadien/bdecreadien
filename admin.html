@@ -1141,6 +1141,10 @@ function selectPage(page) {
     navStack.push('planning');
     showStep('planning');
     initPlanning();
+  } else if (page === 'planning-semaine') {
+    navStack.push('planning-semaine');
+    showStep('planning-semaine');
+    if (typeof initPlanningSemaine === 'function') initPlanningSemaine();
   } else if (page === 'liens') {
     navStack.push('liens');
     showStep('liens');
