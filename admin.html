@@ -4875,6 +4875,17 @@ function finTogglerFormEv() {
 function finMoyenLabel(m) {
   return ({ cb:'💳 CB', virement:'🔁 Virement', especes:'💵 Espèces', cheque:'📝 Chèque', autre:'✨ Autre' })[m || 'autre'] || '✨ Autre';
 }
+function finEvToggleSumup(cb) {
+  if (!cb.dataset.sumup || !cb.dataset.partialId) return;
+  const wrap = document.getElementById(cb.dataset.partialId + '-wrap');
+  if (!wrap) return;
+  wrap.style.display = cb.checked ? 'flex' : 'none';
+  if (!cb.checked) {
+    const input = document.getElementById(cb.dataset.partialId);
+    if (input) input.value = '';
+  }
+}
+
 function finEvUpdateSoldes() {
   const num = id => parseFloat(document.getElementById(id).value) || 0;
   // Réel = somme des transactions cochées uniquement
