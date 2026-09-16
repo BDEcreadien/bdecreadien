@@ -1061,6 +1061,12 @@
   .fac-bottom .col b { display:block; font-weight:700; margin-bottom:4px; letter-spacing:.5px; }
   .fac-bottom .rib-line { display:grid; grid-template-columns:130px 1fr; gap:4px; }
   .fac-footer { text-align:center; margin-top:36px; padding-top:14px; border-top:1px solid #e5e7eb; font-size:10px; color:#666; font-style:italic; line-height:1.5; }
+  /* Mode export PDF : on masque tout ce qui est UI d'édition */
+  .fac-canvas.fac-pdf-mode [contenteditable="true"]:empty:before { content:none !important; }
+  .fac-canvas.fac-pdf-mode [contenteditable="true"] { background:transparent !important; box-shadow:none !important; }
+  .fac-canvas.fac-pdf-mode .fac-add-line { display:none !important; }
+  .fac-canvas.fac-pdf-mode .fac-tab td.action { display:none !important; }
+  .fac-canvas.fac-pdf-mode .fac-tab td.action + td, .fac-canvas.fac-pdf-mode .fac-tab th:last-child { display:none !important; }
   /* Paramètres émetteur */
   .fac-emetteur-panel { padding:16px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; margin-bottom:16px; }
   .fac-emetteur-panel h3 { margin:0 0 12px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--gris-texte); }
