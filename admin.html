@@ -4918,15 +4918,28 @@ function finRenderEvTxSelectors(preselectedIds) {
     const isPreset = preSet.has(t.id) || (evId && t.finance_evenement_id === evId);
     const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
     const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
-    return `<label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;border-radius:6px;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}">
-      <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" onchange="finEvUpdateSoldes()" style="flex-shrink:0;width:18px !important;height:18px !important;padding:0 !important;margin:0 !important;border:1px solid #999 !important;border-radius:3px !important;accent-color:#7c3aed;">
-      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-        <strong style="color:var(--noir);">${escapeHtmlNl(t.libelle)}</strong>
-        <span style="color:var(--gris-texte);font-size:11px;font-weight:normal;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
-        ${linkedElsewhere ? '<span style="color:#dc2626;font-size:11px;font-weight:normal;"> · (déjà lié à un autre event)</span>' : ''}
-      </span>
-      <span style="font-weight:700;color:${kind === 'recette' ? '#16a34a' : '#dc2626'};flex-shrink:0;">${Number(t.montant).toFixed(2)} €</span>
-    </label>`;
+    const isSumup = t.moyen_paiement === 'virement_sumup';
+    const partialId = `ev-partial-${t.id}`;
+    const partialInput = isSumup && !linkedElsewhere ? `
+      <div id="${partialId}-wrap" style="display:${isPreset ? 'flex' : 'none'};align-items:center;gap:6px;margin-top:4px;padding:4px 8px;background:rgba(251,191,36,.12);border-radius:6px;border:1px solid rgba(251,191,36,.4);">
+        <span style="font-size:11px;color:#92400e;flex-shrink:0;">Montant lié à cet event :</span>
+        <input id="${partialId}" type="number" step="0.01" min="0" max="${Math.abs(t.montant)}" placeholder="${Math.abs(t.montant).toFixed(2)}"
+          style="width:90px;padding:3px 6px;border:1px solid #d97706;border-radius:4px;font-size:12px;font-weight:700;color:#92400e;background:white;"
+          oninput="finEvUpdateSoldes()" onclick="event.stopPropagation()">
+        <span style="font-size:11px;color:#92400e;">€ (sur ${Math.abs(Number(t.montant)).toFixed(2)} €)</span>
+      </div>` : '';
+    return `<div style="${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}border-radius:6px;margin-bottom:2px;">
+      <label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;">
+        <input type="checkbox" ${isPreset ? 'checked' : ''} ${linkedElsewhere ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" data-sumup="${isSumup ? '1' : ''}" data-partial-id="${isSumup ? partialId : ''}" onchange="finEvToggleSumup(this);finEvUpdateSoldes()" style="flex-shrink:0;width:18px !important;height:18px !important;padding:0 !important;margin:0 !important;border:1px solid #999 !important;border-radius:3px !important;accent-color:#7c3aed;">
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          <strong style="color:var(--noir);">${escapeHtmlNl(t.libelle)}</strong>
+          <span style="color:var(--gris-texte);font-size:11px;font-weight:normal;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
+          ${linkedElsewhere ? '<span style="color:#dc2626;font-size:11px;font-weight:normal;"> · (déjà lié à un autre event)</span>' : ''}
+        </span>
+        <span style="font-weight:700;color:${kind === 'recette' ? '#16a34a' : '#dc2626'};flex-shrink:0;">${Number(t.montant).toFixed(2)} €</span>
+      </label>
+      ${partialInput}
+    </div>`;
   }).join('') || `<div style="color:var(--gris-texte);font-size:12px;padding:8px;text-align:center;">Aucune transaction ${kind} ce mois-ci.</div>`;
   document.getElementById('ev-tx-recettes-list').innerHTML = render(recettes, 'recette');
   document.getElementById('ev-tx-depenses-list').innerHTML = render(depenses, 'depense');
