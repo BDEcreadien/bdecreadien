@@ -139,13 +139,13 @@ serve(async (req) => {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
-        <tr><td style="background:linear-gradient(135deg,#460186 0%,#8B1A6B 50%,#E85100 100%);padding:32px 40px;">
+        <tr><td style="background:linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);padding:32px 40px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON &bull; PLANNING</p>
           <h1 style="margin:0;font-size:24px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">${escHtml(title)}</h1>
         </td></tr>
         <tr><td style="background:#fff;padding:32px 40px;">
           <p style="margin:0 0 20px;font-size:15px;color:#1A1A2E;line-height:1.6;">${escHtml(message || 'Un nouveau planning est disponible.')}</p>
-          <p style="margin:0;text-align:center;"><a href="${url}" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#460186 0%,#8B1A6B 50%,#E85100 100%);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">Voir le planning</a></p>
+          <p style="margin:0;text-align:center;"><a href="${url}" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">Voir le planning</a></p>
         </td></tr>
         <tr><td style="background:#F5F4FF;padding:16px 40px;text-align:center;font-size:11px;color:#888;">
           BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a>

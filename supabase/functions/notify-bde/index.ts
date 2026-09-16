@@ -19,9 +19,9 @@ function esc(s: string): string {
 }
 
 const LABELS: Record<string, { title: string; badge: string; color: string; url: string }> = {
-  adhesion: { title: 'Nouvelle demande d\'adhésion', badge: 'ADHÉSION', color: '#463A90', url: '/mon-espace.html#bde-demandes' },
-  feedback: { title: 'Nouveau feedback reçu', badge: 'FEEDBACK', color: '#8B1A6B', url: '/mon-espace.html#bde-feedbacks' },
-  annonce:  { title: 'Nouvelle annonce à modérer', badge: 'ANNONCE', color: '#E85100', url: '/mon-espace.html#bde-annonces' },
+  adhesion: { title: 'Nouvelle demande d\'adhésion', badge: 'ADHÉSION', color: '#460186', url: '/mon-espace.html#bde-demandes' },
+  feedback: { title: 'Nouveau feedback reçu', badge: 'FEEDBACK', color: '#9B1889', url: '/mon-espace.html#bde-feedbacks' },
+  annonce:  { title: 'Nouvelle annonce à modérer', badge: 'ANNONCE', color: '#FF741F', url: '/mon-espace.html#bde-annonces' },
 };
 
 function buildHtml(type: string, auteur: string, sujet: string, message: string): string {
@@ -32,7 +32,7 @@ function buildHtml(type: string, auteur: string, sujet: string, message: string)
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F0EFF8;padding:32px 16px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,58,144,0.12);">
-        <tr><td style="background:linear-gradient(135deg,#463A90 0%,#8B1A6B 50%,#E85100 100%);padding:32px 40px;">
+        <tr><td style="background:linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);padding:32px 40px;">
           <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON &bull; ${cfg.badge}</p>
           <h1 style="margin:0;font-size:24px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">${esc(cfg.title)}</h1>
         </td></tr>
@@ -42,10 +42,10 @@ function buildHtml(type: string, auteur: string, sujet: string, message: string)
           ${sujet ? `<p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${cfg.color};">Sujet</p>
           <p style="margin:0 0 20px;font-size:15px;color:#1A1A2E;">${esc(sujet)}</p>` : ''}
           ${message ? `<div style="background:#F8F8FF;border-left:3px solid ${cfg.color};border-radius:0 12px 12px 0;padding:16px 20px;font-size:14px;color:#333;line-height:1.7;">${messageHtml}</div>` : ''}
-          <p style="margin:24px 0 0;font-size:12px;color:#999;text-align:center;">Retrouve le détail dans ton espace BDE sur <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a></p>
+          <p style="margin:24px 0 0;font-size:12px;color:#999;text-align:center;">Retrouve le détail dans ton espace BDE sur <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a></p>
         </td></tr>
         <tr><td style="background:#F5F4FF;padding:16px 40px;text-align:center;font-size:11px;color:#888;">
-          BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a>
+          BDE CREAD Lyon &bull; <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a>
         </td></tr>
       </table>
     </td></tr>

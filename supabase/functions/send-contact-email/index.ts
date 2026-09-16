@@ -37,7 +37,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
 
         <!-- HEADER -->
         <tr>
-          <td style="background:linear-gradient(135deg,#463A90 0%,#8B1A6B 50%,#E85100 100%);padding:36px 40px;">
+          <td style="background:linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);padding:36px 40px;">
             <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.6);">BDE CREAD LYON</p>
             <h1 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:1px;">Nouveau message</h1>
             <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.75);">Reçu depuis bdecreadien.fr/contact</p>
@@ -52,11 +52,11 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
               <tr>
                 <td style="width:40px;vertical-align:top;padding-top:2px;">
-                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#463A90,#E85100);color:white;font-weight:700;font-size:16px;text-align:center;line-height:36px;">${nom.charAt(0).toUpperCase()}</div>
+                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#460186,#FF741F);color:white;font-weight:700;font-size:16px;text-align:center;line-height:36px;">${nom.charAt(0).toUpperCase()}</div>
                 </td>
                 <td style="padding-left:14px;vertical-align:top;">
                   <p style="margin:0;font-size:16px;font-weight:700;color:#1A1A2E;">${nom}</p>
-                  <a href="mailto:${email}" style="font-size:13px;color:#463A90;text-decoration:none;">${email}</a>
+                  <a href="mailto:${email}" style="font-size:13px;color:#460186;text-decoration:none;">${email}</a>
                 </td>
               </tr>
             </table>
@@ -65,7 +65,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
               <tr>
                 <td>
-                  <p style="margin:0 0 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#463A90;">Sujet</p>
+                  <p style="margin:0 0 6px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#460186;">Sujet</p>
                   <div style="background:#F5F4FF;border-radius:10px;padding:12px 16px;display:inline-block;">
                     <p style="margin:0;font-size:15px;font-weight:600;color:#1A1A2E;">${sujet}</p>
                   </div>
@@ -77,8 +77,8 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
             <hr style="border:none;border-top:1px solid #EEEEEE;margin:0 0 28px;">
 
             <!-- Message -->
-            <p style="margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#463A90;">Message</p>
-            <div style="background:#F8F8FF;border-left:3px solid #463A90;border-radius:0 12px 12px 0;padding:20px 24px;">
+            <p style="margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#460186;">Message</p>
+            <div style="background:#F8F8FF;border-left:3px solid #460186;border-radius:0 12px 12px 0;padding:20px 24px;">
               <p style="margin:0;font-size:14px;color:#333333;line-height:1.8;">${messageHtml}</p>
             </div>
 
@@ -87,7 +87,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
               <tr>
                 <td align="center">
                   <a href="mailto:${email}?subject=Re: ${encodeURIComponent(sujet)}"
-                     style="display:inline-block;background:linear-gradient(135deg,#463A90,#E85100);color:white;text-decoration:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.5px;">
+                     style="display:inline-block;background:linear-gradient(135deg,#460186,#FF741F);color:white;text-decoration:none;padding:13px 32px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.5px;">
                     Répondre à ${nom}
                   </a>
                 </td>
@@ -102,7 +102,7 @@ function buildEmailHtml(nom: string, email: string, sujet: string, message: stri
           <td style="background:#F5F4FF;padding:20px 40px;text-align:center;">
             <p style="margin:0;font-size:12px;color:#888888;">
               BDE CREAD Lyon &bull;
-              <a href="https://bdecreadien.fr" style="color:#463A90;text-decoration:none;">bdecreadien.fr</a>
+              <a href="https://bdecreadien.fr" style="color:#460186;text-decoration:none;">bdecreadien.fr</a>
             </p>
           </td>
         </tr>
