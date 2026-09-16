@@ -1187,6 +1187,10 @@ function selectPage(page) {
     navStack.push('liens');
     showStep('liens');
     initLiens();
+  } else if (page === 'factures') {
+    navStack.push('factures');
+    showStep('factures');
+    if (typeof initFactures === 'function') initFactures();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
