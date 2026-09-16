@@ -4881,8 +4881,16 @@ function finEvUpdateSoldes() {
   const wrapR = document.getElementById('ev-tx-recettes-list');
   const wrapD = document.getElementById('ev-tx-depenses-list');
   let sumRec = 0, sumDep = 0;
-  if (wrapR) wrapR.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumRec += Math.abs(parseFloat(cb.dataset.montant) || 0); });
-  if (wrapD) wrapD.querySelectorAll('input[type=checkbox]:checked').forEach(cb => { sumDep += Math.abs(parseFloat(cb.dataset.montant) || 0); });
+  if (wrapR) wrapR.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+    const partial = cb.dataset.partialId ? document.getElementById(cb.dataset.partialId) : null;
+    const val = partial && partial.value !== '' ? parseFloat(partial.value) : Math.abs(parseFloat(cb.dataset.montant) || 0);
+    sumRec += isNaN(val) ? 0 : val;
+  });
+  if (wrapD) wrapD.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+    const partial = cb.dataset.partialId ? document.getElementById(cb.dataset.partialId) : null;
+    const val = partial && partial.value !== '' ? parseFloat(partial.value) : Math.abs(parseFloat(cb.dataset.montant) || 0);
+    sumDep += isNaN(val) ? 0 : val;
+  });
   const gainsReel = sumRec;
   const coutReel = sumDep;
   const hidGains = document.getElementById('ev-gains-reel');
