@@ -6882,24 +6882,35 @@ async function facGenererPdfBlob() {
   await facLoadHtml2Canvas();
   const { jsPDF } = window.jspdf;
   const canvasEl = document.getElementById('fac-canvas');
-  const canvas = await window.html2canvas(canvasEl, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-  const imgData = canvas.toDataURL('image/jpeg', 0.95);
-  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  const pageW = pdf.internal.pageSize.getWidth();
-  const pageH = pdf.internal.pageSize.getHeight();
-  const imgW = pageW;
-  const imgH = (canvas.height * imgW) / canvas.width;
-  if (imgH <= pageH) {
-    pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
-  } else {
-    let pos = 0;
-    while (pos < imgH) {
-      pdf.addImage(imgData, 'JPEG', 0, -pos, imgW, imgH);
-      pos += pageH;
-      if (pos < imgH) pdf.addPage();
+  canvasEl.classList.add('fac-pdf-mode');
+  try {
+    const canvas = await window.html2canvas(canvasEl, {
+      scale: 3,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      letterRendering: true,
+      windowWidth: canvasEl.scrollWidth
+    });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW = pageW;
+    const imgH = (canvas.height * imgW) / canvas.width;
+    if (imgH <= pageH) {
+      pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH, undefined, 'FAST');
+    } else {
+      let pos = 0;
+      while (pos < imgH) {
+        pdf.addImage(imgData, 'PNG', 0, -pos, imgW, imgH, undefined, 'FAST');
+        pos += pageH;
+        if (pos < imgH) pdf.addPage();
+      }
     }
+    return pdf.output('blob');
+  } finally {
+    canvasEl.classList.remove('fac-pdf-mode');
   }
-  return pdf.output('blob');
 }
 
 async function facTelechargerPdf() {
