@@ -49,6 +49,10 @@
       font-family: 'Barlow', sans-serif; font-size: 14px; color: var(--noir);
       background: white; transition: var(--transition); outline: none; box-sizing: border-box;
     }
+    /* iOS n'auto-zoome pas si font-size >= 16px sur les inputs */
+    @media (max-width: 640px) {
+      .auth-field input, .auth-field select { font-size: 16px; }
+    }
     .auth-field input:focus,
     .auth-field select:focus { border-color: var(--violet); }
 

@@ -1,6 +1,14 @@
 (() => {
   const { createClient } = supabase;
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+  // Options auth explicites : persistance longue durée + refresh automatique
+  // (le TTL réel du JWT est côté Supabase — Dashboard → Auth → Sessions).
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  });
   window._sb = sb;
 
   const RANG   = { etudiant: 1, membre: 2, admin: 3 };
@@ -51,14 +59,30 @@
       const cached = _getCachedProfil();
       if (cached) { _profil = cached; return _profil; }
     }
-    const user = await getUser();
-    if (!user) { _profil = null; _clearCachedProfil(); return null; }
-    const { data } = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
+    let user = null;
+    try { user = await getUser(); } catch (_) { user = null; }
+    if (!user) {
+      // Pas d'utilisateur authentifié → on nettoie le cache (mais pas de signOut ici)
+      _profil = null; _clearCachedProfil(); return null;
+    }
+    let data = null, error = null;
+    try {
+      const res = await sb.from('profils').select('*').eq('id', user.id).maybeSingle();
+      data = res.data; error = res.error;
+    } catch (e) { error = e; }
+    if (error) {
+      // Erreur transitoire (réseau, RLS temporaire) → on garde le cache s'il existe, PAS de signOut
+      console.warn('[Auth] getProfil erreur transitoire, cache conservé:', error?.message || error);
+      const cached = _getCachedProfil();
+      if (cached) { _profil = cached; return _profil; }
+      return null;
+    }
     if (!data) {
-      // Session orpheline : l'auth user existe mais pas le profil — on déconnecte
-      await sb.auth.signOut();
-      _profil = null;
-      _clearCachedProfil();
+      // Ligne profil manquante en base. On ne signOut PAS automatiquement —
+      // ça peut être une inscription en cours ou un état temporaire.
+      // On garde le cache si dispo, sinon on renvoie null sans casser la session.
+      const cached = _getCachedProfil();
+      if (cached) { _profil = cached; return _profil; }
       return null;
     }
     _profil = data;
@@ -197,16 +221,15 @@
       // Force re-sync du player OneSignal après reconnexion (couvre les sessions expirées)
       syncOneSignalId();
     }
-    if (!session || event === 'SIGNED_OUT') {
+    // Ne déconnecte QUE sur signout explicite (bouton "Se déconnecter" ou signOut() manuel).
+    // Un TOKEN_REFRESHED avec session=null peut arriver sur perte réseau ponctuelle :
+    // on ne casse plus la session côté client, le prochain refresh reprendra tout seul.
+    if (event === 'SIGNED_OUT') {
       _profil = null;
       _clearCachedProfil();
-      // Si l'utilisateur était sur une page protégée et que la session expire,
-      // redirection propre vers connexion avec message
-      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_OUT') {
-        if (isOnProtected() && !document.hidden) {
-          const next = encodeURIComponent(location.pathname + location.search);
-          location.href = '/connexion.html?next=' + next + '&expired=1';
-        }
+      if (isOnProtected() && !document.hidden) {
+        const next = encodeURIComponent(location.pathname + location.search);
+        location.href = '/connexion.html?next=' + next + '&expired=1';
       }
     }
   });
