@@ -6873,7 +6873,7 @@ function facLoadHtml2Canvas() {
 }
 
 async function facGenererPdfBlob() {
-  await loadJsPDF();
+  await loadJsPdf();
   await facLoadHtml2Canvas();
   const { jsPDF } = window.jspdf;
   const canvasEl = document.getElementById('fac-canvas');
