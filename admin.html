@@ -1137,6 +1137,7 @@ function goBack() {
   else if (prev === 'finances') { showStep('finances'); initFinances(); }
   else if (prev === 'planning') { showStep('planning'); initPlanning(); }
   else if (prev === 'liens') { showStep('liens'); initLiens(); }
+  else if (prev === 'factures') { showStep('factures'); if (typeof initFactures === 'function') initFactures(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
     const type = prev.split(':')[1];
