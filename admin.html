@@ -6926,10 +6926,42 @@ async function facTelechargerPdf() {
 
 async function facTelechargerPdfExistant(id) {
   const f = _facListe.find(x => x.id === id);
-  if (!f || !f.pdf_path) { showToast('PDF non trouvé', 'error'); return; }
-  const { data, error } = await Auth.sb.storage.from('factures').createSignedUrl(f.pdf_path, 60);
-  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
-  window.open(data.signedUrl, '_blank');
+  if (!f) return;
+  // On régénère toujours le PDF à partir des données actuelles (garantit la fraîcheur et la netteté)
+  _facCourante = {
+    ...f,
+    lignes: Array.isArray(f.lignes) ? f.lignes : (typeof f.lignes === 'string' ? JSON.parse(f.lignes) : []),
+    emetteur: (f.emetteur && Object.keys(f.emetteur).length) ? f.emetteur : { ..._facEmetteur }
+  };
+  if (!_facCourante.lignes.length) _facCourante.lignes = [{ intitule: '', montant: 0 }];
+  const editView = document.getElementById('fac-view-edit');
+  const listView = document.getElementById('fac-view-list');
+  const prevEdit = editView.style.display, prevList = listView.style.display;
+  editView.style.visibility = 'hidden';
+  editView.style.position = 'absolute';
+  editView.style.left = '-99999px';
+  editView.style.display = 'block';
+  facRemplirEditor();
+  try {
+    const blob = await facGenererPdfBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `Facture_${f.numero}.pdf`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    // Re-upload silencieux (met à jour le stockage)
+    const path = `${f.annee_scolaire}/${f.numero}.pdf`;
+    Auth.sb.storage.from('factures').upload(path, blob, { contentType: 'application/pdf', upsert: true })
+      .then(({ error: upErr }) => { if (!upErr && !f.pdf_path) Auth.sb.from('factures').update({ pdf_path: path }).eq('id', f.id); });
+  } catch (e) { showToast('Erreur PDF : ' + e.message, 'error'); }
+  finally {
+    editView.style.display = prevEdit || 'none';
+    editView.style.visibility = '';
+    editView.style.position = '';
+    editView.style.left = '';
+    listView.style.display = prevList || '';
+    _facCourante = null;
+  }
 }
 </script>
 
