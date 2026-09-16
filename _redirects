@@ -3,6 +3,7 @@
 
 # URLs propres pour les modules admin — chaque module a son URL dédiée
 /admin/finances          /admin.html?page=finances          200
+/admin/factures          /admin.html?page=factures          200
 /admin/planning          /admin.html?page=planning          200
 /admin/planning-semaine  /admin.html?page=planning-semaine  200
 /admin/agenda            /admin.html?page=agenda            200
