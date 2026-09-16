@@ -6737,7 +6737,7 @@ function facRenderLignes() {
   tb.innerHTML = _facCourante.lignes.map((l, i) => `
     <tr>
       <td><div contenteditable="true" data-idx="${i}" data-champ="intitule" data-placeholder="Désignation" style="white-space:pre-wrap;">${facEscapeHtml(l.intitule || '')}</div></td>
-      <td class="right"><div contenteditable="true" data-idx="${i}" data-champ="montant" data-placeholder="0" style="text-align:right;">${l.montant ? String(l.montant).replace('.', ',') : ''}</div></td>
+      <td class="right"><span style="display:inline-flex;align-items:baseline;gap:4px;justify-content:flex-end;"><span contenteditable="true" data-idx="${i}" data-champ="montant" data-placeholder="0" style="text-align:right;min-width:28px;display:inline-block;">${l.montant ? String(l.montant).replace('.', ',') : ''}</span><span style="color:#333;">€</span></span></td>
       <td class="action">${_facCourante.lignes.length > 1 ? `<button onclick="facSupprimerLigne(${i})" title="Supprimer">✕</button>` : ''}</td>
     </tr>`).join('');
   tb.querySelectorAll('[contenteditable="true"]').forEach(el => {
