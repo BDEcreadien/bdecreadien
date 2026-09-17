@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
     const res = await fetch(`${HA_BASE}/v5/organizations/${HA_ORG_SLUG}/checkout-intents`, {
       method: 'POST',
       headers: {
+        ...HA_HEADERS,
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
