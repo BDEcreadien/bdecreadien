@@ -318,7 +318,7 @@
       const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
 
       try {
-        const res = await fetch(`${SUPABASE_URL}/functions/v1/helloasso-checkout`, {
+        const res = await fetch(`${SUPABASE_URL_VAL}/functions/v1/helloasso-checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
