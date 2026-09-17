@@ -24,6 +24,12 @@ function json(data: unknown, status = 200) {
 
 let _cachedToken: { access_token: string, expires_at: number } | null = null
 
+// HelloAsso passe par Cloudflare WAF : User-Agent identifiable requis, sinon 403
+const HA_HEADERS = {
+  'User-Agent': 'BDECreadien/1.0 (contact@bdecreadien.fr)',
+  'Accept': 'application/json',
+}
+
 async function getAccessToken(): Promise<string> {
   const now = Date.now()
   if (_cachedToken && _cachedToken.expires_at > now + 60_000) return _cachedToken.access_token
@@ -34,7 +40,10 @@ async function getAccessToken(): Promise<string> {
   })
   const res = await fetch(`${HA_BASE}/oauth2/token`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      ...HA_HEADERS,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
     body,
   })
   if (!res.ok) throw new Error(`HelloAsso OAuth failed: ${res.status} ${await res.text()}`)
