@@ -1408,6 +1408,10 @@ function selectPage(page) {
     navStack.push('factures');
     showStep('factures');
     if (typeof initFactures === 'function') initFactures();
+  } else if (page === 'billetterie') {
+    navStack.push('billetterie');
+    showStep('billetterie');
+    if (typeof initBilletterie === 'function') initBilletterie();
   } else if (page === 'parametres') {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
