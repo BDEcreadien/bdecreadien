@@ -1225,6 +1225,117 @@
   </div>
 </div>
 
+<!-- BILLETTERIE (bureau uniquement) -->
+<style>
+  .bil-wrap { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  @media (max-width:1000px) { .bil-wrap { grid-template-columns:1fr; } }
+  .bil-card { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:12px; padding:20px; }
+  .bil-list-row { display:grid; grid-template-columns: 1fr auto auto; gap:10px; padding:12px 14px; align-items:center; border-bottom:1px solid #f0f0f5; font-size:13px; }
+  .bil-list-row:last-child { border-bottom:none; }
+  .bil-status { font-size:10px; text-transform:uppercase; letter-spacing:1px; padding:3px 8px; border-radius:6px; font-weight:700; }
+  .bil-status.actif { background:#dcfce7; color:#166534; }
+  .bil-status.inactif { background:#fee2e2; color:#991b1b; }
+  .bil-field { margin-bottom:14px; }
+  .bil-field label { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#666; margin-bottom:5px; }
+  .bil-field input, .bil-field textarea { width:100%; padding:10px 12px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:14px; font-family:inherit; }
+  .bil-field textarea { resize:vertical; min-height:100px; }
+  .bil-field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .bil-tarif { display:grid; grid-template-columns:1fr 120px auto; gap:10px; align-items:center; padding:12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; margin-bottom:8px; }
+  .bil-tarif input { padding:8px 10px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; }
+  .bil-tarif .del { background:transparent; border:1px solid #fca5a5; color:#dc2626; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:12px; }
+  .bil-preview-frame { width:100%; height:820px; border:1px solid #e5e7eb; border-radius:12px; background:white; }
+  .bil-preview-note { font-size:12px; color:#666; margin-bottom:10px; padding:8px 12px; background:#f3ecff; border-radius:8px; border:1px solid #e9d5ff; }
+</style>
+<div id="step-billetterie" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
+  <!-- Vue liste -->
+  <div id="bil-view-list">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
+      <h2 style="margin:0;">Billetterie</h2>
+      <button class="btn-save" onclick="bilNouvelle()">+ Nouvelle billetterie</button>
+    </div>
+    <div class="bil-card">
+      <div id="bil-list-content"><div style="padding:20px;text-align:center;color:#999;font-size:13px;">Chargement…</div></div>
+    </div>
+  </div>
+
+  <!-- Vue éditeur -->
+  <div id="bil-view-edit" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="btn-cancel" onclick="bilBackToList()">← Retour</button>
+        <h2 style="margin:0;" id="bil-e-titre">Nouvelle billetterie</h2>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-cancel" onclick="bilPreviewInNewTab()" style="border:1px solid #e5e7eb;">🔗 Ouvrir la page</button>
+        <button class="btn-save danger" id="bil-e-del-btn" style="display:none;background:transparent;color:#dc2626;border:1px solid #fca5a5;" onclick="bilSupprimerCourante()">Supprimer</button>
+        <button class="btn-save" onclick="bilEnregistrer()">💾 Enregistrer</button>
+      </div>
+    </div>
+
+    <div class="bil-wrap">
+      <!-- Formulaire édition -->
+      <div class="bil-card">
+        <h3 style="margin:0 0 16px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">📝 Contenu de la page</h3>
+        <div class="bil-field-row">
+          <div class="bil-field">
+            <label>Slug (URL) *</label>
+            <input id="bil-e-slug" placeholder="soiree-integration" oninput="bilOnChange()">
+          </div>
+          <div class="bil-field">
+            <label>Slug HelloAsso *</label>
+            <input id="bil-e-ha-slug" placeholder="soiree-integration" oninput="bilOnChange()">
+          </div>
+        </div>
+        <div class="bil-field">
+          <label>Titre affiché *</label>
+          <input id="bil-e-titre-page" placeholder="Soirée d'intégration" oninput="bilOnChange()">
+        </div>
+        <div class="bil-field-row">
+          <div class="bil-field">
+            <label>Date affichée</label>
+            <input id="bil-e-date" placeholder="🗓️ 15 oct. 2026" oninput="bilOnChange()">
+          </div>
+          <div class="bil-field">
+            <label>Lieu affiché</label>
+            <input id="bil-e-lieu" placeholder="📍 Le Club Lyon" oninput="bilOnChange()">
+          </div>
+        </div>
+        <div class="bil-field">
+          <label>Description (max 500 chars par ligne)</label>
+          <textarea id="bil-e-desc" rows="6" placeholder="Rejoins tes camarades pour…" oninput="bilOnChange()"></textarea>
+        </div>
+        <div class="bil-field-row">
+          <div class="bil-field">
+            <label>Max places / acheteur</label>
+            <input id="bil-e-max" type="number" min="1" max="20" value="4" oninput="bilOnChange()">
+          </div>
+          <div class="bil-field">
+            <label>Texte du bouton</label>
+            <input id="bil-e-cta" placeholder="Payer ma place" oninput="bilOnChange()">
+          </div>
+        </div>
+
+        <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">💰 Tarifs</h3>
+        <div id="bil-e-tarifs"></div>
+        <button type="button" onclick="bilAjouterTarif()" style="background:transparent;border:1px dashed #c4b5fd;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-top:6px;">+ Ajouter un tarif</button>
+
+        <div class="bil-field" style="margin-top:16px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="bil-e-actif" style="width:18px;height:18px;" onchange="bilOnChange()">
+            <span>Page active (visible au public)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Preview iframe -->
+      <div>
+        <div class="bil-preview-note">👁️ Aperçu en direct — enregistre pour que le public voie les modifs</div>
+        <iframe id="bil-preview" class="bil-preview-frame" title="Aperçu billetterie"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 <div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
