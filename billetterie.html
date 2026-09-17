@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billetterie — BDE CREAD Lyon</title>
+  <link rel="preconnect" href="https://zgscyfpqwbmwemzqtvpx.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="css/style.css?v=30">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg?v=4">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png?v=4">
+  <style>
+    :root {
+      --bde-violet: #460186;
+      --bde-orange: #FF741F;
+      --bde-noir: #1A1A2E;
+      --bde-gris: #F5F4FF;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'Barlow',sans-serif; background:var(--bde-gris); color:var(--bde-noir); min-height:100vh; }
+
+    /* HERO — Dégradé BDE plein écran */
+    .bt-hero {
+      background: linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);
+      padding: 60px 24px 100px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      color: white;
+    }
+    .bt-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15), transparent 50%),
+                  radial-gradient(circle at 80% 60%, rgba(255,255,255,0.08), transparent 50%);
+      pointer-events: none;
+    }
+    .bt-hero-logo { width:64px; height:64px; border-radius:50%; margin-bottom:24px; position:relative; }
+    .bt-hero-kicker { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:600; letter-spacing:4px; text-transform:uppercase; opacity:0.85; margin-bottom:16px; position:relative; }
+    .bt-hero-title { font-family:'Bebas Neue',sans-serif; font-size: clamp(40px, 8vw, 72px); letter-spacing:2px; margin:0 0 12px; line-height:0.95; position:relative; text-shadow: 0 2px 20px rgba(0,0,0,0.15); }
+    .bt-hero-meta { display:flex; justify-content:center; gap:32px; flex-wrap:wrap; margin-top:20px; position:relative; font-size:14px; font-weight:600; }
+    .bt-hero-meta span { display:inline-flex; align-items:center; gap:6px; opacity:0.95; }
+
+    /* Card container — chevauche le hero */
+    .bt-container {
+      max-width: 720px; margin: -70px auto 60px; padding: 0 20px; position: relative; z-index: 2;
+    }
+    .bt-card { background:white; border-radius:24px; box-shadow: 0 20px 60px rgba(70,1,134,0.15); overflow:hidden; }
+    .bt-card + .bt-card { margin-top: 20px; }
+    .bt-card-body { padding: 32px 28px; }
+
+    .bt-section-title { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--bde-violet); margin: 0 0 16px; }
+
+    /* Description */
+    .bt-desc { font-size: 15px; line-height: 1.65; white-space: pre-wrap; color: #333; }
+
+    /* Tarifs */
+    .bt-tarif {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px; border: 2px solid #e5e7eb; border-radius: 14px;
+      cursor: pointer; transition: all 0.15s; margin-bottom: 10px;
+      background: white;
+    }
+    .bt-tarif:hover { border-color: var(--bde-violet); background: #faf5ff; }
+    .bt-tarif.selected { border-color: var(--bde-violet); background: #f3ecff; box-shadow: 0 4px 20px rgba(70,1,134,0.15); }
+    .bt-tarif-info { flex: 1; }
+    .bt-tarif-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .bt-tarif-desc { font-size: 12px; color: #888; }
+    .bt-tarif-prix { font-family:'Bebas Neue',sans-serif; font-size: 28px; color: var(--bde-violet); letter-spacing: 1px; }
+
+    /* Quantité + form */
+    .bt-qty-row { display:flex; align-items:center; justify-content:space-between; margin-top:20px; padding-top:20px; border-top: 1px dashed #e5e7eb; }
+    .bt-qty-label { font-weight: 600; }
+    .bt-qty-controls { display:flex; align-items:center; gap:12px; }
+    .bt-qty-btn { width:36px; height:36px; border-radius:50%; border:2px solid var(--bde-violet); background:white; color:var(--bde-violet); font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .12s; }
+    .bt-qty-btn:hover:not(:disabled) { background:var(--bde-violet); color:white; }
+    .bt-qty-btn:disabled { opacity:.35; cursor:not-allowed; }
+    .bt-qty-val { min-width: 28px; text-align:center; font-weight:700; font-size:18px; }
+
+    .bt-field { margin-bottom: 14px; }
+    .bt-field label { display:block; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#666; margin-bottom:5px; }
+    .bt-field input {
+      width:100%; padding:12px 14px; border:1.5px solid #e5e7eb; border-radius:10px;
+      font-family:inherit; font-size:16px; background:white; outline:none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .bt-field input:focus { border-color:var(--bde-violet); box-shadow: 0 0 0 4px rgba(70,1,134,0.1); }
+    .bt-field-row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Total + CTA */
+    .bt-total-box { background: linear-gradient(135deg, #faf5ff 0%, #fff5f0 100%); border-radius: 16px; padding: 20px 24px; margin-top: 20px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #f0e6ff; }
+    .bt-total-label { font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:#666; }
+    .bt-total-val { font-family:'Bebas Neue',sans-serif; font-size:40px; color: var(--bde-violet); letter-spacing:1px; line-height:1; }
+
+    .bt-cta {
+      width:100%; margin-top:20px; padding:18px 24px; border:none; border-radius:14px;
+      background: linear-gradient(135deg,#460186 0%,#6A0F9E 18%,#9B1889 38%,#D2396D 58%,#F04A34 80%,#FF741F 100%);
+      color:white; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+      cursor:pointer; box-shadow: 0 8px 24px rgba(70,1,134,0.3); transition: transform .12s, box-shadow .12s;
+    }
+    .bt-cta:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(70,1,134,0.4); }
+    .bt-cta:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+    .bt-payment-note { text-align:center; margin-top:14px; font-size:11px; color:#888; line-height:1.5; }
+    .bt-payment-note a { color:var(--bde-violet); text-decoration:none; }
+
+    .bt-error { display:none; margin-top:12px; padding:12px 14px; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; color:#991b1b; font-size:13px; }
+    .bt-error.visible { display:block; }
+
+    /* Loading state */
+    .bt-loading { text-align:center; padding: 60px 20px; color:#888; }
+    .bt-spinner { display:inline-block; width:24px; height:24px; border:3px solid #e5e7eb; border-top-color:var(--bde-violet); border-radius:50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .bt-hero { padding: 40px 20px 90px; }
+      .bt-container { margin-top: -60px; padding: 0 12px 40px; }
+      .bt-card-body { padding: 24px 20px; }
+      .bt-field-row { grid-template-columns: 1fr; }
+      .bt-hero-meta { gap: 16px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bt-hero">
+    <img src="/assets/Logo-nav.png" alt="BDE CREAD Lyon" class="bt-hero-logo">
+    <div class="bt-hero-kicker">Billetterie officielle</div>
+    <h1 class="bt-hero-title" id="bt-title">Soirée d'intégration</h1>
+    <div class="bt-hero-meta">
+      <span id="bt-date">🗓️ Date à confirmer</span>
+      <span id="bt-lieu">📍 Lieu à confirmer</span>
+    </div>
+  </div>
+
+  <div class="bt-container">
+
+    <!-- Description -->
+    <div class="bt-card">
+      <div class="bt-card-body">
+        <div class="bt-section-title">L'événement</div>
+        <div class="bt-desc" id="bt-desc">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- Tarifs -->
+    <div class="bt-card">
+      <div class="bt-card-body">
+        <div class="bt-section-title">Choisis ton tarif</div>
+        <div id="bt-tarifs"></div>
+        <div class="bt-qty-row">
+          <div class="bt-qty-label">Nombre de places</div>
+          <div class="bt-qty-controls">
+            <button type="button" class="bt-qty-btn" id="bt-qty-minus" onclick="btChangeQty(-1)">−</button>
+            <div class="bt-qty-val" id="bt-qty-val">1</div>
+            <button type="button" class="bt-qty-btn" id="bt-qty-plus" onclick="btChangeQty(1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire acheteur -->
+    <div class="bt-card">
+      <div class="bt-card-body">
+        <div class="bt-section-title">Tes coordonnées</div>
+        <div class="bt-field-row">
+          <div class="bt-field">
+            <label for="bt-prenom">Prénom *</label>
+            <input type="text" id="bt-prenom" autocomplete="given-name" placeholder="Marie">
+          </div>
+          <div class="bt-field">
+            <label for="bt-nom">Nom *</label>
+            <input type="text" id="bt-nom" autocomplete="family-name" placeholder="Dupont">
+          </div>
+        </div>
+        <div class="bt-field">
+          <label for="bt-email">Email *</label>
+          <input type="email" id="bt-email" autocomplete="email" placeholder="marie.dupont@cread.fr">
+        </div>
+        <div class="bt-field">
+          <label for="bt-tel">Téléphone (facultatif)</label>
+          <input type="tel" id="bt-tel" autocomplete="tel" placeholder="06 12 34 56 78">
+        </div>
+
+        <div class="bt-total-box">
+          <div>
+            <div class="bt-total-label">Total à payer</div>
+            <div style="font-size:12px;color:#888;margin-top:2px;" id="bt-total-detail">1 × 15€</div>
+          </div>
+          <div class="bt-total-val" id="bt-total-val">15€</div>
+        </div>
+
+        <button type="button" class="bt-cta" id="bt-cta" onclick="btPayer()">Payer ma place</button>
+        <div class="bt-error" id="bt-error"></div>
+
+        <div class="bt-payment-note">
+          Paiement sécurisé via <b>HelloAsso</b> · Cartes Visa / Mastercard / CB.<br>
+          En cliquant sur "Payer", tu acceptes les <a href="/mentions-legales.html" target="_blank">CGU</a> du BDE.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================================================
+    // CONFIG — Pour l'instant en dur, plus tard depuis Supabase via l'admin
+    // ============================================================================
+    const BILLETTERIES = {
+      'soiree-integration': {
+        titre: "Soirée d'intégration",
+        date_affiche: "🗓️ Date à confirmer",
+        lieu_affiche: "📍 Lieu à confirmer",
+        description: "Rejoins tes camarades de promo et l'ensemble des étudiants CREAD pour une soirée inoubliable !\n\n🎵 Musique par nos DJ étudiants\n🍹 Bar sur place\n🎁 Cadeaux et goodies BDE\n🤝 Rencontres avec les 1ère à 5ème année\n\nNombre de places limité : réserve la tienne dès maintenant.",
+        max_par_acheteur: 4,
+        tarifs: [
+          { id: 'etudiant-cread', nom: 'Étudiant CREAD', desc: 'Sur présentation de la carte étudiante', prix_centimes: 1500 },
+        ],
+        hello_asso_form_slug: 'soiree-integration',
+      },
+    };
+
+    // Fonction qui construit une URL absolue vers le site (pour les returnUrl/backUrl HelloAsso)
+    const SITE = location.origin;
+    const SUPABASE_URL = 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+
+    // ============================================================================
+    // ÉTAT
+    // ============================================================================
+    const slug = new URLSearchParams(location.search).get('slug')
+      || (location.pathname.match(/^\/billetterie\/([^\/?#]+)/) || [])[1]
+      || 'soiree-integration';
+
+    let _cfg = BILLETTERIES[slug];
+    let _tarifSelId = _cfg?.tarifs[0]?.id || null;
+    let _qty = 1;
+
+    // ============================================================================
+    // RENDU
+    // ============================================================================
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function fmt(centimes) {
+      const v = centimes / 100;
+      if (Number.isInteger(v)) return v + '€';
+      return v.toFixed(2).replace('.', ',') + '€';
+    }
+
+    function renderPage() {
+      if (!_cfg) {
+        document.body.innerHTML = '<div class="bt-loading"><p>Billetterie introuvable.</p><p><a href="/agenda.html" style="color:#460186;">← Retour à l\'agenda</a></p></div>';
+        return;
+      }
+      document.getElementById('bt-title').textContent = _cfg.titre;
+      document.getElementById('bt-date').textContent = _cfg.date_affiche;
+      document.getElementById('bt-lieu').textContent = _cfg.lieu_affiche;
+      document.getElementById('bt-desc').textContent = _cfg.description;
+      renderTarifs();
+      renderTotal();
+    }
+
+    function renderTarifs() {
+      const wrap = document.getElementById('bt-tarifs');
+      wrap.innerHTML = _cfg.tarifs.map(t => `
+        <div class="bt-tarif ${t.id === _tarifSelId ? 'selected' : ''}" onclick="btSelectTarif('${t.id}')">
+          <div class="bt-tarif-info">
+            <div class="bt-tarif-name">${esc(t.nom)}</div>
+            ${t.desc ? `<div class="bt-tarif-desc">${esc(t.desc)}</div>` : ''}
+          </div>
+          <div class="bt-tarif-prix">${fmt(t.prix_centimes)}</div>
+        </div>
+      `).join('');
+    }
+
+    function btSelectTarif(id) { _tarifSelId = id; renderTarifs(); renderTotal(); }
+
+    function btChangeQty(delta) {
+      const max = _cfg.max_par_acheteur || 4;
+      _qty = Math.max(1, Math.min(max, _qty + delta));
+      document.getElementById('bt-qty-val').textContent = _qty;
+      document.getElementById('bt-qty-minus').disabled = _qty <= 1;
+      document.getElementById('bt-qty-plus').disabled = _qty >= max;
+      renderTotal();
+    }
+
+    function renderTotal() {
+      const t = _cfg.tarifs.find(x => x.id === _tarifSelId);
+      if (!t) return;
+      const total = t.prix_centimes * _qty;
+      document.getElementById('bt-total-val').textContent = fmt(total);
+      document.getElementById('bt-total-detail').textContent = `${_qty} × ${fmt(t.prix_centimes)} · ${esc(t.nom)}`;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('bt-error');
+      el.textContent = msg;
+      el.classList.add('visible');
+      setTimeout(() => el.classList.remove('visible'), 8000);
+    }
+
+    // ============================================================================
+    // PAIEMENT
+    // ============================================================================
+    async function btPayer() {
+      const cta = document.getElementById('bt-cta');
+      const t = _cfg.tarifs.find(x => x.id === _tarifSelId);
+      if (!t) return showError('Sélectionne un tarif.');
+
+      const firstName = document.getElementById('bt-prenom').value.trim();
+      const lastName = document.getElementById('bt-nom').value.trim();
+      const email = document.getElementById('bt-email').value.trim();
+      const tel = document.getElementById('bt-tel').value.trim();
+
+      if (!firstName || !lastName || !email) return showError('Renseigne au moins prénom, nom et email.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Email invalide.');
+
+      cta.disabled = true;
+      cta.innerHTML = '<span class="bt-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Redirection…';
+
+      const totalAmountCents = t.prix_centimes * _qty;
+      const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/helloasso-checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            totalAmountCents,
+            itemName,
+            backUrl: `${SITE}/billetterie/${slug}?annule=1`,
+            errorUrl: `${SITE}/billetterie/${slug}?erreur=1`,
+            returnUrl: `${SITE}/billet-confirme.html?slug=${encodeURIComponent(slug)}`,
+            payer: { firstName, lastName, email },
+            metadata: {
+              billetterie_slug: slug,
+              tarif_id: t.id,
+              tarif_nom: t.nom,
+              quantite: _qty,
+              tel,
+              event_titre: _cfg.titre,
+            },
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.redirectUrl) {
+          console.error('checkout error', data);
+          throw new Error(data.error || 'Réponse invalide de la billetterie.');
+        }
+        // Redirection vers HelloAsso pour paiement CB
+        location.href = data.redirectUrl;
+      } catch (e) {
+        console.error(e);
+        showError('Erreur lors de la création du paiement : ' + e.message);
+        cta.disabled = false;
+        cta.textContent = 'Payer ma place';
+      }
+    }
+
+    // ============================================================================
+    // INIT
+    // ============================================================================
+    // Message si retour "annulé"
+    const p = new URLSearchParams(location.search);
+    if (p.get('annule') === '1') {
+      setTimeout(() => showError('Paiement annulé. Ta place n\'est pas réservée — réessaie quand tu veux.'), 300);
+    } else if (p.get('erreur') === '1') {
+      setTimeout(() => showError('Une erreur s\'est produite pendant le paiement. Réessaie ou contacte le BDE.'), 300);
+    }
+
+    renderPage();
+    btChangeQty(0); // init boutons +/-
+  </script>
+</body>
+</html>
