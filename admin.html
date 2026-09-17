@@ -1327,6 +1327,8 @@ function showStep(step, opts = {}) {
   if (lnkEl) lnkEl.style.display = 'none';
   const facEl = document.getElementById('step-factures');
   if (facEl) facEl.style.display = 'none';
+  const bilEl = document.getElementById('step-billetterie');
+  if (bilEl) bilEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
   // Sync URL : /admin sans param quand on est sur les cartes de choix,
