@@ -7081,6 +7081,193 @@ async function facTelechargerPdf() {
   } catch (e) { showToast('Erreur PDF : ' + e.message, 'error'); }
 }
 
+// ============================================================================
+// BILLETTERIE
+// ============================================================================
+let _bilCourante = null, _bilListe = [];
+
+async function initBilletterie() {
+  document.getElementById('bil-view-list').style.display = '';
+  document.getElementById('bil-view-edit').style.display = 'none';
+  await bilChargerListe();
+}
+
+async function bilChargerListe() {
+  const wrap = document.getElementById('bil-list-content');
+  const { data, error } = await Auth.sb.from('billetteries').select('*').order('created_at', { ascending: false });
+  if (error) { wrap.innerHTML = `<div style="padding:20px;color:#dc2626;">Erreur : ${escapeHtml(error.message)}</div>`; return; }
+  _bilListe = data || [];
+  if (!_bilListe.length) { wrap.innerHTML = `<div style="padding:24px;text-align:center;color:#999;font-size:13px;">Aucune billetterie. Clique sur « + Nouvelle billetterie ».</div>`; return; }
+  wrap.innerHTML = _bilListe.map(b => {
+    const tarifs = Array.isArray(b.tarifs) ? b.tarifs : (typeof b.tarifs === 'string' ? JSON.parse(b.tarifs) : []);
+    const min = tarifs.length ? Math.min(...tarifs.map(t => t.prix_centimes)) : 0;
+    const max = tarifs.length ? Math.max(...tarifs.map(t => t.prix_centimes)) : 0;
+    const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€ – ${(max/100).toFixed(0)}€`) : '—';
+    return `
+      <div class="bil-list-row">
+        <div style="min-width:0;">
+          <div style="font-weight:600;font-size:14px;">${escapeHtml(b.titre)}</div>
+          <div style="font-size:12px;color:#888;margin-top:2px;">/billetterie/${escapeHtml(b.slug)} · ${escapeHtml(b.date_affiche || '—')} · ${prixTxt}</div>
+        </div>
+        <span class="bil-status ${b.actif ? 'actif' : 'inactif'}">${b.actif ? 'Active' : 'Inactive'}</span>
+        <button onclick="bilOuvrir('${b.id}')" style="background:transparent;border:1px solid #e5e7eb;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">Modifier</button>
+      </div>`;
+  }).join('');
+}
+
+function bilNouvelle() {
+  _bilCourante = {
+    id: null, slug: '', hello_asso_form_slug: '', titre: '',
+    date_affiche: '', lieu_affiche: '', description: '',
+    max_par_acheteur: 4, cta_texte: 'Payer ma place', actif: true,
+    tarifs: [{ id: 'standard', nom: 'Standard', desc: '', prix_centimes: 1500 }]
+  };
+  bilRemplirEditor();
+  document.getElementById('bil-view-list').style.display = 'none';
+  document.getElementById('bil-view-edit').style.display = '';
+  document.getElementById('bil-e-titre').textContent = 'Nouvelle billetterie';
+  document.getElementById('bil-e-del-btn').style.display = 'none';
+}
+
+async function bilOuvrir(id) {
+  const b = _bilListe.find(x => x.id === id);
+  if (!b) return;
+  _bilCourante = {
+    ...b,
+    tarifs: Array.isArray(b.tarifs) ? b.tarifs : (typeof b.tarifs === 'string' ? JSON.parse(b.tarifs) : [])
+  };
+  if (!_bilCourante.tarifs.length) _bilCourante.tarifs = [{ id: 'standard', nom: 'Standard', desc: '', prix_centimes: 1500 }];
+  bilRemplirEditor();
+  document.getElementById('bil-view-list').style.display = 'none';
+  document.getElementById('bil-view-edit').style.display = '';
+  document.getElementById('bil-e-titre').textContent = 'Modifier : ' + b.titre;
+  document.getElementById('bil-e-del-btn').style.display = '';
+}
+
+function bilRemplirEditor() {
+  const b = _bilCourante;
+  document.getElementById('bil-e-slug').value = b.slug || '';
+  document.getElementById('bil-e-ha-slug').value = b.hello_asso_form_slug || '';
+  document.getElementById('bil-e-titre-page').value = b.titre || '';
+  document.getElementById('bil-e-date').value = b.date_affiche || '';
+  document.getElementById('bil-e-lieu').value = b.lieu_affiche || '';
+  document.getElementById('bil-e-desc').value = b.description || '';
+  document.getElementById('bil-e-max').value = b.max_par_acheteur || 4;
+  document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
+  document.getElementById('bil-e-actif').checked = !!b.actif;
+  bilRenderTarifs();
+  bilRefreshPreview();
+}
+
+function bilRenderTarifs() {
+  const wrap = document.getElementById('bil-e-tarifs');
+  wrap.innerHTML = _bilCourante.tarifs.map((t, i) => `
+    <div class="bil-tarif">
+      <div>
+        <input placeholder="Nom du tarif" value="${escapeHtml(t.nom || '')}" oninput="bilTarifChange(${i}, 'nom', this.value)" style="width:100%;margin-bottom:4px;">
+        <input placeholder="Description (facultative)" value="${escapeHtml(t.desc || '')}" oninput="bilTarifChange(${i}, 'desc', this.value)" style="width:100%;">
+      </div>
+      <div>
+        <input type="number" min="1" placeholder="Prix €" value="${(t.prix_centimes || 0) / 100}" oninput="bilTarifChange(${i}, 'prix_euros', this.value)" style="width:100%;">
+      </div>
+      <button class="del" onclick="bilSupprimerTarif(${i})" ${_bilCourante.tarifs.length <= 1 ? 'disabled' : ''}>✕</button>
+    </div>
+  `).join('');
+}
+
+function bilTarifChange(idx, champ, val) {
+  const t = _bilCourante.tarifs[idx];
+  if (champ === 'prix_euros') t.prix_centimes = Math.round(parseFloat(val || '0') * 100);
+  else t[champ] = val;
+  if (champ === 'nom') t.id = (val || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tarif';
+  bilOnChange();
+}
+function bilAjouterTarif() {
+  _bilCourante.tarifs.push({ id: 'tarif-' + (_bilCourante.tarifs.length + 1), nom: 'Nouveau tarif', desc: '', prix_centimes: 1000 });
+  bilRenderTarifs(); bilOnChange();
+}
+function bilSupprimerTarif(idx) {
+  if (_bilCourante.tarifs.length <= 1) return;
+  _bilCourante.tarifs.splice(idx, 1);
+  bilRenderTarifs(); bilOnChange();
+}
+
+function bilOnChange() {
+  const b = _bilCourante;
+  b.slug = document.getElementById('bil-e-slug').value.trim();
+  b.hello_asso_form_slug = document.getElementById('bil-e-ha-slug').value.trim();
+  b.titre = document.getElementById('bil-e-titre-page').value;
+  b.date_affiche = document.getElementById('bil-e-date').value;
+  b.lieu_affiche = document.getElementById('bil-e-lieu').value;
+  b.description = document.getElementById('bil-e-desc').value;
+  b.max_par_acheteur = parseInt(document.getElementById('bil-e-max').value, 10) || 4;
+  b.cta_texte = document.getElementById('bil-e-cta').value;
+  b.actif = document.getElementById('bil-e-actif').checked;
+  // Debounce preview
+  clearTimeout(window._bilPrevTimer);
+  window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
+}
+
+function bilRefreshPreview() {
+  const iframe = document.getElementById('bil-preview');
+  const b = _bilCourante;
+  // Envoie la config via postMessage à la page billetterie (mode preview)
+  const cfg = encodeURIComponent(JSON.stringify(b));
+  iframe.src = `/billetterie.html?preview=${cfg}`;
+}
+
+function bilPreviewInNewTab() {
+  if (!_bilCourante?.slug) { showToast('Renseigne un slug d\'abord.', 'error'); return; }
+  window.open(`/billetterie/${_bilCourante.slug}`, '_blank');
+}
+
+async function bilEnregistrer() {
+  const b = _bilCourante;
+  if (!b.slug || !b.titre) { showToast('Slug et titre requis.', 'error'); return; }
+  if (!b.hello_asso_form_slug) { showToast('Slug HelloAsso requis pour vendre.', 'error'); return; }
+  if (!b.tarifs.length || b.tarifs.some(t => !t.nom || !t.prix_centimes)) {
+    showToast('Au moins 1 tarif complet requis.', 'error'); return;
+  }
+  const payload = {
+    slug: b.slug,
+    hello_asso_form_slug: b.hello_asso_form_slug,
+    titre: b.titre,
+    date_affiche: b.date_affiche || '',
+    lieu_affiche: b.lieu_affiche || '',
+    description: b.description || '',
+    max_par_acheteur: b.max_par_acheteur,
+    cta_texte: b.cta_texte || 'Payer ma place',
+    actif: !!b.actif,
+    tarifs: b.tarifs,
+  };
+  let error, saved;
+  if (b.id) {
+    ({ data: saved, error } = await Auth.sb.from('billetteries').update(payload).eq('id', b.id).select().single());
+  } else {
+    ({ data: saved, error } = await Auth.sb.from('billetteries').insert(payload).select().single());
+  }
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  _bilCourante.id = saved.id;
+  showToast('Billetterie enregistrée', 'success');
+  await bilChargerListe();
+}
+
+async function bilSupprimerCourante() {
+  if (!_bilCourante?.id) return;
+  if (!confirm(`Supprimer la billetterie "${_bilCourante.titre}" ? Les ventes déjà enregistrées ne seront pas supprimées.`)) return;
+  const { error } = await Auth.sb.from('billetteries').delete().eq('id', _bilCourante.id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('Billetterie supprimée', 'success');
+  bilBackToList();
+}
+
+function bilBackToList() {
+  _bilCourante = null;
+  document.getElementById('bil-view-list').style.display = '';
+  document.getElementById('bil-view-edit').style.display = 'none';
+  bilChargerListe();
+}
+
 async function facTelechargerPdfExistant(id) {
   const f = _facListe.find(x => x.id === id);
   if (!f) return;
