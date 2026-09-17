@@ -356,16 +356,20 @@
     // ============================================================================
     // INIT
     // ============================================================================
-    // Message si retour "annulé"
-    const p = new URLSearchParams(location.search);
-    if (p.get('annule') === '1') {
-      setTimeout(() => showError('Paiement annulé. Ta place n\'est pas réservée — réessaie quand tu veux.'), 300);
-    } else if (p.get('erreur') === '1') {
-      setTimeout(() => showError('Une erreur s\'est produite pendant le paiement. Réessaie ou contacte le BDE.'), 300);
-    }
+    (async function init() {
+      _cfg = await loadConfig();
+      if (_cfg?.tarifs?.length) _tarifSelId = _cfg.tarifs[0].id;
+      renderPage();
+      btChangeQty(0);
 
-    renderPage();
-    btChangeQty(0); // init boutons +/-
+      // Message si retour "annulé"
+      const p = new URLSearchParams(location.search);
+      if (p.get('annule') === '1') {
+        setTimeout(() => showError('Paiement annulé. Ta place n\'est pas réservée — réessaie quand tu veux.'), 300);
+      } else if (p.get('erreur') === '1') {
+        setTimeout(() => showError('Une erreur s\'est produite pendant le paiement. Réessaie ou contacte le BDE.'), 300);
+      }
+    })();
   </script>
 </body>
 </html>
