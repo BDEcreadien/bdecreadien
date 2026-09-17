@@ -203,38 +203,35 @@
 
   </div>
 
+  <!-- Charge Supabase pour lire la config depuis la DB -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script>
     // ============================================================================
-    // CONFIG — Pour l'instant en dur, plus tard depuis Supabase via l'admin
+    // Config chargée depuis Supabase (table `billetteries`)
     // ============================================================================
-    const BILLETTERIES = {
-      'soiree-integration': {
-        titre: "Soirée d'intégration",
-        date_affiche: "🗓️ Date à confirmer",
-        lieu_affiche: "📍 Lieu à confirmer",
-        description: "Rejoins tes camarades de promo et l'ensemble des étudiants CREAD pour une soirée inoubliable !\n\n🎵 Musique par nos DJ étudiants\n🍹 Bar sur place\n🎁 Cadeaux et goodies BDE\n🤝 Rencontres avec les 1ère à 5ème année\n\nNombre de places limité : réserve la tienne dès maintenant.",
-        max_par_acheteur: 4,
-        tarifs: [
-          { id: 'etudiant-cread', nom: 'Étudiant CREAD', desc: 'Sur présentation de la carte étudiante', prix_centimes: 1500 },
-        ],
-        hello_asso_form_slug: 'soiree-integration',
-      },
-    };
-
-    // Fonction qui construit une URL absolue vers le site (pour les returnUrl/backUrl HelloAsso)
     const SITE = location.origin;
-    const SUPABASE_URL = 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+    const SUPABASE_URL_VAL = 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // ============================================================================
-    // ÉTAT
-    // ============================================================================
     const slug = new URLSearchParams(location.search).get('slug')
       || (location.pathname.match(/^\/billetterie\/([^\/?#]+)/) || [])[1]
       || 'soiree-integration';
 
-    let _cfg = BILLETTERIES[slug];
-    let _tarifSelId = _cfg?.tarifs[0]?.id || null;
+    let _cfg = null;
+    let _tarifSelId = null;
     let _qty = 1;
+
+    async function loadConfig() {
+      const { data, error } = await _sb.from('billetteries').select('*').eq('slug', slug).eq('actif', true).maybeSingle();
+      if (error || !data) {
+        console.error('[billetterie] config load failed', error);
+        return null;
+      }
+      // Parse tarifs si string
+      if (typeof data.tarifs === 'string') data.tarifs = JSON.parse(data.tarifs);
+      return data;
+    }
 
     // ============================================================================
     // RENDU
