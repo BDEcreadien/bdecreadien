@@ -1,6 +1,9 @@
 /liens        /menu             301
 /liens.html   /menu             301
 
+# Billetterie publique : /billetterie/<slug> → billetterie.html (slug lu en JS)
+/billetterie/*  /billetterie.html  200
+
 # URLs propres pour les modules admin — chaque module a son URL dédiée
 /admin/finances          /admin.html?page=finances          200
 /admin/factures          /admin.html?page=factures          200
