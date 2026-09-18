@@ -7270,7 +7270,7 @@ function bilOnChange() {
   b.actif = document.getElementById('bil-e-actif').checked;
   // Mise à jour du preview URL en direct
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie.html?slug=${encodeURIComponent(b.slug)}` : '—';
   // Debounce preview iframe
   clearTimeout(window._bilPrevTimer);
   window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
