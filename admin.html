@@ -5184,14 +5184,25 @@ async function finSaveEv() {
 
   // Sync des transactions liées à cet event
   try {
-    const checkedIds = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')]
-      .map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
+    const checkedCbs = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')];
+    const checkedIds = checkedCbs.map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
+    // Collecte les montants partiels (recettes uniquement)
+    const montantsPartiels = {};
+    document.querySelectorAll('#ev-tx-recettes-list input[type=checkbox]').forEach(cb => {
+      const txId = cb.getAttribute('data-tx-id');
+      const partialId = cb.dataset.partialId;
+      if (!txId || !partialId) return;
+      const input = document.getElementById(partialId);
+      if (input && input.value !== '') montantsPartiels[txId] = parseFloat(input.value);
+    });
     // 1. Détache toutes les transactions liées qui ne sont plus cochées
     const currentlyLinked = _finTransactions.filter(t => t.finance_evenement_id === savedId);
     const toDetach = currentlyLinked.filter(t => !checkedIds.includes(t.id)).map(t => t.id);
     if (toDetach.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: null }).in('id', toDetach);
     // 2. Lie les nouvelles transactions cochées
     if (checkedIds.length) await window.Auth.sb.from('transactions').update({ finance_evenement_id: savedId }).in('id', checkedIds);
+    // 3. Sauvegarde les montants partiels sur l'événement
+    await window.Auth.sb.from('finance_evenements').update({ tx_montants_partiels: montantsPartiels }).eq('id', savedId);
   } catch (err) { console.error('[fin ev tx sync]', err); showToast('Événement OK mais erreur sur les transactions liées : ' + err.message, 'error'); }
 
   btn.disabled = false; btn.textContent = 'Enregistrer';
