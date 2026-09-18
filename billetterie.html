@@ -223,12 +223,21 @@
     let _qty = 1;
 
     async function loadConfig() {
+      // Mode preview (admin) : la config est passée en URL, on l'utilise directement
+      const previewParam = new URLSearchParams(location.search).get('preview');
+      if (previewParam) {
+        try {
+          const cfg = JSON.parse(decodeURIComponent(previewParam));
+          if (typeof cfg.tarifs === 'string') cfg.tarifs = JSON.parse(cfg.tarifs);
+          return cfg;
+        } catch (e) { console.error('preview parse failed', e); }
+      }
+      // Mode normal : lecture Supabase
       const { data, error } = await _sb.from('billetteries').select('*').eq('slug', slug).eq('actif', true).maybeSingle();
       if (error || !data) {
         console.error('[billetterie] config load failed', error);
         return null;
       }
-      // Parse tarifs si string
       if (typeof data.tarifs === 'string') data.tarifs = JSON.parse(data.tarifs);
       return data;
     }
