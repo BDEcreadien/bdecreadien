@@ -7258,15 +7258,12 @@ function bilPreviewInNewTab() {
 }
 
 async function bilEnregistrer() {
-  console.log('[bil] Enregistrer clicked, _bilCourante =', _bilCourante);
   const b = _bilCourante;
-  if (!b) { alert('Aucune billetterie en cours d\'édition'); return; }
-  if (!b.slug || !b.titre) { showToast('Slug et titre requis.', 'error'); alert('Slug ou titre manquant'); return; }
-  if (!b.hello_asso_form_slug) { showToast('Slug HelloAsso requis pour vendre.', 'error'); alert('Slug HelloAsso manquant'); return; }
+  if (!b) return;
+  if (!b.slug || !b.titre) { showToast('Slug et titre requis.', 'error'); return; }
+  if (!b.hello_asso_form_slug) { showToast('Slug HelloAsso requis pour vendre.', 'error'); return; }
   if (!b.tarifs.length || b.tarifs.some(t => !t.nom || !t.prix_centimes)) {
-    showToast('Au moins 1 tarif complet requis.', 'error');
-    alert('Tarif invalide : chaque tarif doit avoir un nom + prix > 0');
-    return;
+    showToast('Au moins 1 tarif complet requis.', 'error'); return;
   }
   const payload = {
     slug: b.slug,
@@ -7280,29 +7277,24 @@ async function bilEnregistrer() {
     actif: !!b.actif,
     tarifs: b.tarifs,
   };
-  console.log('[bil] payload =', payload);
   let error, saved;
-  try {
-    if (b.id) {
-      ({ data: saved, error } = await Auth.sb.from('billetteries').update(payload).eq('id', b.id).select().single());
-    } else {
-      ({ data: saved, error } = await Auth.sb.from('billetteries').insert(payload).select().single());
-    }
-  } catch (e) {
-    console.error('[bil] exception', e);
-    alert('Exception : ' + e.message);
-    return;
+  if (b.id) {
+    ({ data: saved, error } = await Auth.sb.from('billetteries').update(payload).eq('id', b.id).select().single());
+  } else {
+    ({ data: saved, error } = await Auth.sb.from('billetteries').insert(payload).select().single());
   }
   if (error) {
     console.error('[bil] supabase error', error);
-    alert('Erreur Supabase : ' + error.message + '\n(voir console pour détails)');
-    showToast('Erreur : ' + error.message, 'error');
+    // Erreur classique : slug déjà pris
+    if (String(error.message).includes('duplicate') || error.code === '23505') {
+      showToast('Ce slug existe déjà. Change-le pour un slug unique.', 'error');
+    } else {
+      showToast('Erreur : ' + error.message, 'error');
+    }
     return;
   }
   _bilCourante.id = saved.id;
-  console.log('[bil] saved OK', saved);
-  showToast('Billetterie enregistrée', 'success');
-  alert('✅ Enregistré !');
+  showToast('✅ Billetterie enregistrée', 'success');
   await bilChargerListe();
 }
 
