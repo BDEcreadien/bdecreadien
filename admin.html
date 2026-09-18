@@ -7110,7 +7110,7 @@ async function bilChargerListe() {
     const min = tarifs.length ? Math.min(...tarifs.map(t => t.prix_centimes)) : 0;
     const max = tarifs.length ? Math.max(...tarifs.map(t => t.prix_centimes)) : 0;
     const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€ – ${(max/100).toFixed(0)}€`) : '—';
-    const publicUrl = `${location.origin}/billetterie.html?slug=${encodeURIComponent(b.slug)}`;
+    const publicUrl = `${location.origin}/billetterie/${b.slug}`;
     return `
       <div class="bil-list-row" style="grid-template-columns: 1fr auto;">
         <div style="min-width:0;">
