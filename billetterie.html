@@ -258,9 +258,10 @@
         return;
       }
       document.getElementById('bt-title').textContent = _cfg.titre;
-      document.getElementById('bt-date').textContent = _cfg.date_affiche;
-      document.getElementById('bt-lieu').textContent = _cfg.lieu_affiche;
-      document.getElementById('bt-desc').textContent = _cfg.description;
+      document.getElementById('bt-date').textContent = _cfg.date_affiche || '🗓️ Date à confirmer';
+      document.getElementById('bt-lieu').textContent = _cfg.lieu_affiche || '📍 Lieu à confirmer';
+      document.getElementById('bt-desc').textContent = _cfg.description || '';
+      if (_cfg.cta_texte) document.getElementById('bt-cta').textContent = _cfg.cta_texte;
       renderTarifs();
       renderTotal();
     }
