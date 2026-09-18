@@ -7190,7 +7190,7 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
   document.getElementById('bil-e-actif').checked = !!b.actif;
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie.html?slug=${encodeURIComponent(b.slug)}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
   bilRenderTarifs();
   bilRefreshPreview();
 }
