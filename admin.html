@@ -5051,8 +5051,9 @@ function finEvUpdateSoldes() {
 }
 // Remplit les listes de transactions du mois affiché avec des checkboxes
 // preselectedIds = tableau d'ids déjà liés à l'événement (pour édition)
-function finRenderEvTxSelectors(preselectedIds) {
+function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
   const preSet = new Set(preselectedIds || []);
+  const partials = montantsPartiels || {};
   const evId = _finEvEditingId;
   // Filtre : transactions du mois affiché OU déjà liées à cet event
   const monthTx = _finTransactions.filter(t => {
