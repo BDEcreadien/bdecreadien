@@ -7103,16 +7103,43 @@ async function bilChargerListe() {
     const min = tarifs.length ? Math.min(...tarifs.map(t => t.prix_centimes)) : 0;
     const max = tarifs.length ? Math.max(...tarifs.map(t => t.prix_centimes)) : 0;
     const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€ – ${(max/100).toFixed(0)}€`) : '—';
+    const publicUrl = `${location.origin}/billetterie/${b.slug}`;
     return `
-      <div class="bil-list-row">
+      <div class="bil-list-row" style="grid-template-columns: 1fr auto;">
         <div style="min-width:0;">
-          <div style="font-weight:600;font-size:14px;">${escapeHtml(b.titre)}</div>
-          <div style="font-size:12px;color:#888;margin-top:2px;">/billetterie/${escapeHtml(b.slug)} · ${escapeHtml(b.date_affiche || '—')} · ${prixTxt}</div>
+          <div style="font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;">
+            ${escapeHtml(b.titre)}
+            <span class="bil-status ${b.actif ? 'actif' : 'inactif'}">${b.actif ? 'Active' : 'Inactive'}</span>
+          </div>
+          <div style="font-size:12px;color:#888;margin-top:2px;">${escapeHtml(b.date_affiche || '—')} · ${prixTxt}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:8px;background:#faf5ff;border:1px solid #e9d5ff;border-radius:8px;padding:6px 10px;max-width:100%;">
+            <span style="font-family:monospace;font-size:12px;color:var(--violet);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">${escapeHtml(publicUrl)}</span>
+            <button onclick="bilCopierLien('${escapeHtml(publicUrl)}', this)" title="Copier le lien" style="background:white;border:1px solid #d8b4fe;color:var(--violet);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;">📋 Copier</button>
+            <a href="${escapeHtml(publicUrl)}" target="_blank" title="Ouvrir dans un nouvel onglet" style="background:white;border:1px solid #d8b4fe;color:var(--violet);border-radius:6px;padding:4px 10px;text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;">↗ Ouvrir</a>
+          </div>
         </div>
-        <span class="bil-status ${b.actif ? 'actif' : 'inactif'}">${b.actif ? 'Active' : 'Inactive'}</span>
-        <button onclick="bilOuvrir('${b.id}')" style="background:transparent;border:1px solid #e5e7eb;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;">Modifier</button>
+        <button onclick="bilOuvrir('${b.id}')" style="background:transparent;border:1px solid #e5e7eb;border-radius:6px;padding:8px 14px;cursor:pointer;font-size:12px;align-self:start;">✏️ Modifier</button>
       </div>`;
   }).join('');
+}
+
+async function bilCopierLien(url, btn) {
+  try {
+    await navigator.clipboard.writeText(url);
+    const original = btn.innerHTML;
+    btn.innerHTML = '✓ Copié !';
+    btn.style.background = '#dcfce7';
+    btn.style.color = '#166534';
+    btn.style.borderColor = '#86efac';
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1500);
+  } catch (e) {
+    showToast('Impossible de copier — copie manuellement le lien', 'error');
+  }
 }
 
 function bilNouvelle() {
