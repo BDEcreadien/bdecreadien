@@ -7299,7 +7299,7 @@ function bilRefreshPreview() {
 
 function bilPreviewInNewTab() {
   if (!_bilCourante?.slug) { showToast('Renseigne un slug d\'abord.', 'error'); return; }
-  window.open(`/billetterie/${_bilCourante.slug}`, '_blank');
+  window.open(`/billetterie.html?slug=${encodeURIComponent(_bilCourante.slug)}`, '_blank');
 }
 
 async function bilEnregistrer() {
