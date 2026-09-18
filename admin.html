@@ -7192,11 +7192,40 @@ function bilSupprimerTarif(idx) {
   bilRenderTarifs(); bilOnChange();
 }
 
+function bilSlugify(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // enleve accents
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
 function bilOnChange() {
   const b = _bilCourante;
-  b.slug = document.getElementById('bil-e-slug').value.trim();
-  b.hello_asso_form_slug = document.getElementById('bil-e-ha-slug').value.trim();
-  b.titre = document.getElementById('bil-e-titre-page').value;
+  const titreEl = document.getElementById('bil-e-titre-page');
+  const slugEl = document.getElementById('bil-e-slug');
+  const haSlugEl = document.getElementById('bil-e-ha-slug');
+  const newTitre = titreEl.value;
+  const oldTitre = b.titre || '';
+  b.titre = newTitre;
+
+  // Auto-génère le slug tant que l'utilisateur n'a pas édité le champ manuellement
+  // et qu'on est en création (pas de b.id)
+  if (!b.id && !b._slugTouched) {
+    const auto = bilSlugify(newTitre);
+    slugEl.value = auto;
+    b.slug = auto;
+    // Auto-remplit aussi le slug HelloAsso s'il est vide (l'utilisateur peut le corriger)
+    if (!b._haSlugTouched) {
+      haSlugEl.value = auto;
+      b.hello_asso_form_slug = auto;
+    }
+  } else {
+    b.slug = slugEl.value.trim();
+    b.hello_asso_form_slug = haSlugEl.value.trim();
+  }
+
   b.date_affiche = document.getElementById('bil-e-date').value;
   b.lieu_affiche = document.getElementById('bil-e-lieu').value;
   b.description = document.getElementById('bil-e-desc').value;
@@ -7207,6 +7236,13 @@ function bilOnChange() {
   clearTimeout(window._bilPrevTimer);
   window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
 }
+
+// Marque les champs slug comme "touchés" dès que l'utilisateur les édite
+document.addEventListener('input', (e) => {
+  if (!_bilCourante) return;
+  if (e.target.id === 'bil-e-slug') _bilCourante._slugTouched = true;
+  if (e.target.id === 'bil-e-ha-slug') _bilCourante._haSlugTouched = true;
+});
 
 function bilRefreshPreview() {
   const iframe = document.getElementById('bil-preview');
