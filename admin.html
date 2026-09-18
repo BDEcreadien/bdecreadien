@@ -1230,11 +1230,64 @@
   .bil-wrap { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
   @media (max-width:1000px) { .bil-wrap { grid-template-columns:1fr; } }
   .bil-card { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:12px; padding:20px; }
-  .bil-list-row { display:grid; grid-template-columns: 1fr auto auto; gap:10px; padding:12px 14px; align-items:center; border-bottom:1px solid #f0f0f5; font-size:13px; }
-  .bil-list-row:last-child { border-bottom:none; }
-  .bil-status { font-size:10px; text-transform:uppercase; letter-spacing:1px; padding:3px 8px; border-radius:6px; font-weight:700; }
+  /* Liste billetteries — style carte "premium" */
+  .bil-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap:16px; }
+  .bil-item {
+    background:white; border-radius:16px; overflow:hidden;
+    box-shadow: 0 2px 8px rgba(70,1,134,0.06), 0 0 0 1px rgba(70,1,134,0.06);
+    transition: box-shadow .18s, transform .18s;
+    display: flex; flex-direction: column;
+  }
+  .bil-item:hover { box-shadow: 0 8px 28px rgba(70,1,134,0.12), 0 0 0 1px rgba(70,1,134,0.12); transform: translateY(-2px); }
+  .bil-item-header {
+    background: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
+    color: white; padding: 18px 20px 16px; position:relative;
+  }
+  .bil-item-header .bil-status {
+    position:absolute; top:14px; right:14px;
+    background: rgba(255,255,255,0.22); backdrop-filter: blur(8px);
+    color: white; border: 1px solid rgba(255,255,255,0.35);
+  }
+  .bil-item-header .bil-status.inactif { background:rgba(0,0,0,0.35); }
+  .bil-item-title { font-size:18px; font-weight:700; margin:0 0 4px; line-height:1.2; padding-right:70px; letter-spacing:.3px; }
+  .bil-item-meta { font-size:12px; opacity:.9; display:flex; gap:12px; flex-wrap:wrap; }
+  .bil-item-meta span { display:inline-flex; align-items:center; gap:4px; }
+  .bil-item-body { padding: 14px 18px 16px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .bil-url-box {
+    display:flex; align-items:center; gap:6px;
+    background:#faf5ff; border:1px solid #e9d5ff; border-radius:10px;
+    padding:8px 10px; font-size:12px;
+  }
+  .bil-url-box .bil-url {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    color: var(--violet); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    flex:1; min-width:0;
+  }
+  .bil-url-box button, .bil-url-box a {
+    background:white; border:1px solid #d8b4fe; color:var(--violet);
+    border-radius:8px; padding:5px 10px; cursor:pointer;
+    font-size:11px; font-weight:700; text-decoration:none; letter-spacing:.3px;
+    display:inline-flex; align-items:center; gap:3px; white-space:nowrap;
+    transition: background .12s, transform .12s;
+  }
+  .bil-url-box button:hover, .bil-url-box a:hover { background:#f3ecff; transform: translateY(-1px); }
+  .bil-item-actions { display:flex; gap:8px; justify-content:flex-end; padding-top:2px; border-top:1px solid #f0f0f5; padding:12px 0 0; }
+  .bil-item-actions button {
+    background: white; border: 1.5px solid #e5e7eb; color: #333;
+    border-radius: 10px; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all .12s;
+  }
+  .bil-item-actions button:hover { border-color: var(--violet); color: var(--violet); background: #faf5ff; }
+  .bil-item-actions button.primary { background: var(--violet); color: white; border-color: var(--violet); }
+  .bil-item-actions button.primary:hover { background: #5a0aa5; }
+  .bil-status { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; padding:4px 10px; border-radius:99px; font-weight:800; }
   .bil-status.actif { background:#dcfce7; color:#166534; }
   .bil-status.inactif { background:#fee2e2; color:#991b1b; }
+  .bil-empty { padding:60px 20px; text-align:center; color:#999; background:white; border-radius:16px; border:2px dashed #e5e7eb; }
+  .bil-empty h3 { color:#333; margin:0 0 8px; font-size:18px; }
+  .bil-empty p { margin:0; font-size:14px; }
   .bil-field { margin-bottom:14px; }
   .bil-field label { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#666; margin-bottom:5px; }
   .bil-field input, .bil-field textarea { width:100%; padding:10px 12px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:14px; font-family:inherit; }
