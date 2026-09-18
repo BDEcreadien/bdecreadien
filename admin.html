@@ -7266,9 +7266,18 @@ function bilOnChange() {
   b.max_par_acheteur = parseInt(document.getElementById('bil-e-max').value, 10) || 4;
   b.cta_texte = document.getElementById('bil-e-cta').value;
   b.actif = document.getElementById('bil-e-actif').checked;
-  // Debounce preview
+  // Mise à jour du preview URL en direct
+  const urlPrev = document.getElementById('bil-e-url-preview');
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
+  // Debounce preview iframe
   clearTimeout(window._bilPrevTimer);
   window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
+}
+
+async function bilCopierLienEditor(btn) {
+  const url = document.getElementById('bil-e-url-preview').textContent;
+  if (!url || url === '—') { showToast('Renseigne un slug d\'abord.', 'error'); return; }
+  await bilCopierLien(url, btn);
 }
 
 // Marque les champs slug comme "touchés" dès que l'utilisateur les édite
