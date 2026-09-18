@@ -5069,10 +5069,11 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
     const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
     const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
     const partialId = `ev-partial-${t.id}`;
+    const savedPartial = partials[t.id] != null ? partials[t.id] : '';
     const partialInput = !linkedElsewhere && kind === 'recette' ? `
       <div id="${partialId}-wrap" style="display:${isPreset ? 'flex' : 'none'};align-items:center;gap:6px;margin-top:4px;padding:4px 8px;background:rgba(251,191,36,.12);border-radius:6px;border:1px solid rgba(251,191,36,.4);">
         <span style="font-size:11px;color:#92400e;flex-shrink:0;">Montant lié à cet event :</span>
-        <input id="${partialId}" type="number" step="0.01" min="0" max="${Math.abs(t.montant)}" placeholder="${Math.abs(t.montant).toFixed(2)}"
+        <input id="${partialId}" type="number" step="0.01" min="0" max="${Math.abs(t.montant)}" placeholder="${Math.abs(t.montant).toFixed(2)}" value="${savedPartial}"
           style="width:90px;padding:3px 6px;border:1px solid #d97706;border-radius:4px;font-size:12px;font-weight:700;color:#92400e;background:white;"
           oninput="finEvUpdateSoldes()" onclick="event.stopPropagation()">
         <span style="font-size:11px;color:#92400e;">€ (sur ${Math.abs(Number(t.montant)).toFixed(2)} €)</span>
