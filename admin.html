@@ -5138,7 +5138,7 @@ function finEditEv(id) {
   document.getElementById('ev-desc').value = ev.description || '';
   // Pré-coche toutes les transactions déjà liées à cet event
   const preselectedIds = _finTransactions.filter(t => t.finance_evenement_id === ev.id).map(t => t.id);
-  finRenderEvTxSelectors(preselectedIds);
+  finRenderEvTxSelectors(preselectedIds, ev.tx_montants_partiels || {});
   finEvUpdateSoldes();
   document.getElementById('fin-form-ev').classList.add('visible');
   document.getElementById('fin-form-ev').scrollIntoView({ behavior: 'smooth' });
