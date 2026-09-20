@@ -5121,13 +5121,20 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
     const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
     const partialId = `ev-partial-${t.id}`;
     const savedPartial = partials[t.id] != null ? partials[t.id] : '';
+    const txTotal = Math.abs(Number(t.montant));
+    const initReste = savedPartial !== '' ? (txTotal - parseFloat(savedPartial)).toFixed(2) : txTotal.toFixed(2);
     const partialInput = !linkedElsewhere && kind === 'recette' ? `
-      <div id="${partialId}-wrap" style="display:${isPreset ? 'flex' : 'none'};align-items:center;gap:6px;margin-top:4px;padding:4px 8px;background:rgba(251,191,36,.12);border-radius:6px;border:1px solid rgba(251,191,36,.4);">
-        <span style="font-size:11px;color:#92400e;flex-shrink:0;">Montant lié à cet event :</span>
-        <input id="${partialId}" type="number" step="0.01" min="0" max="${Math.abs(t.montant)}" placeholder="${Math.abs(t.montant).toFixed(2)}" value="${savedPartial}"
-          style="width:90px;padding:3px 6px;border:1px solid #d97706;border-radius:4px;font-size:12px;font-weight:700;color:#92400e;background:white;"
-          oninput="finEvUpdateSoldes()" onclick="event.stopPropagation()">
-        <span style="font-size:11px;color:#92400e;">€ (sur ${Math.abs(Number(t.montant)).toFixed(2)} €)</span>
+      <div id="${partialId}-wrap" style="display:${isPreset ? 'flex' : 'none'};flex-direction:column;gap:4px;margin-top:4px;padding:6px 8px;background:rgba(251,191,36,.12);border-radius:6px;border:1px solid rgba(251,191,36,.4);">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;color:#92400e;flex-shrink:0;">Montant lié à cet event :</span>
+          <input id="${partialId}" type="number" step="0.01" min="0" max="${txTotal}" placeholder="${txTotal.toFixed(2)}" value="${savedPartial}"
+            style="width:90px;padding:3px 6px;border:1px solid #d97706;border-radius:4px;font-size:12px;font-weight:700;color:#92400e;background:white;"
+            data-tx-total="${txTotal}" oninput="finEvUpdatePartialReste(this);finEvUpdateSoldes()" onclick="event.stopPropagation()">
+          <span style="font-size:11px;color:#92400e;">€ / ${txTotal.toFixed(2)} €</span>
+        </div>
+        <div id="${partialId}-reste" style="font-size:11px;color:${parseFloat(initReste) > 0 ? '#b45309' : '#16a34a'};padding-left:2px;">
+          → Reste non affecté : <strong>${initReste} €</strong>
+        </div>
       </div>` : '';
     return `<div style="${linkedElsewhere ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}border-radius:6px;margin-bottom:2px;">
       <label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;cursor:${linkedElsewhere ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;">
