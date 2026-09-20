@@ -5056,6 +5056,16 @@ function finTogglerFormEv() {
 function finMoyenLabel(m) {
   return ({ cb:'💳 CB', virement:'🔁 Virement', especes:'💵 Espèces', cheque:'📝 Chèque', autre:'✨ Autre' })[m || 'autre'] || '✨ Autre';
 }
+function finEvUpdatePartialReste(input) {
+  const total = parseFloat(input.dataset.txTotal) || 0;
+  const val = input.value !== '' ? parseFloat(input.value) : total;
+  const reste = Math.max(0, total - (isNaN(val) ? 0 : val));
+  const el = document.getElementById(input.id + '-reste');
+  if (!el) return;
+  el.style.color = reste > 0.005 ? '#b45309' : '#16a34a';
+  el.innerHTML = `→ Reste non affecté : <strong>${reste.toFixed(2)} €</strong>`;
+}
+
 function finEvToggleSumup(cb) {
   if (!cb.dataset.sumup || !cb.dataset.partialId) return;
   const wrap = document.getElementById(cb.dataset.partialId + '-wrap');
