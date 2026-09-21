@@ -5450,14 +5450,13 @@ async function finSumupLoad() {
     if (!_finDateDebut || !_finDateFin) { showToast("Sélectionne une période d'abord", 'error'); return; }
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
-    // Chargement parallèle : transactions + catalogue produits
-    const [txResp] = await Promise.all([
-      fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`),
-      finSumupLoadCatalog(),
-    ]);
+    // 1. Transactions d'abord (pour avoir _sumupItems avant le catalogue)
+    const txResp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`);
     if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
     const data = await txResp.json();
     _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
+    // 2. Catalogue ensuite (peut utiliser _sumupItems comme fallback)
+    await finSumupLoadCatalog();
     finSumupRender();
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error');
