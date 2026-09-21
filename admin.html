@@ -5350,23 +5350,35 @@ async function finSumupLoadCatalogFromTx() {
     const k = tx.product_summary || '';
     if (seen.has(k)) return false;
     seen.add(k); return true;
-  }).slice(0, 20); // max 20 appels
+  }).slice(0, 20);
+
+  // Utilise transaction_code (champ SumUp standard) ou id
+  const firstTx = toFetch[0];
+  const txId = firstTx && (firstTx.transaction_code || firstTx.id);
+  if (txId) {
+    try {
+      const r = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${txId}`);
+      const d = await r.json();
+      console.log('[SumUp] transaction detail:', JSON.stringify(d).slice(0, 800));
+    } catch(e) { console.log('[SumUp] detail error:', e.message); }
+  }
 
   await Promise.all(toFetch.map(async tx => {
+    const id = tx.transaction_code || tx.id;
+    if (!id) return;
     try {
-      const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${tx.transaction_id || tx.id}`);
+      const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${id}`);
       if (!resp.ok) return;
       const detail = await resp.json();
-      // Le détail contient products[] avec le nom complet
       const products = detail.products || [];
       products.forEach(p => {
         if (!p.name) return;
-        // Mappe le product_summary de la transaction vers le vrai nom
         if (tx.product_summary) _sumupVariantMap[tx.product_summary.toLowerCase()] = p.name;
         _sumupVariantMap[p.name.toLowerCase()] = p.name;
       });
     } catch (_) {}
   }));
+  console.log('[SumUp] variantMap:', JSON.stringify(_sumupVariantMap));
 }
 
 function finSumupNormalize(productSummary) {
