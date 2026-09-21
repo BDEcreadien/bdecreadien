@@ -5328,20 +5328,32 @@ async function finSumupLoad() {
   }
 }
 
-function finSumupGroups(items) {
-  // Groupe par nom produit + date + moyen
-  const groups = {};
+// Construit l'arbre : produit → moyen → [{date, count, montant, refs}]
+function finSumupTree(items) {
+  const tree = {};
   items.forEach(tx => {
-    const label = tx.product_summary || 'Vente SumUp';
-    const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
+    const produit = tx.product_summary || 'Vente SumUp';
     const moyen = tx.payment_type === 'CASH' ? 'especes' : 'virement_sumup';
-    const key = `${label}||${date}||${moyen}`;
-    if (!groups[key]) groups[key] = { label, date, moyen, montant: 0, refs: [], count: 0 };
-    groups[key].montant += parseFloat(tx.amount || 0);
-    groups[key].refs.push(tx.id);
-    groups[key].count++;
+    const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
+    const montant = parseFloat(tx.amount || 0);
+    if (!tree[produit]) tree[produit] = { label: produit, moyens: {}, total: 0, allRefs: [] };
+    tree[produit].total += montant;
+    tree[produit].allRefs.push(tx.id);
+    if (!tree[produit].moyens[moyen]) tree[produit].moyens[moyen] = { dates: {}, total: 0, allRefs: [] };
+    tree[produit].moyens[moyen].total += montant;
+    tree[produit].moyens[moyen].allRefs.push(tx.id);
+    if (!tree[produit].moyens[moyen].dates[date]) tree[produit].moyens[moyen].dates[date] = { count: 0, montant: 0, refs: [] };
+    tree[produit].moyens[moyen].dates[date].count++;
+    tree[produit].moyens[moyen].dates[date].montant += montant;
+    tree[produit].moyens[moyen].dates[date].refs.push(tx.id);
   });
-  return Object.values(groups);
+  return tree;
+}
+
+function finSumupImportedRefs() {
+  const s = new Set();
+  _finTransactions.forEach(t => { if (t.sumup_ref) t.sumup_ref.split(',').forEach(r => s.add(r.trim())); });
+  return s;
 }
 
 function finSumupRender() {
@@ -5350,49 +5362,68 @@ function finSumupRender() {
     list.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Aucune vente SumUp réussie sur cette période.</p>';
     return;
   }
-  // Détecte les refs déjà importées (supporte refs individuelles ET groupées "id1,id2,...")
-  const importedRefs = new Set();
-  _finTransactions.forEach(t => {
-    if (t.sumup_ref) t.sumup_ref.split(',').forEach(r => importedRefs.add(r.trim()));
-  });
-  const allGroups = finSumupGroups(_sumupItems);
-  const pending = allGroups.filter(g => !g.refs.some(r => importedRefs.has(r)));
-  const done = allGroups.filter(g => g.refs.some(r => importedRefs.has(r)));
+  const importedRefs = finSumupImportedRefs();
+  const tree = finSumupTree(_sumupItems);
+  const produits = Object.values(tree);
+  const pending = produits.filter(p => !p.allRefs.every(r => importedRefs.has(r)));
+  const done = produits.filter(p => p.allRefs.every(r => importedRefs.has(r)));
 
-  const totalPending = pending.reduce((s, g) => s + g.montant, 0);
-  const nbVentesPending = pending.reduce((s, g) => s + g.count, 0);
+  const totalPending = pending.reduce((s, p) => s + p.total, 0);
+  const nbPending = pending.reduce((s, p) => s + p.allRefs.length, 0);
 
   list.innerHTML = `
     ${pending.length ? `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;">
         <input type="checkbox" id="sumup-select-all" onchange="finSumupSelectAll(this)" style="width:16px;height:16px;accent-color:#1a7f37;">
-        Tout sélectionner (${pending.length} groupes · ${nbVentesPending} ventes · ${totalPending.toFixed(2)} €)
+        Tout sélectionner (${pending.length} produits · ${nbPending} ventes · ${totalPending.toFixed(2)} €)
       </label>
       <button onclick="finSumupImportSelection()" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">
         Importer la sélection
       </button>
     </div>
     <div id="sumup-pending-list">
-      ${pending.map((g, i) => finSumupGroupHtml(g, i, false)).join('')}
+      ${pending.map((p, i) => finSumupProduitHtml(p, i, importedRefs, false)).join('')}
     </div>` : '<p style="font-size:13px;color:#16a34a;text-align:center;padding:8px 0;">✓ Toutes les ventes sont importées.</p>'}
     ${done.length ? `
-    <div style="margin-top:12px;font-size:11px;color:var(--gris-texte);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Déjà importés (${done.length} groupes)</div>
-    ${done.map((g, i) => finSumupGroupHtml(g, i, true)).join('')}` : ''}
+    <div style="margin-top:14px;font-size:11px;color:var(--gris-texte);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Déjà importés (${done.length} produits)</div>
+    ${done.map((p, i) => finSumupProduitHtml(p, i + 9999, importedRefs, true)).join('')}` : ''}
   `;
 }
 
-function finSumupGroupHtml(g, idx, imported) {
-  const dateStr = g.date ? new Date(g.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '';
-  const moyen = g.moyen === 'especes' ? 'Espèces' : 'Carte';
-  const label = g.count > 1 ? `${g.label} ×${g.count}` : g.label;
-  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;margin-bottom:3px;background:${imported ? 'rgba(34,197,94,.06)' : 'var(--bg-card,#fafafa)'};border:1px solid ${imported ? 'rgba(34,197,94,.25)' : 'var(--gris-border)'};font-size:13px;">
-    ${imported ? '<span style="width:16px;flex-shrink:0;"></span>' : `<input type="checkbox" class="sumup-cb" data-idx="${idx}" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a7f37;">`}
-    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-      <strong>${escapeHtmlNl(label)}</strong>
-      <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${moyen}</span>
-    </span>
-    <span style="font-weight:700;color:${imported ? '#16a34a' : 'var(--noir)'};flex-shrink:0;">${imported ? '✓ ' : '+'}${g.montant.toFixed(2)} €</span>
+function finSumupProduitHtml(p, idx, importedRefs, imported) {
+  const nbVentes = p.allRefs.length;
+  const moyenLabels = { especes: 'Espèces', virement_sumup: 'Carte' };
+  // Sous-lignes : moyen → dates
+  const sousLignes = Object.entries(p.moyens).map(([moyen, moyenData]) => {
+    const dateLines = Object.entries(moyenData.dates)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, d]) => {
+        const dateStr = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+        return `<div style="display:flex;justify-content:space-between;padding:1px 0 1px 16px;font-size:11px;color:var(--gris-texte);">
+          <span>${dateStr} · ${d.count} vente${d.count > 1 ? 's' : ''}</span>
+          <span style="font-weight:600;">${d.montant.toFixed(2)} €</span>
+        </div>`;
+      }).join('');
+    return `<div style="padding:3px 0 3px 8px;border-left:2px solid var(--gris-border);margin:3px 0 3px 8px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--gris-texte);">
+        <span>${moyenLabels[moyen] || moyen}</span>
+        <span>${moyenData.total.toFixed(2)} €</span>
+      </div>
+      ${dateLines}
+    </div>`;
+  }).join('');
+
+  return `<div style="border:1px solid ${imported ? 'rgba(34,197,94,.3)' : 'var(--gris-border)'};border-radius:8px;margin-bottom:6px;background:${imported ? 'rgba(34,197,94,.05)' : 'var(--bg-card,#fafafa)'};">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;">
+      ${imported
+        ? '<span style="width:16px;flex-shrink:0;color:#16a34a;font-size:14px;">✓</span>'
+        : `<input type="checkbox" class="sumup-cb" data-produit="${escapeHtmlNl(p.label)}" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a7f37;">`}
+      <span style="flex:1;font-size:13px;font-weight:700;color:var(--noir);">${escapeHtmlNl(p.label)}</span>
+      <span style="font-size:12px;color:var(--gris-texte);">${nbVentes} vente${nbVentes > 1 ? 's' : ''}</span>
+      <span style="font-weight:700;color:${imported ? '#16a34a' : 'var(--noir)'};font-size:13px;">${p.total.toFixed(2)} €</span>
+    </div>
+    <div style="padding:0 10px 8px;">${sousLignes}</div>
   </div>`;
 }
 
@@ -5402,35 +5433,41 @@ function finSumupSelectAll(cb) {
 
 async function finSumupImportSelection() {
   const checked = [...document.querySelectorAll('#sumup-pending-list .sumup-cb:checked')];
-  if (!checked.length) { showToast('Sélectionne au moins un groupe', 'error'); return; }
+  if (!checked.length) { showToast('Sélectionne au moins un produit', 'error'); return; }
 
-  const importedRefs = new Set();
-  _finTransactions.forEach(t => {
-    if (t.sumup_ref) t.sumup_ref.split(',').forEach(r => importedRefs.add(r.trim()));
-  });
-  const allGroups = finSumupGroups(_sumupItems);
-  const pending = allGroups.filter(g => !g.refs.some(r => importedRefs.has(r)));
-
-  const selectedIdxs = new Set(checked.map(c => parseInt(c.dataset.idx)));
-  const toImport = pending.filter((_, i) => selectedIdxs.has(i));
-
+  const importedRefs = finSumupImportedRefs();
+  const tree = finSumupTree(_sumupItems);
+  const selectedLabels = new Set(checked.map(c => c.dataset.produit));
   const user = await window.Auth.getUser();
   let ok = 0, err = 0;
-  for (const g of toImport) {
-    const libelle = g.count > 1 ? `${g.label} (×${g.count})` : g.label;
-    // sumup_ref = tous les IDs séparés par virgule pour déduplication future
-    const { error } = await window.Auth.sb.from('transactions').insert({
-      date: g.date,
-      montant: parseFloat(g.montant.toFixed(2)),
-      libelle,
-      categorie: 'vente',
-      moyen_paiement: g.moyen,
-      sumup_ref: g.refs.join(','),
-      created_by: user.id,
-    });
-    if (error) err++; else ok++;
+
+  for (const label of selectedLabels) {
+    const p = tree[label];
+    if (!p) continue;
+    // Une transaction par produit+moyen (détail moyen conservé, dates fusionnées)
+    for (const [moyen, moyenData] of Object.entries(p.moyens)) {
+      const pendingRefs = moyenData.allRefs.filter(r => !importedRefs.has(r));
+      if (!pendingRefs.length) continue;
+      const nbVentes = pendingRefs.length;
+      const montant = moyenData.dates
+        ? Object.values(moyenData.dates).filter(d => d.refs.some(r => pendingRefs.includes(r))).reduce((s, d) => s + d.montant, 0)
+        : moyenData.total;
+      const libelle = nbVentes > 1 ? `${label} (×${nbVentes})` : label;
+      // Date = la plus récente du groupe
+      const derniereDate = Object.keys(moyenData.dates).sort().pop() || new Date().toISOString().slice(0, 10);
+      const { error } = await window.Auth.sb.from('transactions').insert({
+        date: derniereDate,
+        montant: parseFloat(montant.toFixed(2)),
+        libelle,
+        categorie: 'vente',
+        moyen_paiement: moyen,
+        sumup_ref: pendingRefs.join(','),
+        created_by: user.id,
+      });
+      if (error) err++; else ok++;
+    }
   }
-  if (ok) showToast(`${ok} groupe(s) importé(s)`, 'success');
+  if (ok) showToast(`${ok} transaction(s) créée(s)`, 'success');
   if (err) showToast(`${err} erreur(s)`, 'error');
   await finLoadTransactions();
   finSumupRender();
