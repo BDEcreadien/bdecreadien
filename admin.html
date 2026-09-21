@@ -5328,15 +5328,36 @@ async function finSumupLoad() {
   }
 }
 
+function finSumupGroups(items) {
+  // Groupe par nom produit + date + moyen
+  const groups = {};
+  items.forEach(tx => {
+    const label = tx.product_summary || 'Vente SumUp';
+    const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
+    const moyen = tx.payment_type === 'CASH' ? 'especes' : 'virement_sumup';
+    const key = `${label}||${date}||${moyen}`;
+    if (!groups[key]) groups[key] = { label, date, moyen, montant: 0, refs: [], count: 0 };
+    groups[key].montant += parseFloat(tx.amount || 0);
+    groups[key].refs.push(tx.id);
+    groups[key].count++;
+  });
+  return Object.values(groups);
+}
+
 function finSumupRender() {
   const list = document.getElementById('fin-sumup-list');
   if (!_sumupItems.length) {
     list.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Aucune vente SumUp réussie sur cette période.</p>';
     return;
   }
-  const importedRefs = new Set(_finTransactions.filter(t => t.sumup_ref).map(t => t.sumup_ref));
-  const pending = _sumupItems.filter(t => !importedRefs.has(t.id));
-  const done = _sumupItems.filter(t => importedRefs.has(t.id));
+  // Détecte les refs déjà importées (supporte refs individuelles ET groupées "id1,id2,...")
+  const importedRefs = new Set();
+  _finTransactions.forEach(t => {
+    if (t.sumup_ref) t.sumup_ref.split(',').forEach(r => importedRefs.add(r.trim()));
+  });
+  const allGroups = finSumupGroups(_sumupItems);
+  const pending = allGroups.filter(g => !g.refs.some(r => importedRefs.has(r)));
+  const done = allGroups.filter(g => g.refs.some(r => importedRefs.has(r)));
 
   const totalPending = pending.reduce((s, t) => s + parseFloat(t.amount || 0), 0);
 
