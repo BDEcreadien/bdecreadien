@@ -5310,25 +5310,63 @@ let _sumupItems = [];
 let _sumupVariantMap = {};
 
 async function finSumupLoadCatalog() {
-  try {
-    const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/catalog/products`);
-    if (!resp.ok) return;
-    const data = await resp.json();
-    _sumupVariantMap = {};
-    const products = data.products || data.items || (Array.isArray(data) ? data : []);
-    products.forEach(p => {
-      const parentName = p.name;
-      if (!parentName) return;
-      // Le produit lui-même
-      _sumupVariantMap[parentName.toLowerCase()] = parentName;
-      // Ses variantes / options
-      const variants = p.variants || p.variations || p.options || [];
-      variants.forEach(v => {
-        const vName = v.name || v.label || '';
-        if (vName) _sumupVariantMap[vName.toLowerCase()] = parentName;
+  // Essaie plusieurs endpoints SumUp jusqu'à en trouver un valide
+  const endpoints = [
+    '/sumup/v0.1/me/catalog',
+    '/sumup/v0.1/products',
+    '/sumup/v1.0/products',
+  ];
+  _sumupVariantMap = {};
+  for (const ep of endpoints) {
+    try {
+      const resp = await fetch(`${SUMUP_PROXY}${ep}`);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const products = data.products || data.items || data.catalog || (Array.isArray(data) ? data : []);
+      if (!products.length) continue;
+      products.forEach(p => {
+        const parentName = p.name;
+        if (!parentName) return;
+        _sumupVariantMap[parentName.toLowerCase()] = parentName;
+        const variants = p.variants || p.variations || p.options || p.prices || [];
+        variants.forEach(v => {
+          const vName = v.name || v.label || v.description || '';
+          if (vName) _sumupVariantMap[vName.toLowerCase()] = parentName;
+        });
       });
-    });
-  } catch (_) { /* catalogue optionnel */ }
+      return; // succès, on arrête
+    } catch (_) { continue; }
+  }
+  // En dernier recours : essaie de déduire depuis les transactions elles-mêmes
+  // en récupérant le détail de la première transaction de chaque product_summary unique
+  await finSumupLoadCatalogFromTx();
+}
+
+async function finSumupLoadCatalogFromTx() {
+  if (!_sumupItems.length) return;
+  // Prend une transaction par product_summary unique pour avoir le détail
+  const seen = new Set();
+  const toFetch = _sumupItems.filter(tx => {
+    const k = tx.product_summary || '';
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  }).slice(0, 20); // max 20 appels
+
+  await Promise.all(toFetch.map(async tx => {
+    try {
+      const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${tx.transaction_id || tx.id}`);
+      if (!resp.ok) return;
+      const detail = await resp.json();
+      // Le détail contient products[] avec le nom complet
+      const products = detail.products || [];
+      products.forEach(p => {
+        if (!p.name) return;
+        // Mappe le product_summary de la transaction vers le vrai nom
+        if (tx.product_summary) _sumupVariantMap[tx.product_summary.toLowerCase()] = p.name;
+        _sumupVariantMap[p.name.toLowerCase()] = p.name;
+      });
+    } catch (_) {}
+  }));
 }
 
 function finSumupNormalize(productSummary) {
