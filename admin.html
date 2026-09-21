@@ -5359,25 +5359,26 @@ function finSumupRender() {
   const pending = allGroups.filter(g => !g.refs.some(r => importedRefs.has(r)));
   const done = allGroups.filter(g => g.refs.some(r => importedRefs.has(r)));
 
-  const totalPending = pending.reduce((s, t) => s + parseFloat(t.amount || 0), 0);
+  const totalPending = pending.reduce((s, g) => s + g.montant, 0);
+  const nbVentesPending = pending.reduce((s, g) => s + g.count, 0);
 
   list.innerHTML = `
     ${pending.length ? `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
       <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;">
         <input type="checkbox" id="sumup-select-all" onchange="finSumupSelectAll(this)" style="width:16px;height:16px;accent-color:#1a7f37;">
-        Tout sélectionner (${pending.length} ventes · ${totalPending.toFixed(2)} €)
+        Tout sélectionner (${pending.length} groupes · ${nbVentesPending} ventes · ${totalPending.toFixed(2)} €)
       </label>
       <button onclick="finSumupImportSelection()" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">
         Importer la sélection
       </button>
     </div>
     <div id="sumup-pending-list">
-      ${pending.map(tx => finSumupRowHtml(tx, false)).join('')}
-    </div>` : ''}
+      ${pending.map((g, i) => finSumupGroupHtml(g, i, false)).join('')}
+    </div>` : '<p style="font-size:13px;color:#16a34a;text-align:center;padding:8px 0;">✓ Toutes les ventes sont importées.</p>'}
     ${done.length ? `
-    <div style="margin-top:12px;font-size:11px;color:var(--gris-texte);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Déjà importées (${done.length})</div>
-    ${done.map(tx => finSumupRowHtml(tx, true)).join('')}` : ''}
+    <div style="margin-top:12px;font-size:11px;color:var(--gris-texte);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Déjà importés (${done.length} groupes)</div>
+    ${done.map((g, i) => finSumupGroupHtml(g, i, true)).join('')}` : ''}
   `;
 }
 
