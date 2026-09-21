@@ -5366,81 +5366,74 @@ let _sumupItems = [];
 // Map variante → produit parent (ex: "5 tickets" → "Tickets tombolat")
 let _sumupVariantMap = {};
 
-async function finSumupLoadCatalog() {
-  // Essaie plusieurs endpoints SumUp jusqu'à en trouver un valide
-  const endpoints = [
-    '/sumup/v0.1/me/catalog',
-    '/sumup/v0.1/products',
-    '/sumup/v1.0/products',
-  ];
-  _sumupVariantMap = {};
-  for (const ep of endpoints) {
-    try {
-      const resp = await fetch(`${SUMUP_PROXY}${ep}`);
-      if (!resp.ok) continue;
-      const data = await resp.json();
-      const products = data.products || data.items || data.catalog || (Array.isArray(data) ? data : []);
-      if (!products.length) continue;
-      products.forEach(p => {
-        const parentName = p.name;
-        if (!parentName) return;
-        _sumupVariantMap[parentName.toLowerCase()] = parentName;
-        const variants = p.variants || p.variations || p.options || p.prices || [];
-        variants.forEach(v => {
-          const vName = v.name || v.label || v.description || '';
-          if (vName) _sumupVariantMap[vName.toLowerCase()] = parentName;
-        });
-      });
-      return; // succès, on arrête
-    } catch (_) { continue; }
-  }
-  // En dernier recours : essaie de déduire depuis les transactions elles-mêmes
-  // en récupérant le détail de la première transaction de chaque product_summary unique
-  await finSumupLoadCatalogFromTx();
+// Alias manuels : { "5 tickets": "Tickets tombolat", ... } stockés en localStorage
+function finSumupGetAliases() {
+  try { return JSON.parse(localStorage.getItem('sumup_aliases') || '{}'); } catch { return {}; }
 }
-
-async function finSumupLoadCatalogFromTx() {
-  if (!_sumupItems.length) return;
-  // Prend une transaction par product_summary unique pour avoir le détail
-  const seen = new Set();
-  const toFetch = _sumupItems.filter(tx => {
-    const k = tx.product_summary || '';
-    if (seen.has(k)) return false;
-    seen.add(k); return true;
-  }).slice(0, 20);
-
-  // Utilise transaction_code (champ SumUp standard) ou id
-  const firstTx = toFetch[0];
-  const txId = firstTx && (firstTx.transaction_code || firstTx.id);
-  if (txId) {
-    try {
-      const r = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${txId}`);
-      const d = await r.json();
-      console.log('[SumUp] transaction detail:', JSON.stringify(d).slice(0, 800));
-    } catch(e) { console.log('[SumUp] detail error:', e.message); }
-  }
-
-  await Promise.all(toFetch.map(async tx => {
-    const id = tx.transaction_code || tx.id;
-    if (!id) return;
-    try {
-      const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/${id}`);
-      if (!resp.ok) return;
-      const detail = await resp.json();
-      const products = detail.products || [];
-      products.forEach(p => {
-        if (!p.name) return;
-        if (tx.product_summary) _sumupVariantMap[tx.product_summary.toLowerCase()] = p.name;
-        _sumupVariantMap[p.name.toLowerCase()] = p.name;
-      });
-    } catch (_) {}
-  }));
-  console.log('[SumUp] variantMap:', JSON.stringify(_sumupVariantMap));
+function finSumupSaveAliases(map) {
+  try { localStorage.setItem('sumup_aliases', JSON.stringify(map)); } catch {}
 }
-
 function finSumupNormalize(productSummary) {
   if (!productSummary) return 'Vente SumUp';
-  return _sumupVariantMap[productSummary.toLowerCase()] || productSummary;
+  const aliases = finSumupGetAliases();
+  return aliases[productSummary.toLowerCase()] || productSummary;
+}
+
+function finSumupOpenAliases() {
+  const aliases = finSumupGetAliases();
+  // Produits uniques dans les transactions chargées
+  const produits = [...new Set(_sumupItems.map(t => t.product_summary).filter(Boolean))].sort();
+  const rows = produits.map(p => {
+    const group = aliases[p.toLowerCase()] || '';
+    return `<tr>
+      <td style="padding:6px 8px;font-size:13px;border-bottom:1px solid var(--gris-border);">${escapeHtmlNl(p)}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--gris-border);">
+        <input type="text" value="${escapeHtmlNl(group)}" data-produit="${escapeHtmlNl(p)}"
+          placeholder="(inchangé)"
+          style="width:100%;border:1px solid var(--gris-border);border-radius:5px;padding:4px 8px;font-size:13px;background:var(--bg-input,#fff);">
+      </td>
+    </tr>`;
+  }).join('');
+
+  const modal = document.createElement('div');
+  modal.id = 'sumup-alias-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  modal.innerHTML = `
+    <div style="background:var(--bg-card,#fff);border-radius:12px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2);">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--gris-border);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;font-size:15px;">Regrouper des produits SumUp</h3>
+        <button onclick="document.getElementById('sumup-alias-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--gris-texte);">×</button>
+      </div>
+      <p style="margin:10px 20px 0;font-size:12px;color:var(--gris-texte);">Tape le nom du groupe dans la colonne droite pour regrouper plusieurs variantes ensemble. Laisse vide pour ne pas regrouper.</p>
+      <div style="overflow-y:auto;flex:1;padding:0 20px;">
+        <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+          <thead><tr>
+            <th style="text-align:left;font-size:11px;color:var(--gris-texte);padding:4px 8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Nom SumUp</th>
+            <th style="text-align:left;font-size:11px;color:var(--gris-texte);padding:4px 8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Groupe affiché</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--gris-border);display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="document.getElementById('sumup-alias-modal').remove()" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:7px 16px;font-size:13px;cursor:pointer;">Annuler</button>
+        <button onclick="finSumupSaveAliasesFromModal()" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;">Enregistrer</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function finSumupSaveAliasesFromModal() {
+  const aliases = finSumupGetAliases();
+  document.querySelectorAll('#sumup-alias-modal input[data-produit]').forEach(inp => {
+    const key = inp.dataset.produit.toLowerCase();
+    const val = inp.value.trim();
+    if (val) aliases[key] = val;
+    else delete aliases[key];
+  });
+  finSumupSaveAliases(aliases);
+  document.getElementById('sumup-alias-modal').remove();
+  finSumupRender();
+  showToast('Regroupements enregistrés', 'success');
 }
 
 async function finSumupLoad() {
