@@ -5306,19 +5306,50 @@ async function finDeleteEv(id) {
 const SUMUP_PROXY = 'https://sumup-proxy.bdecreadien.workers.dev';
 
 let _sumupItems = [];
+// Map variante → produit parent (ex: "5 tickets" → "Tickets tombolat")
+let _sumupVariantMap = {};
+
+async function finSumupLoadCatalog() {
+  try {
+    const resp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/catalog/products`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    _sumupVariantMap = {};
+    const products = data.products || data.items || (Array.isArray(data) ? data : []);
+    products.forEach(p => {
+      const parentName = p.name;
+      if (!parentName) return;
+      // Le produit lui-même
+      _sumupVariantMap[parentName.toLowerCase()] = parentName;
+      // Ses variantes / options
+      const variants = p.variants || p.variations || p.options || [];
+      variants.forEach(v => {
+        const vName = v.name || v.label || '';
+        if (vName) _sumupVariantMap[vName.toLowerCase()] = parentName;
+      });
+    });
+  } catch (_) { /* catalogue optionnel */ }
+}
+
+function finSumupNormalize(productSummary) {
+  if (!productSummary) return 'Vente SumUp';
+  return _sumupVariantMap[productSummary.toLowerCase()] || productSummary;
+}
 
 async function finSumupLoad() {
   const btn = document.getElementById('fin-btn-sumup');
-  const list = document.getElementById('fin-sumup-list');
   btn.disabled = true; btn.textContent = 'Chargement…';
   try {
     if (!_finDateDebut || !_finDateFin) { showToast("Sélectionne une période d'abord", 'error'); return; }
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
-    const url = `${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`;
-    const resp = await fetch(url);
-    if (!resp.ok) { showToast('Erreur SumUp : ' + resp.status, 'error'); return; }
-    const data = await resp.json();
+    // Chargement parallèle : transactions + catalogue produits
+    const [txResp] = await Promise.all([
+      fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`),
+      finSumupLoadCatalog(),
+    ]);
+    if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
+    const data = await txResp.json();
     _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
     finSumupRender();
   } catch (e) {
@@ -5332,7 +5363,7 @@ async function finSumupLoad() {
 function finSumupTree(items) {
   const tree = {};
   items.forEach(tx => {
-    const produit = tx.product_summary || 'Vente SumUp';
+    const produit = finSumupNormalize(tx.product_summary);
     const moyen = tx.payment_type === 'CASH' ? 'especes' : 'virement_sumup';
     const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
     const montant = parseFloat(tx.amount || 0);
