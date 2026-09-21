@@ -3659,15 +3659,59 @@ function renderFideliteList() {
   const list = document.getElementById('fid-list');
   const empty = document.getElementById('fid-empty');
   const query = (document.getElementById('fid-search')?.value || '').toLowerCase().trim();
+  const sortMode = document.getElementById('fid-sort')?.value || 'nom';
   const toutes = fideliteData.cartes || [];
-  const cartes = toutes.filter(c => {
+  let cartes = toutes.filter(c => {
     if (!query) return true;
     const mots = query.split(/\s+/);
     const cibles = [c.prenom, c.nom].map(s => (s || '').toLowerCase());
     return mots.every(mot => cibles.some(cib => cib.startsWith(mot) || cib.includes(' ' + mot)));
   });
+
+  // Tri
+  // Convertit un h.date (attendu format JJ/MM/AAAA) + h.heure (HH:MM) → timestamp
+  const toTs = (h) => {
+    if (!h?.date) return 0;
+    const m = h.date.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!m) return new Date(h.date).getTime() || 0;
+    const heure = h.heure && /^\d{1,2}:\d{2}/.test(h.heure) ? h.heure : '00:00';
+    return new Date(`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}T${heure}:00`).getTime() || 0;
+  };
+  const dernierPassage = (c) => {
+    const h = (c.historique || []);
+    if (!h.length) return 0;
+    return Math.max(...h.map(toTs));
+  };
+  const nomComplet = (c) => `${(c.prenom||'').toLowerCase()} ${(c.nom||'').toLowerCase()}`.trim();
+
+  if (sortMode === 'nom') {
+    cartes.sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), 'fr', { sensitivity: 'base' }));
+  } else if (sortMode === 'tampons-desc') {
+    cartes.sort((a, b) => (b.tampons || 0) - (a.tampons || 0) || nomComplet(a).localeCompare(nomComplet(b), 'fr'));
+  } else if (sortMode === 'tampons-asc') {
+    cartes.sort((a, b) => (a.tampons || 0) - (b.tampons || 0) || nomComplet(a).localeCompare(nomComplet(b), 'fr'));
+  } else if (sortMode === 'passage-desc') {
+    cartes.sort((a, b) => dernierPassage(b) - dernierPassage(a) || nomComplet(a).localeCompare(nomComplet(b), 'fr'));
+  } else if (sortMode === 'passage-asc') {
+    cartes.sort((a, b) => {
+      const da = dernierPassage(a), db = dernierPassage(b);
+      // Ceux sans passage à la fin
+      if (!da && db) return 1;
+      if (da && !db) return -1;
+      return da - db;
+    });
+  } else if (sortMode === 'jamais') {
+    cartes = cartes.filter(c => !(c.historique && c.historique.length));
+    cartes.sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), 'fr'));
+  }
+
   if (!toutes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte créée pour l\'instant.'; empty.style.display = 'block'; return; }
-  if (!cartes.length) { list.innerHTML = ''; empty.textContent = 'Aucune carte ne correspond à la recherche.'; empty.style.display = 'block'; return; }
+  if (!cartes.length) {
+    list.innerHTML = '';
+    empty.textContent = sortMode === 'jamais' ? 'Aucune carte sans passage.' : 'Aucune carte ne correspond à la recherche.';
+    empty.style.display = 'block';
+    return;
+  }
   empty.style.display = 'none';
 
   list.innerHTML = cartes.map((c) => {
