@@ -5310,10 +5310,11 @@ async function finSumupLoad() {
   const list = document.getElementById('fin-sumup-list');
   btn.disabled = true; btn.textContent = 'Chargement…';
   try {
+    if (!_finDateDebut || !_finDateFin) { showToast('Sélectionne une période d\'abord', 'error'); return; }
     // Période affichée
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
-    const url = `${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100&statuses=SUCCESSFUL`;
+    const url = `${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`;
     const resp = await fetch(url);
     if (!resp.ok) { showToast('Erreur SumUp : ' + resp.status, 'error'); return; }
     const data = await resp.json();
