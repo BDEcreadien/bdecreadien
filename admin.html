@@ -5301,6 +5301,75 @@ async function finDeleteEv(id) {
 }
 
 // ============================================================
+// SUMUP IMPORT
+// ============================================================
+const SUMUP_PROXY = 'https://sumup-proxy.bdecreadien.workers.dev';
+
+async function finSumupLoad() {
+  const btn = document.getElementById('fin-btn-sumup');
+  const list = document.getElementById('fin-sumup-list');
+  btn.disabled = true; btn.textContent = 'Chargement…';
+  try {
+    // Période affichée
+    const debut = _finDateDebut.toISOString().slice(0, 10);
+    const fin = _finDateFin.toISOString().slice(0, 10);
+    const url = `${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100&statuses=SUCCESSFUL`;
+    const resp = await fetch(url);
+    if (!resp.ok) { showToast('Erreur SumUp : ' + resp.status, 'error'); return; }
+    const data = await resp.json();
+    const items = data.items || [];
+    if (!items.length) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Aucune vente SumUp sur cette période.</p>';
+      return;
+    }
+    // IDs déjà importés
+    const importedRefs = new Set(_finTransactions.filter(t => t.sumup_ref).map(t => t.sumup_ref));
+    list.innerHTML = items.map(tx => {
+      const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
+      const dateStr = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '';
+      const montant = parseFloat(tx.amount || 0).toFixed(2);
+      const deja = importedRefs.has(tx.id);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;margin-bottom:4px;background:${deja ? 'rgba(34,197,94,.07)' : 'var(--bg-card, #fafafa)'};border:1px solid ${deja ? 'rgba(34,197,94,.3)' : 'var(--gris-border)'};font-size:13px;">
+        <span style="flex:1;min-width:0;">
+          <strong>${escapeHtmlNl(tx.product_summary || tx.payment_type || 'Vente')}</strong>
+          <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${tx.payment_type || ''}</span>
+        </span>
+        <span style="font-weight:700;color:#16a34a;flex-shrink:0;">+${montant} €</span>
+        ${deja
+          ? '<span style="font-size:11px;color:#16a34a;flex-shrink:0;">✓ importé</span>'
+          : `<button onclick="finSumupImport(${JSON.stringify(tx).replace(/"/g, '&quot;')})" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;flex-shrink:0;">Importer</button>`
+        }
+      </div>`;
+    }).join('');
+  } catch (e) {
+    showToast('Erreur : ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '⟳ Charger les ventes';
+  }
+}
+
+async function finSumupImport(tx) {
+  const date = tx.timestamp ? tx.timestamp.slice(0, 10) : new Date().toISOString().slice(0, 10);
+  const montant = parseFloat(tx.amount || 0);
+  const libelle = tx.product_summary || 'Vente SumUp';
+  const user = await window.Auth.getUser();
+  const payload = {
+    date,
+    montant,
+    libelle,
+    categorie: 'vente',
+    moyen_paiement: 'virement_sumup',
+    sumup_ref: tx.id,
+    created_by: user.id,
+  };
+  const { error } = await window.Auth.sb.from('transactions').insert(payload);
+  if (error) { showToast('Erreur import : ' + error.message, 'error'); return; }
+  showToast('Vente importée', 'success');
+  finLoadTransactions();
+  finSumupLoad();
+}
+
+// ============================================================
 // PDF FINANCES (via jsPDF chargé à la demande)
 // ============================================================
 let _jsPdfLoaded = false;
