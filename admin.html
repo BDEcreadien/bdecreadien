@@ -423,9 +423,22 @@
       </div>
     </div>
 
-    <div style="margin-bottom:1rem;">
-      <input type="search" id="fid-search" placeholder="Rechercher une carte…" oninput="renderFideliteList()" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;">
+    <div style="margin-bottom:1rem;display:grid;grid-template-columns:1fr 220px;gap:10px;">
+      <input type="search" id="fid-search" placeholder="Rechercher une carte…" oninput="renderFideliteList()" style="padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;">
+      <select id="fid-sort" onchange="renderFideliteList()" style="padding:10px 14px;border-radius:10px;border:1.5px solid var(--gris-border);background:var(--gris-bg);color:var(--texte);font-size:14px;font-family:inherit;outline:none;cursor:pointer;">
+        <option value="nom">Trier : Ordre alphabétique</option>
+        <option value="tampons-desc">Trier : Plus de tampons</option>
+        <option value="tampons-asc">Trier : Moins de tampons</option>
+        <option value="passage-desc">Trier : Dernier passage récent</option>
+        <option value="passage-asc">Trier : Dernier passage ancien</option>
+        <option value="jamais">Trier : Sans passage</option>
+      </select>
     </div>
+    <style>
+      @media (max-width: 600px) {
+        #step-fidelite > div[style*="grid-template-columns:1fr 220px"] { grid-template-columns:1fr !important; }
+      }
+    </style>
     <div id="fid-list" class="items-list"></div>
     <div id="fid-empty" class="empty-state" style="display:none;">Aucune carte créée pour l'instant.</div>
   </div>
