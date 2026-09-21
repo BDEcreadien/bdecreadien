@@ -5305,43 +5305,22 @@ async function finDeleteEv(id) {
 // ============================================================
 const SUMUP_PROXY = 'https://sumup-proxy.bdecreadien.workers.dev';
 
+let _sumupItems = [];
+
 async function finSumupLoad() {
   const btn = document.getElementById('fin-btn-sumup');
   const list = document.getElementById('fin-sumup-list');
   btn.disabled = true; btn.textContent = 'Chargement…';
   try {
-    if (!_finDateDebut || !_finDateFin) { showToast('Sélectionne une période d\'abord', 'error'); return; }
-    // Période affichée
+    if (!_finDateDebut || !_finDateFin) { showToast("Sélectionne une période d'abord", 'error'); return; }
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
     const url = `${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`;
     const resp = await fetch(url);
     if (!resp.ok) { showToast('Erreur SumUp : ' + resp.status, 'error'); return; }
     const data = await resp.json();
-    const items = data.items || [];
-    if (!items.length) {
-      list.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Aucune vente SumUp sur cette période.</p>';
-      return;
-    }
-    // IDs déjà importés
-    const importedRefs = new Set(_finTransactions.filter(t => t.sumup_ref).map(t => t.sumup_ref));
-    list.innerHTML = items.map(tx => {
-      const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
-      const dateStr = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '';
-      const montant = parseFloat(tx.amount || 0).toFixed(2);
-      const deja = importedRefs.has(tx.id);
-      return `<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;margin-bottom:4px;background:${deja ? 'rgba(34,197,94,.07)' : 'var(--bg-card, #fafafa)'};border:1px solid ${deja ? 'rgba(34,197,94,.3)' : 'var(--gris-border)'};font-size:13px;">
-        <span style="flex:1;min-width:0;">
-          <strong>${escapeHtmlNl(tx.product_summary || tx.payment_type || 'Vente')}</strong>
-          <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${tx.payment_type || ''}</span>
-        </span>
-        <span style="font-weight:700;color:#16a34a;flex-shrink:0;">+${montant} €</span>
-        ${deja
-          ? '<span style="font-size:11px;color:#16a34a;flex-shrink:0;">✓ importé</span>'
-          : `<button onclick="finSumupImport(${JSON.stringify(tx).replace(/"/g, '&quot;')})" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;flex-shrink:0;">Importer</button>`
-        }
-      </div>`;
-    }).join('');
+    _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
+    finSumupRender();
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error');
   } finally {
@@ -5349,25 +5328,101 @@ async function finSumupLoad() {
   }
 }
 
-async function finSumupImport(tx) {
-  const date = tx.timestamp ? tx.timestamp.slice(0, 10) : new Date().toISOString().slice(0, 10);
-  const montant = parseFloat(tx.amount || 0);
-  const libelle = tx.product_summary || 'Vente SumUp';
+function finSumupRender() {
+  const list = document.getElementById('fin-sumup-list');
+  if (!_sumupItems.length) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Aucune vente SumUp réussie sur cette période.</p>';
+    return;
+  }
+  const importedRefs = new Set(_finTransactions.filter(t => t.sumup_ref).map(t => t.sumup_ref));
+  const pending = _sumupItems.filter(t => !importedRefs.has(t.id));
+  const done = _sumupItems.filter(t => importedRefs.has(t.id));
+
+  const totalPending = pending.reduce((s, t) => s + parseFloat(t.amount || 0), 0);
+
+  list.innerHTML = `
+    ${pending.length ? `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;text-transform:none;letter-spacing:0;">
+        <input type="checkbox" id="sumup-select-all" onchange="finSumupSelectAll(this)" style="width:16px;height:16px;accent-color:#1a7f37;">
+        Tout sélectionner (${pending.length} ventes · ${totalPending.toFixed(2)} €)
+      </label>
+      <button onclick="finSumupImportSelection()" style="background:#1a7f37;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">
+        Importer la sélection
+      </button>
+    </div>
+    <div id="sumup-pending-list">
+      ${pending.map(tx => finSumupRowHtml(tx, false)).join('')}
+    </div>` : ''}
+    ${done.length ? `
+    <div style="margin-top:12px;font-size:11px;color:var(--gris-texte);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Déjà importées (${done.length})</div>
+    ${done.map(tx => finSumupRowHtml(tx, true)).join('')}` : ''}
+  `;
+}
+
+function finSumupRowHtml(tx, imported) {
+  const date = tx.timestamp ? tx.timestamp.slice(0, 10) : '';
+  const dateStr = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '';
+  const montant = parseFloat(tx.amount || 0).toFixed(2);
+  const moyen = tx.payment_type === 'CASH' ? 'Espèces' : 'Carte';
+  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;margin-bottom:3px;background:${imported ? 'rgba(34,197,94,.06)' : 'var(--bg-card,#fafafa)'};border:1px solid ${imported ? 'rgba(34,197,94,.25)' : 'var(--gris-border)'};font-size:13px;">
+    ${imported ? '<span style="width:18px;flex-shrink:0;"></span>' : `<input type="checkbox" class="sumup-cb" data-id="${tx.id}" style="width:16px;height:16px;flex-shrink:0;accent-color:#1a7f37;">`}
+    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+      <strong>${escapeHtmlNl(tx.product_summary || 'Vente')}</strong>
+      <span style="color:var(--gris-texte);font-size:11px;"> · ${dateStr} · ${moyen}</span>
+    </span>
+    <span style="font-weight:700;color:${imported ? '#16a34a' : 'var(--noir)'};flex-shrink:0;">${imported ? '✓ ' : '+'}${montant} €</span>
+  </div>`;
+}
+
+function finSumupSelectAll(cb) {
+  document.querySelectorAll('#sumup-pending-list .sumup-cb').forEach(c => c.checked = cb.checked);
+}
+
+async function finSumupImportSelection() {
+  const checked = [...document.querySelectorAll('#sumup-pending-list .sumup-cb:checked')];
+  if (!checked.empty && !checked.length) { showToast('Sélectionne au moins une vente', 'error'); return; }
+  if (!checked.length) { showToast('Sélectionne au moins une vente', 'error'); return; }
+
+  const ids = new Set(checked.map(c => c.dataset.id));
+  const selected = _sumupItems.filter(t => ids.has(t.id));
+
+  // Groupe par libellé+date pour créer une transaction par groupe
+  const groups = {};
+  selected.forEach(tx => {
+    const label = tx.product_summary || 'Vente SumUp';
+    const date = tx.timestamp ? tx.timestamp.slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const moyen = tx.payment_type === 'CASH' ? 'especes' : 'virement_sumup';
+    const key = `${label}||${date}||${moyen}`;
+    if (!groups[key]) groups[key] = { label, date, moyen, montant: 0, refs: [] };
+    groups[key].montant += parseFloat(tx.amount || 0);
+    groups[key].refs.push(tx.id);
+  });
+
   const user = await window.Auth.getUser();
-  const payload = {
-    date,
-    montant,
-    libelle,
-    categorie: 'vente',
-    moyen_paiement: 'virement_sumup',
-    sumup_ref: tx.id,
-    created_by: user.id,
-  };
-  const { error } = await window.Auth.sb.from('transactions').insert(payload);
-  if (error) { showToast('Erreur import : ' + error.message, 'error'); return; }
-  showToast('Vente importée', 'success');
-  finLoadTransactions();
-  finSumupLoad();
+  let ok = 0, err = 0;
+  for (const g of Object.values(groups)) {
+    const count = g.refs.length;
+    const libelle = count > 1 ? `${g.label} (×${count})` : g.label;
+    // Importe chaque vente séparément pour garder les sumup_ref
+    for (const txId of g.refs) {
+      const tx = _sumupItems.find(t => t.id === txId);
+      const { error } = await window.Auth.sb.from('transactions').insert({
+        date: g.date,
+        montant: parseFloat(tx.amount || 0),
+        libelle: tx.product_summary || 'Vente SumUp',
+        categorie: 'vente',
+        moyen_paiement: g.moyen,
+        sumup_ref: txId,
+        created_by: user.id,
+      });
+      if (error) err++; else ok++;
+    }
+  }
+  if (ok) showToast(`${ok} vente(s) importée(s)`, 'success');
+  if (err) showToast(`${err} erreur(s)`, 'error');
+  await finLoadTransactions();
+  finSumupRender();
 }
 
 // ============================================================
