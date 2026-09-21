@@ -705,7 +705,10 @@
       <div class="form-card visible" style="margin-bottom:1.5rem;" id="fin-sumup-bloc">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
           <h3 style="margin:0;">Ventes SumUp <span style="font-size:12px;color:var(--gris-texte);font-weight:400;">(import automatique)</span></h3>
-          <button class="btn-save" onclick="finSumupLoad()" id="fin-btn-sumup" style="background:#1a7f37;">⟳ Charger les ventes</button>
+          <div style="display:flex;gap:8px;">
+            <button onclick="finSumupOpenAliases()" style="background:none;border:1px solid var(--gris-border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--gris-texte);">⚙ Regrouper</button>
+            <button class="btn-save" onclick="finSumupLoad()" id="fin-btn-sumup" style="background:#1a7f37;">⟳ Charger les ventes</button>
+          </div>
         </div>
         <p style="font-size:12px;color:var(--gris-texte);margin:0 0 10px;">Ventes individuelles SumUp du mois affiché. Importe-les comme transactions pour les lier à tes événements.</p>
         <div id="fin-sumup-list"><p style="font-size:13px;color:var(--gris-texte);text-align:center;padding:16px 0;">Clique sur "Charger les ventes" pour voir les ventes SumUp du mois.</p></div>
