@@ -5446,11 +5446,20 @@ async function finSumupLoad() {
     if (!_finDateDebut || !_finDateFin) { showToast("Sélectionne une période d'abord", 'error'); return; }
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
-    // 1. Transactions d'abord (pour avoir _sumupItems avant le catalogue)
-    const txResp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=500`);
-    if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
-    const data = await txResp.json();
-    _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
+    // Récupère toutes les pages (SumUp limite à ~100 par requête)
+    _sumupItems = [];
+    let offset = 0;
+    const pageSize = 100;
+    while (true) {
+      const txResp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=${pageSize}&offset=${offset}`);
+      if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
+      const data = await txResp.json();
+      const items = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
+      _sumupItems.push(...items);
+      if (items.length < pageSize) break; // dernière page
+      offset += pageSize;
+      if (offset > 2000) break; // sécurité anti-boucle infinie
+    }
     finSumupRender();
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error');
