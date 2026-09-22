@@ -5447,7 +5447,7 @@ async function finSumupLoad() {
     const debut = _finDateDebut.toISOString().slice(0, 10);
     const fin = _finDateFin.toISOString().slice(0, 10);
     // 1. Transactions d'abord (pour avoir _sumupItems avant le catalogue)
-    const txResp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=100`);
+    const txResp = await fetch(`${SUMUP_PROXY}/sumup/v0.1/me/transactions/history?newest_time=${fin}T23:59:59Z&oldest_time=${debut}T00:00:00Z&limit=500`);
     if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
     const data = await txResp.json();
     _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
