@@ -5451,8 +5451,6 @@ async function finSumupLoad() {
     if (!txResp.ok) { showToast('Erreur SumUp : ' + txResp.status, 'error'); return; }
     const data = await txResp.json();
     _sumupItems = (data.items || []).filter(t => t.status === 'SUCCESSFUL');
-    // 2. Catalogue ensuite (peut utiliser _sumupItems comme fallback)
-    await finSumupLoadCatalog();
     finSumupRender();
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error');
