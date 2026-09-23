@@ -1366,11 +1366,20 @@ function renderPartenaires(items) {
     const codeBadge = p.code_promo
       ? `<span class="partenaire-code-badge" aria-label="Code promo disponible">🎟️ ${p.code_promo}</span>`
       : '';
+    // Si description longue OU code promo → modale. Sinon lien direct.
+    const hasExtras = (p.description_longue && p.description_longue.trim()) || p.code_promo;
+    const lienFinal = p.lien_promo || p.lien;
     const inner = `${codeBadge}${logoHtml}
       <p class="partenaire-nom">${p.nom}</p>
       ${p.description ? `<p class="partenaire-desc">${p.description}</p>` : ''}
-      <span class="partenaire-lien">Voir l'offre →</span>`;
-    return `<button type="button" class="partenaire-card reveal" data-idx="${i}" onclick="openPartenaireModal(${i})" aria-label="Voir l'offre ${p.nom}">${inner}</button>`;
+      <span class="partenaire-lien">${hasExtras ? "Voir l'offre" : "Voir le site"} →</span>`;
+    if (hasExtras) {
+      return `<button type="button" class="partenaire-card reveal" data-idx="${i}" onclick="openPartenaireModal(${i})" aria-label="Voir l'offre ${p.nom}">${inner}</button>`;
+    }
+    if (lienFinal) {
+      return `<a href="${lienFinal}" target="_blank" rel="noopener noreferrer" class="partenaire-card reveal" aria-label="Aller sur le site ${p.nom}">${inner}</a>`;
+    }
+    return `<div class="partenaire-card reveal">${inner}</div>`;
   }).join('');
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 }
