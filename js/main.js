@@ -1347,7 +1347,9 @@ if (_origGalerieBlock) {
 // ===================================
 // PARTENAIRES — Chargement & Rendu
 // ===================================
+let _partenairesData = [];
 function renderPartenaires(items) {
+  _partenairesData = items;
   const grid = document.getElementById('partenaires-grid');
   const empty = document.getElementById('partenaires-empty');
   if (!grid) return;
@@ -1361,16 +1363,105 @@ function renderPartenaires(items) {
     const logoHtml = p.logo
       ? `<img class="partenaire-logo" src="${p.logo}" alt="Logo ${p.nom}" loading="lazy">`
       : `<div class="partenaire-logo-placeholder">${(p.nom || '?').slice(0, 2).toUpperCase()}</div>`;
-    const inner = `${logoHtml}
+    const codeBadge = p.code_promo
+      ? `<span class="partenaire-code-badge" aria-label="Code promo disponible">🎟️ ${p.code_promo}</span>`
+      : '';
+    const inner = `${codeBadge}${logoHtml}
       <p class="partenaire-nom">${p.nom}</p>
       ${p.description ? `<p class="partenaire-desc">${p.description}</p>` : ''}
-      ${p.lien ? `<span class="partenaire-lien">Voir le site →</span>` : ''}`;
-    return p.lien
-      ? `<a href="${p.lien}" target="_blank" rel="noopener noreferrer" class="partenaire-card reveal">${inner}</a>`
-      : `<div class="partenaire-card reveal">${inner}</div>`;
+      <span class="partenaire-lien">Voir l'offre →</span>`;
+    return `<button type="button" class="partenaire-card reveal" data-idx="${i}" onclick="openPartenaireModal(${i})" aria-label="Voir l'offre ${p.nom}">${inner}</button>`;
   }).join('');
   grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 }
+
+function openPartenaireModal(idx) {
+  const p = _partenairesData[idx];
+  if (!p) return;
+  let modal = document.getElementById('partenaire-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'partenaire-modal';
+    modal.className = 'partenaire-modal-overlay';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = `
+      <div class="partenaire-modal" id="partenaire-modal-inner">
+        <button class="partenaire-modal-close" type="button" aria-label="Fermer" onclick="closePartenaireModal()">×</button>
+        <div class="partenaire-modal-head">
+          <div class="partenaire-modal-logo" id="pmm-logo"></div>
+          <h3 id="pmm-nom"></h3>
+          <p id="pmm-desc"></p>
+        </div>
+        <div class="partenaire-modal-body">
+          <p id="pmm-long" class="pmm-long"></p>
+          <div id="pmm-code-box" class="pmm-code-box" style="display:none;">
+            <div class="pmm-code-label">Ton code promo</div>
+            <div class="pmm-code-row">
+              <span id="pmm-code" class="pmm-code"></span>
+              <button type="button" class="pmm-code-copy" id="pmm-code-copy" onclick="copyPartenaireCode(this)">📋 Copier</button>
+            </div>
+          </div>
+          <div class="partenaire-modal-actions">
+            <a id="pmm-cta" href="#" target="_blank" rel="noopener noreferrer" class="pmm-cta">Profiter de l'offre ↗</a>
+          </div>
+        </div>
+      </div>`;
+    modal.addEventListener('click', (e) => { if (e.target === modal) closePartenaireModal(); });
+    document.body.appendChild(modal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('open')) closePartenaireModal(); });
+  }
+  // Remplir
+  const logoEl = document.getElementById('pmm-logo');
+  logoEl.innerHTML = p.logo
+    ? `<img src="${p.logo}" alt="Logo ${p.nom}" loading="lazy">`
+    : `<div class="pmm-logo-fallback">${(p.nom || '?').slice(0,2).toUpperCase()}</div>`;
+  document.getElementById('pmm-nom').textContent = p.nom || '';
+  document.getElementById('pmm-desc').textContent = p.description || '';
+  const longEl = document.getElementById('pmm-long');
+  const longTxt = (p.description_longue || '').trim();
+  longEl.textContent = longTxt || 'Aucune description détaillée pour ce partenaire pour l\'instant.';
+  longEl.style.opacity = longTxt ? '1' : '0.6';
+  const codeBox = document.getElementById('pmm-code-box');
+  if (p.code_promo) {
+    codeBox.style.display = '';
+    document.getElementById('pmm-code').textContent = p.code_promo;
+  } else {
+    codeBox.style.display = 'none';
+  }
+  const cta = document.getElementById('pmm-cta');
+  const url = p.lien_promo || p.lien;
+  if (url) {
+    cta.href = url;
+    cta.style.display = '';
+    cta.textContent = p.lien_promo ? 'Profiter de l\'offre ↗' : 'Aller sur le site ↗';
+  } else {
+    cta.style.display = 'none';
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePartenaireModal() {
+  const modal = document.getElementById('partenaire-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function copyPartenaireCode(btn) {
+  const code = document.getElementById('pmm-code').textContent;
+  if (!code) return;
+  navigator.clipboard.writeText(code).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copié !';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 1500);
+  }).catch(() => {});
+}
+window.openPartenaireModal = openPartenaireModal;
+window.closePartenaireModal = closePartenaireModal;
+window.copyPartenaireCode = copyPartenaireCode;
 
 function _partenairesActifs(list) {
   // Filtre les partenaires désactivés (actif === false explicite)

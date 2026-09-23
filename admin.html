@@ -2423,8 +2423,20 @@ function formPartenaire() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau partenaire</h3>
     <div class="form-row"><label>Nom *</label><input type="text" id="pt-nom" placeholder="Ex: Ninkasi"></div>
-    <div class="form-row"><label>Description</label><input type="text" id="pt-desc" placeholder="Ex: Bar partenaire des soirées BDE"></div>
-    <div class="form-row"><label>Lien du site</label><input type="url" id="pt-lien" placeholder="https://…"></div>
+    <div class="form-row"><label>Description courte (carte)</label><input type="text" id="pt-desc" placeholder="Ex: -15% sur tout le magasin"></div>
+    <div class="form-row"><label>Description longue (modale)</label><textarea id="pt-desc-long" rows="4" placeholder="Ex: Ninkasi est un incontournable de la vie étudiante à Lyon. Grâce à notre partenariat, tous les étudiants CREAD bénéficient d'une réduction de 15% sur les boissons et la restauration, tous les jours de la semaine…" style="width:100%;padding:8px 10px;border:1px solid var(--gris-border,#e5e7eb);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;"></textarea></div>
+    <div class="form-row">
+      <label>Code promo (optionnel)</label>
+      <input type="text" id="pt-code-promo" placeholder="Ex: CREAD15" style="text-transform:uppercase;letter-spacing:1px;">
+    </div>
+    <div class="form-row">
+      <label>Lien du site</label>
+      <input type="url" id="pt-lien" placeholder="https://…">
+    </div>
+    <div class="form-row">
+      <label>Lien direct promotion (optionnel — sinon on utilise le lien du site)</label>
+      <input type="url" id="pt-lien-promo" placeholder="https://…/promo-cread">
+    </div>
     <div class="form-row">
       <label>Logo (optionnel)</label>
       <input type="file" id="pt-logo" accept="image/*" onchange="onPartenaireLogoSelected()">
@@ -2543,7 +2555,7 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Nouvelle photo';
   }
   if (currentType === 'partenaires') {
-    ['pt-nom','pt-desc','pt-lien'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    ['pt-nom','pt-desc','pt-desc-long','pt-code-promo','pt-lien','pt-lien-promo'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const fi = document.getElementById('pt-logo'); if(fi) fi.value = '';
     const pw = document.getElementById('pt-preview-wrap'); if(pw) pw.style.display = 'none';
     const img = document.getElementById('pt-preview-img'); if(img) { img.src=''; img.style.display='none'; }
@@ -2663,7 +2675,10 @@ function editItem(type, i) {
     const pt = data.partenaires[i];
     document.getElementById('pt-nom').value = pt.nom || '';
     document.getElementById('pt-desc').value = pt.description || '';
+    document.getElementById('pt-desc-long').value = pt.description_longue || '';
+    document.getElementById('pt-code-promo').value = pt.code_promo || '';
     document.getElementById('pt-lien').value = pt.lien || '';
+    document.getElementById('pt-lien-promo').value = pt.lien_promo || '';
     if (pt.logo) {
       const rawUrl = pt.logo.startsWith('/') ? `https://raw.githubusercontent.com/${REPO}/main${pt.logo}` : pt.logo;
       const img = document.getElementById('pt-preview-img');
@@ -3237,7 +3252,10 @@ async function savePartenaire() {
   const nom = document.getElementById('pt-nom').value.trim();
   if (!nom) return showToast('Le nom est obligatoire', 'error');
   const description = document.getElementById('pt-desc').value.trim();
+  const description_longue = document.getElementById('pt-desc-long').value.trim();
+  const code_promo = document.getElementById('pt-code-promo').value.trim().toUpperCase();
   const lien = document.getElementById('pt-lien').value.trim();
+  const lien_promo = document.getElementById('pt-lien-promo').value.trim();
   const file = document.getElementById('pt-logo')?.files[0];
   const idx = editIndex.partenaire;
   const btn = document.getElementById('btn-save-partenaire');
@@ -3245,9 +3263,8 @@ async function savePartenaire() {
   try {
     let logo = idx >= 0 ? (data.partenaires[idx].logo || '') : '';
     if (file) { const up = await uploadMedia(file); logo = up.url; }
-    // Conserve le statut actif existant en modification, sinon actif par défaut
     const actif = idx >= 0 ? (data.partenaires[idx].actif !== false) : true;
-    const pt = { nom, description, lien, logo, actif };
+    const pt = { nom, description, description_longue, code_promo, lien, lien_promo, logo, actif };
     if (idx >= 0) data.partenaires[idx] = pt; else data.partenaires.push(pt);
   } catch(e) { btn.textContent = 'Ajouter'; btn.disabled = false; return showToast('Erreur upload : ' + e.message, 'error'); }
   btn.textContent = 'Ajouter'; btn.disabled = false;
