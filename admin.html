@@ -573,10 +573,10 @@
       <div id="fin-form-ev" class="form-card" style="margin-bottom:1.5rem;">
         <h3>Nouvel événement (prévisionnel)</h3>
         <div class="form-grid">
-          <div class="form-row"><label>Date</label><input type="date" id="ev-date"></div>
+          <div class="form-row"><label>Date</label><input type="date" id="fin-ev-date"></div>
           <div class="form-row">
             <label>Catégorie budget</label>
-            <select id="ev-categorie" onchange="finEvCatChange()">
+            <select id="fin-ev-categorie" onchange="finEvCatChange()">
               <option value="soiree">🎉 Soirée</option>
               <option value="repas">🍽️ Repas</option>
               <option value="sortie">🚌 Sortie</option>
@@ -584,11 +584,11 @@
               <option value="autre">✨ Autre</option>
               <option value="__custom__">✏️ Personnalisée…</option>
             </select>
-            <input type="text" id="ev-categorie-custom" placeholder="Nom de la catégorie" maxlength="60" style="display:none;margin-top:8px;">
+            <input type="text" id="fin-ev-categorie-custom" placeholder="Nom de la catégorie" maxlength="60" style="display:none;margin-top:8px;">
           </div>
         </div>
-        <div class="form-row"><label>Titre</label><input type="text" id="ev-titre" placeholder="ex: Soirée Halloween Six Brotteaux" maxlength="200"></div>
-        <div class="form-row"><label>Lieu (optionnel)</label><input type="text" id="ev-lieu" placeholder="ex: Ninkasi Cordeliers" maxlength="200"></div>
+        <div class="form-row"><label>Titre</label><input type="text" id="fin-ev-titre" placeholder="ex: Soirée Halloween Six Brotteaux" maxlength="200"></div>
+        <div class="form-row"><label>Lieu (optionnel)</label><input type="text" id="fin-ev-lieu" placeholder="ex: Ninkasi Cordeliers" maxlength="200"></div>
 
         <h4 style="margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);font-weight:700;">Prévisionnel</h4>
         <div class="form-grid">
