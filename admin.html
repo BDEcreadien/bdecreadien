@@ -5722,14 +5722,19 @@ function pdfChangerType(type) {
   _pdfTypeActuel = type;
   document.getElementById('pdf-tab-resume').style.cssText = type === 'resume' ? 'background:var(--violet);color:white;' : '';
   document.getElementById('pdf-tab-detaille').style.cssText = type === 'detaille' ? 'background:var(--violet);color:white;' : '';
-  pdfRegenererPreview();
+  // On ne régénère PAS automatiquement — c'est ce qui provoquait l'auto-téléchargement sur Windows.
+  // On invalide juste le PDF en cache pour forcer une nouvelle génération à la prochaine demande.
+  if (_pdfCurrentUrl) { URL.revokeObjectURL(_pdfCurrentUrl); _pdfCurrentUrl = null; }
+  _pdfCurrentFilename = null;
+  // Reset visuel de l'aperçu
+  const iframe = document.getElementById('pdf-preview-iframe');
+  const placeholder = document.getElementById('pdf-preview-placeholder');
+  if (iframe) { iframe.src = 'about:blank'; iframe.style.display = 'none'; }
+  if (placeholder) placeholder.style.display = '';
 }
 
-async function pdfRegenererPreview() {
-  const iframe = document.getElementById('pdf-preview-iframe');
-  const loader = document.getElementById('pdf-preview-loading');
-  if (!iframe) return;
-  if (loader) loader.style.display = 'flex';
+// Construit un doc jsPDF selon le type actuel et met à jour _pdfCurrentUrl + _pdfCurrentFilename
+async function pdfConstruire() {
   await loadJsPdf();
   await loadLogo();
   const { jsPDF } = window.jspdf;
@@ -5742,20 +5747,55 @@ async function pdfRegenererPreview() {
     _pdfCurrentFilename = pdfFilename('resume');
   }
   if (_pdfCurrentUrl) URL.revokeObjectURL(_pdfCurrentUrl);
-  // On construit un vrai blob application/pdf (type explicite pour éviter que Windows auto-télécharge)
   const pdfBlob = doc.output('blob');
   const typedBlob = pdfBlob.type === 'application/pdf' ? pdfBlob : new Blob([pdfBlob], { type: 'application/pdf' });
   _pdfCurrentUrl = URL.createObjectURL(typedBlob);
-  iframe.src = _pdfCurrentUrl;
-  if (loader) loader.style.display = 'none';
 }
 
-function pdfTelecharger() {
-  if (!_pdfCurrentUrl || !_pdfCurrentFilename) { showToast('Aperçu pas encore prêt', 'error'); return; }
-  const a = document.createElement('a');
-  a.href = _pdfCurrentUrl; a.download = _pdfCurrentFilename;
-  document.body.appendChild(a); a.click(); a.remove();
+// Prévisualisation à la demande (bouton "Prévisualiser")
+async function pdfApercu() {
+  const btn = document.getElementById('pdf-btn-preview');
+  const iframe = document.getElementById('pdf-preview-iframe');
+  const placeholder = document.getElementById('pdf-preview-placeholder');
+  const loader = document.getElementById('pdf-preview-loading');
+  if (!iframe) return;
+  const prevLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Génération…'; }
+  if (placeholder) placeholder.style.display = 'none';
+  if (loader) loader.style.display = 'flex';
+  iframe.style.display = 'none';
+  try {
+    await pdfConstruire();
+    iframe.src = _pdfCurrentUrl;
+    iframe.style.display = '';
+  } catch (e) {
+    console.error('[pdf preview]', e);
+    if (placeholder) placeholder.style.display = '';
+    showToast('Erreur génération PDF : ' + e.message, 'error');
+  } finally {
+    if (loader) loader.style.display = 'none';
+    if (btn) { btn.disabled = false; btn.textContent = prevLabel || '👁 Prévisualiser'; }
+  }
 }
+
+// Téléchargement à la demande (bouton "Télécharger")
+async function pdfTelecharger() {
+  try {
+    if (!_pdfCurrentUrl || !_pdfCurrentFilename) {
+      // Si on n'a pas encore prévisualisé, on génère silencieusement
+      await pdfConstruire();
+    }
+    const a = document.createElement('a');
+    a.href = _pdfCurrentUrl; a.download = _pdfCurrentFilename;
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) {
+    console.error('[pdf telecharger]', e);
+    showToast('Erreur : ' + e.message, 'error');
+  }
+}
+
+// Ancienne fonction conservée en no-op pour compat (elle était appelée à plusieurs endroits pour rafraîchir l'aperçu)
+async function pdfRegenererPreview() { /* désactivé — voir pdfApercu() pour génération à la demande */ }
 
 function pdfConstruireResume(doc) {
   const { rec: recettes, dep: depenses } = finPeriodeRecDep();
