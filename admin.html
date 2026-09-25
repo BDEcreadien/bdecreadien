@@ -5272,11 +5272,11 @@ function finEditEv(id) {
   const ev = _finEvenements.find(e => e.id === id);
   if (!ev) return;
   _finEvEditingId = id;
-  document.getElementById('ev-date').value = ev.date || '';
-  document.getElementById('ev-titre').value = ev.titre || '';
-  document.getElementById('ev-lieu').value = ev.lieu || '';
-  const evCatSel = document.getElementById('ev-categorie');
-  const evCatInput = document.getElementById('ev-categorie-custom');
+  document.getElementById('fin-ev-date').value = ev.date || '';
+  document.getElementById('fin-ev-titre').value = ev.titre || '';
+  document.getElementById('fin-ev-lieu').value = ev.lieu || '';
+  const evCatSel = document.getElementById('fin-ev-categorie');
+  const evCatInput = document.getElementById('fin-ev-categorie-custom');
   const evKnown = [...evCatSel.options].some(o => o.value === (ev.categorie_budget || 'soiree'));
   if (evKnown) {
     evCatSel.value = ev.categorie_budget || 'soiree';
