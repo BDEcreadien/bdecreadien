@@ -5303,12 +5303,12 @@ function finEditEv(id) {
 }
 
 async function finSaveEv() {
-  const titre = document.getElementById('ev-titre').value.trim();
-  const date = document.getElementById('ev-date').value || null;
-  const lieu = document.getElementById('ev-lieu').value.trim() || null;
-  let categorie_budget = document.getElementById('ev-categorie').value;
+  const titre = document.getElementById('fin-ev-titre').value.trim();
+  const date = document.getElementById('fin-ev-date').value || null;
+  const lieu = document.getElementById('fin-ev-lieu').value.trim() || null;
+  let categorie_budget = document.getElementById('fin-ev-categorie').value;
   if (categorie_budget === '__custom__') {
-    categorie_budget = document.getElementById('ev-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
+    categorie_budget = document.getElementById('fin-ev-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
     if (!categorie_budget) { showToast('Nomme la catégorie personnalisée', 'error'); return; }
   }
   const gainsPrevVal = document.getElementById('ev-gains-prev').value;
