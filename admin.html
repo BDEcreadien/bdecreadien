@@ -5251,9 +5251,9 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
 }
 
 async function finAutoEstimation() {
-  let cat = document.getElementById('ev-categorie').value;
+  let cat = document.getElementById('fin-ev-categorie').value;
   if (cat === '__custom__') {
-    cat = document.getElementById('ev-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
+    cat = document.getElementById('fin-ev-categorie-custom').value.trim().toLowerCase().replace(/\s+/g, '_');
   }
   const hint = document.getElementById('ev-hint-moy');
   hint.textContent = '';
