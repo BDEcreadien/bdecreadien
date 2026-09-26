@@ -768,24 +768,38 @@
 
       <!-- RAPPORT PDF -->
       <div class="form-card visible" style="margin-top:1.5rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
-          <h3 style="margin:0;">Rapport PDF</h3>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <button class="stats-ext-btn" id="pdf-tab-resume" onclick="pdfChangerType('resume')" style="background:var(--violet);color:white;">Résumé</button>
-            <button class="stats-ext-btn" id="pdf-tab-detaille" onclick="pdfChangerType('detaille')">Détaillé</button>
-            <button class="stats-ext-btn" onclick="pdfApercu()" id="pdf-btn-preview" style="border:1px solid var(--violet);color:var(--violet);background:white;">👁 Prévisualiser</button>
-            <button class="stats-ext-btn" onclick="pdfTelecharger()" style="background:var(--gradient);color:white;border:none;font-weight:600;">⬇ Télécharger</button>
-          </div>
+        <h3 style="margin:0 0 6px;">Rapports PDF</h3>
+        <p style="font-size:13px;color:var(--gris-texte);margin:0 0 16px;">Choisis le rapport à télécharger. Le fichier PDF est enregistré dans ton dossier <b>Téléchargements</b>.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <button type="button" onclick="pdfTelechargerType('resume')" style="text-align:left;padding:18px 20px;background:white;border:1.5px solid var(--gris-border,#e5e7eb);border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--violet)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='var(--gris-border,#e5e7eb)';this.style.transform='';">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="font-size:32px;">📄</div>
+              <div>
+                <div style="font-weight:700;font-size:15px;color:var(--noir);">⬇ Télécharger le Résumé</div>
+                <div style="font-size:12px;color:var(--gris-texte);margin-top:2px;">1 page — chiffres clés & récapitulatif</div>
+              </div>
+            </div>
+          </button>
+          <button type="button" onclick="pdfTelechargerType('detaille')" style="text-align:left;padding:18px 20px;background:white;border:1.5px solid var(--gris-border,#e5e7eb);border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--violet)';this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='var(--gris-border,#e5e7eb)';this.style.transform='';">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="font-size:32px;">📑</div>
+              <div>
+                <div style="font-weight:700;font-size:15px;color:var(--noir);">⬇ Télécharger le Détaillé</div>
+                <div style="font-size:12px;color:var(--gris-texte);margin-top:2px;">Multi-pages — toutes les transactions ligne par ligne</div>
+              </div>
+            </div>
+          </button>
         </div>
-        <div id="pdf-preview-wrap" style="background:#f5f4f8;border-radius:12px;padding:60px 20px;display:flex;justify-content:center;align-items:center;text-align:center;min-height:180px;position:relative;flex-direction:column;gap:10px;">
-          <div id="pdf-preview-placeholder" style="color:#666;font-size:13px;line-height:1.6;">
-            <div style="font-size:32px;margin-bottom:8px;">📄</div>
-            Choisis un type (<b>Résumé</b> ou <b>Détaillé</b>) puis clique sur<br><b>👁 Prévisualiser</b> pour afficher, ou <b>⬇ Télécharger</b> pour l'enregistrer.
-          </div>
-          <div id="pdf-preview-loading" style="display:none;color:#666;font-size:13px;">⏳ Génération de l'aperçu…</div>
-          <iframe id="pdf-preview-iframe" style="display:none;width:210mm;height:297mm;border:none;box-shadow:0 8px 30px rgba(0,0,0,0.4);background:white;" title="Aperçu PDF"></iframe>
+        <div style="display:none;">
+          <!-- éléments legacy conservés pour compat JS (no-op) -->
+          <button id="pdf-tab-resume"></button>
+          <button id="pdf-tab-detaille"></button>
+          <button id="pdf-btn-preview"></button>
+          <div id="pdf-preview-wrap"></div>
+          <div id="pdf-preview-placeholder"></div>
+          <div id="pdf-preview-loading"></div>
+          <div id="pdf-preview-iframe"></div>
         </div>
-        <p style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;text-align:center;">Choisis le type, prévisualise si tu veux vérifier, puis télécharge — rien ne se lance tout seul.</p>
       </div>
     </div>
   </div>
