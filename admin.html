@@ -5792,11 +5792,10 @@ async function pdfApercu() {
   }
 }
 
-// Téléchargement à la demande (bouton "Télécharger")
+// Téléchargement à la demande (bouton "Télécharger" — ancien flux, gardé pour compat)
 async function pdfTelecharger() {
   try {
     if (!_pdfCurrentUrl || !_pdfCurrentFilename) {
-      // Si on n'a pas encore prévisualisé, on génère silencieusement
       await pdfConstruire();
     }
     const a = document.createElement('a');
@@ -5804,6 +5803,21 @@ async function pdfTelecharger() {
     document.body.appendChild(a); a.click(); a.remove();
   } catch (e) {
     console.error('[pdf telecharger]', e);
+    showToast('Erreur : ' + e.message, 'error');
+  }
+}
+
+// Nouveau flux : télécharge directement le type demandé, sans iframe ni preview
+async function pdfTelechargerType(type) {
+  _pdfTypeActuel = type;
+  try {
+    await pdfConstruire();
+    const a = document.createElement('a');
+    a.href = _pdfCurrentUrl; a.download = _pdfCurrentFilename;
+    document.body.appendChild(a); a.click(); a.remove();
+    showToast('PDF ' + (type === 'detaille' ? 'détaillé' : 'résumé') + ' téléchargé', 'success');
+  } catch (e) {
+    console.error('[pdf telecharger type]', e);
     showToast('Erreur : ' + e.message, 'error');
   }
 }
