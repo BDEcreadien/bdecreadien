@@ -4685,9 +4685,6 @@ function finRender() {
       }
       const soldeEstim = soldeTotal + prevMoisNonValide;
       const couleur = soldeEstim >= 0 ? '#16a34a' : '#dc2626';
-      const sub = nbEvNonValides > 0
-        ? `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">${nbEvNonValides} event${nbEvNonValides > 1 ? 's' : ''} non validé${nbEvNonValides > 1 ? 's' : ''} · ${prevMoisNonValide >= 0 ? '+' : ''}${prevMoisNonValide.toFixed(2)} € prévu</div>`
-        : `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">Aucun event à venir ce mois</div>`;
       return tuile('Solde estimatif fin de mois', soldeEstim.toFixed(2) + ' €', couleur);
     })();
 
