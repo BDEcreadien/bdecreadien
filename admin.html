@@ -5242,18 +5242,28 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
     const isPreset = preSet.has(t.id) || (evId && t.finance_evenement_id === evId);
     const dateStr = new Date(t.date).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
     const txTotal = Math.abs(Number(t.montant));
-    const claimedByOthers = finEvCalcClaimedByOthers(t.id, evId);
-    const availableForThis = Math.max(0, txTotal - claimedByOthers);
-    // Bloqué uniquement s'il ne reste rien ET qu'on ne l'avait pas déjà pré-coché pour ce event
-    const disabled = availableForThis <= 0.005 && !isPreset;
+    // Partial + partage : recettes uniquement. Dépenses = full amount, ownership unique.
+    const supportsPartial = kind === 'recette';
+    let disabled, availableForThis, claimedByOthers;
+    if (supportsPartial) {
+      claimedByOthers = finEvCalcClaimedByOthers(t.id, evId);
+      availableForThis = Math.max(0, txTotal - claimedByOthers);
+      disabled = availableForThis <= 0.005 && !isPreset;
+    } else {
+      // Dépenses : logique historique — un seul event peut la lier
+      const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
+      claimedByOthers = 0;
+      availableForThis = txTotal;
+      disabled = linkedElsewhere;
+    }
     const partialId = `ev-partial-${kind}-${t.id}`;
     const savedPartial = partials[t.id] != null ? partials[t.id] : '';
     const initReste = savedPartial !== '' ? (availableForThis - parseFloat(savedPartial)).toFixed(2) : availableForThis.toFixed(2);
-    const shareInfo = claimedByOthers > 0.005
+    const shareInfo = supportsPartial && claimedByOthers > 0.005
       ? `<div style="font-size:11px;color:#b91c1c;padding:4px 6px;margin-bottom:4px;background:#fef2f2;border-radius:4px;">
           Déjà utilisé ailleurs : <strong>${claimedByOthers.toFixed(2)} €</strong> · Dispo ici : <strong>${availableForThis.toFixed(2)} €</strong>
         </div>` : '';
-    const partialInput = !disabled ? `
+    const partialInput = (supportsPartial && !disabled) ? `
       <div id="${partialId}-wrap" style="display:${isPreset ? 'flex' : 'none'};flex-direction:column;gap:4px;margin-top:4px;padding:6px 8px;background:rgba(251,191,36,.12);border-radius:6px;border:1px solid rgba(251,191,36,.4);">
         ${shareInfo}
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
@@ -5267,14 +5277,16 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
           → Reste non affecté sur cette transaction : <strong>${initReste} €</strong>
         </div>
       </div>` : '';
+    const showRestBadge = supportsPartial && claimedByOthers > 0.005 && !disabled;
     return `<div style="${disabled ? 'opacity:.5;' : ''}${isPreset ? 'background:rgba(124,58,237,.08);' : ''}border-radius:6px;margin-bottom:2px;">
       <label style="display:flex !important;align-items:center;gap:8px;padding:6px 8px;margin-bottom:0 !important;cursor:${disabled ? 'not-allowed' : 'pointer'};text-transform:none;letter-spacing:0;font-size:13px;color:var(--noir);font-weight:normal;">
-        <input type="checkbox" ${isPreset ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" data-partial-id="${!disabled ? partialId : ''}" onchange="finEvToggleSumup(this);finEvUpdateSoldes()" style="flex-shrink:0;width:18px !important;height:18px !important;padding:0 !important;margin:0 !important;border:1px solid #999 !important;border-radius:3px !important;accent-color:#7c3aed;">
+        <input type="checkbox" ${isPreset ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-tx-id="${t.id}" data-montant="${t.montant}" data-partial-id="${supportsPartial && !disabled ? partialId : ''}" onchange="finEvToggleSumup(this);finEvUpdateSoldes()" style="flex-shrink:0;width:18px !important;height:18px !important;padding:0 !important;margin:0 !important;border:1px solid #999 !important;border-radius:3px !important;accent-color:#7c3aed;">
         <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
           <strong style="color:var(--noir);">${escapeHtmlNl(t.libelle)}</strong>
           <span style="color:var(--gris-texte);font-size:11px;font-weight:normal;"> · ${dateStr} · ${finMoyenLabel(t.moyen_paiement)}</span>
-          ${claimedByOthers > 0.005 && !disabled ? `<span style="color:#b45309;font-size:11px;font-weight:600;"> · reste ${availableForThis.toFixed(2)} €</span>` : ''}
-          ${disabled ? '<span style="color:#dc2626;font-size:11px;font-weight:600;"> · entièrement utilisé ailleurs</span>' : ''}
+          ${showRestBadge ? `<span style="color:#b45309;font-size:11px;font-weight:600;"> · reste ${availableForThis.toFixed(2)} €</span>` : ''}
+          ${disabled && supportsPartial ? '<span style="color:#dc2626;font-size:11px;font-weight:600;"> · entièrement utilisé ailleurs</span>' : ''}
+          ${disabled && !supportsPartial ? '<span style="color:#dc2626;font-size:11px;font-weight:600;"> · (déjà lié à un autre event)</span>' : ''}
         </span>
         <span style="font-weight:700;color:${kind === 'recette' ? '#16a34a' : '#dc2626'};flex-shrink:0;">${Number(t.montant).toFixed(2)} €</span>
       </label>
