@@ -4439,28 +4439,6 @@ function finPeriodeRecDep() {
 
 // Rafraîchit en parallèle tous les éléments financiers (tuiles, chart, events, PDF)
 let _finRefreshBusy = false;
-function finSyncColHeights() {
-  // Double rAF : attend que le navigateur ait peint le contenu avant de mesurer
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const cols = [...document.querySelectorAll('.fin-two-cols > .form-card')];
-    if (cols.length < 2) return;
-    // 1. Reset : chaque colonne prend sa hauteur naturelle
-    cols.forEach(c => {
-      c.style.maxHeight = 'none';
-      c.style.overflowY = 'visible';
-      c.style.alignSelf = 'start';
-    });
-    // 2. Force reflow pour avoir les vraies dimensions
-    cols.forEach(c => void c.offsetHeight);
-    // 3. Hauteur de la colonne la plus courte
-    const minH = Math.min(...cols.map(c => c.offsetHeight));
-    // 4. Les deux colonnes prennent cette hauteur ; la plus grande défile
-    cols.forEach(c => {
-      c.style.maxHeight = minH + 'px';
-      c.style.overflowY = 'auto';
-    });
-  }));
-}
 
 async function finRefreshAll() {
   if (_finRefreshBusy) return;
