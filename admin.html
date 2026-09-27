@@ -5792,30 +5792,9 @@ async function pdfConstruire() {
   _pdfCurrentUrl = URL.createObjectURL(typedBlob);
 }
 
-// Prévisualisation à la demande (bouton "Prévisualiser")
+// Prévisualisation à la demande (compat — plus utilisée directement mais gardée pour d'anciens appels)
 async function pdfApercu() {
-  const btn = document.getElementById('pdf-btn-preview');
-  const iframe = document.getElementById('pdf-preview-iframe');
-  const placeholder = document.getElementById('pdf-preview-placeholder');
-  const loader = document.getElementById('pdf-preview-loading');
-  if (!iframe) return;
-  const prevLabel = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Génération…'; }
-  if (placeholder) placeholder.style.display = 'none';
-  if (loader) loader.style.display = 'flex';
-  iframe.style.display = 'none';
-  try {
-    await pdfConstruire();
-    iframe.src = _pdfCurrentUrl;
-    iframe.style.display = '';
-  } catch (e) {
-    console.error('[pdf preview]', e);
-    if (placeholder) placeholder.style.display = '';
-    showToast('Erreur génération PDF : ' + e.message, 'error');
-  } finally {
-    if (loader) loader.style.display = 'none';
-    if (btn) { btn.disabled = false; btn.textContent = prevLabel || '👁 Prévisualiser'; }
-  }
+  return pdfRegenererPreview();
 }
 
 // Téléchargement à la demande (bouton "Télécharger" — ancien flux, gardé pour compat)
