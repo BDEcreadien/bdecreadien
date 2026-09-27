@@ -24,7 +24,10 @@
   {
     "nom": "Flam's",
     "description": "",
+    "description_longue": "Grâce à notre partenariat avec le restaurant Flam’s, les étudiants peuvent profiter d’offres avantageuses et d’une formule étudiante à 14,50 € avec des flammekueches salées et sucrées à volonté, accompagnées d’une bière de 50 cl ou d’un soft (sur présentation de la carte étudiante, selon les conditions du restaurant). \nCe partenariat permet également aux étudiants de bénéficier d’offres supplémentaires et de profiter encore plus des avantages proposés tout au long de l’année !",
+    "code_promo": "",
     "lien": "https://flams.fr",
+    "lien_promo": "",
     "logo": "/assets/uploads/1789231463593_39n9_images.jpeg",
     "actif": true
   }
