@@ -5378,9 +5378,9 @@ async function finSaveEv() {
   try {
     const checkedCbs = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')];
     const checkedIds = checkedCbs.map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
-    // Collecte les montants partiels (recettes uniquement)
+    // Collecte les montants partiels — recettes ET dépenses (uniquement pour les cases cochées)
     const montantsPartiels = {};
-    document.querySelectorAll('#ev-tx-recettes-list input[type=checkbox]').forEach(cb => {
+    checkedCbs.forEach(cb => {
       const txId = cb.getAttribute('data-tx-id');
       const partialId = cb.dataset.partialId;
       if (!txId || !partialId) return;
