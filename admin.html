@@ -4475,8 +4475,13 @@ async function finLoadSoldeInitial() {
 }
 
 async function finSaveSoldeInitial() {
+  // Le solde initial représente le report de l'année précédente : modifiable qu'à la rentrée (septembre)
+  if (!_finDateDebut || _finDateDebut.getMonth() !== 8) {
+    showToast('Le solde initial ne se modifie qu\'en septembre (rentrée BDE).', 'error');
+    return;
+  }
   const cur = _finSoldeInitial.toFixed(2).replace('.', ',');
-  const input = prompt('Solde initial (report antérieur) en € :', cur);
+  const input = prompt('Solde initial (report de l\'année précédente) en € :', cur);
   if (input == null) return;
   const val = parseFloat(String(input).replace(',', '.'));
   if (isNaN(val)) { showToast('Valeur invalide', 'error'); return; }
