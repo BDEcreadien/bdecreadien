@@ -5833,12 +5833,15 @@ async function pdfTelechargerType(type) {
   }
 }
 
-// Régénère l'aperçu via PDF.js (canvas) — pas d'iframe, donc aucun auto-download sur Windows
+// Détection Windows : c'est là qu'on a le pb d'auto-download PDF en iframe
+const _isWindows = /Windows/i.test(navigator.userAgent || '');
+
+// Régénère l'aperçu — iframe natif sur Mac/Linux (net et rapide), canvas PDF.js sur Windows (pas d'auto-download)
 async function pdfRegenererPreview() {
+  const iframe = document.getElementById('pdf-preview-iframe');
   const wrap = document.getElementById('pdf-preview-wrap');
   const loader = document.getElementById('pdf-preview-loading');
-  const canvasWrap = document.getElementById('pdf-preview-canvas-wrap');
-  if (!wrap || !canvasWrap) return;
+  if (!iframe && !wrap) return;
   if (loader) loader.style.display = 'flex';
   try {
     await loadJsPdf();
@@ -5856,13 +5859,57 @@ async function pdfRegenererPreview() {
     const pdfBlob = doc.output('blob');
     const typedBlob = pdfBlob.type === 'application/pdf' ? pdfBlob : new Blob([pdfBlob], { type: 'application/pdf' });
     _pdfCurrentUrl = URL.createObjectURL(typedBlob);
-    // Rend en canvas image (pas d'iframe = pas d'auto-download Windows)
-    await pdfRendreEnCanvas(typedBlob);
+
+    if (_isWindows) {
+      // Windows : rendu canvas via PDF.js pour éviter l'auto-download déclenché par les blob PDF en iframe
+      if (iframe) iframe.style.display = 'none';
+      // Injecte un conteneur canvas dans le wrap si absent
+      let canvasWrap = wrap.querySelector('#pdf-preview-canvas-live');
+      if (!canvasWrap) {
+        canvasWrap = document.createElement('div');
+        canvasWrap.id = 'pdf-preview-canvas-live';
+        canvasWrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:16px;';
+        wrap.appendChild(canvasWrap);
+      }
+      // Rendu haute qualité
+      await pdfRendreEnCanvasLive(typedBlob, canvasWrap);
+    } else {
+      // Mac/Linux : iframe natif (net et fluide)
+      if (iframe) {
+        iframe.style.display = '';
+        iframe.src = _pdfCurrentUrl;
+      }
+    }
   } catch (e) {
     console.error('[pdf preview]', e);
-    canvasWrap.innerHTML = `<div style="color:#fca5a5;padding:40px;text-align:center;">Erreur : ${e.message}</div>`;
   } finally {
     if (loader) loader.style.display = 'none';
+  }
+}
+
+async function pdfRendreEnCanvasLive(blob, container) {
+  container.innerHTML = '';
+  try {
+    await loadPdfJs();
+    const arrayBuffer = await blob.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const dpr = window.devicePixelRatio || 1;
+    // Scale généreux pour rester net à 210mm de large
+    const scale = 2.5 * dpr;
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      // Affiché à taille A4 réelle
+      canvas.style.cssText = 'width:210mm;max-width:100%;height:auto;background:white;box-shadow:0 8px 30px rgba(0,0,0,0.4);border-radius:2px;';
+      container.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+  } catch (e) {
+    console.error('[pdfjs render]', e);
+    container.innerHTML = `<div style="color:#fca5a5;padding:40px;text-align:center;">Erreur rendu : ${e.message}<br>Utilise le bouton Télécharger.</div>`;
   }
 }
 
