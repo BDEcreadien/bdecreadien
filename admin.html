@@ -4419,21 +4419,15 @@ async function finRecurDelete(id) {
   finRefreshAll();
 }
 
-// Recettes/Dépenses de la période courante = transactions + récurrentes dépliées + événements validés (réels)
+// Recettes/Dépenses de la période courante = transactions + récurrentes dépliées.
+// Les events validés (gains_reel/cout_reel) ne sont PAS ajoutés car ces montants proviennent
+// déjà des transactions liées → sinon double comptabilisation.
+// Cas d'un cash non tracé ? → il doit être créé en tant que transaction espèces.
 function finPeriodeRecDep() {
   const virtuels = finExpandRecurrentes(_finDateDebut, _finDateFin);
   const all = _finTransactions.concat(virtuels);
-  let rec = all.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
-  let dep = all.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-  if (_finDateDebut && _finDateFin) {
-    for (const ev of _finEvenements) {
-      if (!ev.valide || !ev.date) continue;
-      const d = new Date(ev.date + 'T00:00:00');
-      if (d < _finDateDebut || d > _finDateFin) continue;
-      rec += Number(ev.gains_reel) || 0;
-      dep += Number(ev.cout_reel) || 0;
-    }
-  }
+  const rec = all.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
+  const dep = all.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
   return { rec, dep };
 }
 
