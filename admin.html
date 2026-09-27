@@ -5156,11 +5156,11 @@ function finEvUpdatePartialReste(input) {
   const el = document.getElementById(input.id + '-reste');
   if (!el) return;
   el.style.color = reste > 0.005 ? '#b45309' : '#16a34a';
-  el.innerHTML = `→ Reste non affecté : <strong>${reste.toFixed(2)} €</strong>`;
+  el.innerHTML = `→ Reste non affecté sur cette transaction : <strong>${reste.toFixed(2)} €</strong>`;
 }
 
 function finEvToggleSumup(cb) {
-  if (!cb.dataset.sumup || !cb.dataset.partialId) return;
+  if (!cb.dataset.partialId) return;
   const wrap = document.getElementById(cb.dataset.partialId + '-wrap');
   if (!wrap) return;
   wrap.style.display = cb.checked ? 'flex' : 'none';
@@ -5168,6 +5168,26 @@ function finEvToggleSumup(cb) {
     const input = document.getElementById(cb.dataset.partialId);
     if (input) input.value = '';
   }
+}
+
+// Calcule combien d'un montant de transaction est déjà réclamé par d'autres events
+// (via leurs tx_montants_partiels, ou via finance_evenement_id si pas de partial spécifié)
+function finEvCalcClaimedByOthers(txId, excludeEvId) {
+  const tx = _finTransactions.find(t => t.id === txId);
+  if (!tx) return 0;
+  const txTotal = Math.abs(Number(tx.montant));
+  let claimed = 0;
+  for (const ev of (_finEvenements || [])) {
+    if (ev.id === excludeEvId) continue;
+    const partials = ev.tx_montants_partiels || {};
+    if (partials[txId] != null) {
+      claimed += parseFloat(partials[txId]) || 0;
+    } else if (tx.finance_evenement_id === ev.id) {
+      // Cet event détient la transaction sans partial → occupe le total
+      claimed += txTotal;
+    }
+  }
+  return Math.min(claimed, txTotal);
 }
 
 function finEvUpdateSoldes() {
