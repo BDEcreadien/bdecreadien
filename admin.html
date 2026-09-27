@@ -4669,7 +4669,27 @@ function finRender() {
         return `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">Initial : ${_finSoldeInitial.toFixed(2)} € <button onclick="finSaveSoldeInitial()" style="background:none;border:none;color:var(--violet);cursor:pointer;font-size:10px;text-decoration:underline;padding:0 0 0 4px;">modifier</button></div>`;
       })()
     ) +
-    tuile('Nb transactions', String(_finTransactions.length + finExpandRecurrentes(_finDateDebut, _finDateFin).length), 'var(--gris-texte)');
+    (() => {
+      // Solde total estimatif = solde total actuel + prévisionnel des events non-validés du mois affiché
+      const debutStr = _finDateDebut.toISOString().slice(0, 10);
+      const finStr = _finDateFin.toISOString().slice(0, 10);
+      let prevMoisNonValide = 0;
+      let nbEvNonValides = 0;
+      for (const ev of _finEvenements) {
+        if (!ev.date || ev.date < debutStr || ev.date > finStr) continue;
+        if (ev.valide) continue; // event validé → déjà dans les recettes/dépenses réelles
+        const gP = Number(ev.gains_previsionnel) || 0;
+        const cP = Number(ev.budget_previsionnel) || 0;
+        prevMoisNonValide += (gP - cP);
+        nbEvNonValides++;
+      }
+      const soldeEstim = soldeTotal + prevMoisNonValide;
+      const couleur = soldeEstim >= 0 ? '#16a34a' : '#dc2626';
+      const sub = nbEvNonValides > 0
+        ? `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">${nbEvNonValides} event${nbEvNonValides > 1 ? 's' : ''} non validé${nbEvNonValides > 1 ? 's' : ''} · ${prevMoisNonValide >= 0 ? '+' : ''}${prevMoisNonValide.toFixed(2)} € prévu</div>`
+        : `<div style="font-size:10px;color:var(--gris-texte);margin-top:4px;">Aucun event à venir ce mois</div>`;
+      return tuile('Solde estimatif fin de mois', soldeEstim.toFixed(2) + ' €', couleur, sub);
+    })();
 
   const list = document.getElementById('fin-liste');
   const virtuels = finExpandRecurrentes(_finDateDebut, _finDateFin);
