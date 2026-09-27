@@ -3308,7 +3308,7 @@
         fetch('https://bde-notif.bdecreadien.workers.dev/notify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ titre, type: 'add', evenement: null })
+          body: JSON.stringify({ titre: `${titre} — ${new Date(jour).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}`, type: 'add', evenement: null })
         }).catch(() => {});
       } else {
         // Bloquer l'édit d'une occurrence virtuelle de récurrente
