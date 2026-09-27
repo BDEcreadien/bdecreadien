@@ -6850,6 +6850,13 @@ async function plnSaveTache() {
   showToast(id ? 'Tâche modifiée' : 'Tâche ajoutée', 'success');
   plnCloseTacheForm();
   await plnReload();
+  // Notif push
+  const ev = _plnEvents.find(e => e.id === (payload.evenement_id || evId));
+  fetch('https://bde-notif.bdecreadien.workers.dev/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ titre, type: id ? 'update' : 'add', evenement: ev ? ev.titre : null })
+  }).catch(() => {});
 }
 
 async function plnDeleteTache(id) {
