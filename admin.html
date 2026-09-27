@@ -6266,9 +6266,7 @@ async function pdfConstruireDetaille(doc) {
   doc.text((prevTotal >= 0 ? '+' : '') + prevTotal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
   doc.setFont(undefined, 'normal');
   pdfFooter(doc);
-
-  // P5 — Graphique annuel
-  await pdfAjouterGraphique(doc);
+  // (Page "Vue annuelle" retirée du PDF — visible uniquement dans l'admin)
 }
 
 // Snapshot du graphique SVG converti en image, ajouté en page 5
