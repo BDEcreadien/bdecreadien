@@ -6181,7 +6181,7 @@ async function pdfConstruireDetaille(doc) {
     doc.text('DATE', 15, y); doc.text('ÉVÉNEMENT', 40, y); doc.text('G.PRÉVU', 130, y, { align: 'right' }); doc.text('C.PRÉVU', 160, y, { align: 'right' }); doc.text('SOLDE PRÉVU', 195, y, { align: 'right' });
     doc.setDrawColor(220); doc.line(15, y + 1.5, 195, y + 1.5); y += 5;
     evsPrev.forEach(ev => {
-      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
+      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 60; }
       const gP = Number(ev.gains_previsionnel) || 0;
       const cP = Number(ev.budget_previsionnel) || 0;
       const solde = gP - cP;
@@ -6229,7 +6229,7 @@ async function pdfConstruireDetaille(doc) {
     doc.text('DATE', 15, y); doc.text('LIBELLÉ', 40, y); doc.text('CATÉGORIE', 120, y); doc.text('MONTANT', 195, y, { align: 'right' });
     doc.setDrawColor(220); doc.line(15, y + 1.5, 195, y + 1.5); y += 5;
     recurLignes.forEach(({ rc, occ, mMois }) => {
-      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 45; }
+      if (y > 260) { doc.addPage(); pdfHeader(doc, 'Prévisionnel (suite)'); y = 60; }
       const c = FIN_CATEGORIES[rc.categorie] || { label: rc.categorie };
       doc.setFontSize(9); doc.setTextColor(50);
       doc.text(occ.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }), 15, y);
