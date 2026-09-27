@@ -6084,7 +6084,7 @@ async function pdfConstruireDetaille(doc) {
       y += 6;
     });
     // Ligne SOLDE FINAL
-    if (y > 260) { doc.addPage(); pdfHeader(doc, 'Solde final'); y = 45; }
+    if (y > 260) { doc.addPage(); pdfHeader(doc, 'Solde final'); y = 60; }
     y += 3;
     doc.setDrawColor(60); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 8;
     doc.setFontSize(9); doc.setTextColor(100);
