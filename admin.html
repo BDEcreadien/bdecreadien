@@ -5720,17 +5720,57 @@ let _pdfCurrentFilename = null;
 
 function pdfChangerType(type) {
   _pdfTypeActuel = type;
-  document.getElementById('pdf-tab-resume').style.cssText = type === 'resume' ? 'background:var(--violet);color:white;' : '';
-  document.getElementById('pdf-tab-detaille').style.cssText = type === 'detaille' ? 'background:var(--violet);color:white;' : '';
-  // On ne régénère PAS automatiquement — c'est ce qui provoquait l'auto-téléchargement sur Windows.
-  // On invalide juste le PDF en cache pour forcer une nouvelle génération à la prochaine demande.
-  if (_pdfCurrentUrl) { URL.revokeObjectURL(_pdfCurrentUrl); _pdfCurrentUrl = null; }
-  _pdfCurrentFilename = null;
-  // Reset visuel de l'aperçu
-  const iframe = document.getElementById('pdf-preview-iframe');
-  const placeholder = document.getElementById('pdf-preview-placeholder');
-  if (iframe) { iframe.src = 'about:blank'; iframe.style.display = 'none'; }
-  if (placeholder) placeholder.style.display = '';
+  const tabR = document.getElementById('pdf-tab-resume');
+  const tabD = document.getElementById('pdf-tab-detaille');
+  if (tabR) tabR.style.cssText = type === 'resume' ? 'background:var(--violet);color:white;' : '';
+  if (tabD) tabD.style.cssText = type === 'detaille' ? 'background:var(--violet);color:white;' : '';
+  pdfRegenererPreview();
+}
+
+// PDF.js — chargé à la demande (rend le PDF en canvas image, pas d'iframe = pas d'auto-download Windows)
+let _pdfjsLoaded = false;
+function loadPdfJs() {
+  return new Promise((resolve, reject) => {
+    if (_pdfjsLoaded || window.pdfjsLib) { _pdfjsLoaded = true; resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+    s.onload = () => {
+      if (window.pdfjsLib) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      }
+      _pdfjsLoaded = true;
+      resolve();
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// Rend le PDF (blob URL) sous forme de <canvas> dans le conteneur. Aucun iframe/object = aucun auto-download Windows.
+async function pdfRendreEnCanvas(blob) {
+  const wrap = document.getElementById('pdf-preview-canvas-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  try {
+    await loadPdfJs();
+    const arrayBuffer = await blob.arrayBuffer();
+    const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const scale = 1.5;
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.cssText = 'max-width:100%;height:auto;background:white;box-shadow:0 8px 30px rgba(0,0,0,0.4);border-radius:4px;';
+      wrap.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+    }
+  } catch (e) {
+    console.error('[pdfjs render]', e);
+    wrap.innerHTML = `<div style="color:#fca5a5;padding:40px;text-align:center;">Erreur rendu aperçu : ${e.message}<br>Utilise le bouton Télécharger pour ouvrir le PDF.</div>`;
+  }
 }
 
 // Construit un doc jsPDF selon le type actuel et met à jour _pdfCurrentUrl + _pdfCurrentFilename
