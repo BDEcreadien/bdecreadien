@@ -4607,8 +4607,37 @@ async function finLoadTransactions() {
     .order('created_at', { ascending: false });
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
   _finTransactions = data || [];
+  await finLoadSoldeMoisPrecedents();
   finRender();
   finLoadEvenements();
+}
+
+// Calcule le solde net des mois précédents (du 1er sept de l'année scolaire à la veille du mois affiché)
+async function finLoadSoldeMoisPrecedents() {
+  // Année scolaire : commence en septembre. Si on est de sept à déc → année N. Sinon → année N-1.
+  const anneeScolaireStart = _finDateDebut.getMonth() >= 8
+    ? _finDateDebut.getFullYear()
+    : _finDateDebut.getFullYear() - 1;
+  const anneeScolaireDebutStr = `${anneeScolaireStart}-09-01`;
+  // Veille du 1er du mois affiché
+  const veille = new Date(_finDateDebut);
+  veille.setDate(veille.getDate() - 1);
+  const veilleStr = veille.toISOString().slice(0, 10);
+  // Si on est en septembre de l'année scolaire, il n'y a pas de mois précédent
+  if (anneeScolaireDebutStr > veilleStr) {
+    _finSoldeMoisPrecedents = 0;
+    return;
+  }
+  try {
+    const { data } = await window.Auth.sb
+      .from('transactions')
+      .select('date, montant')
+      .gte('date', anneeScolaireDebutStr)
+      .lte('date', veilleStr);
+    const virtuelsPrev = finExpandRecurrentes(new Date(anneeScolaireDebutStr + 'T00:00:00'), veille);
+    const all = (data || []).concat(virtuelsPrev);
+    _finSoldeMoisPrecedents = all.reduce((s, t) => s + (Number(t.montant) || 0), 0);
+  } catch (_) { _finSoldeMoisPrecedents = 0; }
 }
 
 function finRender() {
