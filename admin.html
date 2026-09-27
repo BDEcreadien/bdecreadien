@@ -5111,12 +5111,20 @@ async function finLoadEvenements() {
 function finRenderEvenements() {
   const el = document.getElementById('fin-liste-ev');
   if (!el) return;
-  if (!_finEvenements.length) {
+  // On ne montre QUE les events du mois affiché (le mois suivant est chargé pour le prévisionnel
+  // mais ne doit pas apparaître dans la liste de ce mois-ci)
+  const debutStr = _finDateDebut ? _finDateDebut.toISOString().slice(0, 10) : '';
+  const finStr = _finDateFin ? _finDateFin.toISOString().slice(0, 10) : '';
+  const evPeriode = _finEvenements.filter(ev => {
+    if (!ev.date) return false;
+    return ev.date >= debutStr && ev.date <= finStr;
+  });
+  if (!evPeriode.length) {
     el.innerHTML = '<p style="text-align:center;padding:20px;color:var(--gris-texte);font-size:13px;">Aucun événement sur cette période. Ajoutes-en pour construire le prévisionnel.</p>';
     return;
   }
   const now = new Date();
-  el.innerHTML = _finEvenements.map(ev => {
+  el.innerHTML = evPeriode.map(ev => {
     const dateObj = ev.date ? new Date(ev.date) : null;
     const dateStr = dateObj ? dateObj.toLocaleDateString('fr-FR') : '(sans date)';
     const passe = dateObj && dateObj < now;
