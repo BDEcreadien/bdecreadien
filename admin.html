@@ -4732,11 +4732,10 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     const gP = Number(ev.gains_previsionnel) || 0;
     const cP = Number(ev.budget_previsionnel) || 0;
     months[idx].prev += (gP - cP);
-    // Events validés → réels dans les bars ; non-validés → prévu dans des bars grises
-    if (ev.valide) {
-      months[idx].recettes += Number(ev.gains_reel) || 0;
-      months[idx].depenses += Number(ev.cout_reel) || 0;
-    } else {
+    // NOTE : on n'ajoute PAS ev.gains_reel/cout_reel car ils sont déjà comptés
+    // via les transactions liées (sinon double comptabilisation).
+    if (!ev.valide) {
+      // Events non validés (prévu) → bars grises hachurées
       months[idx].prevRec = (months[idx].prevRec || 0) + gP;
       months[idx].prevDep = (months[idx].prevDep || 0) + cP;
     }
@@ -4745,12 +4744,43 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   const monthFull = ['Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août'];
   const yearOfIdx = i => (i <= 3 ? yStart : yStart + 1);
 
+  // Détermine l'index du mois "actuel" dans l'année scolaire affichée (ou -1 si année scolaire pas courante)
+  const today = new Date();
+  const tYear = today.getFullYear(), tMonth = today.getMonth();
+  let currentIdx = -1;
+  if (tYear === yStart && tMonth >= 8) currentIdx = tMonth - 8;
+  else if (tYear === yStart + 1 && tMonth <= 7) currentIdx = tMonth + 4;
+  else if (tYear > yStart + 1 || (tYear === yStart + 1 && tMonth > 7)) currentIdx = 11; // année passée : tout est réel
+  // else currentIdx = -1 (année future : tout est projection)
+
+  // Moyenne recettes/dépenses sur les mois "vécus" (jusqu'au mois courant) avec au moins une donnée
+  const realIdxLimit = currentIdx; // mois <= currentIdx sont "réels"
+  let sumRec = 0, sumDep = 0, cntReal = 0;
+  for (let i = 0; i <= realIdxLimit; i++) {
+    if (months[i].recettes > 0 || months[i].depenses > 0) {
+      sumRec += months[i].recettes;
+      sumDep += months[i].depenses;
+      cntReal++;
+    }
+  }
+  const avgRec = cntReal > 0 ? sumRec / cntReal : 0;
+  const avgDep = cntReal > 0 ? sumDep / cntReal : 0;
+
   // Solde cumulé mois par mois (démarre au solde initial)
+  // Pour les mois passés/actuel → recettes/dépenses réelles
+  // Pour les mois futurs → moyenne des mois passés (projection)
   const soldes = [];
+  const projected = []; // true si ce mois est en projection
   let running = Number(_finSoldeInitial) || 0;
   for (let i = 0; i < 12; i++) {
-    running += months[i].recettes - months[i].depenses;
+    const isProjected = currentIdx >= 0 && i > currentIdx;
+    if (isProjected) {
+      running += avgRec - avgDep;
+    } else {
+      running += months[i].recettes - months[i].depenses;
+    }
     soldes.push(running);
+    projected.push(isProjected);
   }
   const soldeInitial = Number(_finSoldeInitial) || 0;
 
