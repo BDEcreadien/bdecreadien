@@ -6,7 +6,8 @@
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      storageKey: 'bde-cread-auth'
     }
   });
   window._sb = sb;
