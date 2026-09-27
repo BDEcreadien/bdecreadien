@@ -5827,8 +5827,38 @@ async function pdfTelechargerType(type) {
   }
 }
 
-// Ancienne fonction conservée en no-op pour compat (elle était appelée à plusieurs endroits pour rafraîchir l'aperçu)
-async function pdfRegenererPreview() { /* désactivé — voir pdfApercu() pour génération à la demande */ }
+// Régénère l'aperçu via PDF.js (canvas) — pas d'iframe, donc aucun auto-download sur Windows
+async function pdfRegenererPreview() {
+  const wrap = document.getElementById('pdf-preview-wrap');
+  const loader = document.getElementById('pdf-preview-loading');
+  const canvasWrap = document.getElementById('pdf-preview-canvas-wrap');
+  if (!wrap || !canvasWrap) return;
+  if (loader) loader.style.display = 'flex';
+  try {
+    await loadJsPdf();
+    await loadLogo();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    if (_pdfTypeActuel === 'detaille') {
+      await pdfConstruireDetaille(doc);
+      _pdfCurrentFilename = pdfFilename('rapport-detaille');
+    } else {
+      pdfConstruireResume(doc);
+      _pdfCurrentFilename = pdfFilename('resume');
+    }
+    if (_pdfCurrentUrl) URL.revokeObjectURL(_pdfCurrentUrl);
+    const pdfBlob = doc.output('blob');
+    const typedBlob = pdfBlob.type === 'application/pdf' ? pdfBlob : new Blob([pdfBlob], { type: 'application/pdf' });
+    _pdfCurrentUrl = URL.createObjectURL(typedBlob);
+    // Rend en canvas image (pas d'iframe = pas d'auto-download Windows)
+    await pdfRendreEnCanvas(typedBlob);
+  } catch (e) {
+    console.error('[pdf preview]', e);
+    canvasWrap.innerHTML = `<div style="color:#fca5a5;padding:40px;text-align:center;">Erreur : ${e.message}</div>`;
+  } finally {
+    if (loader) loader.style.display = 'none';
+  }
+}
 
 function pdfConstruireResume(doc) {
   const { rec: recettes, dep: depenses } = finPeriodeRecDep();
