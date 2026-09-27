@@ -776,15 +776,15 @@
             <button class="stats-ext-btn" onclick="pdfTelecharger()" style="background:var(--gradient);color:white;border:none;font-weight:600;">⬇ Télécharger</button>
           </div>
         </div>
-        <div id="pdf-preview-wrap" style="background:#3a3a3a;border-radius:12px;padding:20px;min-height:400px;position:relative;">
+        <div id="pdf-preview-wrap" style="background:#3a3a3a;border-radius:12px;padding:20px;display:flex;justify-content:center;overflow:auto;position:relative;">
           <div id="pdf-preview-loading" style="position:absolute;inset:20px;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px;pointer-events:none;">Génération de l'aperçu…</div>
-          <div id="pdf-preview-canvas-wrap" style="display:flex;flex-direction:column;align-items:center;gap:16px;"></div>
+          <iframe id="pdf-preview-iframe" style="width:210mm;height:297mm;border:none;box-shadow:0 8px 30px rgba(0,0,0,0.4);background:white;" title="Aperçu PDF"></iframe>
         </div>
-        <p style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;text-align:center;">Aperçu A4 image (rendu canvas) — mis à jour à chaque changement</p>
+        <p style="font-size:12px;color:var(--gris-texte);margin:10px 0 0;text-align:center;">Aperçu A4 réel mis à jour à chaque modification. Le téléchargement ne se déclenche <b>que</b> via le bouton ⬇ Télécharger.</p>
         <div style="display:none;">
           <button id="pdf-btn-preview"></button>
           <div id="pdf-preview-placeholder"></div>
-          <div id="pdf-preview-iframe"></div>
+          <div id="pdf-preview-canvas-wrap"></div>
         </div>
       </div>
     </div>
