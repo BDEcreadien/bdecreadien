@@ -4685,7 +4685,7 @@ function finRender() {
       }
       const soldeEstim = soldeTotal + prevMoisNonValide;
       const couleur = soldeEstim >= 0 ? '#16a34a' : '#dc2626';
-      return tuile('Solde estimatif fin de mois', soldeEstim.toFixed(2) + ' €', couleur);
+      return tuile('Solde estimatif', soldeEstim.toFixed(2) + ' €', couleur);
     })();
 
   const list = document.getElementById('fin-liste');
