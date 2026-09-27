@@ -4873,9 +4873,8 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
   }).join('');
 
   // Courbe solde cumulé (smooth via Catmull-Rom-like path)
-  const soldePts = soldes.map((s, i) => ({ x: xCenter(i), y: yScale(s) }));
-  // Ajoute point de départ = solde initial (avant sept)
-  const startPt = { x: padL + xStep * 0.15, y: yScale(soldeInitial) };
+  const soldePts = soldes.map((s, i) => ({ x: xCenter(i), y: yScale(s), projected: projected[i] }));
+  const startPt = { x: padL + xStep * 0.15, y: yScale(soldeInitial), projected: false };
   const allPts = [startPt, ...soldePts];
   const smoothPath = pts => {
     if (pts.length < 2) return '';
@@ -4893,8 +4892,25 @@ function finRenderCourbeAnnuelle(transactions, evenements, yStart) {
     }
     return d;
   };
-  const soldeLine = `<path d="${smoothPath(allPts)}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
-  const soldeDots = soldePts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2563eb" stroke="white" stroke-width="1.5" pointer-events="none"/>`).join('');
+  // Séparation : trait plein pour la partie réelle, pointillés pour la projection
+  // Trouve l'index dans allPts où la projection commence
+  const firstProjIdx = allPts.findIndex(p => p.projected);
+  let soldeLine = '';
+  if (firstProjIdx === -1) {
+    // Tout est réel
+    soldeLine = `<path d="${smoothPath(allPts)}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  } else {
+    const realPts = allPts.slice(0, firstProjIdx);
+    // On étend le trait plein jusqu'au premier point de projection pour éviter un "trou"
+    const projPts = allPts.slice(Math.max(0, firstProjIdx - 1));
+    if (realPts.length >= 2) {
+      soldeLine += `<path d="${smoothPath(realPts)}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    }
+    if (projPts.length >= 2) {
+      soldeLine += `<path d="${smoothPath(projPts)}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,4" opacity="0.7"/>`;
+    }
+  }
+  const soldeDots = soldePts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${p.projected ? 'white' : '#2563eb'}" stroke="#2563eb" stroke-width="1.5" pointer-events="none"/>`).join('');
 
   // Overlays pour hover
   const overlays = months.map((m, i) => {
