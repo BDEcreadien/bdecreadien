@@ -4439,6 +4439,19 @@ function finPeriodeRecDep() {
 
 // Rafraîchit en parallèle tous les éléments financiers (tuiles, chart, events, PDF)
 let _finRefreshBusy = false;
+function finSyncColHeights() {
+  // Égalise la hauteur des deux colonnes : les deux prennent la hauteur de la plus courte,
+  // la plus grande défile en interne.
+  requestAnimationFrame(() => {
+    const cols = document.querySelectorAll('.fin-two-cols > .form-card');
+    if (cols.length < 2) return;
+    cols.forEach(c => { c.style.maxHeight = 'none'; });
+    const heights = [...cols].map(c => c.scrollHeight);
+    const minH = Math.min(...heights);
+    cols.forEach(c => { c.style.maxHeight = minH + 'px'; });
+  });
+}
+
 async function finRefreshAll() {
   if (_finRefreshBusy) return;
   _finRefreshBusy = true;
@@ -4451,6 +4464,7 @@ async function finRefreshAll() {
       finLoadCourbeAnnuelle() // → graphique
     ]);
     finRenderRecurrentes();
+    finSyncColHeights();
   } finally {
     _finRefreshBusy = false;
     finShowRefreshing(false);
