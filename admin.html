@@ -6122,7 +6122,7 @@ async function pdfConstruireDetaille(doc) {
     doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
     let totRec = 0, totDep = 0;
     evsValides.forEach(ev => {
-      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements validés (suite)'); y = 45; }
+      if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements validés (suite)'); y = 60; }
       const gR = Number(ev.gains_reel) || 0;
       const cR = Number(ev.cout_reel) || 0;
       const solde = gR - cR;
