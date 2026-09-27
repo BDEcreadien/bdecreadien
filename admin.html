@@ -6174,8 +6174,8 @@ async function pdfConstruireDetaille(doc) {
     y += 3;
     doc.setDrawColor(60); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 8;
     doc.setFontSize(9); doc.setTextColor(100);
-    doc.text('Solde initial (report)', 15, y);
-    doc.text(_finSoldeInitial.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+    doc.text('Solde au début du mois', 15, y);
+    doc.text((_finSoldeInitial + _finSoldeMoisPrecedents).toFixed(2) + ' EUR', 195, y, { align: 'right' });
     y += 6;
     doc.setTextColor(100);
     doc.text('Somme des mouvements période', 15, y);
@@ -6183,7 +6183,7 @@ async function pdfConstruireDetaille(doc) {
     doc.text((netP2 >= 0 ? '+' : '') + netP2.toFixed(2) + ' EUR', 195, y, { align: 'right' });
     y += 6;
     doc.setDrawColor(30); doc.setLineWidth(0.4); doc.line(15, y, 195, y); y += 8;
-    const soldeFinalP2 = _finSoldeInitial + netP2;
+    const soldeFinalP2 = _finSoldeInitial + _finSoldeMoisPrecedents + netP2;
     doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
     doc.text('SOLDE FINAL', 15, y);
     doc.setTextColor(soldeFinalP2 >= 0 ? 34 : 220, soldeFinalP2 >= 0 ? 197 : 38, soldeFinalP2 >= 0 ? 94 : 38);
