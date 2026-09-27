@@ -4440,14 +4440,13 @@ function finPeriodeRecDep() {
 // Rafraîchit en parallèle tous les éléments financiers (tuiles, chart, events, PDF)
 let _finRefreshBusy = false;
 function finSyncColHeights() {
-  // Égalise la hauteur des deux colonnes : les deux prennent la hauteur de la plus courte,
-  // la plus grande défile en interne.
   requestAnimationFrame(() => {
-    const cols = document.querySelectorAll('.fin-two-cols > .form-card');
+    const cols = [...document.querySelectorAll('.fin-two-cols > .form-card')];
     if (cols.length < 2) return;
-    cols.forEach(c => { c.style.maxHeight = 'none'; });
-    const heights = [...cols].map(c => c.scrollHeight);
-    const minH = Math.min(...heights);
+    // Libère la contrainte grid pour mesurer la hauteur naturelle de chaque colonne
+    cols.forEach(c => { c.style.maxHeight = 'none'; c.style.alignSelf = 'start'; });
+    const minH = Math.min(...cols.map(c => c.scrollHeight));
+    // Limite les deux à la hauteur de la plus courte ; la plus grande défile
     cols.forEach(c => { c.style.maxHeight = minH + 'px'; });
   });
 }
