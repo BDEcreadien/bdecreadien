@@ -3305,13 +3305,11 @@
         const { error } = await Auth.sb.from('planning_taches').insert(rows);
         if (error) { console.error('[plp insert]', error, rows); return showToast('Erreur : ' + error.message, 'error'); }
         showToast(targets.length > 1 ? `Tâche créée pour ${targets.length} membres` : 'Tâche créée', 'success');
-        if (plpIsBureau()) {
-          fetch('https://bde-notif.bdecreadien.workers.dev/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ titre, type: 'add', evenement: null })
-          }).catch(() => {});
-        }
+        fetch('https://bde-notif.bdecreadien.workers.dev/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titre, type: 'add', evenement: null })
+        }).catch(() => {});
       } else {
         // Bloquer l'édit d'une occurrence virtuelle de récurrente
         if (String(id).startsWith('rec-')) {
