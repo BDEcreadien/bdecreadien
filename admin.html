@@ -6340,10 +6340,10 @@ async function pdfConstruireDetaille(doc) {
   y += 8;
 
   // PRÉVISIONNEL TOTAL = solde du compte actuel + prévisionnel unique
-  const soldeActuel = _finSoldeInitial + soldePeriode;
+  const soldeActuel = _finSoldeInitial + _finSoldeMoisPrecedents + soldePeriode;
   const prevTotal = soldeActuel + prevUnique;
   doc.setFontSize(9); doc.setTextColor(120);
-  doc.text(`Solde actuel du compte : ${soldeActuel.toFixed(2)} EUR (initial ${_finSoldeInitial.toFixed(2)} + période ${soldePeriode >= 0 ? '+' : ''}${soldePeriode.toFixed(2)})`, 15, y);
+  doc.text(`Solde actuel du compte : ${soldeActuel.toFixed(2)} EUR (initial ${_finSoldeInitial.toFixed(2)} + cumul ${_finSoldeMoisPrecedents >= 0 ? '+' : ''}${_finSoldeMoisPrecedents.toFixed(2)} + période ${soldePeriode >= 0 ? '+' : ''}${soldePeriode.toFixed(2)})`, 15, y);
   y += 4;
   doc.setDrawColor(30); doc.setLineWidth(0.5); doc.line(15, y, 195, y); y += 7;
   doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
