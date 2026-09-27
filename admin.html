@@ -4643,7 +4643,8 @@ async function finLoadSoldeMoisPrecedents() {
 function finRender() {
   const { rec: recettes, dep: depenses } = finPeriodeRecDep();
   const soldePeriode = recettes - depenses;
-  const soldeTotal = _finSoldeInitial + soldePeriode;
+  // Solde total = solde initial (rentrée sept) + cumul des mois précédents + net du mois affiché
+  const soldeTotal = _finSoldeInitial + _finSoldeMoisPrecedents + soldePeriode;
 
   document.getElementById('fin-periode-label').textContent =
     `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
@@ -6046,7 +6047,8 @@ async function pdfRendreEnCanvasLive(blob, container) {
 function pdfConstruireResume(doc) {
   const { rec: recettes, dep: depenses } = finPeriodeRecDep();
   const soldePeriode = recettes - depenses;
-  const soldeTotal = _finSoldeInitial + soldePeriode;
+  // Solde total = solde initial (rentrée sept) + cumul des mois précédents + net du mois affiché
+  const soldeTotal = _finSoldeInitial + _finSoldeMoisPrecedents + soldePeriode;
   const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
   pdfHeader(doc, 'Résumé financier');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
@@ -6072,7 +6074,8 @@ function pdfConstruireResume(doc) {
 async function pdfConstruireDetaille(doc) {
   const { rec: recettes, dep: depenses } = finPeriodeRecDep();
   const soldePeriode = recettes - depenses;
-  const soldeTotal = _finSoldeInitial + soldePeriode;
+  // Solde total = solde initial (rentrée sept) + cumul des mois précédents + net du mois affiché
+  const soldeTotal = _finSoldeInitial + _finSoldeMoisPrecedents + soldePeriode;
   const periodeLabel = `Du ${_finDateDebut.toLocaleDateString('fr-FR')} au ${_finDateFin.toLocaleDateString('fr-FR')}`;
 
   // P1
