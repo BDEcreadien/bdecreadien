@@ -6241,16 +6241,54 @@ async function pdfConstruireDetaille(doc) {
       doc.text((solde >= 0 ? '+' : '') + solde.toFixed(2), 195, y, { align: 'right' });
       y += 6;
     });
-    y += 2;
-    doc.setDrawColor(60); doc.line(15, y, 195, y); y += 7;
-    doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
-    doc.text('TOTAL VALIDÉ', 15, y);
-    doc.setTextColor(34, 197, 94); doc.text('+' + totRec.toFixed(2), 130, y, { align: 'right' });
-    doc.setTextColor(220, 38, 38); doc.text('-' + totDep.toFixed(2), 160, y, { align: 'right' });
-    const netVal = totRec - totDep;
-    doc.setTextColor(netVal >= 0 ? 34 : 220, netVal >= 0 ? 197 : 38, netVal >= 0 ? 94 : 38);
-    doc.text((netVal >= 0 ? '+' : '') + netVal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
-    doc.setFont(undefined, 'normal');
+    // Transactions hors événements (sans finance_evenement_id) dans la période
+    const debutStr = _finDateDebut.toISOString().slice(0, 10);
+    const finStr = _finDateFin.toISOString().slice(0, 10);
+    const txHors = _finTransactions.filter(t => !t.finance_evenement_id && t.date >= debutStr && t.date <= finStr);
+    const horsRec = txHors.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
+    const horsDep = txHors.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+
+    if (horsRec > 0 || horsDep > 0) {
+      y += 2;
+      doc.setDrawColor(60); doc.line(15, y, 195, y); y += 7;
+      doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(100);
+      doc.text('Sous-total événements', 15, y);
+      doc.setTextColor(34, 197, 94); doc.text('+' + totRec.toFixed(2), 130, y, { align: 'right' });
+      doc.setTextColor(220, 38, 38); doc.text('-' + totDep.toFixed(2), 160, y, { align: 'right' });
+      const netEv = totRec - totDep;
+      doc.setTextColor(netEv >= 0 ? 34 : 220, netEv >= 0 ? 197 : 38, netEv >= 0 ? 94 : 38);
+      doc.text((netEv >= 0 ? '+' : '') + netEv.toFixed(2), 195, y, { align: 'right' });
+      y += 6;
+      doc.setTextColor(100);
+      doc.text('Transactions hors événements', 15, y);
+      if (horsRec > 0) { doc.setTextColor(34, 197, 94); doc.text('+' + horsRec.toFixed(2), 130, y, { align: 'right' }); }
+      if (horsDep > 0) { doc.setTextColor(220, 38, 38); doc.text('-' + horsDep.toFixed(2), 160, y, { align: 'right' }); }
+      const netHors = horsRec - horsDep;
+      doc.setTextColor(netHors >= 0 ? 34 : 220, netHors >= 0 ? 197 : 38, netHors >= 0 ? 94 : 38);
+      doc.text((netHors >= 0 ? '+' : '') + netHors.toFixed(2), 195, y, { align: 'right' });
+      y += 2;
+      doc.setDrawColor(30); doc.line(15, y, 195, y); y += 7;
+      const grandRec = totRec + horsRec, grandDep = totDep + horsDep;
+      doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+      doc.text('TOTAL GÉNÉRAL', 15, y);
+      doc.setTextColor(34, 197, 94); doc.text('+' + grandRec.toFixed(2), 130, y, { align: 'right' });
+      doc.setTextColor(220, 38, 38); doc.text('-' + grandDep.toFixed(2), 160, y, { align: 'right' });
+      const netVal = grandRec - grandDep;
+      doc.setTextColor(netVal >= 0 ? 34 : 220, netVal >= 0 ? 197 : 38, netVal >= 0 ? 94 : 38);
+      doc.text((netVal >= 0 ? '+' : '') + netVal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+      doc.setFont(undefined, 'normal');
+    } else {
+      y += 2;
+      doc.setDrawColor(60); doc.line(15, y, 195, y); y += 7;
+      doc.setFontSize(10); doc.setFont(undefined, 'bold'); doc.setTextColor(30);
+      doc.text('TOTAL VALIDÉ', 15, y);
+      doc.setTextColor(34, 197, 94); doc.text('+' + totRec.toFixed(2), 130, y, { align: 'right' });
+      doc.setTextColor(220, 38, 38); doc.text('-' + totDep.toFixed(2), 160, y, { align: 'right' });
+      const netVal = totRec - totDep;
+      doc.setTextColor(netVal >= 0 ? 34 : 220, netVal >= 0 ? 197 : 38, netVal >= 0 ? 94 : 38);
+      doc.text((netVal >= 0 ? '+' : '') + netVal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
+      doc.setFont(undefined, 'normal');
+    }
   }
   pdfFooter(doc);
 
