@@ -408,6 +408,12 @@
     show('error');
   }
 
+  function fermerScan() {
+    window.close();
+    // Fallback si le navigateur refuse de fermer l'onglet
+    setTimeout(() => { window.location.href = '/'; }, 300);
+  }
+
   // L'API /api/tampon sans validateur/event = juste lire la carte (GET-like via POST)
   // On modifie la fonction pour séparer lecture et écriture
   loadCarte();
