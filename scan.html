@@ -410,23 +410,13 @@
     show('error');
   }
 
-  let _redirectTimer = null;
-  function startRedirectCountdown() {
-    let n = 3;
-    const el = document.getElementById('sc-countdown');
-    _redirectTimer = setInterval(() => {
-      n--;
-      if (el) el.textContent = n;
-      if (n <= 0) {
-        clearInterval(_redirectTimer);
-        fermerScan();
-      }
-    }, 1000);
-  }
   function fermerScan() {
-    if (_redirectTimer) clearInterval(_redirectTimer);
     window.close();
-    setTimeout(() => { window.location.href = '/'; }, 100);
+    // Si window.close() ne fonctionne pas (Safari/iPhone), redirige vers la carte du client
+    setTimeout(() => {
+      const dest = uid ? `/carte.html?uid=${uid}` : (carteId ? `/carte.html?id=${carteId}` : '/');
+      window.location.href = dest;
+    }, 500);
   }
 
   // L'API /api/tampon sans validateur/event = juste lire la carte (GET-like via POST)
