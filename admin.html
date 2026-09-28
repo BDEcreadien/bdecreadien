@@ -6223,11 +6223,26 @@ async function pdfConstruireDetaille(doc) {
     doc.setFontSize(9); doc.setTextColor(120);
     doc.text('DATE', 15, y); doc.text('ÉVÉNEMENT', 40, y); doc.text('GAINS', 130, y, { align: 'right' }); doc.text('COÛT', 160, y, { align: 'right' }); doc.text('SOLDE', 195, y, { align: 'right' });
     doc.setDrawColor(200); doc.line(15, y + 2, 195, y + 2); y += 8;
+    // Calcul des gains/coûts par event depuis les transactions (même logique que le dashboard)
+    const evIdSet = new Set(evsValides.map(e => e.id));
     let totRec = 0, totDep = 0;
     evsValides.forEach(ev => {
       if (y > 265) { doc.addPage(); pdfHeader(doc, 'Événements validés (suite)'); y = 60; }
-      const gR = Number(ev.gains_reel) || 0;
-      const cR = Number(ev.cout_reel) || 0;
+      const partials = ev.tx_montants_partiels || {};
+      let gR = 0, cR = 0;
+      for (const tx of _finTransactions) {
+        const mnt = Number(tx.montant);
+        let amount;
+        if (partials[tx.id] != null) {
+          amount = parseFloat(partials[tx.id]) || 0;
+        } else if (tx.finance_evenement_id === ev.id) {
+          amount = Math.abs(mnt);
+        } else {
+          continue;
+        }
+        if (mnt >= 0) gR += amount;
+        else cR += amount;
+      }
       const solde = gR - cR;
       totRec += gR; totDep += cR;
       const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
@@ -6241,10 +6256,18 @@ async function pdfConstruireDetaille(doc) {
       doc.text((solde >= 0 ? '+' : '') + solde.toFixed(2), 195, y, { align: 'right' });
       y += 6;
     });
-    // Transactions hors événements (sans finance_evenement_id) dans la période
+    // Transactions hors événements : pas liées à un event validé de la période et pas en partial
     const debutStr = _finDateDebut.toISOString().slice(0, 10);
     const finStr = _finDateFin.toISOString().slice(0, 10);
-    const txHors = _finTransactions.filter(t => !t.finance_evenement_id && t.date >= debutStr && t.date <= finStr);
+    const capturedByEvTx = new Set();
+    for (const ev of evsValides) {
+      const partials = ev.tx_montants_partiels || {};
+      for (const txId of Object.keys(partials)) capturedByEvTx.add(txId);
+      for (const tx of _finTransactions) {
+        if (tx.finance_evenement_id === ev.id) capturedByEvTx.add(String(tx.id));
+      }
+    }
+    const txHors = _finTransactions.filter(t => !capturedByEvTx.has(String(t.id)) && t.date >= debutStr && t.date <= finStr);
     const horsRec = txHors.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
     const horsDep = txHors.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
 
