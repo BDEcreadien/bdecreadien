@@ -215,8 +215,8 @@
     const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const slug = new URLSearchParams(location.search).get('slug')
-      || (location.pathname.match(/^\/billetterie\/([^\/?#]+)/) || [])[1]
-      || 'soiree-integration';
+      || decodeURIComponent((location.pathname.match(/^\/billetterie\/([^?#]+)/) || [])[1] || '')
+      || null;
 
     let _cfg = null;
     let _tarifSelId = null;
