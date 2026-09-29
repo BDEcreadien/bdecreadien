@@ -8149,7 +8149,9 @@ function bilOnChange() {
     }
   } else {
     b.slug = slugEl.value.trim();
-    b.hello_asso_form_slug = haSlugEl.value.trim();
+    const haRaw = haSlugEl.value.trim();
+    const haMatch = haRaw.match(/\/evenements\/([^/?#]+)/);
+    b.hello_asso_form_slug = haMatch ? haMatch[1] : haRaw;
   }
 
   b.date_affiche = document.getElementById('bil-e-date').value;
