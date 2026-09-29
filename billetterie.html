@@ -216,7 +216,7 @@
 
     const slug = new URLSearchParams(location.search).get('slug')
       || (location.pathname.match(/^\/billetterie\/([^\/?#]+)/) || [])[1]
-      || null;
+      || 'soiree-integration';
 
     let _cfg = null;
     let _tarifSelId = null;
