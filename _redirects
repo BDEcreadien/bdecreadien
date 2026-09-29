@@ -22,4 +22,5 @@
 /admin/newsletter        /admin.html?page=newsletter        200
 /admin/liens             /admin.html?page=liens             200
 /admin/parametres        /admin.html?page=parametres        200
+/admin/qr                /admin.html?page=qr                200
 /admin/planning-perso    /mon-espace#me-planning            302
