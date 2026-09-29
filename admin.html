@@ -1431,6 +1431,30 @@
   </div>
 </div>
 
+<div id="step-qr" style="display:none;padding:2rem;max-width:700px;margin:0 auto;">
+  <div class="params-card">
+    <h3>URL de destination</h3>
+    <p style="font-size:13px;color:var(--gris-texte);margin:0 0 0.75rem;">L'URL imprimée <strong>bdecreadien.fr/qr</strong> ne change jamais. Modifie uniquement la destination ci-dessous.</p>
+    <div class="form-row">
+      <label>Destination du QR code</label>
+      <input type="url" id="qr-dest-input" placeholder="https://..." style="flex:1;">
+    </div>
+    <div class="form-actions" style="justify-content:flex-end;margin-top:1rem;">
+      <button class="btn-save" onclick="saveQrDestination()">Enregistrer</button>
+    </div>
+  </div>
+  <div class="params-card" style="text-align:center;">
+    <h3>QR code a imprimer</h3>
+    <p style="font-size:13px;color:var(--gris-texte);margin:0 0 1rem;">Ce QR code pointe toujours vers <strong>bdecreadien.fr/qr</strong>. Imprime-le une seule fois.</p>
+    <canvas id="qr-canvas" style="max-width:280px;width:100%;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.1);"></canvas>
+    <br>
+    <button class="btn-save" onclick="downloadQrCode()" style="margin-top:1rem;display:inline-flex;align-items:center;gap:0.5rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Télécharger en PNG
+    </button>
+  </div>
+</div>
+
 <div id="toast"></div>
 <div id="upload-progress" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
