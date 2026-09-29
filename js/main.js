@@ -642,7 +642,7 @@ if (document.getElementById('sidebar-events')) {
         </div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:700;color:var(--noir);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev.titre}</div>
-          <div style="font-size:11px;color:var(--gris-texte);margin-top:2px;">${ev.lieu || ''}</div>
+          <div style="font-size:11px;color:var(--gris-texte);margin-top:2px;">${ev.horaire ? ev.horaire + (ev.lieu ? ' · ' + ev.lieu : '') : (ev.lieu || '')}</div>
         </div>
         <button class="btn-je-viens" data-slug="${slug}" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" style="font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:0.5px;padding:5px 10px;border-radius:16px;border:1.5px solid;cursor:pointer;flex-shrink:0;${jvStyle}">${jvLabel}</button>
       </div>`;
