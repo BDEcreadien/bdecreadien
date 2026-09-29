@@ -198,41 +198,54 @@ function partagerEvenement(titre, date) {
   }
 }
 
-// Charge les événements depuis Supabase (source principale) + JSON legacy (fallback)
-// Format uniforme : {id, titre, date, dateAffichage, horaire, lieu, adresse, description, prix, categorie, imageUrl, lien, typeLien, phare, inscrits}
+// Charge les événements depuis Google Calendar (source de vérité) + JSON (enrichissement) + Supabase (planning bureau)
 async function loadEvenementsMerged() {
-  // /admin?page=agenda écrit dans _data/evenements.json (via GitHub) — source riche (image, lien, prix…).
-  // La table Supabase `evenements` sert au planning bureau. On fusionne : pour un event présent dans
-  // les 2 sources, on complète le Supabase avec les champs manquants venant du JSON.
-  const [sbEvents, jsonData] = await Promise.all([
-    loadEvenementsSb(),
-    fetch('/_data/evenements.json?nc=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({ evenements: [] }))
-  ]);
-  const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
   const keyFn = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
+
+  const [gcalEvents, jsonData, sbEvents] = await Promise.all([
+    fetch('/api/gcal-events').then(r => r.json()).catch(() => []),
+    fetch('/_data/evenements.json?nc=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({ evenements: [] })),
+    loadEvenementsSb()
+  ]);
+
+  const gcal = Array.isArray(gcalEvents) ? gcalEvents : [];
+  const jsonEvents = (Array.isArray(jsonData) ? jsonData : (jsonData.evenements || []));
+
+  // Index JSON et Supabase par clé titre|date pour enrichissement
   const jsonByKey = new Map(jsonEvents.map(e => [keyFn(e), e]));
-  const enrichedSb = sbEvents.map(sb => {
-    const j = jsonByKey.get(keyFn(sb));
-    if (!j) return sb;
-    // Remplit chaque champ vide du Supabase avec la valeur du JSON
-    const jImg = typeof j.imageUrl === 'object' ? j.imageUrl?.url : j.imageUrl;
+  const sbByKey = new Map(sbEvents.map(e => [keyFn(e), e]));
+
+  // GCal = source de vérité pour l'existence des events
+  // JSON et Supabase enrichissent (photo, prix, lien, billetterie…)
+  const gcalKeys = new Set(gcal.map(keyFn));
+  const merged = gcal.map(g => {
+    const j = jsonByKey.get(keyFn(g));
+    const sb = sbByKey.get(keyFn(g));
+    const jImg = j && (typeof j.imageUrl === 'object' ? j.imageUrl?.url : j.imageUrl);
     return {
-      ...sb,
-      imageUrl: sb.imageUrl || jImg || null,
-      lien: sb.lien || j.lien || null,
-      typeLien: sb.typeLien || j.typeLien || null,
-      horaire: sb.horaire || j.horaire || null,
-      prix: sb.prix || j.prix || null,
-      categorie: sb.categorie || j.categorie || null,
-      phare: sb.phare || j.phare === true,
-      adresse: sb.adresse || j.adresse || null,
-      dateAffichage: sb.dateAffichage || j.dateAffichage || null,
-      inscrits: sb.inscrits || j.inscrits || null,
+      ...g,
+      ...(j || {}),
+      ...(sb ? {
+        id: sb.id,
+        imageUrl: sb.imageUrl || jImg || null,
+        lien: sb.lien || (j && j.lien) || null,
+        typeLien: sb.typeLien || (j && j.typeLien) || null,
+        prix: sb.prix || (j && j.prix) || null,
+        categorie: sb.categorie || (j && j.categorie) || null,
+        phare: sb.phare || (j && j.phare === true),
+        adresse: sb.adresse || (j && j.adresse) || null,
+        dateAffichage: sb.dateAffichage || (j && j.dateAffichage) || null,
+        inscrits: sb.inscrits || (j && j.inscrits) || null,
+      } : {}),
+      titre: g.titre, date: g.date, lieu: g.lieu || (j && j.lieu) || (sb && sb.lieu) || '',
     };
   });
-  const sbKeys = new Set(sbEvents.map(keyFn));
-  const jsonUnique = jsonEvents.filter(e => !sbKeys.has(keyFn(e)));
-  return [...enrichedSb, ...jsonUnique];
+
+  // Events JSON/Supabase non présents dans GCal (ajoutés manuellement)
+  const jsonUnique = jsonEvents.filter(e => !gcalKeys.has(keyFn(e)));
+  const sbUnique = sbEvents.filter(e => !gcalKeys.has(keyFn(e)) && !jsonByKey.has(keyFn(e)));
+
+  return [...merged, ...jsonUnique, ...sbUnique].sort((a, b) => (a.date||'').localeCompare(b.date||''));
 }
 
 async function loadEvenementsSb() {
