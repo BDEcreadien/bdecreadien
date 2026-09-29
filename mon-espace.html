@@ -3305,10 +3305,10 @@
         const { error } = await Auth.sb.from('planning_taches').insert(rows);
         if (error) { console.error('[plp insert]', error, rows); return showToast('Erreur : ' + error.message, 'error'); }
         showToast(targets.length > 1 ? `Tâche créée pour ${targets.length} membres` : 'Tâche créée', 'success');
-        fetch('https://bde-notif.bdecreadien.workers.dev/notify', {
+        fetch('/api/notify-task', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ titre, type: 'add', jour: base.jour })
+          body: JSON.stringify({ titre, type: 'add', jour: base.jour, memberIds: targets })
         }).catch(() => {});
       } else {
         // Bloquer l'édit d'une occurrence virtuelle de récurrente
