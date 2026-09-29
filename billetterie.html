@@ -233,6 +233,7 @@
         } catch (e) { console.error('preview parse failed', e); }
       }
       // Mode normal : lecture Supabase
+      if (!slug) { console.error('[billetterie] slug manquant'); return null; }
       const { data, error } = await _sb.from('billetteries').select('*').eq('slug', slug).eq('actif', true).maybeSingle();
       if (error || !data) {
         console.error('[billetterie] config load failed', error);
