@@ -1567,6 +1567,7 @@ function selectPage(page) {
   navStack = ['pages'];
   if (page === 'agenda') {
     openEditor('evenements', true, 'Agenda', 'Événements');
+    if (window.Auth?.sb) plnSyncJsonEvents().catch(() => {});
   } else if (page === 'annonces') {
     openEditor('annonces', true, 'Annonces', 'Annonces');
   } else if (page === 'accueil') {
