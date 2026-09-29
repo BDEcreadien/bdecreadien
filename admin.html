@@ -1658,6 +1658,10 @@ function selectPage(page) {
         document.getElementById('editor-content').innerHTML = buildParametresEditor();
         showStep('editor');
       });
+  } else if (page === 'qr') {
+    navStack.push('qr');
+    showStep('qr');
+    initQrPage();
   }
 }
 
