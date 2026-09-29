@@ -629,12 +629,8 @@ if (document.getElementById('sidebar-events')) {
       const d = new Date(ev.date);
       const day = isNaN(d) ? '' : d.getDate().toString().padStart(2, '0');
       const month = isNaN(d) ? '' : d.toLocaleString('fr-FR', { month: 'short' });
-      const slug = eventSlug(ev);
-      const jeViens = _mesInscriptions.has(slug);
-      const jvStyle = jeViens
-        ? 'background:linear-gradient(90deg,#460186,#FF741F);color:white;border-color:transparent;'
-        : 'background:white;color:var(--violet);border-color:var(--violet);';
-      const jvLabel = jeViens ? '✓ J\'y vais' : 'Je viens';
+      const lienLabel = ev.typeLien === 'inscription' ? 'S\'inscrire' : 'Billetterie';
+      const lienBtn = ev.lien ? `<a href="${ev.lien}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:0.5px;padding:5px 10px;border-radius:16px;border:1.5px solid var(--violet);background:white;color:var(--violet);cursor:pointer;flex-shrink:0;text-decoration:none;white-space:nowrap;">${lienLabel}</a>` : '';
       return `<div class="sidebar-ev-row" data-idx="${upcoming.indexOf(ev)}" style="display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--gris-clair);cursor:pointer;transition:background 0.2s;">
         <div style="min-width:38px;text-align:center;background:var(--gradient);border-radius:8px;padding:5px 6px;color:white;font-family:'Bebas Neue',sans-serif;flex-shrink:0;">
           <div style="font-size:20px;line-height:1;">${day}</div>
@@ -644,12 +640,9 @@ if (document.getElementById('sidebar-events')) {
           <div style="font-size:13px;font-weight:700;color:var(--noir);line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev.titre}</div>
           <div style="font-size:11px;color:var(--gris-texte);margin-top:2px;">${ev.horaire ? ev.horaire + (ev.lieu ? ' · ' + ev.lieu : '') : (ev.lieu || '')}</div>
         </div>
-        <button class="btn-je-viens" data-slug="${slug}" data-titre="${ev.titre.replace(/"/g,'&quot;')}" data-date="${ev.date||''}" style="font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:0.5px;padding:5px 10px;border-radius:16px;border:1.5px solid;cursor:pointer;flex-shrink:0;${jvStyle}">${jvLabel}</button>
+        ${lienBtn}
       </div>`;
     }).join('');
-    container.querySelectorAll('.btn-je-viens').forEach(btn => {
-      btn.addEventListener('click', e => { e.stopPropagation(); toggleJeViens(btn); });
-    });
     // Clic sur la ligne → ouvre le modal détails (sauf sur le bouton "Je viens")
     container.querySelectorAll('.sidebar-ev-row').forEach(row => {
       row.addEventListener('click', e => {
