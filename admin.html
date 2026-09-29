@@ -2003,8 +2003,13 @@ async function saveParametres() {
   }));
   const poles = data.config?.poles || [];
   data.config = { chiffres, contact: { email, instagram }, canaux, poles };
+  const qrDest = document.getElementById('cfg-qr-destination')?.value.trim() || '';
   try {
     await persistData('config', 'Mise à jour paramètres site');
+    if (qrDest) {
+      data._qrDestination = qrDest;
+      await Auth.sb.from('bde_config').upsert({ id: 'qr_destination', value: qrDest });
+    }
     showToast('Paramètres enregistrés !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
 }
