@@ -1950,6 +1950,11 @@ function buildParametresEditor() {
       <div id="canaux-rows">${canauxHtml}</div>
       <button type="button" class="btn-add" onclick="addCanalRow()" style="margin-top:0.5rem;">+ Ajouter un canal</button>
     </div>
+    <div class="params-card">
+      <h3>QR code dynamique</h3>
+      <p style="font-size:13px;color:var(--gris-texte);margin:0 0 0.75rem;">L'URL fixe du QR code est toujours <strong>bdecreadien.fr/qr</strong>. Change la destination ci-dessous sans jamais rechanger le QR code imprimé.</p>
+      <div class="form-row"><label>Destination du QR code</label><input type="url" id="cfg-qr-destination" value="${data._qrDestination || ''}" placeholder="https://..."></div>
+    </div>
     <div class="form-actions" style="justify-content:flex-end;">
       <button class="btn-save" onclick="saveParametres()">Enregistrer les paramètres</button>
     </div>`;
