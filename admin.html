@@ -1908,6 +1908,105 @@ function buildEquipeEditor() {
     <button class="btn-add" id="btn-add" onclick="showForm()">+ Ajouter un membre</button>`;
 }
 
+// ============================================================
+// QR CODE DYNAMIQUE
+// ============================================================
+async function initQrPage() {
+  const { data: row } = await Auth.sb.from('bde_config').select('value').eq('id', 'qr_destination').maybeSingle();
+  const dest = row?.value || '';
+  document.getElementById('qr-dest-input').value = dest;
+  renderQrCode();
+}
+
+function renderQrCode() {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const QR_URL = 'https://bdecreadien.fr/qr';
+  if (typeof QRCode === 'undefined') {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = () => _drawQr(canvas, QR_URL);
+    document.head.appendChild(s);
+  } else {
+    _drawQr(canvas, QR_URL);
+  }
+}
+
+function _drawQr(canvas, url) {
+  const SIZE = 560;
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+
+  const tempDiv = document.createElement('div');
+  tempDiv.style.display = 'none';
+  document.body.appendChild(tempDiv);
+  new QRCode(tempDiv, {
+    text: url,
+    width: SIZE,
+    height: SIZE,
+    colorDark: '#1a1a2e',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+  const qrImg = tempDiv.querySelector('img') || tempDiv.querySelector('canvas');
+  const done = () => {
+    ctx.drawImage(qrImg, 0, 0, SIZE, SIZE);
+    document.body.removeChild(tempDiv);
+    // Logo au centre
+    const logo = new Image();
+    logo.onload = () => {
+      const pad = 10;
+      const logoSize = Math.round(SIZE * 0.22);
+      const x = (SIZE - logoSize) / 2;
+      const y = (SIZE - logoSize) / 2;
+      // Fond blanc arrondi
+      ctx.save();
+      const r = logoSize / 4;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + logoSize - r, y);
+      ctx.quadraticCurveTo(x + logoSize, y, x + logoSize, y + r);
+      ctx.lineTo(x + logoSize, y + logoSize - r);
+      ctx.quadraticCurveTo(x + logoSize, y + logoSize, x + logoSize - r, y + logoSize);
+      ctx.lineTo(x + r, y + logoSize);
+      ctx.quadraticCurveTo(x, y + logoSize, x, y + logoSize - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.15)';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.restore();
+      ctx.drawImage(logo, x + pad, y + pad, logoSize - pad*2, logoSize - pad*2);
+    };
+    logo.src = '/assets/Logo.png';
+  };
+  if (qrImg.tagName === 'IMG') {
+    if (qrImg.complete) done(); else qrImg.onload = done;
+  } else {
+    done();
+  }
+}
+
+async function saveQrDestination() {
+  const dest = document.getElementById('qr-dest-input').value.trim();
+  if (!dest) return showToast('Entre une URL de destination', 'error');
+  const { error } = await Auth.sb.from('bde_config').upsert({ id: 'qr_destination', value: dest });
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast('Destination enregistrée', 'success');
+}
+
+function downloadQrCode() {
+  const canvas = document.getElementById('qr-canvas');
+  if (!canvas) return;
+  const a = document.createElement('a');
+  a.download = 'qr-bdecreadien.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
 function buildParametresEditor() {
   const cfg = data.config || { chiffres: [{number:'',label:''},{number:'',label:''},{number:'',label:''},{number:'',label:''}], contact: { email:'', instagram:'' }, canaux: [] };
   const chiffresHtml = (cfg.chiffres || []).map((c, i) => `
