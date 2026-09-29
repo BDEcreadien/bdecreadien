@@ -2766,6 +2766,15 @@ async function deleteItem(type, i) {
         } catch(e) { /* fichier déjà absent, pas bloquant */ }
       }
     }
+    // Suppression de l'event dans Supabase si c'est un événement agenda
+    if (type === 'evenements' && item.titre && window.Auth?.sb) {
+      try {
+        const key = `${item.titre.toLowerCase().trim()}|${item.date || ''}`;
+        const { data: sbEvs } = await window.Auth.sb.from('evenements').select('id, titre, date');
+        const match = (sbEvs || []).find(e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}` === key);
+        if (match) await window.Auth.sb.from('evenements').delete().eq('id', match.id);
+      } catch(e) { /* pas bloquant */ }
+    }
     refreshList(type);
     showToast('Supprimé !', 'success');
   } catch(e) { showToast('Erreur : ' + e.message, 'error'); }
