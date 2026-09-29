@@ -8198,6 +8198,7 @@ async function bilEnregistrer() {
   const b = _bilCourante;
   if (!b) return;
   if (!b.slug || !b.titre) { showToast('Slug et titre requis.', 'error'); return; }
+  if (/[^a-z0-9-]/.test(b.slug)) { showToast('Le slug ne doit contenir que des lettres minuscules, chiffres et tirets (ex: course-soiree-flams).', 'error'); return; }
   if (!b.hello_asso_form_slug) { showToast('Slug HelloAsso requis pour vendre.', 'error'); return; }
   if (!b.tarifs.length || b.tarifs.some(t => !t.nom || !t.prix_centimes)) {
     showToast('Au moins 1 tarif complet requis.', 'error'); return;
