@@ -4,16 +4,14 @@
     "date": "2026-10-01",
     "dateAffichage": "jeudi 1 octobre 2026",
     "horaire": "12h30 – 14h00",
-    "horaireDebut": "12h30",
-    "horaireFin": "14h00",
-    "lieu": "",
+    "lieu": "Hall",
     "adresse": "",
     "description": "",
     "prix": "",
     "categorie": "soiree",
     "imageUrl": "",
     "lien": "",
-    "typeLien": "billetterie",
+    "typeLien": "",
     "phare": false
   },
   {
