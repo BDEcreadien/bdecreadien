@@ -1621,8 +1621,12 @@ function selectPage(page) {
     navStack = ['pages'];
     document.getElementById('editor-title').textContent = 'Paramètres du site';
     document.getElementById('editor-badge').textContent = 'Site';
-    document.getElementById('editor-content').innerHTML = buildParametresEditor();
-    showStep('editor');
+    Auth.sb.from('bde_config').select('value').eq('id', 'qr_destination').maybeSingle()
+      .then(({ data: row }) => { if (row?.value) data._qrDestination = row.value; })
+      .finally(() => {
+        document.getElementById('editor-content').innerHTML = buildParametresEditor();
+        showStep('editor');
+      });
   }
 }
 
