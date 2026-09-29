@@ -6566,10 +6566,16 @@ async function plnSyncJsonEvents() {
     const res = await fetch('/_data/evenements.json?nc=' + Date.now());
     const raw = await res.json();
     const jsonEvs = Array.isArray(raw) ? raw : (raw.evenements || []);
-    if (!jsonEvs.length) return;
-    // Récupère les events Supabase pour éviter les doublons
-    const { data: existing } = await Auth.sb.from('evenements').select('titre, date');
+    // Récupère les events Supabase existants
+    const { data: existing } = await Auth.sb.from('evenements').select('id, titre, date, bureau_only');
     const key = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
+    const jsonKeys = new Set(jsonEvs.filter(e => e.titre).map(key));
+    // Supprime de Supabase les events non bureau_only qui ne sont plus dans le JSON
+    const toDelete = (existing || []).filter(e => !e.bureau_only && !jsonKeys.has(key(e)));
+    if (toDelete.length) {
+      await Auth.sb.from('evenements').delete().in('id', toDelete.map(e => e.id));
+    }
+    if (!jsonEvs.length) return;
     const existingKeys = new Set((existing || []).map(key));
     const toInsert = jsonEvs.filter(e => e.titre && !existingKeys.has(key(e))).map(e => {
       const img = typeof e.imageUrl === 'object' ? e.imageUrl?.url : e.imageUrl;
