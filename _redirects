@@ -3,7 +3,7 @@
 
 # Billetterie publique : /billetterie/<slug> → billetterie.html?slug=<slug>
 # (placeholder Cloudflare Pages : :slug capture la variable et la ré-injecte)
-/billet/:slug  /billetterie.html?slug=:slug  200
+/billetterie/:slug  /ticket.html?slug=:slug  200
 
 # URLs propres pour les modules admin — chaque module a son URL dédiée
 /admin/finances          /admin.html?page=finances          200
