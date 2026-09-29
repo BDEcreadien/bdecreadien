@@ -334,8 +334,8 @@
           body: JSON.stringify({
             totalAmountCents,
             itemName,
-            backUrl: `${SITE}/billetterie/${slug}?annule=1`,
-            errorUrl: `${SITE}/billetterie/${slug}?erreur=1`,
+            backUrl: `${SITE}/billet/${slug}?annule=1`,
+            errorUrl: `${SITE}/billet/${slug}?erreur=1`,
             returnUrl: `${SITE}/billet-confirme.html?slug=${encodeURIComponent(slug)}`,
             payer: { firstName, lastName, email },
             metadata: {
