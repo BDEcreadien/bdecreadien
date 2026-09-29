@@ -7992,7 +7992,7 @@ async function bilChargerListe() {
     const min = tarifs.length ? Math.min(...tarifs.map(t => t.prix_centimes)) : 0;
     const max = tarifs.length ? Math.max(...tarifs.map(t => t.prix_centimes)) : 0;
     const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€–${(max/100).toFixed(0)}€`) : '—';
-    const publicUrl = `${location.origin}/billet/${b.slug}`;
+    const publicUrl = `${location.origin}/billetterie/${b.slug}`;
     const nbTarifs = tarifs.length;
     return `
       <div class="bil-item">
@@ -8080,7 +8080,7 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
   document.getElementById('bil-e-actif').checked = !!b.actif;
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billet/${b.slug}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
   bilRenderTarifs();
   bilRefreshPreview();
 }
@@ -8162,7 +8162,7 @@ function bilOnChange() {
   b.actif = document.getElementById('bil-e-actif').checked;
   // Mise à jour du preview URL en direct
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billet/${b.slug}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
   // Debounce preview iframe
   clearTimeout(window._bilPrevTimer);
   window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
@@ -8191,7 +8191,7 @@ function bilRefreshPreview() {
 
 function bilPreviewInNewTab() {
   if (!_bilCourante?.slug) { showToast('Renseigne un slug d\'abord.', 'error'); return; }
-  window.open(`/billet/${_bilCourante.slug}`, '_blank');
+  window.open(`/billetterie/${_bilCourante.slug}`, '_blank');
 }
 
 async function bilEnregistrer() {
