@@ -2858,8 +2858,8 @@ async function saveEvenement() {
   const rawPrix = document.getElementById('ev-prix').value.trim().replace(/€/g, '').replace(',', '.').trim();
   const prix = rawPrix ? (rawPrix.replace('.', ',') + '€') : '';
   const description = document.getElementById('ev-description').value.trim();
-  if (!titre || !date || !debut || !fin || !lieu || !prix || !description) return showToast('Remplis tous les champs obligatoires', 'error');
-  const horaire = debut.replace(':','h') + ' – ' + fin.replace(':','h');
+  if (!titre || !date) return showToast('Titre et date obligatoires', 'error');
+  const horaire = debut && fin ? debut.replace(':','h') + ' – ' + fin.replace(':','h') : (debut ? debut.replace(':','h') : '');
   const phare = document.getElementById('ev-phare').checked;
   const categorie = document.getElementById('ev-categorie').value;
   const idx = editIndex.evenement;
