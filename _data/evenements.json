@@ -15,6 +15,23 @@
     "phare": false
   },
   {
+    "titre": "Course + soirée Flam's",
+    "date": "2026-10-07",
+    "dateAffichage": "mercredi 7 octobre 2026",
+    "horaire": "20h00 – 23h00",
+    "horaireDebut": "20h00",
+    "horaireFin": "23h00",
+    "lieu": "",
+    "adresse": "",
+    "description": "",
+    "prix": "",
+    "categorie": "soiree",
+    "imageUrl": "",
+    "lien": "",
+    "typeLien": "billetterie",
+    "phare": false
+  },
+  {
     "titre": "Semaine Octobre Rose",
     "date": "2026-10-13",
     "dateAffichage": "mardi 13 octobre 2026",
