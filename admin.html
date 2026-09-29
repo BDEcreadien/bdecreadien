@@ -2891,6 +2891,58 @@ async function saveEvenement() {
 }
 
 // ============================================================
+// SYNC GOOGLE AGENDA
+// ============================================================
+async function syncGcal() {
+  const btn = document.getElementById('btn-gcal-sync');
+  if (btn) { btn.disabled = true; btn.textContent = 'Synchronisation…'; }
+  try {
+    const res = await fetch('/api/gcal-events');
+    if (!res.ok) throw new Error('Erreur réseau ' + res.status);
+    const gcalEvents = await res.json();
+    if (!Array.isArray(gcalEvents)) throw new Error(gcalEvents.error || 'Réponse invalide');
+
+    const existing = data.evenements || [];
+    const keyOf = e => `${(e.titre||'').toLowerCase().trim()}|${e.date||''}`;
+    const existingKeys = new Set(existing.map(keyOf));
+
+    const toAdd = gcalEvents.filter(e => !existingKeys.has(keyOf(e)));
+    if (!toAdd.length) { showToast('Déjà à jour — aucun nouvel événement', 'success'); return; }
+
+    for (const e of toAdd) {
+      data.evenements.push({
+        titre: e.titre,
+        date: e.date,
+        dateAffichage: e.date ? new Date(e.date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '',
+        horaire: e.horaire || '',
+        horaireDebut: e.horaireDebut || '',
+        horaireFin: e.horaireFin || '',
+        lieu: e.lieu || '',
+        adresse: '',
+        description: e.description || '',
+        prix: '',
+        categorie: 'soiree',
+        imageUrl: '',
+        lien: '',
+        typeLien: 'billetterie',
+        phare: false,
+      });
+    }
+    // Trier par date
+    data.evenements.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+    await persistData('evenements', `Sync Google Agenda : +${toAdd.length} event${toAdd.length > 1 ? 's' : ''}`);
+    openEditor('evenements', false, 'Agenda', 'Événements');
+    showToast(`${toAdd.length} événement${toAdd.length > 1 ? 's' : ''} importé${toAdd.length > 1 ? 's' : ''} depuis Google Agenda !`, 'success');
+  } catch(e) {
+    showToast('Erreur sync : ' + e.message, 'error');
+  } finally {
+    const b = document.getElementById('btn-gcal-sync');
+    if (b) { b.disabled = false; b.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Sync Google Agenda'; }
+  }
+}
+
+// ============================================================
 // SAVE ANNONCE
 // ============================================================
 function previewAnPhoto(input) {
