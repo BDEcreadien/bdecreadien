@@ -8186,7 +8186,7 @@ function bilRefreshPreview() {
   const b = _bilCourante;
   // Envoie la config via postMessage à la page billetterie (mode preview)
   const cfg = encodeURIComponent(JSON.stringify(b));
-  iframe.src = `/billetterie.html?preview=${cfg}`;
+  iframe.src = `/ticket.html?preview=${cfg}`;
 }
 
 function bilPreviewInNewTab() {
