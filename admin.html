@@ -2180,7 +2180,8 @@ function buildEditor(type) {
     ${categoriesPanel}
     <div class="items-list" id="items-list">${listHtml}</div>
     ${formHtml}
-    <button class="btn-add" id="btn-add" onclick="showForm()">+ ${addLabel}</button>`;
+    <button class="btn-add" id="btn-add" onclick="showForm()">+ ${addLabel}</button>
+    ${type === 'evenements' ? `<button class="btn-add" id="btn-gcal-sync" onclick="syncGcal()" style="margin-top:8px;border-color:#4285f4;color:#4285f4;gap:8px;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Sync Google Agenda</button>` : ''}`;
 }
 
 function buildVideosEditor() {
