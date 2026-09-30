@@ -1923,10 +1923,10 @@ function renderQrCode() {
   if (!canvas) return;
   const QR_URL = 'https://bdecreadien.fr/qr';
   const draw = () => _drawQr(canvas, QR_URL);
-  if (typeof window._QRCodeLib === 'undefined') {
+  if (typeof QRCode === 'undefined') {
     const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-    s.onload = () => { window._QRCodeLib = window.QRCode; draw(); };
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = draw;
     document.head.appendChild(s);
   } else {
     draw();
@@ -1935,15 +1935,29 @@ function renderQrCode() {
 
 function _drawQr(canvas, url) {
   const SIZE = 560;
-  const QRLib = window._QRCodeLib || window.QRCode;
-  QRLib.toCanvas(canvas, url, {
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d');
+
+  // Div hors-écran (pas display:none) pour que QRCode.js rende bien le canvas
+  const tempDiv = document.createElement('div');
+  tempDiv.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+  document.body.appendChild(tempDiv);
+
+  new QRCode(tempDiv, {
+    text: url,
     width: SIZE,
-    margin: 2,
-    color: { dark: '#1a1a2e', light: '#ffffff' },
-    errorCorrectionLevel: 'H',
-  }, (err) => {
-    if (err) { console.error('QR error', err); return; }
-    const ctx = canvas.getContext('2d');
+    height: SIZE,
+    colorDark: '#1a1a2e',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+
+  const qrCanvas = tempDiv.querySelector('canvas');
+  const qrImg   = tempDiv.querySelector('img');
+
+  const drawLogo = () => {
+    document.body.removeChild(tempDiv);
     const logo = new Image();
     logo.onload = () => {
       const logoSize = Math.round(SIZE * 0.22);
@@ -1971,7 +1985,16 @@ function _drawQr(canvas, url) {
       ctx.drawImage(logo, x + pad, y + pad, logoSize - pad * 2, logoSize - pad * 2);
     };
     logo.src = '/assets/Logo.png';
-  });
+  };
+
+  if (qrCanvas) {
+    ctx.drawImage(qrCanvas, 0, 0, SIZE, SIZE);
+    drawLogo();
+  } else if (qrImg) {
+    const finish = () => { ctx.drawImage(qrImg, 0, 0, SIZE, SIZE); drawLogo(); };
+    if (qrImg.complete && qrImg.naturalWidth > 0) finish();
+    else qrImg.onload = finish;
+  }
 }
 
 async function saveQrDestination() {
