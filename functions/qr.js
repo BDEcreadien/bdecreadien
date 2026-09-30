@@ -10,8 +10,14 @@ export async function onRequest() {
     const rows = await res.json();
     const dest = rows?.[0]?.value;
     if (dest && dest.startsWith('http')) {
-      return Response.redirect(dest, 302);
+      return new Response(null, {
+        status: 302,
+        headers: { Location: dest, 'Cache-Control': 'no-store, no-cache' },
+      });
     }
   } catch (_) {}
-  return Response.redirect('https://bdecreadien.fr', 302);
+  return new Response(null, {
+    status: 302,
+    headers: { Location: 'https://bdecreadien.fr', 'Cache-Control': 'no-store, no-cache' },
+  });
 }
