@@ -72,9 +72,9 @@ export async function onRequest({ request, env }) {
 
   const numero = updated.numero;
 
-  // ── 4. URL HelloAsso — variable HELLOASSO_BOUTIQUE_URL = URL complète de l'événement
+  // ── 4. URL HelloAsso — variable HELLOASSO_BOUTIQUE_SLUG = URL complète de l'événement
   // ex: https://www.helloasso.com/associations/bde-creadien/evenements/vente
-  const helloassoUrl = env.HELLOASSO_BOUTIQUE_URL || null;
+  const helloassoUrl = env.HELLOASSO_BOUTIQUE_SLUG || null;
 
   // ── 5. E-mail de confirmation ────────────────────────────
   if (env.RESEND_API_KEY) {
