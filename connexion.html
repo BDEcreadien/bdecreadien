@@ -243,7 +243,9 @@
   <script src="js/supabase-config.js"></script>
   <script>
     const { createClient } = supabase;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'bde-cread-auth' }
+    });
 
     // Détecte si on arrive depuis un lien de reset password
     const _hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
