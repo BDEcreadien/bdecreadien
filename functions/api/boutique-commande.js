@@ -72,23 +72,9 @@ export async function onRequest({ request, env }) {
 
   const numero = updated.numero;
 
-  // ── 4. URL HelloAsso (slug configurable dans bde_config) ─
-  let helloassoSlug = env.HELLOASSO_BOUTIQUE_SLUG || '';
-  if (!helloassoSlug) {
-    // Essayer de récupérer depuis bde_config
-    try {
-      const cfgRes = await fetch(
-        `${SB}/rest/v1/bde_config?cle=eq.helloasso_boutique_slug&select=valeur`,
-        { headers }
-      );
-      const [cfg] = await cfgRes.json();
-      helloassoSlug = cfg?.valeur || '';
-    } catch (_) { /* ignore */ }
-  }
-
-  const helloassoUrl = helloassoSlug
-    ? `${HELLO_ASSO_BASE}/evenements/${helloassoSlug}/paiement-rapide`
-    : null;
+  // ── 4. URL HelloAsso — variable HELLOASSO_BOUTIQUE_URL = URL complète de l'événement
+  // ex: https://www.helloasso.com/associations/bde-creadien/evenements/vente
+  const helloassoUrl = env.HELLOASSO_BOUTIQUE_URL || null;
 
   // ── 5. E-mail de confirmation ────────────────────────────
   if (env.RESEND_API_KEY) {
