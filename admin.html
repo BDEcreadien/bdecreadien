@@ -1742,6 +1742,7 @@ function goBack() {
   else if (prev === 'factures') { showStep('factures'); if (typeof initFactures === 'function') initFactures(); }
   else if (prev === 'billetterie') { showStep('billetterie'); if (typeof initBilletterie === 'function') initBilletterie(); }
   else if (prev === 'qr') { showStep('qr'); initQrPage(); }
+  else if (prev === 'boutique') { showStep('boutique'); initBoutiqueAdmin(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
     const type = prev.split(':')[1];
