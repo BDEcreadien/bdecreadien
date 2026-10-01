@@ -1399,6 +1399,37 @@
 
 <style>
 /* ── Boutique admin ────────────────────────────── */
+.btqa-header {
+  background: linear-gradient(135deg,#460186 0%,#D2396D 55%,#FF741F 100%);
+  border-radius:20px;padding:28px 28px 24px;margin-bottom:1.5rem;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  position:relative;overflow:hidden;
+}
+.btqa-header::before {
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,.08);pointer-events:none;
+}
+.btqa-header::after {
+  content:'';position:absolute;bottom:-60px;left:20px;
+  width:150px;height:150px;border-radius:50%;
+  background:rgba(255,255,255,.06);pointer-events:none;
+}
+.btqa-header h2 { margin:0;color:white;font-size:1.6rem;font-weight:800;letter-spacing:-.5px;position:relative;z-index:1; }
+.btqa-header-actions { display:flex;gap:8px;position:relative;z-index:1; }
+.btqa-btn-outline {
+  padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);
+  color:white;backdrop-filter:blur(4px);transition:all .15s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btqa-btn-outline:hover { background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.7); }
+.btqa-btn-solid {
+  padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
+  border:none;background:white;color:#460186;transition:all .15s;text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btqa-btn-solid:hover { background:#f0e8ff; }
 .btqa-tabs { display:flex;gap:0;border-bottom:2px solid #f0e8ff;margin-bottom:1.5rem;overflow-x:auto; }
 .btqa-tab { background:none;border:none;padding:12px 20px;font-size:14px;font-weight:600;
   color:var(--gris-texte);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
@@ -1408,13 +1439,24 @@
 .btqa-pane { display:none; }
 .btqa-pane.active { display:block; }
 .btqa-stat-row { display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem; }
-.btqa-stat { background:white;border-radius:14px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);text-align:center; }
-.btqa-stat-val { font-size:28px;font-weight:700;color:var(--violet); }
-.btqa-stat-lbl { font-size:12px;color:var(--gris-texte);margin-top:2px; }
-.btqa-table-wrap { overflow-x:auto; }
+.btqa-stat {
+  border-radius:14px;padding:20px 16px;text-align:center;
+  background:linear-gradient(135deg,#f8f5ff,#fff0f7);
+  border:1px solid #f0e8ff;
+  box-shadow:0 2px 10px rgba(70,1,134,.06);
+  transition:transform .2s,box-shadow .2s;
+}
+.btqa-stat:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(70,1,134,.12); }
+.btqa-stat-val { font-size:30px;font-weight:800;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent; }
+.btqa-stat-val.orange { background:linear-gradient(135deg,#D2396D,#FF741F);-webkit-background-clip:text;background-clip:text;color:transparent; }
+.btqa-stat-lbl { font-size:12px;color:var(--gris-texte);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+.btqa-table-wrap { overflow-x:auto;border-radius:14px;box-shadow:0 2px 12px rgba(70,1,134,.07); }
 .btqa-table { width:100%;border-collapse:collapse;font-size:13px; }
-.btqa-table th { background:linear-gradient(90deg,#460186,#D2396D);color:white;padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap; }
-.btqa-table td { padding:10px 12px;border-bottom:1px solid #f0e8ff;vertical-align:middle; }
+.btqa-table th { background:linear-gradient(90deg,#460186,#D2396D);color:white;padding:12px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap; }
+.btqa-table th:first-child { border-radius:14px 0 0 0; }
+.btqa-table th:last-child  { border-radius:0 14px 0 0; }
+.btqa-table td { padding:10px 14px;border-bottom:1px solid #f0e8ff;vertical-align:middle; }
+.btqa-table tr:last-child td { border-bottom:none; }
 .btqa-table tr:hover td { background:#faf8ff; }
 .btqa-badge { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase; }
 .btqa-badge.panier     { background:#f3f4f6;color:#666; }
@@ -1437,18 +1479,19 @@
   width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;
   font-size:14px;font-family:inherit;color:var(--noir);outline:none;box-sizing:border-box; }
 .btqa-form-row input:focus,.btqa-form-row select:focus { border-color:var(--violet); }
-.btqa-scan-box { border:2px dashed #d0c4ff;border-radius:16px;padding:40px;text-align:center;margin:20px 0; }
+.btqa-scan-box { border:2px dashed #d0c4ff;border-radius:16px;padding:40px;text-align:center;margin:20px 0;background:#faf8ff; }
 .btqa-scan-box video { width:100%;max-width:320px;border-radius:12px; }
-.btqa-order-result { background:#f7f5fb;border-radius:14px;padding:20px;margin-top:16px; }
+.btqa-order-result { background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:14px;padding:20px;margin-top:16px;border:1px solid #f0e8ff; }
 .btqa-phys-item-row { display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;align-items:start;margin-bottom:8px; }
 </style>
 
 <div id="step-boutique" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
-    <h2 style="margin:0">Vente Goodies</h2>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-save" onclick="btqaExportCSV()" style="background:white;color:var(--violet);border:1.5px solid var(--violet);">⬇ Export CSV</button>
-      <a href="/boutique.html" target="_blank" class="btn-save" style="text-decoration:none">↗ Voir boutique</a>
+  <!-- Header gradient BDE -->
+  <div class="btqa-header">
+    <h2>Vente Goodies</h2>
+    <div class="btqa-header-actions">
+      <button class="btqa-btn-outline" onclick="btqaExportCSV()">⬇ Export CSV</button>
+      <a href="/boutique.html" target="_blank" class="btqa-btn-solid">↗ Voir boutique</a>
     </div>
   </div>
 
