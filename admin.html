@@ -9029,7 +9029,8 @@ function btqaOpenProduit(id) {
 
 async function btqaSaveProduit(id) {
   const nom     = document.getElementById('bp-nom').value.trim();
-  const prix    = Math.round(parseFloat(document.getElementById('bp-prix').value) * 100) || 0;
+  const prixRaw = parseFloat(document.getElementById('bp-prix').value);
+  const prix    = isNaN(prixRaw) ? 0 : Math.round(prixRaw * 100);
   const cat     = document.getElementById('bp-cat').value;
   const tailles = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
   const aDesigns = document.getElementById('bp-designs').checked;
