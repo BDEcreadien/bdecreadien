@@ -121,9 +121,19 @@ export async function onRequest({ request, env }) {
           </table>
           ${payBtn}
           <hr style="border:none;border-top:1px solid #f0e8ff;margin:28px 0">
+          <div style="text-align:center;margin:24px 0">
+            <p style="font-size:13px;color:#666;margin:0 0 14px">
+              <strong>Présente ce QR code lors du retrait de ta commande</strong>
+            </p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(numero)}&size=200x200&margin=10&color=460186"
+              alt="QR code commande ${numero}"
+              style="width:200px;height:200px;border-radius:12px;border:2px solid #f0e8ff">
+            <p style="font-size:16px;font-weight:700;color:#460186;margin:10px 0 0;letter-spacing:2px">${numero}</p>
+          </div>
+          <hr style="border:none;border-top:1px solid #f0e8ff;margin:28px 0">
           <p style="font-size:13px;color:#999;margin:0">
             La livraison se fait sur place une fois que nous avons reçu tous les articles.
-            Conserve ce numéro de commande pour le retrait.
+            Conserve cet e-mail pour le retrait.
           </p>
           <p style="font-size:13px;color:#999;margin:8px 0 0">
             Une question ? Contacte-nous sur bdecreadien.fr
