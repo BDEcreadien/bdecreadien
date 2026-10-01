@@ -1397,6 +1397,194 @@
   </div>
 </div>
 
+<style>
+/* ── Boutique admin ────────────────────────────── */
+.btqa-tabs { display:flex;gap:0;border-bottom:2px solid #f0e8ff;margin-bottom:1.5rem;overflow-x:auto; }
+.btqa-tab { background:none;border:none;padding:12px 20px;font-size:14px;font-weight:600;
+  color:var(--gris-texte);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:color .15s,border-color .15s; }
+.btqa-tab:hover { color:var(--noir); }
+.btqa-tab.active { color:var(--violet);border-bottom-color:var(--violet); }
+.btqa-pane { display:none; }
+.btqa-pane.active { display:block; }
+.btqa-stat-row { display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem; }
+.btqa-stat { background:white;border-radius:14px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);text-align:center; }
+.btqa-stat-val { font-size:28px;font-weight:700;color:var(--violet); }
+.btqa-stat-lbl { font-size:12px;color:var(--gris-texte);margin-top:2px; }
+.btqa-table-wrap { overflow-x:auto; }
+.btqa-table { width:100%;border-collapse:collapse;font-size:13px; }
+.btqa-table th { background:linear-gradient(90deg,#460186,#D2396D);color:white;padding:10px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap; }
+.btqa-table td { padding:10px 12px;border-bottom:1px solid #f0e8ff;vertical-align:middle; }
+.btqa-table tr:hover td { background:#faf8ff; }
+.btqa-badge { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase; }
+.btqa-badge.panier     { background:#f3f4f6;color:#666; }
+.btqa-badge.en_attente { background:#fef3c7;color:#92400e; }
+.btqa-badge.confirmee  { background:#d1fae5;color:#065f46; }
+.btqa-badge.remise     { background:#e0e7ff;color:#3730a3; }
+.btqa-badge.annulee    { background:#fee2e2;color:#991b1b; }
+.btqa-badge.expiree    { background:#f3f4f6;color:#999; }
+.btqa-badge.physique   { background:#fce7f3;color:#9d174d; }
+.btqa-act-btn { padding:5px 10px;border-radius:8px;border:1.5px solid;font-size:12px;font-weight:600;cursor:pointer;background:white;transition:all .15s; }
+.btqa-act-btn.confirm  { border-color:#10b981;color:#10b981; } .btqa-act-btn.confirm:hover  { background:#10b981;color:white; }
+.btqa-act-btn.remise   { border-color:var(--violet);color:var(--violet); } .btqa-act-btn.remise:hover   { background:var(--violet);color:white; }
+.btqa-act-btn.cancel   { border-color:#ef4444;color:#ef4444; } .btqa-act-btn.cancel:hover   { background:#ef4444;color:white; }
+.btqa-act-btn.detail   { border-color:#888;color:#888; } .btqa-act-btn.detail:hover   { background:#888;color:white; }
+.btqa-detail-modal { position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px; }
+.btqa-detail-card  { background:white;border-radius:20px;padding:28px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto; }
+.btqa-form-row { margin-bottom:14px; }
+.btqa-form-row label { display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:5px; }
+.btqa-form-row input,.btqa-form-row select,.btqa-form-row textarea {
+  width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;
+  font-size:14px;font-family:inherit;color:var(--noir);outline:none;box-sizing:border-box; }
+.btqa-form-row input:focus,.btqa-form-row select:focus { border-color:var(--violet); }
+.btqa-scan-box { border:2px dashed #d0c4ff;border-radius:16px;padding:40px;text-align:center;margin:20px 0; }
+.btqa-scan-box video { width:100%;max-width:320px;border-radius:12px; }
+.btqa-order-result { background:#f7f5fb;border-radius:14px;padding:20px;margin-top:16px; }
+.btqa-phys-item-row { display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;align-items:start;margin-bottom:8px; }
+</style>
+
+<div id="step-boutique" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
+    <h2 style="margin:0">Vente Goodies</h2>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-save" onclick="btqaExportCSV()" style="background:white;color:var(--violet);border:1.5px solid var(--violet);">⬇ Export CSV</button>
+      <a href="/boutique.html" target="_blank" class="btn-save" style="text-decoration:none">↗ Voir boutique</a>
+    </div>
+  </div>
+
+  <!-- Onglets -->
+  <div class="btqa-tabs">
+    <button class="btqa-tab active" onclick="btqaSwitchTab('commandes')">Commandes</button>
+    <button class="btqa-tab" onclick="btqaSwitchTab('physique')">Vente physique</button>
+    <button class="btqa-tab" onclick="btqaSwitchTab('remise')">Remise</button>
+    <button class="btqa-tab" onclick="btqaSwitchTab('config')">Config produits</button>
+  </div>
+
+  <!-- ── Onglet Commandes ─── -->
+  <div class="btqa-pane active" id="btqa-pane-commandes">
+    <div class="btqa-stat-row" id="btqa-stats"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <input id="btqa-search" type="text" placeholder="Rechercher numéro, nom, email…"
+        oninput="btqaFilterTable()"
+        style="padding:9px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:14px;flex:1;min-width:180px;">
+      <select id="btqa-filter-statut" onchange="btqaFilterTable()"
+        style="padding:9px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:14px;">
+        <option value="">Tous les statuts</option>
+        <option value="en_attente">En attente</option>
+        <option value="confirmee">Confirmée</option>
+        <option value="remise">Remise</option>
+        <option value="annulee">Annulée</option>
+        <option value="expiree">Expirée</option>
+      </select>
+    </div>
+    <div class="btqa-table-wrap">
+      <table class="btqa-table">
+        <thead><tr>
+          <th>N°</th><th>Nom</th><th>Email</th><th>Date</th>
+          <th>Total</th><th>Type</th><th>Statut</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="btqa-tbody"></tbody>
+      </table>
+    </div>
+    <p id="btqa-empty" style="text-align:center;color:#bbb;padding:30px;display:none">Aucune commande.</p>
+  </div>
+
+  <!-- ── Onglet Vente physique ─── -->
+  <div class="btqa-pane" id="btqa-pane-physique">
+    <div style="max-width:600px">
+      <div class="params-card">
+        <h3 style="margin-top:0">Créer une commande physique</h3>
+        <div class="btqa-form-row">
+          <label>Nom de l'acheteur</label>
+          <input id="btqa-p-nom" type="text" placeholder="Prénom Nom">
+        </div>
+        <div class="btqa-form-row">
+          <label>E-mail</label>
+          <input id="btqa-p-email" type="email" placeholder="prenom@etudiant.fr">
+        </div>
+        <div class="btqa-form-row">
+          <label>Moyen de paiement</label>
+          <select id="btqa-p-paiement">
+            <option value="especes">Espèces</option>
+            <option value="sumup">SumUp</option>
+          </select>
+        </div>
+        <div class="btqa-form-row">
+          <label>Notes (optionnel)</label>
+          <textarea id="btqa-p-notes" rows="2" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none"></textarea>
+        </div>
+
+        <div id="btqa-p-items-list" style="margin-bottom:12px">
+          <!-- Lignes article ajoutées dynamiquement -->
+        </div>
+        <button onclick="btqaAddPhysItem()" style="width:100%;padding:10px;border:1.5px dashed #ccc;border-radius:10px;background:white;color:#666;font-size:14px;cursor:pointer;margin-bottom:16px;">
+          + Ajouter un article
+        </button>
+
+        <div style="background:#f7f5fb;border-radius:12px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;font-size:15px;">Total estimé</span>
+          <span id="btqa-p-total" style="font-size:20px;font-weight:700;color:var(--violet);">0,00 €</span>
+        </div>
+
+        <button class="btn-save" onclick="btqaCreatePhysOrder()" style="width:100%">
+          Créer la commande physique
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Onglet Remise ─── -->
+  <div class="btqa-pane" id="btqa-pane-remise">
+    <div style="max-width:540px">
+      <div class="params-card">
+        <h3 style="margin-top:0">Remettre une commande</h3>
+        <p style="font-size:13px;color:var(--gris-texte)">Entre le numéro de commande ou scanne le QR code reçu par l'étudiant.</p>
+
+        <div class="btqa-form-row">
+          <label>Numéro de commande</label>
+          <div style="display:flex;gap:8px">
+            <input id="btqa-r-numero" type="text" placeholder="BDE-2026-XXXX" style="text-transform:uppercase">
+            <button class="btn-save" onclick="btqaLookup()">Chercher</button>
+          </div>
+        </div>
+
+        <div id="btqa-r-result" style="display:none" class="btqa-order-result">
+          <!-- Rempli par JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Onglet Config ─── -->
+  <div class="btqa-pane" id="btqa-pane-config">
+    <div style="max-width:800px">
+      <div class="params-card" style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="margin:0">Produits</h3>
+          <button class="btn-save" onclick="btqaOpenProduit(null)">+ Nouveau produit</button>
+        </div>
+        <div id="btqa-config-produits"></div>
+      </div>
+      <div class="params-card" style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="margin:0">Designs</h3>
+          <button class="btn-save" onclick="btqaOpenDesign(null)">+ Nouveau design</button>
+        </div>
+        <div id="btqa-config-designs"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal détail commande -->
+<div id="btqa-detail-modal" style="display:none" class="btqa-detail-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="btqa-detail-card" id="btqa-detail-card"></div>
+</div>
+<!-- Modal produit config -->
+<div id="btqa-prod-modal" style="display:none" class="btqa-detail-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="btqa-detail-card" id="btqa-prod-card"></div>
+</div>
+
 <div id="step-qr" style="display:none;padding:2rem;max-width:700px;margin:0 auto;">
   <div class="params-card">
     <h3>URL de destination</h3>
