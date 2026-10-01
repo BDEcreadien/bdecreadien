@@ -253,7 +253,9 @@ async function loadEvenementsSb() {
   try {
     const { createClient } = window.supabase || {};
     if (!createClient) return [];
-    const client = window._readSb || (window._readSb = createClient(SUPABASE_URL, SUPABASE_ANON));
+    const client = window._readSb || (window._readSb = createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    }));
     const { data, error } = await client.from('evenements').select('*').or('bureau_only.is.null,bureau_only.eq.false').order('date', { ascending: true });
     if (error || !data) return [];
     // Mappe snake_case → camelCase pour compat avec le code existant
