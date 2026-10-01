@@ -1,5 +1,4 @@
 const RESEND_FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
-const HELLO_ASSO_BASE = 'https://www.helloasso.com/associations/bde-cread-lyon';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
