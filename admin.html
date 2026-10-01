@@ -9086,6 +9086,51 @@ async function btqaSaveDesign(id) {
   showToast(id ? 'Design modifié' : 'Design créé');
 }
 
+// ── Scanner QR ───────────────────────────────────────────────
+let _btqaHtml5QrCode = null;
+
+async function btqaToggleScanner() {
+  const wrap = document.getElementById('btqa-scanner-wrap');
+  if (wrap.style.display === 'none') {
+    // Charger la lib html5-qrcode si besoin
+    if (!window.Html5Qrcode) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    wrap.style.display = 'block';
+    document.getElementById('btqa-scan-toggle').style.display = 'none';
+    _btqaHtml5QrCode = new Html5Qrcode('btqa-qr-reader');
+    const cameras = await Html5Qrcode.getCameras();
+    const camId = cameras.length ? cameras[cameras.length - 1].id : undefined; // caméra arrière
+    _btqaHtml5QrCode.start(
+      camId || { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 220, height: 220 } },
+      decoded => {
+        const num = decoded.trim().toUpperCase();
+        document.getElementById('btqa-r-numero').value = num;
+        btqaStopScanner();
+        btqaLookup();
+      },
+      () => {}
+    ).catch(err => { showToast('Caméra inaccessible : ' + err, 'error'); btqaStopScanner(); });
+  }
+}
+
+function btqaStopScanner() {
+  if (_btqaHtml5QrCode) {
+    _btqaHtml5QrCode.stop().catch(() => {});
+    _btqaHtml5QrCode = null;
+  }
+  const wrap = document.getElementById('btqa-scanner-wrap');
+  if (wrap) wrap.style.display = 'none';
+  const btn = document.getElementById('btqa-scan-toggle');
+  if (btn) btn.style.display = 'block';
+}
+
 // ── Helpers ──────────────────────────────────────────────────
 function btqaFmt(c) {
   return (c / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
