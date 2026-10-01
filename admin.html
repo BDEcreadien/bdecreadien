@@ -1814,6 +1814,10 @@ function selectPage(page) {
     navStack.push('qr');
     showStep('qr');
     initQrPage();
+  } else if (page === 'boutique') {
+    navStack.push('boutique');
+    showStep('boutique');
+    initBoutiqueAdmin();
   }
 }
 
