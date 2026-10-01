@@ -1538,19 +1538,33 @@
     <div style="max-width:540px">
       <div class="params-card">
         <h3 style="margin-top:0">Remettre une commande</h3>
-        <p style="font-size:13px;color:var(--gris-texte)">Entre le numéro de commande ou scanne le QR code reçu par l'étudiant.</p>
+        <p style="font-size:13px;color:var(--gris-texte)">Scanne le QR code de l'étudiant ou entre le numéro manuellement.</p>
+
+        <!-- Scanner caméra -->
+        <div style="margin-bottom:16px">
+          <button id="btqa-scan-toggle" class="btn-save" onclick="btqaToggleScanner()"
+            style="background:white;color:var(--violet);border:1.5px solid var(--violet);width:100%;margin-bottom:10px">
+            📷 Scanner un QR code
+          </button>
+          <div id="btqa-scanner-wrap" style="display:none">
+            <div id="btqa-qr-reader" style="width:100%;border-radius:12px;overflow:hidden;background:#000"></div>
+            <button onclick="btqaStopScanner()" style="margin-top:8px;width:100%;padding:8px;border:1.5px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:13px;color:#666">
+              Arrêter le scanner
+            </button>
+          </div>
+        </div>
 
         <div class="btqa-form-row">
-          <label>Numéro de commande</label>
+          <label>Ou saisis le numéro manuellement</label>
           <div style="display:flex;gap:8px">
-            <input id="btqa-r-numero" type="text" placeholder="BDE-2026-XXXX" style="text-transform:uppercase">
+            <input id="btqa-r-numero" type="text" placeholder="BDE-2026-XXXX"
+              style="text-transform:uppercase"
+              onkeydown="if(event.key==='Enter')btqaLookup()">
             <button class="btn-save" onclick="btqaLookup()">Chercher</button>
           </div>
         </div>
 
-        <div id="btqa-r-result" style="display:none" class="btqa-order-result">
-          <!-- Rempli par JS -->
-        </div>
+        <div id="btqa-r-result" style="display:none" class="btqa-order-result"></div>
       </div>
     </div>
   </div>
