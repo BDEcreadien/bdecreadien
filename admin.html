@@ -1729,6 +1729,8 @@ function showStep(step, opts = {}) {
   } catch (_) {}
 }
 
+  if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'liens', 'factures', 'billetterie', 'qr', 'boutique'].includes(step)) {
+
 function goBack() {
   navStack.pop();
   const prev = navStack[navStack.length - 1];
