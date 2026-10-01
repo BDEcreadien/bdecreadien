@@ -268,7 +268,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabase-config.js"></script>
 <script>
-  window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+  });
 </script>
 <script defer src="js/auth.js?v=11"></script>
 <!-- @include scripts-public @end -->
