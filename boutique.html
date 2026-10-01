@@ -892,9 +892,7 @@ let _cmdId   = null;   // id du panier Supabase
 // ── Initialisation ─────────────────────────────────────────
 async function btqInit() {
   // Supabase client injecté par supabase-config.js
-  _sb = window._supabaseClient || (typeof createClient !== 'undefined'
-    ? createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
-    : null);
+  _sb = window._sb || null;
   if (!_sb) return console.error('[BTQ] Supabase client introuvable');
 
   const { data: { session } } = await _sb.auth.getSession();
