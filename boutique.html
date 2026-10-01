@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique Goodies — BDE CREAD Lyon</title>
+  <link rel="icon" type="image/png" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    :root {
+      --btq-violet: #460186;
+      --btq-pink: #D2396D;
+      --btq-orange: #FF741F;
+      --btq-dark: #0d001a;
+      --btq-card-radius: 18px;
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────── */
+    .btq-hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--btq-dark);
+    }
+    .btq-hero-canvas {
+      position: absolute;inset:0;
+      background: linear-gradient(135deg,#0d001a 0%,#1a0040 40%,#2d0060 70%,#1a0020 100%);
+    }
+    /* Animated blobs */
+    .btq-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.55;
+      animation: blobFloat linear infinite;
+      pointer-events: none;
+    }
+    .btq-blob-1 { width:480px;height:480px; background:radial-gradient(circle,#460186,transparent 70%); top:-10%;left:-8%; animation-duration:22s; }
+    .btq-blob-2 { width:360px;height:360px; background:radial-gradient(circle,#D2396D,transparent 70%); top:20%;right:-5%; animation-duration:18s;animation-delay:-7s; }
+    .btq-blob-3 { width:300px;height:300px; background:radial-gradient(circle,#FF741F,transparent 70%); bottom:5%;left:35%; animation-duration:26s;animation-delay:-12s; }
+    .btq-blob-4 { width:220px;height:220px; background:radial-gradient(circle,#a020e0,transparent 70%); bottom:20%;right:20%; animation-duration:20s;animation-delay:-4s; }
+    @keyframes blobFloat {
+      0%   { transform: translate(0,0)   rotate(0deg); }
+      25%  { transform: translate(30px,-40px) rotate(90deg); }
+      50%  { transform: translate(-20px,30px) rotate(180deg); }
+      75%  { transform: translate(40px,10px) rotate(270deg); }
+      100% { transform: translate(0,0)   rotate(360deg); }
+    }
+    /* Stars / particles */
+    .btq-stars {
+      position:absolute;inset:0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,0.6),transparent),
+        radial-gradient(1px 1px at 80% 20%,rgba(255,255,255,0.4),transparent),
+        radial-gradient(1.5px 1.5px at 50% 50%,rgba(255,255,255,0.5),transparent),
+        radial-gradient(1px 1px at 30% 75%,rgba(255,255,255,0.3),transparent),
+        radial-gradient(1px 1px at 90% 65%,rgba(255,255,255,0.5),transparent),
+        radial-gradient(1.5px 1.5px at 20% 40%,rgba(255,255,255,0.4),transparent),
+        radial-gradient(1px 1px at 65% 85%,rgba(255,255,255,0.3),transparent),
+        radial-gradient(1px 1px at 45% 10%,rgba(255,255,255,0.5),transparent);
+    }
+    .btq-hero-content {
+      position:relative;z-index:2;
+      text-align:center;
+      padding:0 24px;
+    }
+    .btq-pretitle {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:13px;letter-spacing:4px;
+      color:rgba(255,255,255,0.55);
+      text-transform:uppercase;
+      margin-bottom:16px;
+      animation: fadeUp .8s .2s both;
+    }
+    .btq-hero-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(80px,18vw,180px);
+      line-height:.9;
+      color:transparent;
+      background: linear-gradient(135deg,#fff 0%,#e8c0ff 30%,#ffaad0 60%,#ff9060 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      letter-spacing:-2px;
+      margin:0;
+      animation: fadeUp .8s .35s both;
+    }
+    .btq-hero-sub {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:600;font-size:18px;
+      color:rgba(255,255,255,0.7);
+      margin-top:18px;
+      animation: fadeUp .8s .5s both;
+    }
+    .btq-hero-cta {
+      margin-top:36px;
+      animation: fadeUp .8s .65s both;
+    }
+    .btq-hero-scroll {
+      display:inline-flex;align-items:center;gap:8px;
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:14px;letter-spacing:2px;
+      color:rgba(255,255,255,0.45);
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:color .2s;
+    }
+    .btq-hero-scroll:hover { color:rgba(255,255,255,.8); }
+    .btq-scroll-arrow {
+      width:32px;height:32px;border-radius:50%;
+      border:1.5px solid rgba(255,255,255,.3);
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;
+      animation: bounceY 2s ease-in-out infinite;
+    }
+    @keyframes bounceY {
+      0%,100% { transform:translateY(0); }
+      50%      { transform:translateY(6px); }
+    }
+    /* Marquee band */
+    .btq-marquee-wrap {
+      position:absolute;bottom:0;left:0;right:0;
+      background:rgba(255,255,255,.06);
+      backdrop-filter:blur(4px);
+      padding:10px 0;overflow:hidden;
+    }
+    .btq-marquee-track {
+      display:flex;gap:0;white-space:nowrap;
+      animation: marqueeScroll 18s linear infinite;
+    }
+    .btq-marquee-track span {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:12px;letter-spacing:3px;
+      color:rgba(255,255,255,.45);
+      text-transform:uppercase;
+      padding:0 24px;
+    }
+    .btq-marquee-track span::after { content:'·'; margin-left:24px; }
+    @keyframes marqueeScroll {
+      0%   { transform:translateX(0); }
+      100% { transform:translateX(-50%); }
+    }
+
+    /* ─── MAIN SECTION ──────────────────────────────────────── */
+    .btq-section {
+      background:#f7f5fb;
+      min-height:60vh;
+      padding-bottom:120px;
+    }
+    .btq-section-header {
+      padding:60px 32px 0;
+      max-width:1200px;margin:0 auto;
+    }
+    .btq-section-title {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:42px;color:var(--btq-violet);
+      margin:0 0 4px;
+    }
+    .btq-section-desc {
+      font-family:'Inter',sans-serif;
+      font-size:15px;color:#666;margin:0;
+    }
+
+    /* Filter bar */
+    .btq-filters {
+      display:flex;gap:8px;flex-wrap:wrap;
+      padding:28px 32px 0;
+      max-width:1200px;margin:0 auto;
+    }
+    .btq-filter-btn {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:14px;letter-spacing:1px;
+      text-transform:uppercase;
+      padding:8px 20px;border-radius:100px;
+      border:1.5px solid #ddd;
+      background:white;color:#777;
+      cursor:pointer;
+      transition:all .2s;
+    }
+    .btq-filter-btn.active, .btq-filter-btn:hover {
+      background:var(--btq-violet);color:white;border-color:var(--btq-violet);
+    }
+
+    /* Product grid */
+    .btq-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      gap:20px;
+      padding:24px 32px 0;
+      max-width:1200px;margin:0 auto;
+    }
+    .btq-card {
+      background:white;
+      border-radius:var(--btq-card-radius);
+      overflow:hidden;
+      cursor:pointer;
+      transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s;
+      box-shadow:0 2px 12px rgba(70,1,134,.06);
+      animation: cardReveal .5s both;
+    }
+    .btq-card:hover {
+      transform:translateY(-8px);
+      box-shadow:0 16px 40px rgba(70,1,134,.18);
+    }
+    @keyframes cardReveal {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .btq-card-img {
+      width:100%;height:220px;
+      position:relative;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .btq-card-img-bg {
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,#f0e8ff,#ffe8f3,#fff3e8);
+    }
+    .btq-card-img-icon {
+      font-size:56px;position:relative;z-index:1;
+      filter:drop-shadow(0 4px 12px rgba(0,0,0,.1));
+      transition:transform .3s;
+    }
+    .btq-card:hover .btq-card-img-icon { transform:scale(1.1) rotate(-5deg); }
+    .btq-card-img img {
+      width:100%;height:100%;object-fit:cover;
+      position:absolute;inset:0;
+    }
+    .btq-card-body { padding:16px 18px 18px; }
+    .btq-card-name {
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:17px;
+      color:#1a0030;margin:0 0 4px;
+    }
+    .btq-card-price {
+      font-family:'Inter',sans-serif;
+      font-weight:700;font-size:18px;
+      color:var(--btq-violet);margin:0;
+    }
+    .btq-card-meta {
+      font-size:12px;color:#999;
+      font-family:'Inter',sans-serif;
+      margin-top:2px;
+    }
+    .btq-card-add {
+      margin-top:14px;width:100%;
+      font-family:'Barlow Condensed',sans-serif;
+      font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;
+      padding:10px;border-radius:10px;
+      border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;
+      transition:opacity .2s, transform .1s;
+    }
+    .btq-card-add:hover { opacity:.92; }
+    .btq-card-add:active { transform:scale(.97); }
+
+    /* ─── PRODUCT MODAL ─────────────────────────────────────── */
+    .btq-modal-overlay {
+      position:fixed;inset:0;z-index:1000;
+      background:rgba(13,0,26,.7);backdrop-filter:blur(8px);
+      display:flex;align-items:flex-end;justify-content:center;
+      opacity:0;pointer-events:none;
+      transition:opacity .3s;
+    }
+    .btq-modal-overlay.open {
+      opacity:1;pointer-events:all;
+    }
+    .btq-modal-card {
+      background:white;
+      border-radius:28px 28px 0 0;
+      width:100%;max-width:560px;
+      max-height:92svh;overflow-y:auto;
+      padding:0 0 40px;
+      transform:translateY(60px);
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .btq-modal-overlay.open .btq-modal-card {
+      transform:translateY(0);
+    }
+    .btq-modal-drag {
+      width:40px;height:4px;border-radius:2px;
+      background:#ddd;margin:14px auto 0;
+    }
+    .btq-modal-close-btn {
+      position:absolute;top:16px;right:20px;
+      width:32px;height:32px;border-radius:50%;
+      border:none;background:#f0f0f0;
+      font-size:18px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      color:#666;
+    }
+    .btq-modal-inner { padding:20px 24px 0; position:relative; }
+    .btq-modal-img {
+      width:100%;height:220px;border-radius:18px;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;margin-bottom:20px;
+    }
+    .btq-modal-img-bg {
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,#f0e8ff,#ffe8f3,#fff3e8);
+    }
+    .btq-modal-img-icon { font-size:72px;position:relative;z-index:1; }
+    .btq-modal-img img { width:100%;height:100%;object-fit:cover;position:absolute;inset:0; }
+    .btq-modal-name {
+      font-family:'Bebas Neue',sans-serif;font-size:32px;
+      color:#1a0030;margin:0 0 2px;
+    }
+    .btq-modal-price {
+      font-family:'Inter',sans-serif;font-weight:700;font-size:22px;
+      color:var(--btq-violet);margin:0 0 20px;
+    }
+    .btq-modal-label {
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+      color:#999;margin-bottom:10px;
+    }
+    /* Design picker */
+    .btq-designs { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
+    .btq-design-chip {
+      padding:7px 16px;border-radius:100px;
+      border:1.5px solid #e0d8f0;
+      font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;
+      color:#555;cursor:pointer;transition:all .2s;
+      background:white;
+    }
+    .btq-design-chip.selected {
+      background:var(--btq-violet);color:white;border-color:var(--btq-violet);
+    }
+    .btq-design-chip img { width:28px;height:28px;object-fit:cover;border-radius:50%;margin-right:6px;vertical-align:middle; }
+    /* Size picker */
+    .btq-sizes { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
+    .btq-size-chip {
+      width:50px;height:40px;border-radius:10px;
+      border:1.5px solid #e0d8f0;background:white;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+      color:#555;cursor:pointer;transition:all .2s;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .btq-size-chip.selected {
+      background:var(--btq-violet);color:white;border-color:var(--btq-violet);
+    }
+    /* Qty */
+    .btq-qty-row { display:flex;align-items:center;gap:16px;margin-bottom:24px; }
+    .btq-qty-btn {
+      width:36px;height:36px;border-radius:50%;border:1.5px solid #ddd;
+      background:white;font-size:20px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .2s;line-height:1;
+    }
+    .btq-qty-btn:hover { border-color:var(--btq-violet);color:var(--btq-violet); }
+    .btq-qty-val {
+      font-family:'Bebas Neue',sans-serif;font-size:28px;
+      color:#1a0030;min-width:28px;text-align:center;
+    }
+    /* Add to cart */
+    .btq-add-btn {
+      width:100%;padding:15px;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:18px;letter-spacing:2px;text-transform:uppercase;
+      border:none;border-radius:14px;cursor:pointer;
+      background:linear-gradient(135deg,var(--btq-violet) 0%,var(--btq-pink) 50%,var(--btq-orange) 100%);
+      color:white;
+      transition:opacity .2s,transform .1s;
+      position:relative;overflow:hidden;
+    }
+    .btq-add-btn::after {
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+      transform:translateX(-100%);
+      transition:transform .4s;
+    }
+    .btq-add-btn:hover::after { transform:translateX(100%); }
+    .btq-add-btn:active { transform:scale(.98); opacity:.9; }
+
+    /* ─── CART FAB ──────────────────────────────────────────── */
+    .btq-fab {
+      position:fixed;bottom:28px;right:28px;z-index:500;
+      width:64px;height:64px;border-radius:50%;border:none;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;font-size:24px;cursor:pointer;
+      box-shadow:0 8px 32px rgba(70,1,134,.4);
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .2s;
+    }
+    .btq-fab:hover { transform:scale(1.08); }
+    .btq-fab-badge {
+      position:absolute;top:-4px;right:-4px;
+      width:22px;height:22px;border-radius:50%;
+      background:var(--btq-orange);color:white;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
+      display:flex;align-items:center;justify-content:center;
+      border:2px solid white;
+      opacity:0;transform:scale(0);
+      transition:opacity .2s,transform .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .btq-fab-badge.show { opacity:1;transform:scale(1); }
+    .btq-fab.pulse { animation:fabPulse .4s; }
+    @keyframes fabPulse {
+      0%,100% { transform:scale(1); }
+      50%      { transform:scale(1.2); }
+    }
+
+    /* ─── CART SIDEBAR ──────────────────────────────────────── */
+    .btq-cart-backdrop {
+      position:fixed;inset:0;z-index:600;
+      background:rgba(13,0,26,.5);
+      opacity:0;pointer-events:none;
+      transition:opacity .3s;
+    }
+    .btq-cart-backdrop.open { opacity:1;pointer-events:all; }
+    .btq-cart-sidebar {
+      position:fixed;top:0;right:0;bottom:0;z-index:700;
+      width:min(400px,100vw);
+      background:white;
+      box-shadow:-8px 0 40px rgba(70,1,134,.12);
+      display:flex;flex-direction:column;
+      transform:translateX(100%);
+      transition:transform .35s cubic-bezier(.34,1,.64,1);
+    }
+    .btq-cart-sidebar.open { transform:translateX(0); }
+    .btq-cart-head {
+      padding:20px 24px 16px;
+      border-bottom:1px solid #f0e8ff;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .btq-cart-title {
+      font-family:'Bebas Neue',sans-serif;font-size:28px;color:#1a0030;margin:0;
+    }
+    .btq-cart-close-btn {
+      width:36px;height:36px;border-radius:50%;border:1.5px solid #eee;
+      background:white;font-size:20px;cursor:pointer;color:#666;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .2s;
+    }
+    .btq-cart-close-btn:hover { border-color:var(--btq-violet);color:var(--btq-violet); }
+    .btq-cart-items {
+      flex:1;overflow-y:auto;padding:16px 24px;
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .btq-cart-empty {
+      text-align:center;padding:40px 0;color:#bbb;
+      font-family:'Inter',sans-serif;font-size:15px;
+    }
+    .btq-cart-empty-icon { font-size:48px;display:block;margin-bottom:12px; }
+    /* Cart item */
+    .btq-cart-item {
+      display:flex;gap:12px;align-items:flex-start;
+      padding:12px;border-radius:14px;background:#faf8ff;
+    }
+    .btq-cart-item-img {
+      width:56px;height:56px;border-radius:10px;flex-shrink:0;
+      background:linear-gradient(135deg,#f0e8ff,#ffe8f3);
+      display:flex;align-items:center;justify-content:center;font-size:24px;
+    }
+    .btq-cart-item-img img { width:100%;height:100%;object-fit:cover;border-radius:10px; }
+    .btq-cart-item-info { flex:1;min-width:0; }
+    .btq-cart-item-name {
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+      color:#1a0030;margin:0 0 2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .btq-cart-item-detail {
+      font-size:12px;color:#999;font-family:'Inter',sans-serif;
+      margin:0;
+    }
+    .btq-cart-item-right {
+      display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;
+    }
+    .btq-cart-item-price {
+      font-family:'Inter',sans-serif;font-weight:700;font-size:14px;
+      color:var(--btq-violet);
+    }
+    .btq-cart-item-price.offert { color:var(--btq-orange); }
+    .btq-cart-item-del {
+      width:24px;height:24px;border-radius:50%;border:none;
+      background:#ffe8e8;color:#cc4444;font-size:14px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+    }
+    /* Pack banner */
+    .btq-pack-banner {
+      margin:0 24px 16px;
+      padding:12px 16px;border-radius:14px;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+      display:flex;align-items:center;gap:10px;
+    }
+    /* Cart footer */
+    .btq-cart-foot {
+      padding:16px 24px 24px;
+      border-top:1px solid #f0e8ff;
+    }
+    .btq-cart-total-row {
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:16px;
+    }
+    .btq-cart-total-label {
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;
+      color:#666;letter-spacing:.5px;text-transform:uppercase;
+    }
+    .btq-cart-total-val {
+      font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--btq-violet);
+    }
+    .btq-checkout-btn {
+      width:100%;padding:15px;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:18px;letter-spacing:2px;text-transform:uppercase;
+      border:none;border-radius:14px;cursor:pointer;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink),var(--btq-orange));
+      color:white;transition:opacity .2s;
+    }
+    .btq-checkout-btn:hover { opacity:.9; }
+    .btq-checkout-btn:disabled { opacity:.5;cursor:not-allowed; }
+
+    /* ─── CHECKOUT MODAL ────────────────────────────────────── */
+    .btq-checkout-overlay {
+      position:fixed;inset:0;z-index:900;
+      background:rgba(13,0,26,.8);backdrop-filter:blur(10px);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+      opacity:0;pointer-events:none;transition:opacity .3s;
+    }
+    .btq-checkout-overlay.open { opacity:1;pointer-events:all; }
+    .btq-checkout-card {
+      background:white;border-radius:24px;
+      width:100%;max-width:500px;
+      max-height:90svh;overflow-y:auto;
+      padding:32px 28px;
+      transform:scale(.92);
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .btq-checkout-overlay.open .btq-checkout-card { transform:scale(1); }
+    .btq-checkout-title {
+      font-family:'Bebas Neue',sans-serif;font-size:32px;color:#1a0030;
+      margin:0 0 6px;
+    }
+    .btq-checkout-desc {
+      font-family:'Inter',sans-serif;font-size:14px;color:#888;margin:0 0 24px;
+    }
+    .btq-checkout-summary {
+      background:#f7f5fb;border-radius:14px;padding:16px;margin-bottom:20px;
+    }
+    .btq-checkout-row {
+      display:flex;justify-content:space-between;
+      font-family:'Inter',sans-serif;font-size:14px;color:#444;
+      margin-bottom:6px;
+    }
+    .btq-checkout-row:last-child { margin:0;padding-top:8px;border-top:1px solid #e0d8f0;font-weight:700; }
+    .btq-form-group { margin-bottom:16px; }
+    .btq-form-label {
+      display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#888;
+      margin-bottom:6px;
+    }
+    .btq-form-input {
+      width:100%;padding:12px 16px;border-radius:12px;
+      border:1.5px solid #e0d8f0;
+      font-family:'Inter',sans-serif;font-size:15px;color:#1a0030;
+      outline:none;transition:border-color .2s;box-sizing:border-box;
+    }
+    .btq-form-input:focus { border-color:var(--btq-violet); }
+    .btq-checkout-pay-btn {
+      width:100%;padding:16px;margin-top:8px;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:18px;letter-spacing:2px;text-transform:uppercase;
+      border:none;border-radius:14px;cursor:pointer;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink),var(--btq-orange));
+      color:white;transition:opacity .2s;
+    }
+    .btq-checkout-pay-btn:hover { opacity:.9; }
+    .btq-checkout-pay-btn:disabled { opacity:.5;cursor:not-allowed; }
+    .btq-checkout-cancel {
+      width:100%;padding:12px;margin-top:10px;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:15px;letter-spacing:1px;
+      border:1.5px solid #e0d8f0;border-radius:12px;
+      background:white;color:#666;cursor:pointer;transition:all .2s;
+    }
+    .btq-checkout-cancel:hover { border-color:#aaa;color:#333; }
+
+    /* ─── SUCCESS STATE ─────────────────────────────────────── */
+    .btq-success {
+      text-align:center;padding:20px 0;
+    }
+    .btq-success-icon { font-size:64px;display:block;margin-bottom:16px; }
+    .btq-success-title {
+      font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--btq-violet);margin:0 0 8px;
+    }
+    .btq-success-num {
+      font-family:'Inter',sans-serif;font-weight:700;font-size:22px;
+      color:var(--btq-orange);margin:8px 0 12px;
+    }
+    .btq-success-msg {
+      font-family:'Inter',sans-serif;font-size:14px;color:#666;margin:0 0 24px;
+    }
+
+    /* ─── GATE (not logged in) ───────────────────────────────── */
+    .btq-gate {
+      min-height:50vh;display:flex;align-items:center;justify-content:center;
+      background:#f7f5fb;padding:40px 24px;
+    }
+    .btq-gate-card {
+      background:white;border-radius:24px;padding:40px 32px;
+      text-align:center;max-width:380px;
+      box-shadow:0 4px 24px rgba(70,1,134,.1);
+    }
+    .btq-gate-icon { font-size:56px;display:block;margin-bottom:16px; }
+    .btq-gate-card h2 {
+      font-family:'Bebas Neue',sans-serif;font-size:28px;color:#1a0030;margin:0 0 8px;
+    }
+    .btq-gate-card p {
+      font-family:'Inter',sans-serif;font-size:15px;color:#777;margin:0 0 24px;
+    }
+    .btq-gate-btn {
+      display:inline-block;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:16px;letter-spacing:1.5px;text-transform:uppercase;
+      padding:14px 32px;border-radius:12px;text-decoration:none;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;transition:opacity .2s;
+    }
+    .btq-gate-btn:hover { opacity:.9; }
+
+    /* ─── TOAST ─────────────────────────────────────────────── */
+    .btq-toast {
+      position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+      z-index:1100;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+      padding:12px 24px;border-radius:100px;
+      box-shadow:0 8px 24px rgba(70,1,134,.3);
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+      white-space:nowrap;
+    }
+    .btq-toast.show { transform:translateX(-50%) translateY(0); }
+
+    @keyframes fadeUp {
+      from { opacity:0;transform:translateY(30px); }
+      to   { opacity:1;transform:translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width:640px) {
+      .btq-grid { grid-template-columns:repeat(2,1fr);gap:12px;padding:16px; }
+      .btq-filters { padding:20px 16px 0; }
+      .btq-section-header { padding:40px 16px 0; }
+      .btq-fab { bottom:20px;right:16px;width:56px;height:56px;font-size:20px; }
+      .btq-cart-sidebar { width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV (identique aux autres pages) ─────────────────────── -->
+<header class="nav-header" id="main-nav">
+  <a href="/" class="nav-logo">
+    <img src="/img/logo-bde.png" alt="Logo BDE" class="nav-logo-img" onerror="this.style.display='none'">
+    <div class="nav-logo-text">
+      <span class="nav-bde">BDE</span>
+      <span class="nav-cread">CREAD</span>
+    </div>
+  </a>
+  <nav class="nav-links" id="nav-links">
+    <a href="/index.html" class="nav-link">Accueil</a>
+    <a href="/agenda.html" class="nav-link">Agenda</a>
+    <a href="/communication.html" class="nav-link">Commu</a>
+    <a href="/annonces.html" class="nav-link">Annonces</a>
+    <a href="/boutique.html" class="nav-link active">Boutique</a>
+    <a href="/contact.html" class="nav-link">Contact</a>
+  </nav>
+  <div class="nav-actions" id="nav-actions"></div>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="btq-hero" id="btq-hero">
+  <div class="btq-hero-canvas"></div>
+  <div class="btq-stars"></div>
+  <div class="btq-blob btq-blob-1"></div>
+  <div class="btq-blob btq-blob-2"></div>
+  <div class="btq-blob btq-blob-3"></div>
+  <div class="btq-blob btq-blob-4"></div>
+
+  <div class="btq-hero-content">
+    <p class="btq-pretitle">BDE CREAD LYON · 2025-2026</p>
+    <h1 class="btq-hero-title">BOUTIQUE</h1>
+    <p class="btq-hero-sub">Merch officiel · Livraison sur place</p>
+    <div class="btq-hero-cta">
+      <div class="btq-hero-scroll" onclick="document.getElementById('btq-shop').scrollIntoView({behavior:'smooth'})">
+        <div class="btq-scroll-arrow">↓</div>
+        Commander
+      </div>
+    </div>
+  </div>
+
+  <div class="btq-marquee-wrap">
+    <div class="btq-marquee-track" id="btq-marquee"></div>
+  </div>
+</section>
+
+<!-- ── GATE (non connecté) ──────────────────────────────────── -->
+<div id="btq-gate" class="btq-gate" style="display:none">
+  <div class="btq-gate-card">
+    <span class="btq-gate-icon">🛍️</span>
+    <h2>Connecte-toi pour commander</h2>
+    <p>La boutique est réservée aux membres BDE CREAD.</p>
+    <a href="/mon-espace.html?next=/boutique.html" class="btq-gate-btn">Se connecter</a>
+  </div>
+</div>
+
+<!-- ── BOUTIQUE PRINCIPALE ───────────────────────────────────── -->
+<section class="btq-section" id="btq-shop" style="display:none">
+  <div class="btq-section-header">
+    <h2 class="btq-section-title">NOS GOODIES</h2>
+    <p class="btq-section-desc" id="btq-sale-status">Chargement du catalogue…</p>
+  </div>
+  <div class="btq-filters" id="btq-filters">
+    <button class="btq-filter-btn active" data-cat="tous">Tout</button>
+    <button class="btq-filter-btn" data-cat="vetement">Vêtements</button>
+    <button class="btq-filter-btn" data-cat="accessoire">Accessoires</button>
+  </div>
+  <div class="btq-grid" id="btq-grid"></div>
+</section>
+
+<!-- ── MODAL PRODUIT ─────────────────────────────────────────── -->
+<div class="btq-modal-overlay" id="btq-modal" onclick="btqCloseModal(event)">
+  <div class="btq-modal-card" id="btq-modal-card">
+    <div class="btq-modal-drag"></div>
+    <div class="btq-modal-inner" id="btq-modal-inner">
+      <!-- JS fill -->
+    </div>
+  </div>
+</div>
+
+<!-- ── PANIER (sidebar) ──────────────────────────────────────── -->
+<div class="btq-cart-backdrop" id="btq-cart-backdrop" onclick="btqCloseCart()"></div>
+<div class="btq-cart-sidebar" id="btq-cart-sidebar">
+  <div class="btq-cart-head">
+    <h3 class="btq-cart-title">Mon panier</h3>
+    <button class="btq-cart-close-btn" onclick="btqCloseCart()">✕</button>
+  </div>
+  <div class="btq-cart-items" id="btq-cart-items"></div>
+  <div class="btq-pack-banner" id="btq-pack-banner" style="display:none">
+    <span>🎁</span>
+    <span id="btq-pack-msg">Pack détecté !</span>
+  </div>
+  <div class="btq-cart-foot">
+    <div class="btq-cart-total-row">
+      <span class="btq-cart-total-label">Total</span>
+      <span class="btq-cart-total-val" id="btq-cart-total">0,00 €</span>
+    </div>
+    <button class="btq-checkout-btn" id="btq-checkout-btn" onclick="btqOpenCheckout()">
+      Commander
+    </button>
+  </div>
+</div>
+
+<!-- ── CHECKOUT MODAL ────────────────────────────────────────── -->
+<div class="btq-checkout-overlay" id="btq-checkout-overlay" onclick="btqCloseCheckout(event)">
+  <div class="btq-checkout-card" id="btq-checkout-card">
+    <h2 class="btq-checkout-title">Finaliser la commande</h2>
+    <p class="btq-checkout-desc">Tu recevras une confirmation par e-mail avec ton numéro de commande.</p>
+
+    <div class="btq-checkout-summary" id="btq-checkout-summary"></div>
+
+    <div class="btq-form-group">
+      <label class="btq-form-label" for="btq-nom">Ton prénom + nom</label>
+      <input class="btq-form-input" type="text" id="btq-nom" placeholder="Prénom Nom" autocomplete="name">
+    </div>
+    <div class="btq-form-group">
+      <label class="btq-form-label" for="btq-email">Ton e-mail</label>
+      <input class="btq-form-input" type="email" id="btq-email" placeholder="prenom@etudiant.fr" autocomplete="email">
+    </div>
+
+    <button class="btq-checkout-pay-btn" id="btq-pay-btn" onclick="btqPlaceOrder()">
+      Payer sur HelloAsso
+    </button>
+    <button class="btq-checkout-cancel" onclick="btqCloseCheckout()">Retour au panier</button>
+  </div>
+</div>
+
+<!-- ── FAB panier ────────────────────────────────────────────── -->
+<button class="btq-fab" id="btq-fab" onclick="btqOpenCart()" aria-label="Panier" style="display:none">
+  🛒
+  <span class="btq-fab-badge" id="btq-fab-badge">0</span>
+</button>
+
+<!-- ── TOAST ─────────────────────────────────────────────────── -->
+<div class="btq-toast" id="btq-toast"></div>
+
+<!-- ── SCRIPTS ───────────────────────────────────────────────── -->
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+/* ============================================================
+   BOUTIQUE — logique principale
+   ============================================================ */
+
+const BTQ_CART_KEY = 'btq_cart_v2';
+
+let _sb      = null;   // client Supabase
+let _user    = null;   // utilisateur connecté
+let _profil  = null;   // profil Supabase
+let _produits= [];     // catalogue chargé
+let _designs = [];     // designs disponibles
+let _packs   = [];     // règles pack
+let _cart    = [];     // [{produit_id,produit_nom,design_id,design_nom,taille,quantite,prix,est_offert,_key}]
+let _cmdId   = null;   // id du panier Supabase
+
+// ── Initialisation ─────────────────────────────────────────
+async function btqInit() {
+  // Supabase client injecté par supabase-config.js
+  _sb = window._supabaseClient || (typeof createClient !== 'undefined'
+    ? createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
+    : null);
+  if (!_sb) return console.error('[BTQ] Supabase client introuvable');
+
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) {
+    document.getElementById('btq-gate').style.display = 'flex';
+    return;
+  }
+  _user = session.user;
+
+  // Profil
+  const { data: profil } = await _sb.from('profils').select('*').eq('id', _user.id).single();
+  _profil = profil;
+
+  // Préremplir checkout
+  if (_profil) {
+    const nom = [_profil.prenom, _profil.nom].filter(Boolean).join(' ');
+    document.getElementById('btq-nom').value   = nom || '';
+    document.getElementById('btq-email').value = _profil.email || _user.email || '';
+  } else {
+    document.getElementById('btq-email').value = _user.email || '';
+  }
+
+  // Afficher boutique
+  document.getElementById('btq-shop').style.display = 'block';
+  document.getElementById('btq-fab').style.display   = 'flex';
+
+  // Charger catalogue + panier
+  await Promise.all([btqLoadCatalogue(), btqLoadCart()]);
+  btqRenderGrid();
+  btqUpdateCartUI();
+  btqFillMarquee();
+}
+
+// ── Catalogue ──────────────────────────────────────────────
+async function btqLoadCatalogue() {
+  const [{ data: produits }, { data: designs }, { data: packs }, { data: pd }] = await Promise.all([
+    _sb.from('boutique_produits').select('*').eq('actif', true).order('ordre'),
+    _sb.from('boutique_designs').select('*').eq('actif', true).order('ordre'),
+    _sb.from('boutique_packs').select('*').eq('actif', true),
+    _sb.from('boutique_produit_designs').select('*'),
+  ]);
+  _designs = designs || [];
+  _packs   = packs   || [];
+  _produits = (produits || []).map(p => ({
+    ...p,
+    design_ids: (pd || []).filter(r => r.produit_id === p.id).map(r => r.design_id),
+  }));
+
+  const statusEl = document.getElementById('btq-sale-status');
+  if (_produits.length) {
+    statusEl.textContent = `${_produits.length} article${_produits.length > 1 ? 's' : ''} disponibles — livraison sur place`;
+  } else {
+    statusEl.textContent = 'Catalogue bientôt disponible';
+  }
+}
+
+// ── Panier Supabase ─────────────────────────────────────────
+async function btqLoadCart() {
+  // Chercher un panier existant
+  const { data: cmd } = await _sb.from('boutique_commandes')
+    .select('id')
+    .eq('membre_id', _user.id)
+    .eq('statut', 'panier')
+    .order('created_at', {ascending:false})
+    .limit(1)
+    .maybeSingle();
+
+  if (cmd) {
+    _cmdId = cmd.id;
+    const { data: items } = await _sb.from('boutique_items')
+      .select('*')
+      .eq('commande_id', _cmdId);
+    _cart = (items || []).map(i => ({
+      _key:     i.id,
+      produit_id:   i.produit_id,
+      produit_nom:  i.produit_nom,
+      design_id:    i.design_id,
+      design_nom:   i.design_nom,
+      taille:       i.taille,
+      quantite:     i.quantite,
+      prix:         i.prix_unitaire_centimes,
+      est_offert:   i.est_offert,
+    }));
+  } else {
+    // Créer un panier vide
+    const { data: newCmd } = await _sb.from('boutique_commandes').insert({
+      membre_id:     _user.id,
+      statut:        'panier',
+      type:          'online',
+      nom_acheteur:  '',
+      email_acheteur:'',
+    }).select('id').single();
+    if (newCmd) _cmdId = newCmd.id;
+  }
+}
+
+async function btqSaveCart() {
+  if (!_cmdId) return;
+  const total = btqCalcTotal();
+  await _sb.from('boutique_commandes').update({ total_centimes: total }).eq('id', _cmdId);
+}
+
+// ── Grille produits ─────────────────────────────────────────
+function btqRenderGrid(cat = 'tous') {
+  const grid = document.getElementById('btq-grid');
+  const filtered = cat === 'tous' ? _produits : _produits.filter(p => p.categorie === cat);
+  if (!filtered.length) {
+    grid.innerHTML = '<p style="color:#bbb;font-family:Inter,sans-serif;font-size:15px;padding:20px">Aucun article dans cette catégorie pour le moment.</p>';
+    return;
+  }
+  grid.innerHTML = filtered.map((p, i) => `
+    <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
+      <div class="btq-card-img">
+        <div class="btq-card-img-bg"></div>
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
+      </div>
+      <div class="btq-card-body">
+        <p class="btq-card-name">${p.nom}</p>
+        <p class="btq-card-price">${btqFmt(p.prix_centimes)}</p>
+        <p class="btq-card-meta">${p.a_designs ? '4 designs · ' : ''}${p.a_tailles ? p.tailles_disponibles.join(' · ') : 'Taille unique'}</p>
+        <button class="btq-card-add" onclick="event.stopPropagation();btqOpenModal('${p.id}')">
+          Choisir &amp; ajouter
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function btqProdIcon(p) {
+  const icons = {vetement:{'T-shirt':'👕','Pull sans capuche':'🧥','Pull à capuche':'🧣','T-shirt Club de Sport':'👕'},accessoire:{Chaussettes:'🧦',Tasse:'☕','Porte-clef':'🔑'}};
+  return icons[p.categorie]?.[p.nom] || (p.categorie === 'vetement' ? '👕' : '🎁');
+}
+
+// Filtres
+document.getElementById('btq-filters').addEventListener('click', e => {
+  const btn = e.target.closest('.btq-filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.btq-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  btqRenderGrid(btn.dataset.cat);
+});
+
+// ── Modal produit ───────────────────────────────────────────
+let _modalProd   = null;
+let _modalDesign = null;
+let _modalTaille = null;
+let _modalQty    = 1;
+
+function btqOpenModal(id) {
+  const p = _produits.find(x => x.id === id);
+  if (!p) return;
+  _modalProd   = p;
+  _modalDesign = null;
+  _modalTaille = null;
+  _modalQty    = 1;
+
+  const designs = _designs.filter(d => p.design_ids.includes(d.id));
+
+  document.getElementById('btq-modal-inner').innerHTML = `
+    <div class="btq-modal-img">
+      <div class="btq-modal-img-bg"></div>
+      ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-modal-img-icon">${btqProdIcon(p)}</span>`}
+    </div>
+    <button class="btq-modal-close-btn" onclick="btqCloseModal({target:null})">✕</button>
+    <p class="btq-modal-name">${p.nom}</p>
+    <p class="btq-modal-price">${btqFmt(p.prix_centimes)}</p>
+
+    ${designs.length ? `
+      <p class="btq-modal-label">Design</p>
+      <div class="btq-designs" id="btq-design-row">
+        ${designs.map(d => `
+          <button class="btq-design-chip" data-did="${d.id}" data-dnom="${d.nom}" onclick="btqSelectDesign('${d.id}','${btqEsc(d.nom)}',this)">
+            ${d.image_url ? `<img src="${d.image_url}" alt="${d.nom}">` : ''}${d.nom}
+          </button>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    ${p.tailles_disponibles?.length ? `
+      <p class="btq-modal-label">Taille</p>
+      <div class="btq-sizes" id="btq-size-row">
+        ${p.tailles_disponibles.map(t => `
+          <button class="btq-size-chip" data-t="${t}" onclick="btqSelectTaille('${t}',this)">${t}</button>
+        `).join('')}
+      </div>
+    ` : ''}
+
+    <p class="btq-modal-label">Quantité</p>
+    <div class="btq-qty-row">
+      <button class="btq-qty-btn" onclick="btqQty(-1)">−</button>
+      <span class="btq-qty-val" id="btq-qty-val">1</span>
+      <button class="btq-qty-btn" onclick="btqQty(1)">+</button>
+    </div>
+
+    <button class="btq-add-btn" id="btq-add-btn" onclick="btqAddToCart()">
+      Ajouter au panier
+    </button>
+  `;
+
+  document.getElementById('btq-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function btqCloseModal(e) {
+  if (e.target === document.getElementById('btq-modal') || e.target === null) {
+    document.getElementById('btq-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    _modalProd = null;
+  }
+}
+
+function btqSelectDesign(id, nom, el) {
+  _modalDesign = {id, nom};
+  document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function btqSelectTaille(t, el) {
+  _modalTaille = t;
+  document.querySelectorAll('.btq-size-chip').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function btqQty(delta) {
+  const max = _modalProd?.max_par_commande || 10;
+  _modalQty = Math.max(1, Math.min(max, _modalQty + delta));
+  document.getElementById('btq-qty-val').textContent = _modalQty;
+}
+
+// ── Ajouter au panier ───────────────────────────────────────
+async function btqAddToCart() {
+  const p = _modalProd;
+  if (!p) return;
+  if (p.a_designs && !_modalDesign) { btqToast('Choisis un design !'); return; }
+  if (p.a_tailles && !_modalTaille) { btqToast('Choisis une taille !'); return; }
+
+  const btn = document.getElementById('btq-add-btn');
+  btn.disabled = true;btn.textContent = '…';
+
+  // Vérifier quantité déjà dans le panier pour ce produit/design/taille
+  const existing = _cart.filter(i => !i.est_offert
+    && i.produit_id === p.id
+    && i.design_id  === (_modalDesign?.id || null)
+    && i.taille     === (_modalTaille || null));
+  const qtyInCart = existing.reduce((s,i) => s + i.quantite, 0);
+  if (qtyInCart + _modalQty > (p.max_par_commande || 10)) {
+    btqToast(`Max ${p.max_par_commande || 10} par article`);
+    btn.disabled = false;btn.textContent = 'Ajouter au panier';
+    return;
+  }
+
+  // Insert en base
+  const { data: item } = await _sb.from('boutique_items').insert({
+    commande_id:            _cmdId,
+    produit_id:             p.id,
+    produit_nom:            p.nom,
+    design_id:              _modalDesign?.id || null,
+    design_nom:             _modalDesign?.nom || null,
+    taille:                 _modalTaille || null,
+    quantite:               _modalQty,
+    prix_unitaire_centimes: p.prix_centimes,
+    est_offert:             false,
+  }).select('id').single();
+
+  if (item) {
+    _cart.push({
+      _key: item.id, produit_id: p.id, produit_nom: p.nom,
+      design_id: _modalDesign?.id||null, design_nom: _modalDesign?.nom||null,
+      taille: _modalTaille||null, quantite: _modalQty,
+      prix: p.prix_centimes, est_offert: false,
+    });
+    await btqApplyPacks();
+    btqUpdateCartUI();
+    btqToast(`${p.nom} ajouté !`);
+    // Fermer modal
+    document.getElementById('btq-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    // Pulse FAB
+    const fab = document.getElementById('btq-fab');
+    fab.classList.add('pulse');
+    setTimeout(() => fab.classList.remove('pulse'), 500);
+    // Ouvrir panier
+    setTimeout(btqOpenCart, 300);
+  }
+  btn.disabled = false;btn.textContent = 'Ajouter au panier';
+}
+
+// ── Supprimer item ──────────────────────────────────────────
+async function btqRemoveItem(key) {
+  await _sb.from('boutique_items').delete().eq('id', key);
+  _cart = _cart.filter(i => i._key !== key);
+  await btqApplyPacks();
+  btqUpdateCartUI();
+}
+
+// ── Pack detection ──────────────────────────────────────────
+async function btqApplyPacks() {
+  if (!_packs.length) return;
+  // Supprimer les articles offerts actuels
+  const offerts = _cart.filter(i => i.est_offert);
+  for (const o of offerts) {
+    await _sb.from('boutique_items').delete().eq('id', o._key);
+  }
+  _cart = _cart.filter(i => !i.est_offert);
+
+  // Calculer les quantités par produit
+  const qtyMap = {};
+  _cart.forEach(i => { qtyMap[i.produit_id] = (qtyMap[i.produit_id] || 0) + i.quantite; });
+
+  let packActive = null;
+  for (const pack of _packs) {
+    if (!pack.actif) continue;
+    const met = pack.conditions.every(c => (qtyMap[c.produit_id] || 0) >= c.min_qty);
+    if (met) {
+      packActive = pack;
+      break;
+    }
+  }
+
+  const banner   = document.getElementById('btq-pack-banner');
+  const packMsg  = document.getElementById('btq-pack-msg');
+  if (packActive) {
+    const offreProd = _produits.find(p => p.id === packActive.offre_produit_id);
+    if (offreProd) {
+      const { data: item } = await _sb.from('boutique_items').insert({
+        commande_id:            _cmdId,
+        produit_id:             offreProd.id,
+        produit_nom:            offreProd.nom,
+        quantite:               packActive.offre_qty,
+        prix_unitaire_centimes: 0,
+        est_offert:             true,
+      }).select('id').single();
+      if (item) {
+        _cart.push({
+          _key: item.id, produit_id: offreProd.id, produit_nom: offreProd.nom,
+          design_id:null,design_nom:null,taille:null,
+          quantite: packActive.offre_qty, prix: 0, est_offert: true,
+        });
+      }
+    }
+    packMsg.textContent = packActive.description || 'Pack détecté ! Article offert ajouté.';
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+  await btqSaveCart();
+}
+
+// ── UI panier ───────────────────────────────────────────────
+function btqUpdateCartUI() {
+  const items  = document.getElementById('btq-cart-items');
+  const total  = document.getElementById('btq-cart-total');
+  const badge  = document.getElementById('btq-fab-badge');
+  const chkBtn = document.getElementById('btq-checkout-btn');
+
+  const nonOfferts = _cart.filter(i => !i.est_offert);
+  const totalVal   = btqCalcTotal();
+  const totalItems = nonOfferts.reduce((s,i) => s + i.quantite, 0);
+
+  // Badge FAB
+  badge.textContent = totalItems;
+  badge.classList.toggle('show', totalItems > 0);
+
+  total.textContent = btqFmt(totalVal);
+  chkBtn.disabled   = totalItems === 0;
+
+  if (!_cart.length) {
+    items.innerHTML = `
+      <div class="btq-cart-empty">
+        <span class="btq-cart-empty-icon">🛒</span>
+        Ton panier est vide.<br>Ajoute des articles depuis le catalogue !
+      </div>`;
+    return;
+  }
+
+  items.innerHTML = _cart.map(i => `
+    <div class="btq-cart-item">
+      <div class="btq-cart-item-img">${btqProdIconById(i.produit_id)}</div>
+      <div class="btq-cart-item-info">
+        <p class="btq-cart-item-name">${i.produit_nom}</p>
+        <p class="btq-cart-item-detail">
+          ${i.design_nom ? `${i.design_nom}` : ''}${i.design_nom && i.taille ? ' · ' : ''}${i.taille || ''}${(i.design_nom || i.taille) ? '' : 'Taille unique'} — ×${i.quantite}
+        </p>
+      </div>
+      <div class="btq-cart-item-right">
+        <span class="btq-cart-item-price${i.est_offert ? ' offert' : ''}">
+          ${i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}
+        </span>
+        <button class="btq-cart-item-del" onclick="btqRemoveItem('${i._key}')" title="Supprimer">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function btqCalcTotal() {
+  return _cart.filter(i => !i.est_offert).reduce((s,i) => s + i.prix * i.quantite, 0);
+}
+function btqFmt(centimes) {
+  return (centimes / 100).toLocaleString('fr-FR', {minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+}
+function btqProdIconById(id) {
+  const p = _produits.find(x => x.id === id);
+  return p ? btqProdIcon(p) : '📦';
+}
+
+// ── Ouvrir / fermer sidebar ─────────────────────────────────
+function btqOpenCart() {
+  document.getElementById('btq-cart-sidebar').classList.add('open');
+  document.getElementById('btq-cart-backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function btqCloseCart() {
+  document.getElementById('btq-cart-sidebar').classList.remove('open');
+  document.getElementById('btq-cart-backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Checkout ────────────────────────────────────────────────
+function btqOpenCheckout() {
+  if (!_cart.filter(i => !i.est_offert).length) return;
+  btqCloseCart();
+  // Remplir le résumé
+  const summary = document.getElementById('btq-checkout-summary');
+  summary.innerHTML = _cart.map(i => `
+    <div class="btq-checkout-row">
+      <span>${i.produit_nom}${i.taille ? ` (${i.taille})` : ''}${i.design_nom ? ` — ${i.design_nom}` : ''} ×${i.quantite}</span>
+      <span>${i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}</span>
+    </div>
+  `).join('') + `
+    <div class="btq-checkout-row">
+      <span>Total</span>
+      <span>${btqFmt(btqCalcTotal())}</span>
+    </div>
+  `;
+  document.getElementById('btq-checkout-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function btqCloseCheckout(e) {
+  if (!e || e.target === document.getElementById('btq-checkout-overlay') || e.target === null) {
+    document.getElementById('btq-checkout-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    btqOpenCart();
+  }
+}
+
+async function btqPlaceOrder() {
+  const nom   = document.getElementById('btq-nom').value.trim();
+  const email = document.getElementById('btq-email').value.trim();
+  if (!nom)   { btqToast('Entre ton prénom + nom'); return; }
+  if (!email || !email.includes('@')) { btqToast('Entre un e-mail valide'); return; }
+
+  const btn = document.getElementById('btq-pay-btn');
+  btn.disabled = true;btn.textContent = 'Traitement…';
+
+  try {
+    const res = await fetch('/api/boutique-commande', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        commande_id: _cmdId,
+        nom_acheteur: nom,
+        email_acheteur: email,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error || 'Erreur');
+
+    // Afficher succès
+    const card = document.getElementById('btq-checkout-card');
+    card.innerHTML = `
+      <div class="btq-success">
+        <span class="btq-success-icon">🎉</span>
+        <p class="btq-success-title">Commande enregistrée !</p>
+        <p class="btq-success-num">${data.numero}</p>
+        <p class="btq-success-msg">
+          Un e-mail de confirmation vient de t'être envoyé à <strong>${email}</strong>.<br>
+          Tu seras livré sur place une fois que nous aurons reçu tous les articles.
+        </p>
+        ${data.helloasso_url ? `
+          <a href="${data.helloasso_url}" target="_blank" rel="noopener" style="
+            display:block;width:100%;padding:15px;
+            font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;
+            letter-spacing:2px;text-transform:uppercase;
+            border-radius:14px;text-decoration:none;text-align:center;
+            background:linear-gradient(135deg,#460186,#D2396D,#FF741F);
+            color:white;
+          ">
+            Payer ${btqFmt(btqCalcTotal())} sur HelloAsso
+          </a>
+        ` : ''}
+        <button onclick="document.getElementById('btq-checkout-overlay').classList.remove('open');document.body.style.overflow='';btqResetCart();"
+          style="margin-top:12px;width:100%;padding:12px;font-family:'Barlow Condensed',sans-serif;
+          font-weight:700;font-size:15px;border:1.5px solid #e0d8f0;border-radius:12px;
+          background:white;color:#666;cursor:pointer;">
+          Retour à la boutique
+        </button>
+      </div>`;
+
+    // Réinitialiser le panier local
+    _cart  = [];
+    _cmdId = null;
+    await btqLoadCart();
+    btqUpdateCartUI();
+  } catch(err) {
+    btqToast('Une erreur est survenue. Réessaie.');
+    btn.disabled = false;btn.textContent = 'Payer sur HelloAsso';
+  }
+}
+
+function btqResetCart() {
+  btqUpdateCartUI();
+}
+
+// ── Toast ────────────────────────────────────────────────────
+let _toastTimer = null;
+function btqToast(msg) {
+  const t = document.getElementById('btq-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Marquee ──────────────────────────────────────────────────
+function btqFillMarquee() {
+  const items = (_produits.length ? _produits.map(p => p.nom) : ['T-shirt','Pull','Tasse','Chaussettes','Porte-clef']);
+  const track = document.getElementById('btq-marquee');
+  const doubled = [...items,...items,...items,...items];
+  track.innerHTML = doubled.map(n => `<span>${n}</span>`).join('');
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function btqEsc(s) { return s.replace(/'/g,'\\\'').replace(/"/g,'&quot;'); }
+
+// ── Démarrage ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', btqInit);
+</script>
+
+<script defer src="js/main.js?v=20"></script>
+<script defer src="js/notif.js"></script>
+</body>
+</html>
