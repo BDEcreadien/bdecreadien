@@ -8728,10 +8728,10 @@ function btqaRenderStats() {
                       .reduce((s, c) => s + (c.total_centimes || 0), 0);
   document.getElementById('btqa-stats').innerHTML = `
     <div class="btqa-stat"><div class="btqa-stat-val">${all.length}</div><div class="btqa-stat-lbl">Commandes</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#f59e0b">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#10b981">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#6366f1">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#460186;font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val orange">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val orange">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
   `;
 }
 
