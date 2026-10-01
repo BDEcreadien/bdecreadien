@@ -406,7 +406,7 @@
 
     async function fetchFromSupabase(uid) {
       if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON) return null;
-      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
       const { data: carte } = await sb.from('cartes_fidelite').select('*').eq('user_id', uid).maybeSingle();
       if (!carte) return null;
       // Utilise la fonction sécurisée qui n'expose que prenom/nom (pas email/tel/role)

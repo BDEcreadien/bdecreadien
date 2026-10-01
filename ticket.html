@@ -213,7 +213,7 @@
     // ============================================================================
     const SITE = location.origin;
     const SUPABASE_URL_VAL = 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
-    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 
     const slug = new URLSearchParams(location.search).get('slug')
       || (location.pathname.match(/^\/billetterie\/([^\/?#]+)/) || [])[1]
