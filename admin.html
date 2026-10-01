@@ -9003,7 +9003,7 @@ function btqaOpenProduit(id) {
         style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
     </div>
     <div class="btqa-form-row"><label>Nom</label><input id="bp-nom" value="${prod?.nom || ''}"></div>
-    <div class="btqa-form-row"><label>Prix (en euros)</label><input id="bp-prix" type="number" step="0.01" min="0" value="${((prod?.prix_centimes || 0) / 100).toFixed(2)}"></div>
+    <div class="btqa-form-row"><label>Prix (en euros)</label><input id="bp-prix" type="number" step="0.01" min="0" value="${((prod?.prix_centimes ?? 0) / 100).toFixed(2)}"></div>
     <div class="btqa-form-row"><label>Catégorie</label>
       <select id="bp-cat">
         <option value="vetement" ${prod?.categorie === 'vetement' ? 'selected' : ''}>Vêtement</option>
