@@ -8619,5 +8619,467 @@ async function facTelechargerPdfExistant(id) {
     </div>
   </div>
 </div>
+
+<script>
+/* ============================================================
+   ADMIN BOUTIQUE GOODIES
+   ============================================================ */
+
+let _btqaCommandes  = [];   // commandes chargées
+let _btqaProduits   = [];   // catalogue
+let _btqaPhysItems  = [];   // lignes vente physique
+
+// ── Init ────────────────────────────────────────────────────
+async function initBoutiqueAdmin() {
+  const sb = window.Auth?.sb;
+  if (!sb) return;
+
+  // Charger commandes (tout sauf paniers)
+  const { data: cmds } = await sb
+    .from('boutique_commandes')
+    .select('*, boutique_items(*)')
+    .neq('statut', 'panier')
+    .order('created_at', { ascending: false });
+  _btqaCommandes = cmds || [];
+
+  // Charger produits pour la vente physique + config
+  const { data: prods } = await sb.from('boutique_produits').select('*').eq('actif', true).order('ordre');
+  _btqaProduits = prods || [];
+
+  btqaRenderStats();
+  btqaRenderTable(_btqaCommandes);
+  btqaRenderConfigProduits();
+}
+
+// ── Onglets ──────────────────────────────────────────────────
+function btqaSwitchTab(tab) {
+  document.querySelectorAll('.btqa-tab').forEach((b, i) => {
+    b.classList.toggle('active', ['commandes','physique','remise','config'][i] === tab);
+  });
+  document.querySelectorAll('.btqa-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('btqa-pane-' + tab).classList.add('active');
+  if (tab === 'physique' && !_btqaPhysItems.length) btqaAddPhysItem();
+}
+
+// ── Stats ────────────────────────────────────────────────────
+function btqaRenderStats() {
+  const all     = _btqaCommandes;
+  const attn    = all.filter(c => c.statut === 'en_attente').length;
+  const conf    = all.filter(c => c.statut === 'confirmee').length;
+  const remis   = all.filter(c => c.statut === 'remise').length;
+  const totalEur = all.filter(c => ['en_attente','confirmee','remise'].includes(c.statut))
+                      .reduce((s, c) => s + (c.total_centimes || 0), 0);
+  document.getElementById('btqa-stats').innerHTML = `
+    <div class="btqa-stat"><div class="btqa-stat-val">${all.length}</div><div class="btqa-stat-lbl">Commandes</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#f59e0b">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#10b981">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#6366f1">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="color:#460186;font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
+  `;
+}
+
+// ── Table commandes ──────────────────────────────────────────
+function btqaRenderTable(list) {
+  const tbody  = document.getElementById('btqa-tbody');
+  const emptyEl = document.getElementById('btqa-empty');
+  if (!list.length) { tbody.innerHTML = ''; emptyEl.style.display = 'block'; return; }
+  emptyEl.style.display = 'none';
+  tbody.innerHTML = list.map(c => {
+    const d = new Date(c.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit' });
+    const typeLabel = c.type === 'physique'
+      ? '<span class="btqa-badge physique">Physique</span>'
+      : '<span style="font-size:11px;color:#999">En ligne</span>';
+    const actions = [];
+    if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaConfirm('${c.id}')">Confirmer</button>`);
+    if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
+    if (['en_attente','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+    actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
+    return `<tr>
+      <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '—'}</td>
+      <td>${c.nom_acheteur || '—'}</td>
+      <td style="font-size:12px;color:#666">${c.email_acheteur || '—'}</td>
+      <td style="font-size:12px;color:#999">${d}</td>
+      <td style="font-weight:700">${btqaFmt(c.total_centimes || 0)}</td>
+      <td>${typeLabel}</td>
+      <td><span class="btqa-badge ${c.statut}">${btqaStatutLabel(c.statut)}</span></td>
+      <td style="white-space:nowrap">${actions.join(' ')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function btqaFilterTable() {
+  const q  = document.getElementById('btqa-search').value.toLowerCase();
+  const st = document.getElementById('btqa-filter-statut').value;
+  const filtered = _btqaCommandes.filter(c => {
+    const matchQ  = !q || (c.numero||'').toLowerCase().includes(q) || (c.nom_acheteur||'').toLowerCase().includes(q) || (c.email_acheteur||'').toLowerCase().includes(q);
+    const matchSt = !st || c.statut === st;
+    return matchQ && matchSt;
+  });
+  btqaRenderTable(filtered);
+}
+
+// ── Détail commande ──────────────────────────────────────────
+function btqaShowDetail(id) {
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (!c) return;
+  const items = c.boutique_items || [];
+  const card = document.getElementById('btqa-detail-card');
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="margin:0;color:var(--violet)">${c.numero || 'Panier'}</h3>
+      <button onclick="document.getElementById('btqa-detail-modal').style.display='none'"
+        style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
+    </div>
+    <p style="margin:0 0 4px;font-weight:700">${c.nom_acheteur}</p>
+    <p style="margin:0 0 12px;font-size:13px;color:#666">${c.email_acheteur}</p>
+    <p style="margin:0 0 4px;font-size:12px;color:#999">
+      ${new Date(c.created_at).toLocaleString('fr-FR')} · ${c.type === 'physique' ? 'Vente physique' : 'En ligne'} · ${btqaStatutLabel(c.statut)}
+    </p>
+    ${c.notes ? `<p style="margin:8px 0;font-size:13px;color:#666;background:#f7f5fb;padding:8px 12px;border-radius:8px">${c.notes}</p>` : ''}
+    <hr style="border:none;border-top:1px solid #f0e8ff;margin:16px 0">
+    ${items.map(i => `
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px">
+        <span>${i.produit_nom}${i.taille ? ` (${i.taille})` : ''}${i.design_nom ? ` — ${i.design_nom}` : ''} ×${i.quantite}${i.est_offert ? ' <span style="color:#FF741F;font-size:11px;font-weight:700">OFFERT</span>' : ''}</span>
+        <span style="font-weight:700;color:var(--violet)">${i.est_offert ? '—' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
+      </div>`).join('')}
+    <hr style="border:none;border-top:1px solid #f0e8ff;margin:12px 0">
+    <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px">
+      <span>Total</span><span style="color:var(--violet)">${btqaFmt(c.total_centimes || 0)}</span>
+    </div>
+    ${c.moyen_paiement ? `<p style="margin:12px 0 0;font-size:12px;color:#888">Paiement : ${c.moyen_paiement}</p>` : ''}
+    <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+      ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaConfirm('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">✓ Confirmer le paiement</button>` : ''}
+      ${c.statut === 'confirmee'  ? `<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">📦 Marquer remis</button>` : ''}
+    </div>`;
+  document.getElementById('btqa-detail-modal').style.display = 'flex';
+}
+
+// ── Actions statut ───────────────────────────────────────────
+async function btqaConfirm(id) {
+  if (!confirm('Confirmer le paiement de cette commande ?')) return;
+  await window.Auth.sb.from('boutique_commandes').update({ statut: 'confirmee' }).eq('id', id);
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (c) c.statut = 'confirmee';
+  btqaRenderStats();
+  btqaFilterTable();
+  showToast('Commande confirmée');
+}
+async function btqaRemettre(id) {
+  if (!confirm('Marquer cette commande comme remise au client ?')) return;
+  const sb = window.Auth.sb;
+  await sb.from('boutique_commandes').update({ statut: 'remise' }).eq('id', id);
+  await sb.from('boutique_remises').insert({ commande_id: id, remis_par: window._monProfilId });
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (c) c.statut = 'remise';
+  btqaRenderStats();
+  btqaFilterTable();
+  showToast('Commande marquée comme remise');
+}
+async function btqaCancel(id) {
+  if (!confirm('Annuler cette commande ? Cette action est définitive.')) return;
+  await window.Auth.sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', id);
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (c) c.statut = 'annulee';
+  btqaRenderStats();
+  btqaFilterTable();
+  showToast('Commande annulée');
+}
+
+// ── Export CSV ───────────────────────────────────────────────
+function btqaExportCSV() {
+  const rows = [['Numéro','Nom','Email','Date','Total €','Type','Statut','Paiement','Notes']];
+  _btqaCommandes.forEach(c => {
+    const items = (c.boutique_items || []).filter(i => !i.est_offert)
+      .map(i => `${i.produit_nom} ×${i.quantite}${i.taille ? ` (${i.taille})` : ''}`).join(' | ');
+    rows.push([
+      c.numero || '',
+      c.nom_acheteur || '',
+      c.email_acheteur || '',
+      new Date(c.created_at).toLocaleDateString('fr-FR'),
+      ((c.total_centimes || 0) / 100).toFixed(2),
+      c.type,
+      btqaStatutLabel(c.statut),
+      c.moyen_paiement || '',
+      c.notes || '',
+    ]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `commandes-boutique-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+}
+
+// ── Vente physique ───────────────────────────────────────────
+function btqaAddPhysItem() {
+  _btqaPhysItems.push({ produit_id: '', taille: '', quantite: 1 });
+  btqaRenderPhysItems();
+}
+function btqaRenderPhysItems() {
+  const el = document.getElementById('btqa-p-items-list');
+  el.innerHTML = _btqaPhysItems.map((item, i) => {
+    const prod = _btqaProduits.find(p => p.id === item.produit_id);
+    const tailles = prod?.tailles_disponibles || [];
+    return `
+      <div class="btqa-phys-item-row">
+        <select onchange="btqaPhysItemProd(${i}, this.value)"
+          style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px">
+          <option value="">— Produit —</option>
+          ${_btqaProduits.map(p => `<option value="${p.id}" ${p.id === item.produit_id ? 'selected' : ''}>${p.nom} — ${btqaFmt(p.prix_centimes)}</option>`).join('')}
+        </select>
+        <select onchange="_btqaPhysItems[${i}].taille=this.value;btqaUpdatePhysTotal()"
+          style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px"
+          ${!tailles.length ? 'disabled' : ''}>
+          <option value="">${tailles.length ? '— Taille —' : 'Sans taille'}</option>
+          ${tailles.map(t => `<option value="${t}" ${t === item.taille ? 'selected' : ''}>${t}</option>`).join('')}
+        </select>
+        <input type="number" min="1" max="10" value="${item.quantite}"
+          onchange="_btqaPhysItems[${i}].quantite=+this.value;btqaUpdatePhysTotal()"
+          style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;width:70px">
+        <button onclick="_btqaPhysItems.splice(${i},1);btqaRenderPhysItems()"
+          style="border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;padding:0 10px;font-size:18px">✕</button>
+      </div>`;
+  }).join('');
+  btqaUpdatePhysTotal();
+}
+function btqaPhysItemProd(i, prodId) {
+  _btqaPhysItems[i].produit_id = prodId;
+  _btqaPhysItems[i].taille = '';
+  btqaRenderPhysItems();
+}
+function btqaUpdatePhysTotal() {
+  const total = _btqaPhysItems.reduce((s, item) => {
+    const p = _btqaProduits.find(x => x.id === item.produit_id);
+    return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
+  }, 0);
+  document.getElementById('btqa-p-total').textContent = btqaFmt(total);
+}
+
+async function btqaCreatePhysOrder() {
+  const nom   = document.getElementById('btqa-p-nom').value.trim();
+  const email = document.getElementById('btqa-p-email').value.trim();
+  if (!nom)   return showToast('Entre le nom de l\'acheteur', 'error');
+  if (!email) return showToast('Entre un e-mail', 'error');
+  const validItems = _btqaPhysItems.filter(i => i.produit_id);
+  if (!validItems.length) return showToast('Ajoute au moins un article', 'error');
+
+  const sb = window.Auth.sb;
+  const moyen = document.getElementById('btqa-p-paiement').value;
+  const notes = document.getElementById('btqa-p-notes').value.trim();
+  const total = _btqaPhysItems.reduce((s, item) => {
+    const p = _btqaProduits.find(x => x.id === item.produit_id);
+    return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
+  }, 0);
+
+  const { data: cmd } = await sb.from('boutique_commandes').insert({
+    type: 'physique', statut: 'confirmee',
+    membre_id: null, nom_acheteur: nom, email_acheteur: email,
+    total_centimes: total, moyen_paiement: moyen,
+    cree_par: window._monProfilId, notes,
+  }).select('id,numero').single();
+
+  if (!cmd) return showToast('Erreur lors de la création', 'error');
+
+  const itemsToInsert = validItems.map(item => {
+    const p = _btqaProduits.find(x => x.id === item.produit_id);
+    return {
+      commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p.nom,
+      taille: item.taille || null, quantite: item.quantite || 1,
+      prix_unitaire_centimes: p.prix_centimes, est_offert: false,
+    };
+  });
+  await sb.from('boutique_items').insert(itemsToInsert);
+
+  showToast(`Commande ${cmd.numero} créée !`);
+  _btqaPhysItems = [];
+  document.getElementById('btqa-p-nom').value   = '';
+  document.getElementById('btqa-p-email').value  = '';
+  document.getElementById('btqa-p-notes').value  = '';
+  btqaRenderPhysItems();
+  await initBoutiqueAdmin();
+}
+
+// ── Remise ───────────────────────────────────────────────────
+async function btqaLookup() {
+  const num = document.getElementById('btqa-r-numero').value.trim().toUpperCase();
+  if (!num) return showToast('Entre un numéro de commande', 'error');
+  const sb = window.Auth.sb;
+  const { data } = await sb.from('boutique_commandes')
+    .select('*, boutique_items(*)')
+    .eq('numero', num)
+    .maybeSingle();
+
+  const res = document.getElementById('btqa-r-result');
+  res.style.display = 'block';
+  if (!data) {
+    res.innerHTML = `<p style="color:#dc2626;font-weight:600">Commande introuvable : ${num}</p>`;
+    return;
+  }
+  const items = data.boutique_items || [];
+  res.innerHTML = `
+    <p style="font-weight:700;margin:0 0 4px;color:var(--violet)">${data.numero}</p>
+    <p style="margin:0 0 8px">${data.nom_acheteur} — ${data.email_acheteur}</p>
+    <span class="btqa-badge ${data.statut}">${btqaStatutLabel(data.statut)}</span>
+    <hr style="border:none;border-top:1px solid #e0d8f0;margin:12px 0">
+    ${items.map(i => `<div style="font-size:13px;margin-bottom:4px">
+      ${i.produit_nom}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}
+      ${i.est_offert ? '<span style="color:#FF741F;font-size:11px;font-weight:700"> OFFERT</span>' : ''}
+    </div>`).join('')}
+    <p style="font-weight:700;margin:12px 0 0">Total : ${btqaFmt(data.total_centimes)}</p>
+    ${data.statut === 'confirmee' ? `
+      <button class="btn-save" style="margin-top:12px;width:100%" onclick="btqaRemettreNum('${data.id}')">
+        📦 Confirmer la remise
+      </button>` : ''}
+    ${data.statut === 'remise' ? '<p style="color:#6366f1;font-weight:700;margin-top:12px">✓ Déjà remise</p>' : ''}
+    ${data.statut === 'en_attente' ? '<p style="color:#f59e0b;font-weight:700;margin-top:8px">⚠ Paiement pas encore confirmé</p>' : ''}
+  `;
+}
+
+async function btqaRemettreNum(id) {
+  await btqaRemettre(id);
+  document.getElementById('btqa-r-result').style.display = 'none';
+  document.getElementById('btqa-r-numero').value = '';
+}
+
+// ── Config produits ──────────────────────────────────────────
+async function btqaRenderConfigProduits() {
+  const sb = window.Auth.sb;
+  const { data: prods } = await sb.from('boutique_produits').select('*').order('ordre');
+  const el = document.getElementById('btqa-config-produits');
+  if (!prods?.length) { el.innerHTML = '<p style="color:#bbb">Aucun produit configuré.</p>'; return; }
+  el.innerHTML = prods.map(p => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff">
+      <div>
+        <span style="font-weight:600">${p.nom}</span>
+        <span style="font-size:12px;color:#999;margin-left:8px">${btqaFmt(p.prix_centimes)} · ${p.actif ? 'Actif' : 'Inactif'}</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btqa-act-btn detail" onclick="btqaOpenProduit('${p.id}')">Modifier</button>
+        <button class="btqa-act-btn ${p.actif ? 'cancel' : 'confirm'}" onclick="btqaToggleProduit('${p.id}', ${!p.actif})">
+          ${p.actif ? 'Désactiver' : 'Activer'}
+        </button>
+      </div>
+    </div>`).join('');
+
+  // Designs
+  const { data: designs } = await sb.from('boutique_designs').select('*').order('ordre');
+  const del = document.getElementById('btqa-config-designs');
+  if (!designs?.length) { del.innerHTML = '<p style="color:#bbb">Aucun design configuré.</p>'; return; }
+  del.innerHTML = designs.map(d => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff">
+      <span style="font-weight:600">${d.nom}</span>
+      <button class="btqa-act-btn detail" onclick="btqaOpenDesign('${d.id}')">Modifier</button>
+    </div>`).join('');
+}
+
+async function btqaToggleProduit(id, actif) {
+  await window.Auth.sb.from('boutique_produits').update({ actif }).eq('id', id);
+  btqaRenderConfigProduits();
+  showToast(actif ? 'Produit activé' : 'Produit désactivé');
+}
+
+function btqaOpenProduit(id) {
+  const sb = window.Auth.sb;
+  const prod = id ? _btqaProduits.find(p => p.id === id) : null;
+  const card = document.getElementById('btqa-prod-card');
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="margin:0">${prod ? 'Modifier' : 'Nouveau'} produit</h3>
+      <button onclick="document.getElementById('btqa-prod-modal').style.display='none'"
+        style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
+    </div>
+    <div class="btqa-form-row"><label>Nom</label><input id="bp-nom" value="${prod?.nom || ''}"></div>
+    <div class="btqa-form-row"><label>Prix (en euros)</label><input id="bp-prix" type="number" step="0.01" min="0" value="${((prod?.prix_centimes || 0) / 100).toFixed(2)}"></div>
+    <div class="btqa-form-row"><label>Catégorie</label>
+      <select id="bp-cat">
+        <option value="vetement" ${prod?.categorie === 'vetement' ? 'selected' : ''}>Vêtement</option>
+        <option value="accessoire" ${prod?.categorie === 'accessoire' ? 'selected' : ''}>Accessoire</option>
+      </select>
+    </div>
+    <div class="btqa-form-row"><label>Tailles (séparées par des virgules)</label>
+      <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}">
+    </div>
+    <div class="btqa-form-row" style="display:flex;gap:16px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
+        <input type="checkbox" id="bp-designs" ${prod?.a_designs ? 'checked' : ''}> A des designs
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
+        <input type="checkbox" id="bp-actif" ${prod?.actif !== false ? 'checked' : ''}> Actif
+      </label>
+    </div>
+    <button class="btn-save" style="width:100%;margin-top:8px" onclick="btqaSaveProduit('${id || ''}')">
+      ${prod ? 'Enregistrer' : 'Créer le produit'}
+    </button>`;
+  document.getElementById('btqa-prod-modal').style.display = 'flex';
+}
+
+async function btqaSaveProduit(id) {
+  const nom     = document.getElementById('bp-nom').value.trim();
+  const prix    = Math.round(parseFloat(document.getElementById('bp-prix').value) * 100) || 0;
+  const cat     = document.getElementById('bp-cat').value;
+  const tailles = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
+  const aDesigns = document.getElementById('bp-designs').checked;
+  const actif   = document.getElementById('bp-actif').checked;
+  if (!nom) return showToast('Entre un nom', 'error');
+
+  const payload = { nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
+    a_designs: aDesigns, a_tailles: tailles.length > 0, actif };
+  const sb = window.Auth.sb;
+  if (id) {
+    await sb.from('boutique_produits').update(payload).eq('id', id);
+  } else {
+    await sb.from('boutique_produits').insert(payload);
+  }
+  document.getElementById('btqa-prod-modal').style.display = 'none';
+  const { data } = await sb.from('boutique_produits').select('*').eq('actif', true).order('ordre');
+  _btqaProduits = data || [];
+  btqaRenderConfigProduits();
+  showToast(id ? 'Produit modifié' : 'Produit créé');
+}
+
+function btqaOpenDesign(id) {
+  const card = document.getElementById('btqa-prod-card');
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="margin:0">${id ? 'Modifier' : 'Nouveau'} design</h3>
+      <button onclick="document.getElementById('btqa-prod-modal').style.display='none'"
+        style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
+    </div>
+    <div class="btqa-form-row"><label>Nom du design</label><input id="bd-nom" value=""></div>
+    <div class="btqa-form-row"><label>URL image (optionnel)</label><input id="bd-img" placeholder="https://…"></div>
+    <button class="btn-save" style="width:100%;margin-top:8px" onclick="btqaSaveDesign('${id || ''}')">
+      ${id ? 'Enregistrer' : 'Créer le design'}
+    </button>`;
+  // Préremplir si modif
+  if (id) {
+    window.Auth.sb.from('boutique_designs').select('*').eq('id', id).single()
+      .then(({ data }) => {
+        if (data) { document.getElementById('bd-nom').value = data.nom; document.getElementById('bd-img').value = data.image_url || ''; }
+      });
+  }
+  document.getElementById('btqa-prod-modal').style.display = 'flex';
+}
+
+async function btqaSaveDesign(id) {
+  const nom = document.getElementById('bd-nom').value.trim();
+  const img = document.getElementById('bd-img').value.trim();
+  if (!nom) return showToast('Entre un nom', 'error');
+  const sb = window.Auth.sb;
+  if (id) { await sb.from('boutique_designs').update({ nom, image_url: img }).eq('id', id); }
+  else    { await sb.from('boutique_designs').insert({ nom, image_url: img }); }
+  document.getElementById('btqa-prod-modal').style.display = 'none';
+  btqaRenderConfigProduits();
+  showToast(id ? 'Design modifié' : 'Design créé');
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function btqaFmt(c) {
+  return (c / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+function btqaStatutLabel(s) {
+  const m = { panier:'Panier',en_attente:'En attente',confirmee:'Confirmée',remise:'Remise',annulee:'Annulée',expiree:'Expirée' };
+  return m[s] || s;
+}
+</script>
 </body>
 </html>
