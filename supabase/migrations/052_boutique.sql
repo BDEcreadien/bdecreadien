@@ -1,6 +1,5 @@
 -- Migration 052 — Boutique BDE (merch / goodies)
 -- Tables: boutique_produits, boutique_designs, boutique_produit_designs,
---         boutique_packs, boutique_commandes, boutique_items, boutique_remises
 
 CREATE SEQUENCE IF NOT EXISTS boutique_commande_seq START 1;
 
