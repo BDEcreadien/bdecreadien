@@ -9106,21 +9106,6 @@ async function btqaRenderConfigProduits() {
     }).join('')}</div>`;
   }
 
-  // ── Designs liste ──
-  const del = document.getElementById('btqa-config-designs');
-  if (!designs?.length) { del.innerHTML = '<p style="color:#bbb">Aucun design.</p>'; }
-  else {
-    del.innerHTML = designs.map(d => `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0e8ff">
-        ${d.image_url
-          ? `<img src="${d.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0">`
-          : `<div style="width:44px;height:44px;border-radius:8px;background:#f0e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎨</div>`}
-        <span style="font-weight:600;flex:1">${d.nom}</span>
-        ${d.image_url ? `<span style="font-size:11px;color:#10b981;font-weight:700">IMAGE OK</span>` : `<span style="font-size:11px;color:#ef4444;font-weight:700">SANS IMAGE</span>`}
-        <button class="btqa-act-btn detail" onclick="btqaOpenDesign('${d.id}')">Modifier</button>
-      </div>`).join('');
-  }
-
   // ── Packs cards ──
   const pel = document.getElementById('btqa-config-packs');
   if (!pel) return;
