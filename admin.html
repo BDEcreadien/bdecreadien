@@ -9047,9 +9047,27 @@ async function btqaToggleProduit(id, actif) {
   showToast(actif ? 'Produit activé' : 'Produit désactivé');
 }
 
-function btqaOpenProduit(id) {
+async function btqaOpenProduit(id) {
   const sb = window.Auth.sb;
   const prod = id ? _btqaProduits.find(p => p.id === id) : null;
+
+  // Charger les designs liés + tous les designs disponibles
+  let linkedDesigns = [];
+  let allDesigns = [];
+  if (id) {
+    const [{ data: pd }, { data: ad }] = await Promise.all([
+      sb.from('boutique_produit_designs').select('design_id, boutique_designs(id,nom,image_url)').eq('produit_id', id),
+      sb.from('boutique_designs').select('*').order('ordre')
+    ]);
+    linkedDesigns = (pd || []).map(r => r.boutique_designs).filter(Boolean);
+    allDesigns = ad || [];
+  } else {
+    const { data: ad } = await sb.from('boutique_designs').select('*').order('ordre');
+    allDesigns = ad || [];
+  }
+
+  const linkedIds = new Set(linkedDesigns.map(d => d.id));
+
   const card = document.getElementById('btqa-prod-card');
   card.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -9057,6 +9075,7 @@ function btqaOpenProduit(id) {
       <button onclick="document.getElementById('btqa-prod-modal').style.display='none'"
         style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
     </div>
+
     <div class="btqa-form-row"><label>Nom</label><input id="bp-nom" value="${prod?.nom || ''}"></div>
     <div class="btqa-form-row"><label>Prix (en euros)</label><input id="bp-prix" type="number" step="0.01" min="0" value="${((prod?.prix_centimes ?? 0) / 100).toFixed(2)}"></div>
     <div class="btqa-form-row"><label>Catégorie</label>
@@ -9068,17 +9087,53 @@ function btqaOpenProduit(id) {
     <div class="btqa-form-row"><label>Tailles (séparées par des virgules)</label>
       <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}">
     </div>
-    <div class="btqa-form-row" style="display:flex;gap:16px">
-      <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
-        <input type="checkbox" id="bp-designs" ${prod?.a_designs ? 'checked' : ''}> A des designs
-      </label>
+    <div class="btqa-form-row"><label>Image produit (URL, affiché si pas de design sélectionné)</label>
+      <input id="bp-img" placeholder="https://…" value="${prod?.image_url || ''}">
+    </div>
+    <div class="btqa-form-row" style="display:flex;gap:16px;margin-bottom:4px">
       <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
         <input type="checkbox" id="bp-actif" ${prod?.actif !== false ? 'checked' : ''}> Actif
       </label>
     </div>
-    <button class="btn-save" style="width:100%;margin-top:8px" onclick="btqaSaveProduit('${id || ''}')">
+
+    ${id && allDesigns.length ? `
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0e8ff">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:12px">
+        Designs disponibles pour ce produit
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="bp-designs-list">
+        ${allDesigns.map(d => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1.5px solid ${linkedIds.has(d.id) ? '#460186' : '#eee'};background:${linkedIds.has(d.id) ? '#f8f5ff' : '#fafafa'}">
+          ${d.image_url ? `<img src="${d.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0">` : `<div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#f0e8ff,#ffe8f3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🎨</div>`}
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px">${d.nom}</div>
+            <input class="bp-design-img-input" data-design-id="${d.id}" placeholder="URL de l'image pour ce design…" value="${d.image_url || ''}"
+              style="width:100%;padding:6px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;font-family:inherit;color:#333;outline:none;box-sizing:border-box">
+          </div>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;flex-shrink:0;cursor:pointer">
+            <input type="checkbox" class="bp-design-linked" data-design-id="${d.id}" ${linkedIds.has(d.id) ? 'checked' : ''}>
+            Lié
+          </label>
+        </div>`).join('')}
+      </div>
+    </div>
+    ` : ''}
+
+    <button class="btn-save" style="width:100%;margin-top:16px" onclick="btqaSaveProduit('${id || ''}')">
       ${prod ? 'Enregistrer' : 'Créer le produit'}
     </button>`;
+
+  // Mettre à jour le style au changement de checkbox
+  card.querySelectorAll('.bp-design-linked').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const row = cb.closest('div[style*="align-items:center"]');
+      if (row) {
+        row.style.borderColor = cb.checked ? '#460186' : '#eee';
+        row.style.background  = cb.checked ? '#f8f5ff' : '#fafafa';
+      }
+    });
+  });
+
   document.getElementById('btqa-prod-modal').style.display = 'flex';
 }
 
@@ -9088,22 +9143,49 @@ async function btqaSaveProduit(id) {
   const prix    = isNaN(prixRaw) ? 0 : Math.round(prixRaw * 100);
   const cat     = document.getElementById('bp-cat').value;
   const tailles = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
-  const aDesigns = document.getElementById('bp-designs').checked;
   const actif   = document.getElementById('bp-actif').checked;
+  const imgUrl  = document.getElementById('bp-img').value.trim();
   if (!nom) return showToast('Entre un nom', 'error');
 
-  const payload = { nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
-    a_designs: aDesigns, a_tailles: tailles.length > 0, actif };
   const sb = window.Auth.sb;
+
+  // Sauvegarder les images des designs + gestion des liens
+  const designImgInputs = document.querySelectorAll('.bp-design-img-input');
+  const designLinked    = document.querySelectorAll('.bp-design-linked');
+  const saveOps = [];
+  const newLinkedIds = [];
+
+  designImgInputs.forEach(input => {
+    const did = input.dataset.designId;
+    const img = input.value.trim();
+    saveOps.push(sb.from('boutique_designs').update({ image_url: img }).eq('id', did));
+  });
+  designLinked.forEach(cb => {
+    if (cb.checked) newLinkedIds.push(cb.dataset.designId);
+  });
+
+  if (saveOps.length) await Promise.all(saveOps);
+
+  // Mettre à jour les liens produit↔design si produit existant
+  const aDesigns = newLinkedIds.length > 0;
+  const payload  = { nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
+    a_designs: aDesigns, a_tailles: tailles.length > 0, actif, image_url: imgUrl || null };
+
+  let prodId = id;
   if (id) {
     await sb.from('boutique_produits').update(payload).eq('id', id);
+    // Supprimer anciens liens, réinsérer les nouveaux
+    await sb.from('boutique_produit_designs').delete().eq('produit_id', id);
   } else {
-    await sb.from('boutique_produits').insert(payload);
+    const { data: ins } = await sb.from('boutique_produits').insert(payload).select().single();
+    prodId = ins?.id;
   }
+  if (prodId && newLinkedIds.length) {
+    await sb.from('boutique_produit_designs').insert(newLinkedIds.map(did => ({ produit_id: prodId, design_id: did })));
+  }
+
   document.getElementById('btqa-prod-modal').style.display = 'none';
-  const { data } = await sb.from('boutique_produits').select('*').eq('actif', true).order('ordre');
-  _btqaProduits = data || [];
-  btqaRenderConfigProduits();
+  await btqaRenderConfigProduits();
   showToast(id ? 'Produit modifié' : 'Produit créé');
 }
 
