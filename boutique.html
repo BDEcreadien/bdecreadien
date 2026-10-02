@@ -1236,16 +1236,18 @@ function btqQty(delta) {
 async function btqAddToCart() {
   const p = _modalProd;
   if (!p) return;
-  if (p.a_designs && !_modalDesign) { btqToast('Choisis un design !'); return; }
+  if (p.designs?.length && !_modalDesign) { btqToast('Choisis un design !'); return; }
   if (p.a_tailles && !_modalTaille) { btqToast('Choisis une taille !'); return; }
 
   const btn = document.getElementById('btq-add-btn');
   btn.disabled = true;btn.textContent = '…';
 
+  const designNom = _modalDesign?.nom || null;
+
   // Vérifier quantité déjà dans le panier pour ce produit/design/taille
   const existing = _cart.filter(i => !i.est_offert
     && i.produit_id === p.id
-    && i.design_id  === (_modalDesign?.id || null)
+    && i.design_nom === designNom
     && i.taille     === (_modalTaille || null));
   const qtyInCart = existing.reduce((s,i) => s + i.quantite, 0);
   if (qtyInCart + _modalQty > (p.max_par_commande || 10)) {
@@ -1259,8 +1261,8 @@ async function btqAddToCart() {
     commande_id:            _cmdId,
     produit_id:             p.id,
     produit_nom:            p.nom,
-    design_id:              _modalDesign?.id || null,
-    design_nom:             _modalDesign?.nom || null,
+    design_id:              null,
+    design_nom:             designNom,
     taille:                 _modalTaille || null,
     quantite:               _modalQty,
     prix_unitaire_centimes: p.prix_centimes,
@@ -1270,7 +1272,7 @@ async function btqAddToCart() {
   if (item) {
     _cart.push({
       _key: item.id, produit_id: p.id, produit_nom: p.nom,
-      design_id: _modalDesign?.id||null, design_nom: _modalDesign?.nom||null,
+      design_id: null, design_nom: designNom,
       taille: _modalTaille||null, quantite: _modalQty,
       prix: p.prix_centimes, est_offert: false,
     });
