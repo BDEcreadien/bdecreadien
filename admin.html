@@ -9214,8 +9214,17 @@ async function btqaOpenProduit(id) {
     <div class="btqa-form-row"><label>Tailles (séparées par des virgules)</label>
       <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}">
     </div>
-    <div class="btqa-form-row"><label>Image produit (URL, affiché si pas de design sélectionné)</label>
-      <input id="bp-img" placeholder="https://…" value="${prod?.image_url || ''}">
+    <div class="btqa-form-row"><label>Image produit (affiché si pas de design sélectionné)</label>
+      <div class="btqa-img-picker">
+        <div class="btqa-img-preview-wrap" id="bp-img-prev-wrap" style="${prod?.image_url ? '' : 'display:none'}">
+          <img src="${prod?.image_url || ''}" id="bp-img-prev-img" class="btqa-img-preview-img">
+          <button class="btqa-img-clear" onclick="btqaClearImg('bp-img','bp-img-prev-wrap')">✕</button>
+        </div>
+        <input type="hidden" id="bp-img" value="${prod?.image_url || ''}">
+        <label class="btqa-img-btn" for="bp-img-file" id="bp-img-lbl">📷 Choisir une photo</label>
+        <input type="file" id="bp-img-file" accept="image/*" style="display:none"
+               onchange="btqaUploadImg(this,'bp-img','bp-img-prev-img','bp-img-prev-wrap','bp-img-lbl')">
+      </div>
     </div>
     <div class="btqa-form-row" style="display:flex;gap:16px;margin-bottom:4px">
       <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
