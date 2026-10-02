@@ -9063,44 +9063,81 @@ async function btqaRemettreNum(id) {
 // ── Config produits ──────────────────────────────────────────
 async function btqaRenderConfigProduits() {
   const sb = window.Auth.sb;
-  const { data: prods } = await sb.from('boutique_produits').select('*').order('ordre');
+  const [{ data: prods }, { data: designs }, { data: packs }] = await Promise.all([
+    sb.from('boutique_produits').select('*').order('ordre'),
+    sb.from('boutique_designs').select('*').order('ordre'),
+    sb.from('boutique_packs').select('*,offre:boutique_produits!offre_produit_id(nom)').order('created_at')
+  ]);
   _btqaProduits = prods || [];
-  const el = document.getElementById('btqa-config-produits');
-  if (!prods?.length) { el.innerHTML = '<p style="color:#bbb">Aucun produit configuré.</p>'; return; }
 
-  el.innerHTML = prods.map(p => {
-    const icon = p.categorie === 'vetement' ? '👕' : '🎁';
-    const prixStr = btqaFmt(p.prix_centimes);
-    return `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f0e8ff;gap:12px">
-      <div style="display:flex;align-items:center;gap:12px;min-width:0">
-        ${p.image_url ? `<img src="${p.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:10px;flex-shrink:0">` : `<div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#f0e8ff,#ffe8f3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${icon}</div>`}
-        <div style="min-width:0">
-          <div style="font-weight:700;font-size:14px">${p.nom}</div>
-          <div style="font-size:12px;color:#999">${prixStr} · ${p.a_designs ? 'Avec designs' : 'Design fixe'} ${p.tailles_disponibles?.length ? '· Tailles' : ''} · <span style="color:${p.actif ? '#10b981' : '#ef4444'}">${p.actif ? 'Actif' : 'Inactif'}</span></div>
+  // ── Produits grid ──
+  const el = document.getElementById('btqa-config-produits');
+  if (!prods?.length) { el.innerHTML = '<p style="color:#bbb">Aucun produit configuré.</p>'; }
+  else {
+    el.innerHTML = `<div class="btqa-prod-grid">${prods.map(p => {
+      const icon = {T:'👕','Pull sans capuche':'🧥','Pull à capuche':'🧣','T-shirt Club de Sport':'👕',Chaussettes:'🧦',Tasse:'☕','Porte-clef':'🔑'}[p.nom] || (p.categorie==='vetement'?'👕':'🎁');
+      const meta = [p.a_designs?'4 designs':null, p.a_tailles?'Tailles':'', p.actif?null:'Inactif'].filter(Boolean).join(' · ');
+      return `<div class="btqa-prod-card">
+        <div class="btqa-prod-card-img">
+          ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btqa-prod-card-icon">${icon}</span>`}
+          <div class="btqa-prod-card-status" style="background:${p.actif?'#10b981':'#ef4444'}"></div>
+          <div class="btqa-prod-card-price-badge">${btqaFmt(p.prix_centimes)}</div>
         </div>
+        <div class="btqa-prod-card-body">
+          <div class="btqa-prod-card-name">${p.nom}</div>
+          <div class="btqa-prod-card-meta">${meta||'Accessoire'}</div>
+          <div class="btqa-prod-card-actions">
+            <button class="btqa-prod-card-btn edit" onclick="btqaOpenProduit('${p.id}')">Modifier</button>
+            <button class="btqa-prod-card-btn ${p.actif?'toggle-off':'toggle-on'}" onclick="btqaToggleProduit('${p.id}',${!p.actif})">
+              ${p.actif?'OFF':'ON'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ── Designs liste ──
+  const del = document.getElementById('btqa-config-designs');
+  if (!designs?.length) { del.innerHTML = '<p style="color:#bbb">Aucun design.</p>'; }
+  else {
+    del.innerHTML = designs.map(d => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0e8ff">
+        ${d.image_url
+          ? `<img src="${d.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0">`
+          : `<div style="width:44px;height:44px;border-radius:8px;background:#f0e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎨</div>`}
+        <span style="font-weight:600;flex:1">${d.nom}</span>
+        ${d.image_url ? `<span style="font-size:11px;color:#10b981;font-weight:700">IMAGE OK</span>` : `<span style="font-size:11px;color:#ef4444;font-weight:700">SANS IMAGE</span>`}
+        <button class="btqa-act-btn detail" onclick="btqaOpenDesign('${d.id}')">Modifier</button>
+      </div>`).join('');
+  }
+
+  // ── Packs cards ──
+  const pel = document.getElementById('btqa-config-packs');
+  if (!pel) return;
+  if (!packs?.length) { pel.innerHTML = '<p style="color:#bbb">Aucun pack configuré.</p>'; return; }
+  pel.innerHTML = `<div class="btqa-pack-grid">${packs.map(pk => {
+    const offreNom = pk.offre?.nom || '?';
+    const condText = Array.isArray(pk.conditions) ? pk.conditions.map(c => {
+      const prod = (_btqaProduits||[]).find(p=>p.id===c.produit_id);
+      return (prod?.nom||'?') + (c.min_qty>1?` x${c.min_qty}`:'');
+    }).join(' + ') : '';
+    return `<div class="btqa-pack-card">
+      <span class="btqa-pack-badge">${pk.actif?'ACTIF':'INACTIF'}</span>
+      <div class="btqa-pack-card-title">${pk.nom}</div>
+      <div class="btqa-pack-card-desc">${pk.description||''}</div>
+      <div style="font-size:12px;color:#555;margin-bottom:10px">
+        <strong>Condition :</strong> ${condText||'—'}
       </div>
-      <div style="display:flex;gap:8px;flex-shrink:0">
-        <button class="btqa-act-btn detail" onclick="btqaOpenProduit('${p.id}')">Modifier</button>
-        <button class="btqa-act-btn ${p.actif ? 'cancel' : 'confirm'}" onclick="btqaToggleProduit('${p.id}', ${!p.actif})">
-          ${p.actif ? 'Désactiver' : 'Activer'}
-        </button>
+      <div class="btqa-pack-offer">
+        🎁 <span>${pk.offre_qty}x ${offreNom} offert${pk.offre_qty>1?'s':''}</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btqa-act-btn detail" onclick="btqaOpenPack('${pk.id}')">Modifier</button>
+        <button class="btqa-act-btn ${pk.actif?'cancel':'confirm'}" onclick="btqaTogglePack('${pk.id}',${!pk.actif})">${pk.actif?'Désactiver':'Activer'}</button>
       </div>
     </div>`;
-  }).join('');
-
-  // Designs globaux
-  const { data: designs } = await sb.from('boutique_designs').select('*').order('ordre');
-  const del = document.getElementById('btqa-config-designs');
-  if (!designs?.length) { del.innerHTML = '<p style="color:#bbb">Aucun design.</p>'; return; }
-  del.innerHTML = designs.map(d => `
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0e8ff">
-      ${d.image_url
-        ? `<img src="${d.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0">`
-        : `<div style="width:44px;height:44px;border-radius:8px;background:#f0e8ff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎨</div>`}
-      <span style="font-weight:600;flex:1">${d.nom}</span>
-      <button class="btqa-act-btn detail" onclick="btqaOpenDesign('${d.id}')">Modifier</button>
-    </div>`).join('');
+  }).join('')}</div>`;
 }
 
 async function btqaToggleProduit(id, actif) {
