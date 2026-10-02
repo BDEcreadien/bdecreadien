@@ -9134,7 +9134,8 @@ async function btqaRenderConfigProduits() {
   if (!pel) return;
   if (!packs?.length) { pel.innerHTML = '<p style="color:#bbb">Aucun pack configuré.</p>'; return; }
   pel.innerHTML = `<div class="btqa-pack-grid">${packs.map(pk => {
-    const offreNom = pk.offre?.nom || '?';
+    const offreProd = (_btqaProduits||[]).find(p => p.id === pk.offre_produit_id);
+    const offreNom = offreProd?.nom || '?';
     const condText = Array.isArray(pk.conditions) ? pk.conditions.map(c => {
       const prod = (_btqaProduits||[]).find(p=>p.id===c.produit_id);
       return (prod?.nom||'?') + (c.min_qty>1?` x${c.min_qty}`:'');
