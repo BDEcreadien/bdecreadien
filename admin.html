@@ -9157,6 +9157,37 @@ async function btqaRenderConfigProduits() {
   }).join('')}</div>`;
 }
 
+// ── Upload image vers Supabase bucket 'boutique' ──────────────
+async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lblId) {
+  const file = inputEl.files?.[0];
+  if (!file) return;
+  const lbl = document.getElementById(lblId);
+  if (lbl) { lbl.textContent = '⏳ Upload…'; lbl.classList.add('btqa-img-uploading'); }
+  try {
+    const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
+    const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = Date.now() + '-' + Math.random().toString(36).slice(2,7) + '.' + ext;
+    const { error } = await Auth.sb.storage.from('boutique').upload(path, webp, { contentType: webp.type });
+    if (error) throw error;
+    const url = Auth.sb.storage.from('boutique').getPublicUrl(path).data.publicUrl;
+    document.getElementById(hiddenId).value = url;
+    const img = document.getElementById(previewImgId);
+    img.src = url;
+    document.getElementById(previewWrapId).style.display = '';
+    showToast('Photo uploadée !', 'success');
+  } catch(e) {
+    showToast('Erreur upload : ' + e.message, 'error');
+  } finally {
+    if (lbl) { lbl.textContent = '📷 Changer'; lbl.classList.remove('btqa-img-uploading'); }
+    inputEl.value = '';
+  }
+}
+
+function btqaClearImg(hiddenId, wrapId) {
+  document.getElementById(hiddenId).value = '';
+  document.getElementById(wrapId).style.display = 'none';
+}
+
 async function btqaToggleProduit(id, actif) {
   await window.Auth.sb.from('boutique_produits').update({ actif }).eq('id', id);
   btqaRenderConfigProduits();
