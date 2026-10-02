@@ -1104,10 +1104,19 @@ function btqCloseModal(e) {
   }
 }
 
-function btqSelectDesign(id, nom, el) {
+function btqSelectDesign(id, nom, img, el) {
   _modalDesign = {id, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  // Mise à jour preview image
+  const imgWrap = document.querySelector('.btq-modal-img');
+  if (imgWrap) {
+    if (img) {
+      imgWrap.innerHTML = `<div class="btq-modal-img-bg"></div><img src="${img}" alt="${nom}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:18px;">`;
+    } else {
+      imgWrap.innerHTML = `<div class="btq-modal-img-bg"></div><span class="btq-modal-img-icon">${btqProdIcon(_modalProd)}</span>`;
+    }
+  }
 }
 function btqSelectTaille(t, el) {
   _modalTaille = t;
