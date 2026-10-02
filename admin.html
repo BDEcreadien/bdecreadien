@@ -9135,6 +9135,35 @@ async function btqaRenderConfigProduits() {
   }).join('')}</div>`;
 }
 
+// ── Helpers designs inline ───────────────────────────────────
+function btqaDesignRowHtml(idx, nom, imageUrl) {
+  return `<div class="bp-design-row" data-idx="${idx}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
+    <div class="btqa-img-picker" style="flex-shrink:0">
+      <div class="btqa-img-preview-wrap" id="dp-w-${idx}" style="${imageUrl ? '' : 'display:none'}">
+        <img src="${imageUrl}" id="dp-img-${idx}" class="btqa-img-preview-img">
+        <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-dimg-${idx}','dp-w-${idx}')">✕</button>
+      </div>
+      <input type="hidden" id="bp-dimg-${idx}" value="${imageUrl}">
+      <label class="btqa-img-btn" for="dp-file-${idx}" id="dp-lbl-${idx}" style="padding:6px 10px;font-size:11px">${imageUrl ? '📷 Changer' : '📷 Photo'}</label>
+      <input type="file" id="dp-file-${idx}" accept="image/*" style="display:none"
+             onchange="btqaUploadImg(this,'bp-dimg-${idx}','dp-img-${idx}','dp-w-${idx}','dp-lbl-${idx}')">
+    </div>
+    <input type="text" class="bp-design-nom" placeholder="Nom du design (ex: Design 1)" value="${nom}"
+      style="flex:1;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">
+    <button type="button" onclick="this.closest('.bp-design-row').remove()"
+      style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>`;
+}
+
+function btqaAddDesignRow() {
+  const list = document.getElementById('bp-designs-list');
+  if (!list) return;
+  const idx = Date.now(); // unique id pour les éléments DOM
+  const div = document.createElement('div');
+  div.innerHTML = btqaDesignRowHtml(idx, '', '');
+  list.appendChild(div.firstElementChild);
+}
+
 // ── Upload image vers Supabase bucket 'boutique' ──────────────
 async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lblId) {
   const file = inputEl.files?.[0];
