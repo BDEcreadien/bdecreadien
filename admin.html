@@ -1483,6 +1483,23 @@
 .btqa-scan-box video { width:100%;max-width:320px;border-radius:12px; }
 .btqa-order-result { background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:14px;padding:20px;margin-top:16px;border:1px solid #f0e8ff; }
 .btqa-phys-item-row { display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;align-items:start;margin-bottom:8px; }
+/* ── Photo picker ── */
+.btqa-img-picker { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+.btqa-img-preview-wrap { position:relative;flex-shrink:0; }
+.btqa-img-preview-img { width:64px;height:64px;object-fit:cover;border-radius:10px;border:1.5px solid #e0d8f0;display:block; }
+.btqa-img-clear {
+  position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;
+  background:#ef4444;color:white;border:none;cursor:pointer;
+  font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1;
+}
+.btqa-img-btn {
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
+  border-radius:10px;border:1.5px dashed #c4b5fd;background:#faf8ff;
+  color:#460186;font-size:12px;font-weight:700;cursor:pointer;
+  transition:background .15s,border-color .15s;white-space:nowrap;
+}
+.btqa-img-btn:hover { background:#f0e8ff;border-color:#8b5cf6; }
+.btqa-img-uploading { opacity:.6;pointer-events:none; }
 /* ── Config produits visual grid ── */
 .btqa-prod-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-prod-card {
