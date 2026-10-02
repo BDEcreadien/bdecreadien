@@ -236,67 +236,94 @@
       border-radius:var(--btq-card-radius);
       overflow:hidden;
       cursor:pointer;
-      transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, border-color .25s;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, border-color .3s;
       box-shadow:0 2px 20px rgba(0,0,0,.3);
       animation: cardReveal .5s both;
       backdrop-filter:blur(8px);
+      position:relative;
+    }
+    .btq-card::after {
+      content:'';position:absolute;inset:-1px;border-radius:calc(var(--btq-card-radius) + 1px);
+      background:linear-gradient(135deg,#460186,#D2396D,#FF741F);
+      opacity:0;transition:opacity .3s;z-index:-1;pointer-events:none;
     }
     .btq-card:hover {
-      transform:translateY(-8px);
-      box-shadow:0 20px 50px rgba(70,1,134,.35);
-      border-color:rgba(210,57,109,.35);
+      transform:translateY(-10px);
+      box-shadow:0 24px 60px rgba(70,1,134,.4), 0 0 0 1px rgba(210,57,109,.3);
+      border-color:transparent;
     }
+    .btq-card:hover::after { opacity:1; }
     @keyframes cardReveal {
       from { opacity:0; transform:translateY(24px); }
       to   { opacity:1; transform:translateY(0); }
     }
     .btq-card-img {
-      width:100%;height:220px;
+      width:100%;height:260px;
       position:relative;overflow:hidden;
       display:flex;align-items:center;justify-content:center;
     }
     .btq-card-img-bg {
       position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(70,1,134,.5),rgba(210,57,109,.35),rgba(255,116,31,.25));
+      background:linear-gradient(135deg,rgba(70,1,134,.6),rgba(210,57,109,.4),rgba(255,116,31,.3));
     }
     .btq-card-img-icon {
-      font-size:56px;position:relative;z-index:1;
-      filter:drop-shadow(0 4px 16px rgba(0,0,0,.4));
-      transition:transform .3s;
+      font-size:72px;position:relative;z-index:1;
+      filter:drop-shadow(0 6px 20px rgba(0,0,0,.5));
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1);
     }
-    .btq-card:hover .btq-card-img-icon { transform:scale(1.1) rotate(-5deg); }
+    .btq-card:hover .btq-card-img-icon { transform:scale(1.15) rotate(-6deg); }
     .btq-card-img img {
       width:100%;height:100%;object-fit:cover;
       position:absolute;inset:0;
+      transition:transform .4s ease;
+    }
+    .btq-card:hover .btq-card-img img { transform:scale(1.06); }
+    .btq-card-price-badge {
+      position:absolute;bottom:12px;left:12px;z-index:2;
+      background:linear-gradient(135deg,rgba(70,1,134,.95),rgba(210,57,109,.95));
+      color:white;font-family:'Barlow Condensed',sans-serif;
+      font-weight:800;font-size:18px;letter-spacing:.5px;
+      padding:4px 12px;border-radius:99px;
+      box-shadow:0 2px 12px rgba(0,0,0,.4);
+      backdrop-filter:blur(4px);
+    }
+    .btq-card-design-dots {
+      position:absolute;bottom:12px;right:12px;z-index:2;
+      display:flex;gap:4px;align-items:center;
+    }
+    .btq-card-design-dot {
+      width:8px;height:8px;border-radius:50%;
+      background:linear-gradient(135deg,#FF741F,#FFDC00);
+      box-shadow:0 1px 4px rgba(0,0,0,.4);
+      opacity:.85;
+    }
+    .btq-card-design-label {
+      font-family:'Inter',sans-serif;font-size:10px;font-weight:700;
+      color:rgba(255,255,255,.7);letter-spacing:.5px;text-transform:uppercase;
     }
     .btq-card-body { padding:16px 18px 18px; }
     .btq-card-name {
       font-family:'Barlow Condensed',sans-serif;
-      font-weight:700;font-size:17px;
-      color:rgba(255,255,255,.9);margin:0 0 4px;
-    }
-    .btq-card-price {
-      font-family:'Inter',sans-serif;
-      font-weight:700;font-size:18px;
-      color:#c084fc;margin:0;
+      font-weight:700;font-size:19px;letter-spacing:-.2px;
+      color:rgba(255,255,255,.95);margin:0 0 6px;
     }
     .btq-card-meta {
-      font-size:12px;color:rgba(255,255,255,.4);
+      font-size:12px;color:rgba(255,255,255,.45);
       font-family:'Inter',sans-serif;
-      margin-top:2px;
+      margin:0 0 14px;
     }
     .btq-card-add {
-      margin-top:14px;width:100%;
+      width:100%;
       font-family:'Barlow Condensed',sans-serif;
       font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;
-      padding:10px;border-radius:10px;
+      padding:11px;border-radius:10px;
       border:none;cursor:pointer;
       background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
       color:white;
-      transition:opacity .2s, transform .1s;
+      transition:opacity .2s, transform .1s, box-shadow .2s;
       box-shadow:0 4px 16px rgba(70,1,134,.4);
     }
-    .btq-card-add:hover { opacity:.92; }
+    .btq-card-add:hover { opacity:.92; box-shadow:0 6px 24px rgba(210,57,109,.5); }
     .btq-card-add:active { transform:scale(.97); }
 
     /* ─── PRODUCT MODAL ─────────────────────────────────────── */
