@@ -1539,6 +1539,18 @@ function btqFillMarquee() {
 // ── Helpers ──────────────────────────────────────────────────
 function btqEsc(s) { return s.replace(/'/g,'\\\'').replace(/"/g,'&quot;'); }
 
+// ── Nav transparent → solide au scroll ───────────────────────
+(function() {
+  const nav = document.getElementById('main-nav');
+  if (!nav) return;
+  function onScroll() {
+    if (window.scrollY > 60) nav.classList.add('btq-nav-solid');
+    else nav.classList.remove('btq-nav-solid');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
 // ── Démarrage ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', btqInit);
 </script>
