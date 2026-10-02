@@ -9166,10 +9166,10 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
   try {
     const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
     const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const path = Date.now() + '-' + Math.random().toString(36).slice(2,7) + '.' + ext;
-    const { error } = await Auth.sb.storage.from('boutique').upload(path, webp, { contentType: webp.type });
+    const path = 'boutique/' + Date.now() + '-' + Math.random().toString(36).slice(2,7) + '.' + ext;
+    const { error } = await Auth.sb.storage.from('annonces').upload(path, webp, { contentType: webp.type });
     if (error) throw error;
-    const url = Auth.sb.storage.from('boutique').getPublicUrl(path).data.publicUrl;
+    const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
     document.getElementById(hiddenId).value = url;
     const img = document.getElementById(previewImgId);
     img.src = url;
