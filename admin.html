@@ -9083,7 +9083,7 @@ async function btqaRenderConfigProduits() {
   const [{ data: prods }, { data: designs }, { data: packs }] = await Promise.all([
     sb.from('boutique_produits').select('*').order('ordre'),
     sb.from('boutique_designs').select('*').order('ordre'),
-    sb.from('boutique_packs').select('*,offre:boutique_produits!offre_produit_id(nom)').order('created_at')
+    sb.from('boutique_packs').select('*').order('created_at')
   ]);
   _btqaProduits = prods || [];
 
