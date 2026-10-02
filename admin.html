@@ -9073,9 +9073,8 @@ async function btqaRemettreNum(id) {
 // ── Config produits ──────────────────────────────────────────
 async function btqaRenderConfigProduits() {
   const sb = window.Auth.sb;
-  const [{ data: prods }, { data: designs }, { data: packs }] = await Promise.all([
+  const [{ data: prods }, { data: packs }] = await Promise.all([
     sb.from('boutique_produits').select('*').order('ordre'),
-    sb.from('boutique_designs').select('*').order('ordre'),
     sb.from('boutique_packs').select('*').order('created_at')
   ]);
   _btqaProduits = prods || [];
