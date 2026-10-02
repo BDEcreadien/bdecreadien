@@ -1029,17 +1029,15 @@ async function btqInit() {
 
 // ── Catalogue ──────────────────────────────────────────────
 async function btqLoadCatalogue() {
-  const [{ data: produits }, { data: designs }, { data: packs }, { data: pd }] = await Promise.all([
+  const [{ data: produits }, { data: packs }] = await Promise.all([
     _sb.from('boutique_produits').select('*').eq('actif', true).order('ordre'),
-    _sb.from('boutique_designs').select('*').eq('actif', true).order('ordre'),
     _sb.from('boutique_packs').select('*').eq('actif', true),
-    _sb.from('boutique_produit_designs').select('*'),
   ]);
-  _designs = designs || [];
-  _packs   = packs   || [];
+  _designs = [];
+  _packs   = packs || [];
   _produits = (produits || []).map(p => ({
     ...p,
-    design_ids: (pd || []).filter(r => r.produit_id === p.id).map(r => r.design_id),
+    designs: Array.isArray(p.designs) ? p.designs : [],
   }));
 
   const statusEl = document.getElementById('btq-sale-status');
