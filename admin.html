@@ -9146,6 +9146,17 @@ async function btqaToggleProduit(id, actif) {
   showToast(actif ? 'Produit activé' : 'Produit désactivé');
 }
 
+async function btqaTogglePack(id, actif) {
+  await window.Auth.sb.from('boutique_packs').update({ actif }).eq('id', id);
+  btqaRenderConfigProduits();
+  showToast(actif ? 'Pack activé' : 'Pack désactivé');
+}
+
+function btqaOpenPack(id) {
+  // Pack editing: show a simple toast for now, full editor is a future feature
+  showToast('Éditeur de pack à venir — contacte le dev pour modifier les conditions.');
+}
+
 async function btqaOpenProduit(id) {
   const sb = window.Auth.sb;
   const prod = id ? _btqaProduits.find(p => p.id === id) : null;
