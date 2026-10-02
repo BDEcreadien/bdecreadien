@@ -9372,15 +9372,33 @@ function btqaOpenDesign(id) {
         style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
     </div>
     <div class="btqa-form-row"><label>Nom du design</label><input id="bd-nom" value=""></div>
-    <div class="btqa-form-row"><label>URL image (optionnel)</label><input id="bd-img" placeholder="https://…"></div>
+    <div class="btqa-form-row"><label>Visuel du design</label>
+      <div class="btqa-img-picker">
+        <div class="btqa-img-preview-wrap" id="bd-img-prev-wrap" style="display:none">
+          <img src="" id="bd-img-prev-img" class="btqa-img-preview-img">
+          <button class="btqa-img-clear" onclick="btqaClearImg('bd-img','bd-img-prev-wrap')">✕</button>
+        </div>
+        <input type="hidden" id="bd-img" value="">
+        <label class="btqa-img-btn" for="bd-img-file" id="bd-img-lbl">📷 Choisir une photo</label>
+        <input type="file" id="bd-img-file" accept="image/*" style="display:none"
+               onchange="btqaUploadImg(this,'bd-img','bd-img-prev-img','bd-img-prev-wrap','bd-img-lbl')">
+      </div>
+    </div>
     <button class="btn-save" style="width:100%;margin-top:8px" onclick="btqaSaveDesign('${id || ''}')">
       ${id ? 'Enregistrer' : 'Créer le design'}
     </button>`;
   // Préremplir si modif
   if (id) {
     window.Auth.sb.from('boutique_designs').select('*').eq('id', id).single()
-      .then(({ data }) => {
-        if (data) { document.getElementById('bd-nom').value = data.nom; document.getElementById('bd-img').value = data.image_url || ''; }
+      .then(({ data: d }) => {
+        if (!d) return;
+        document.getElementById('bd-nom').value = d.nom;
+        if (d.image_url) {
+          document.getElementById('bd-img').value = d.image_url;
+          document.getElementById('bd-img-prev-img').src = d.image_url;
+          document.getElementById('bd-img-prev-wrap').style.display = '';
+          document.getElementById('bd-img-lbl').textContent = '📷 Changer';
+        }
       });
   }
   document.getElementById('btqa-prod-modal').style.display = 'flex';
