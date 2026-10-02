@@ -1207,8 +1207,8 @@ function btqCloseModal(e) {
   }
 }
 
-function btqSelectDesign(id, nom, img, el) {
-  _modalDesign = {id, nom};
+function btqSelectDesign(idx, nom, img, el) {
+  _modalDesign = {idx, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   // Mise à jour preview image
