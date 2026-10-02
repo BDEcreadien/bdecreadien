@@ -19,6 +19,28 @@
       --btq-card-radius: 18px;
     }
 
+    /* ─── NAV overlay sur le hero ──────────────────────────── */
+    body { padding-top: 0 !important; }
+    #main-nav {
+      position: fixed !important;
+      top: 0; left: 0; right: 0;
+      background: transparent !important;
+      box-shadow: none !important;
+      border-bottom: none !important;
+      transition: background .4s, backdrop-filter .4s, box-shadow .4s !important;
+    }
+    #main-nav.btq-nav-solid {
+      background: rgba(10,0,21,0.88) !important;
+      backdrop-filter: blur(16px) !important;
+      box-shadow: 0 1px 0 rgba(255,255,255,.06) !important;
+    }
+    #main-nav .nav-logo-text .nav-bde,
+    #main-nav .nav-logo-text .nav-cread,
+    #main-nav .nav-link { color: rgba(255,255,255,.85) !important; }
+    #main-nav .nav-link:hover { color: white !important; }
+    #main-nav .nav-link.active { color: #c084fc !important; }
+    #main-nav .nav-burger span { background: white !important; }
+
     /* ─── HERO ─────────────────────────────────────────────── */
     .btq-hero {
       position: relative;
@@ -31,40 +53,84 @@
     }
     .btq-hero-canvas {
       position: absolute;inset:0;
-      background: linear-gradient(135deg,#0d001a 0%,#1a0040 40%,#2d0060 70%,#1a0020 100%);
+      background: radial-gradient(ellipse 80% 70% at 50% 40%,#2d0060 0%,#1a0040 40%,#0d001a 100%);
     }
     /* Animated blobs */
     .btq-blob {
       position: absolute;
       border-radius: 50%;
       filter: blur(80px);
-      opacity: 0.55;
+      opacity: 0.65;
       animation: blobFloat linear infinite;
       pointer-events: none;
     }
-    .btq-blob-1 { width:480px;height:480px; background:radial-gradient(circle,#460186,transparent 70%); top:-10%;left:-8%; animation-duration:22s; }
-    .btq-blob-2 { width:360px;height:360px; background:radial-gradient(circle,#D2396D,transparent 70%); top:20%;right:-5%; animation-duration:18s;animation-delay:-7s; }
-    .btq-blob-3 { width:300px;height:300px; background:radial-gradient(circle,#FF741F,transparent 70%); bottom:5%;left:35%; animation-duration:26s;animation-delay:-12s; }
-    .btq-blob-4 { width:220px;height:220px; background:radial-gradient(circle,#a020e0,transparent 70%); bottom:20%;right:20%; animation-duration:20s;animation-delay:-4s; }
+    .btq-blob-1 { width:600px;height:600px; background:radial-gradient(circle,#460186,transparent 70%); top:-15%;left:-10%; animation-duration:22s; }
+    .btq-blob-2 { width:420px;height:420px; background:radial-gradient(circle,#D2396D,transparent 70%); top:10%;right:-8%; animation-duration:18s;animation-delay:-7s; }
+    .btq-blob-3 { width:360px;height:360px; background:radial-gradient(circle,#FF741F,transparent 70%); bottom:0%;left:30%; animation-duration:26s;animation-delay:-12s; }
+    .btq-blob-4 { width:260px;height:260px; background:radial-gradient(circle,#8b00ff,transparent 70%); bottom:25%;right:15%; animation-duration:20s;animation-delay:-4s; }
     @keyframes blobFloat {
       0%   { transform: translate(0,0)   rotate(0deg); }
-      25%  { transform: translate(30px,-40px) rotate(90deg); }
-      50%  { transform: translate(-20px,30px) rotate(180deg); }
-      75%  { transform: translate(40px,10px) rotate(270deg); }
+      25%  { transform: translate(40px,-50px) rotate(90deg); }
+      50%  { transform: translate(-25px,35px) rotate(180deg); }
+      75%  { transform: translate(50px,15px) rotate(270deg); }
       100% { transform: translate(0,0)   rotate(360deg); }
     }
+
     /* Stars / particles */
     .btq-stars {
       position:absolute;inset:0;
       background-image:
-        radial-gradient(1px 1px at 10% 15%,rgba(255,255,255,0.6),transparent),
-        radial-gradient(1px 1px at 80% 20%,rgba(255,255,255,0.4),transparent),
-        radial-gradient(1.5px 1.5px at 50% 50%,rgba(255,255,255,0.5),transparent),
-        radial-gradient(1px 1px at 30% 75%,rgba(255,255,255,0.3),transparent),
-        radial-gradient(1px 1px at 90% 65%,rgba(255,255,255,0.5),transparent),
-        radial-gradient(1.5px 1.5px at 20% 40%,rgba(255,255,255,0.4),transparent),
-        radial-gradient(1px 1px at 65% 85%,rgba(255,255,255,0.3),transparent),
-        radial-gradient(1px 1px at 45% 10%,rgba(255,255,255,0.5),transparent);
+        radial-gradient(1.5px 1.5px at 8% 12%,rgba(255,255,255,0.7),transparent),
+        radial-gradient(1px 1px at 75% 18%,rgba(255,255,255,0.5),transparent),
+        radial-gradient(2px 2px at 48% 48%,rgba(255,255,255,0.6),transparent),
+        radial-gradient(1px 1px at 25% 70%,rgba(255,255,255,0.4),transparent),
+        radial-gradient(1.5px 1.5px at 88% 62%,rgba(255,255,255,0.6),transparent),
+        radial-gradient(1px 1px at 18% 38%,rgba(255,255,255,0.5),transparent),
+        radial-gradient(1px 1px at 60% 82%,rgba(255,255,255,0.4),transparent),
+        radial-gradient(1px 1px at 42% 8%,rgba(255,255,255,0.6),transparent),
+        radial-gradient(1px 1px at 93% 35%,rgba(255,255,255,0.4),transparent),
+        radial-gradient(1.5px 1.5px at 5% 55%,rgba(255,255,255,0.5),transparent),
+        radial-gradient(1px 1px at 55% 28%,rgba(210,57,109,.5),transparent),
+        radial-gradient(1px 1px at 35% 90%,rgba(255,116,31,.4),transparent);
+      animation: starsPulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes starsPulse {
+      from { opacity:.7; }
+      to   { opacity:1; }
+    }
+
+    /* Floating product icons */
+    .btq-float-icon {
+      position:absolute;pointer-events:none;z-index:1;
+      font-size:clamp(32px,4vw,60px);
+      opacity:.12;
+      filter:blur(0px) drop-shadow(0 0 16px rgba(210,57,109,.4));
+      animation: floatIcon linear infinite;
+    }
+    .btq-fi-1 { top:12%;left:8%;  animation-duration:16s;animation-delay:0s; }
+    .btq-fi-2 { top:60%;left:5%;  animation-duration:20s;animation-delay:-5s; font-size:clamp(24px,3vw,44px);opacity:.09; }
+    .btq-fi-3 { top:20%;right:7%; animation-duration:18s;animation-delay:-8s; }
+    .btq-fi-4 { top:70%;right:10%;animation-duration:14s;animation-delay:-3s; font-size:clamp(24px,3vw,44px);opacity:.09; }
+    .btq-fi-5 { top:45%;left:50%;animation-duration:24s;animation-delay:-12s;opacity:.07; }
+    @keyframes floatIcon {
+      0%   { transform:translateY(0) rotate(-8deg) scale(1); }
+      30%  { transform:translateY(-28px) rotate(4deg) scale(1.05); }
+      60%  { transform:translateY(14px) rotate(-4deg) scale(.95); }
+      100% { transform:translateY(0) rotate(-8deg) scale(1); }
+    }
+
+    /* Rotating ring */
+    .btq-ring {
+      position:absolute;border-radius:50%;pointer-events:none;
+      border:1px solid rgba(210,57,109,.18);
+      animation: ringPulse ease-in-out infinite alternate;
+    }
+    .btq-ring-1 { width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%); animation-duration:4s; }
+    .btq-ring-2 { width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%); border-color:rgba(70,1,134,.15);animation-duration:6s;animation-delay:-2s; }
+    .btq-ring-3 { width:900px;height:900px;top:50%;left:50%;transform:translate(-50%,-50%); border-color:rgba(255,116,31,.08);animation-duration:8s;animation-delay:-4s; }
+    @keyframes ringPulse {
+      from { opacity:.3;transform:translate(-50%,-50%) scale(.95); }
+      to   { opacity:.8;transform:translate(-50%,-50%) scale(1.02); }
     }
     .btq-hero-content {
       position:relative;z-index:2;
