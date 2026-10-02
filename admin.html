@@ -9297,39 +9297,28 @@ async function btqaSaveProduit(id) {
 
   const sb = window.Auth.sb;
 
-  // Sauvegarder les images des designs + gestion des liens
-  const designImgInputs = document.querySelectorAll('.bp-design-img-input');
-  const designLinked    = document.querySelectorAll('.bp-design-linked');
-  const saveOps = [];
-  const newLinkedIds = [];
-
-  designImgInputs.forEach(input => {
-    const did = input.dataset.designId;
-    const img = input.value.trim();
-    saveOps.push(sb.from('boutique_designs').update({ image_url: img }).eq('id', did));
-  });
-  designLinked.forEach(cb => {
-    if (cb.checked) newLinkedIds.push(cb.dataset.designId);
+  // Lire les designs inline depuis les rows du DOM
+  const designs = [];
+  document.querySelectorAll('.bp-design-row').forEach(row => {
+    const nomInput = row.querySelector('.bp-design-nom');
+    const imgInput = row.querySelector('input[type="hidden"]');
+    const n = nomInput?.value.trim();
+    if (n) designs.push({ nom: n, image_url: imgInput?.value.trim() || '' });
   });
 
-  if (saveOps.length) await Promise.all(saveOps);
-
-  // Mettre à jour les liens produit↔design si produit existant
-  const aDesigns = newLinkedIds.length > 0;
-  const payload  = { nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
-    a_designs: aDesigns, a_tailles: tailles.length > 0, actif, image_url: imgUrl || null };
+  const payload = {
+    nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
+    a_designs: designs.length > 0, a_tailles: tailles.length > 0,
+    actif, image_url: imgUrl || null,
+    designs,
+  };
 
   let prodId = id;
   if (id) {
     await sb.from('boutique_produits').update(payload).eq('id', id);
-    // Supprimer anciens liens, réinsérer les nouveaux
-    await sb.from('boutique_produit_designs').delete().eq('produit_id', id);
   } else {
     const { data: ins } = await sb.from('boutique_produits').insert(payload).select().single();
     prodId = ins?.id;
-  }
-  if (prodId && newLinkedIds.length) {
-    await sb.from('boutique_produit_designs').insert(newLinkedIds.map(did => ({ produit_id: prodId, design_id: did })));
   }
 
   document.getElementById('btqa-prod-modal').style.display = 'none';
