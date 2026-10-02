@@ -9188,23 +9188,8 @@ function btqaOpenPack(id) {
 async function btqaOpenProduit(id) {
   const sb = window.Auth.sb;
   const prod = id ? _btqaProduits.find(p => p.id === id) : null;
-
-  // Charger les designs liés + tous les designs disponibles
-  let linkedDesigns = [];
-  let allDesigns = [];
-  if (id) {
-    const [{ data: pd }, { data: ad }] = await Promise.all([
-      sb.from('boutique_produit_designs').select('design_id, boutique_designs(id,nom,image_url)').eq('produit_id', id),
-      sb.from('boutique_designs').select('*').order('ordre')
-    ]);
-    linkedDesigns = (pd || []).map(r => r.boutique_designs).filter(Boolean);
-    allDesigns = ad || [];
-  } else {
-    const { data: ad } = await sb.from('boutique_designs').select('*').order('ordre');
-    allDesigns = ad || [];
-  }
-
-  const linkedIds = new Set(linkedDesigns.map(d => d.id));
+  // Designs inline depuis la colonne JSONB du produit
+  const existingDesigns = Array.isArray(prod?.designs) ? prod.designs : [];
 
   const card = document.getElementById('btqa-prod-card');
   card.innerHTML = `
