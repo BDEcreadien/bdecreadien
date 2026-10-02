@@ -1030,22 +1030,26 @@ function btqRenderGrid(cat = 'tous') {
     grid.innerHTML = '<p style="color:#bbb;font-family:Inter,sans-serif;font-size:15px;padding:20px">Aucun article dans cette catégorie pour le moment.</p>';
     return;
   }
-  grid.innerHTML = filtered.map((p, i) => `
+  grid.innerHTML = filtered.map((p, i) => {
+    const designDots = p.a_designs ? `<div class="btq-card-design-dots">${'<div class="btq-card-design-dot"></div>'.repeat(4)}<span class="btq-card-design-label" style="margin-left:2px">4 designs</span></div>` : '';
+    const metaTailles = p.a_tailles ? (p.tailles_disponibles?.length <= 4 ? p.tailles_disponibles.join(' · ') : p.tailles_disponibles?.slice(0,4).join(' · ') + '…') : 'Taille unique';
+    return `
     <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
       <div class="btq-card-img">
         <div class="btq-card-img-bg"></div>
         ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
+        <div class="btq-card-price-badge">${btqFmt(p.prix_centimes)}</div>
+        ${designDots}
       </div>
       <div class="btq-card-body">
         <p class="btq-card-name">${p.nom}</p>
-        <p class="btq-card-price">${btqFmt(p.prix_centimes)}</p>
-        <p class="btq-card-meta">${p.a_designs ? '4 designs · ' : ''}${p.a_tailles ? p.tailles_disponibles.join(' · ') : 'Taille unique'}</p>
+        <p class="btq-card-meta">${metaTailles}</p>
         <button class="btq-card-add" onclick="event.stopPropagation();btqOpenModal('${p.id}')">
           Choisir &amp; ajouter
         </button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function btqProdIcon(p) {
