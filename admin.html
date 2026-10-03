@@ -1538,6 +1538,47 @@
 .btqa-prod-card-btn.edit { border-color:#888;color:#888; } .btqa-prod-card-btn.edit:hover { background:#888;color:white; }
 .btqa-prod-card-btn.toggle-off { border-color:#ef4444;color:#ef4444; } .btqa-prod-card-btn.toggle-off:hover { background:#ef4444;color:white; }
 .btqa-prod-card-btn.toggle-on  { border-color:#10b981;color:#10b981; } .btqa-prod-card-btn.toggle-on:hover  { background:#10b981;color:white; }
+/* ── Vente physique split layout ── */
+.btqa-physique-split { display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start; }
+@media(max-width:920px) { .btqa-physique-split { grid-template-columns:1fr; } }
+.btqa-catalog-panel {
+  background:#faf8ff;border-radius:16px;border:1.5px solid #f0e8ff;padding:16px;
+  max-height:calc(100vh - 240px);overflow-y:auto;
+}
+.btqa-catalog-title { font-weight:800;font-size:15px;margin:0 0 14px;color:var(--noir);display:flex;align-items:center;gap:8px; }
+.btqa-mini-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px; }
+.btqa-mini-card { border-radius:12px;overflow:hidden;background:white;border:1.5px solid #f0e8ff;transition:box-shadow .15s,border-color .15s; }
+.btqa-mini-card:hover { box-shadow:0 4px 16px rgba(70,1,134,.12);border-color:#c4b5fd; }
+.btqa-mini-card-img { width:100%;height:90px;object-fit:cover;display:block; }
+.btqa-mini-card-icon { width:100%;height:90px;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,rgba(70,1,134,.08),rgba(210,57,109,.06)); }
+.btqa-mini-card-body { padding:8px 10px 10px; }
+.btqa-mini-card-name { font-weight:700;font-size:12px;color:var(--noir);margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.btqa-mini-card-price { font-size:11px;font-weight:700;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 7px; }
+.btqa-mini-card-sizes { display:flex;flex-wrap:wrap;gap:4px; }
+.btqa-mini-size-btn {
+  padding:3px 8px;border-radius:6px;border:1.5px solid #d0c4ff;
+  background:white;color:#460186;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s;
+}
+.btqa-mini-size-btn:hover { background:#460186;color:white;border-color:#460186; }
+.btqa-mini-add-btn {
+  width:100%;padding:5px;border:1.5px solid #d0c4ff;border-radius:8px;
+  background:white;color:#460186;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s;
+}
+.btqa-mini-add-btn:hover { background:#460186;color:white;border-color:#460186; }
+.btqa-form-panel {
+  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:20px;
+  position:sticky;top:20px;box-shadow:0 2px 16px rgba(70,1,134,.07);
+}
+.btqa-form-panel h3 { margin:0 0 16px;font-size:16px;color:var(--noir);font-weight:800; }
+/* ── Remise ── */
+.btqa-remise-banner {
+  background:linear-gradient(135deg,#460186 0%,#D2396D 60%,#FF741F 100%);
+  border-radius:16px;padding:20px 24px;margin-bottom:20px;
+  display:flex;align-items:center;gap:16px;color:white;
+}
+.btqa-remise-banner-icon { font-size:40px;flex-shrink:0; }
+.btqa-remise-banner-text h4 { margin:0 0 4px;font-size:16px;font-weight:800; }
+.btqa-remise-banner-text p { margin:0;font-size:13px;opacity:.85;line-height:1.5; }
 /* ── Pack cards ── */
 .btqa-pack-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-pack-card {
