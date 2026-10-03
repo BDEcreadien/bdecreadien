@@ -1206,45 +1206,59 @@ function btqOpenModal(id) {
 
   const designs = p.designs || [];
 
+  // Thumbnails : image produit + images de chaque design
+  const thumbItems = [];
+  thumbItems.push({ idx: null, img: p.image_url || '', nom: p.nom, isProduct: true });
+  designs.forEach((d, i) => { if (d.image_url) thumbItems.push({ idx: i, img: d.image_url, nom: d.nom, isProduct: false }); });
+
+  const thumbsHtml = thumbItems.map((t, ti) => `
+    <div class="btq-modal-thumb${ti===0?' active':''}" onclick="btqThumbClick(${t.idx===null?'null':t.idx},'${btqEsc(t.img)}','${btqEsc(t.nom)}',this)">
+      ${t.img ? `<img src="${t.img}" alt="${t.nom}">` : `<span>${btqProdIcon(p)}</span>`}
+    </div>`).join('');
+
+  const mainImgHtml = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.nom}" id="btq-main-img">`
+    : `<span class="btq-modal-main-icon">${btqProdIcon(p)}</span>`;
+
   document.getElementById('btq-modal-inner').innerHTML = `
-    <div class="btq-modal-img">
-      <div class="btq-modal-img-bg"></div>
-      ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-modal-img-icon">${btqProdIcon(p)}</span>`}
-    </div>
     <button class="btq-modal-close-btn" onclick="btqCloseModal({target:null})">✕</button>
-    <p class="btq-modal-name">${p.nom}</p>
-    <p class="btq-modal-price">${btqFmt(p.prix_centimes)}</p>
+    <div class="btq-modal-layout">
+      <div class="btq-modal-thumbs">${thumbsHtml}</div>
+      <div class="btq-modal-main-img" id="btq-main-img-wrap">${mainImgHtml}</div>
+      <div class="btq-modal-details">
+        <p class="btq-modal-name">${p.nom}</p>
+        <p class="btq-modal-price">${btqFmt(p.prix_centimes)}</p>
 
-    ${designs.length ? `
-      <p class="btq-modal-label">Design</p>
-      <div class="btq-designs" id="btq-design-row">
-        ${designs.map((d, idx) => `
-          <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}','${btqEsc(d.image_url||'')}',this)">
-            ${d.image_url ? `<img src="${d.image_url}" alt="${d.nom}" style="width:28px;height:28px;object-fit:cover;border-radius:6px;margin-right:6px;vertical-align:middle">` : ''}${d.nom}
+        ${designs.length ? `
+          <p class="btq-modal-label">Design</p>
+          <div class="btq-designs" id="btq-design-row">
+            ${designs.map((d, idx) => `
+              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}','${btqEsc(d.image_url||'')}',this)">
+                ${d.image_url ? `<img src="${d.image_url}" alt="${d.nom}" style="width:28px;height:28px;object-fit:contain;border-radius:6px;margin-right:6px;vertical-align:middle">` : ''}${d.nom}
+              </button>`).join('')}
+          </div>` : ''}
+
+        ${p.tailles_disponibles?.length ? `
+          <p class="btq-modal-label">Taille</p>
+          <div class="btq-sizes" id="btq-size-row">
+            ${p.tailles_disponibles.map(t => `
+              <button class="btq-size-chip" data-t="${t}" onclick="btqSelectTaille('${t}',this)">${t}</button>`).join('')}
+          </div>` : ''}
+
+        <p class="btq-modal-label">Quantité</p>
+        <div class="btq-qty-row">
+          <button class="btq-qty-btn" onclick="btqQty(-1)">−</button>
+          <span class="btq-qty-val" id="btq-qty-val">1</span>
+          <button class="btq-qty-btn" onclick="btqQty(1)">+</button>
+        </div>
+
+        <div class="btq-modal-add-wrap">
+          <button class="btq-add-btn" id="btq-add-btn" onclick="btqAddToCart()">
+            Ajouter au panier
           </button>
-        `).join('')}
+        </div>
       </div>
-    ` : ''}
-
-    ${p.tailles_disponibles?.length ? `
-      <p class="btq-modal-label">Taille</p>
-      <div class="btq-sizes" id="btq-size-row">
-        ${p.tailles_disponibles.map(t => `
-          <button class="btq-size-chip" data-t="${t}" onclick="btqSelectTaille('${t}',this)">${t}</button>
-        `).join('')}
-      </div>
-    ` : ''}
-
-    <p class="btq-modal-label">Quantité</p>
-    <div class="btq-qty-row">
-      <button class="btq-qty-btn" onclick="btqQty(-1)">−</button>
-      <span class="btq-qty-val" id="btq-qty-val">1</span>
-      <button class="btq-qty-btn" onclick="btqQty(1)">+</button>
     </div>
-
-    <button class="btq-add-btn" id="btq-add-btn" onclick="btqAddToCart()">
-      Ajouter au panier
-    </button>
   `;
 
   document.getElementById('btq-modal').classList.add('open');
