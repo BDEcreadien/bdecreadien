@@ -1571,7 +1571,13 @@ async function btqPlaceOrder() {
     const data = await res.json();
     if (!res.ok || !data.ok) throw new Error(data.error || 'Erreur');
 
-    // Afficher succès
+    // Si HelloAsso checkout dispo → redirection directe pour paiement
+    if (data.helloasso_url) {
+      location.href = data.helloasso_url;
+      return;
+    }
+
+    // Fallback : afficher succès sans paiement en ligne
     const card = document.getElementById('btq-checkout-card');
     card.innerHTML = `
       <div class="btq-success">
@@ -1580,20 +1586,8 @@ async function btqPlaceOrder() {
         <p class="btq-success-num">${data.numero}</p>
         <p class="btq-success-msg">
           Un e-mail de confirmation vient de t'être envoyé à <strong>${email}</strong>.<br>
-          Tu seras livré sur place une fois que nous aurons reçu tous les articles.
+          Tu seras livré sur place une fois que nous avons reçu les articles.
         </p>
-        ${data.helloasso_url ? `
-          <a href="${data.helloasso_url}" target="_blank" rel="noopener" style="
-            display:block;width:100%;padding:15px;
-            font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;
-            letter-spacing:2px;text-transform:uppercase;
-            border-radius:14px;text-decoration:none;text-align:center;
-            background:linear-gradient(135deg,#460186,#D2396D,#FF741F);
-            color:white;
-          ">
-            Payer ${btqFmt(btqCalcTotal())} sur HelloAsso
-          </a>
-        ` : ''}
         <button onclick="document.getElementById('btq-checkout-overlay').classList.remove('open');document.body.style.overflow='';btqResetCart();"
           style="margin-top:12px;width:100%;padding:12px;font-family:'Barlow Condensed',sans-serif;
           font-weight:700;font-size:15px;border:1.5px solid #e0d8f0;border-radius:12px;
