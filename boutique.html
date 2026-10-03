@@ -1224,8 +1224,9 @@ function btqOpenModal(id) {
       ${t.img ? `<img src="${t.img}" alt="${t.nom}">` : `<span>${btqProdIcon(p)}</span>`}
     </div>`).join('');
 
-  const mainImgHtml = p.image_url
-    ? `<img src="${p.image_url}" alt="${p.nom}" id="btq-main-img">`
+  const firstImg = thumbItems[0]?.img || '';
+  const mainImgHtml = firstImg
+    ? `<img src="${firstImg}" alt="${p.nom}" id="btq-main-img">`
     : `<span class="btq-modal-main-icon">${btqProdIcon(p)}</span>`;
 
   document.getElementById('btq-modal-inner').innerHTML = `
