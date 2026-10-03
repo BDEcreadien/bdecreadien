@@ -9158,9 +9158,36 @@ function btqaDesignRowHtml(idx, nom, imageUrl) {
 function btqaAddDesignRow() {
   const list = document.getElementById('bp-designs-list');
   if (!list) return;
-  const idx = Date.now(); // unique id pour les éléments DOM
+  const idx = Date.now();
   const div = document.createElement('div');
   div.innerHTML = btqaDesignRowHtml(idx, '', '');
+  list.appendChild(div.firstElementChild);
+}
+
+function btqaGalleryRowHtml(idx, imageUrl) {
+  return `<div class="bp-gallery-row" data-idx="${idx}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
+    <div class="btqa-img-picker" style="flex-shrink:0">
+      <div class="btqa-img-preview-wrap" id="gp-w-${idx}" style="${imageUrl ? '' : 'display:none'}">
+        <img src="${imageUrl}" id="gp-img-${idx}" class="btqa-img-preview-img">
+        <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-gimg-${idx}','gp-w-${idx}')">✕</button>
+      </div>
+      <input type="hidden" id="bp-gimg-${idx}" value="${imageUrl}">
+      <label class="btqa-img-btn" for="gp-file-${idx}" id="gp-lbl-${idx}" style="padding:6px 10px;font-size:11px">${imageUrl ? '📷 Changer' : '📷 Ajouter une photo'}</label>
+      <input type="file" id="gp-file-${idx}" accept="image/*" style="display:none"
+             onchange="btqaUploadImg(this,'bp-gimg-${idx}','gp-img-${idx}','gp-w-${idx}','gp-lbl-${idx}')">
+    </div>
+    <span style="flex:1;font-size:13px;color:#888">${imageUrl ? 'Photo ajoutée' : 'Aucune photo'}</span>
+    <button type="button" onclick="this.closest('.bp-gallery-row').remove()"
+      style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>`;
+}
+
+function btqaAddGalleryRow() {
+  const list = document.getElementById('bp-gallery-list');
+  if (!list) return;
+  const idx = Date.now();
+  const div = document.createElement('div');
+  div.innerHTML = btqaGalleryRowHtml(idx, '');
   list.appendChild(div.firstElementChild);
 }
 
