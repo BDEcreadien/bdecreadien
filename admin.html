@@ -1647,9 +1647,20 @@
 
   <!-- ── Onglet Vente physique ─── -->
   <div class="btqa-pane" id="btqa-pane-physique">
-    <div style="max-width:600px">
-      <div class="params-card">
-        <h3 style="margin-top:0">Créer une commande physique</h3>
+    <div class="btqa-physique-split">
+
+      <!-- Colonne gauche : catalogue -->
+      <div class="btqa-catalog-panel">
+        <p class="btqa-catalog-title">
+          <svg width="18" height="18" fill="none" stroke="#460186" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Catalogue boutique
+        </p>
+        <div id="btqa-phys-catalog"><p style="color:#bbb;font-size:13px">Chargement…</p></div>
+      </div>
+
+      <!-- Colonne droite : formulaire -->
+      <div class="btqa-form-panel">
+        <h3>Créer une commande physique</h3>
         <div class="btqa-form-row">
           <label>Nom de l'acheteur</label>
           <input id="btqa-p-nom" type="text" placeholder="Prénom Nom">
@@ -1670,22 +1681,21 @@
           <textarea id="btqa-p-notes" rows="2" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none"></textarea>
         </div>
 
-        <div id="btqa-p-items-list" style="margin-bottom:12px">
-          <!-- Lignes article ajoutées dynamiquement -->
-        </div>
-        <button onclick="btqaAddPhysItem()" style="width:100%;padding:10px;border:1.5px dashed #ccc;border-radius:10px;background:white;color:#666;font-size:14px;cursor:pointer;margin-bottom:16px;">
-          + Ajouter un article
+        <div id="btqa-p-items-list" style="margin-bottom:10px"></div>
+        <button onclick="btqaAddPhysItem()" style="width:100%;padding:9px;border:1.5px dashed #c4b5fd;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">
+          + Ajouter un article manuellement
         </button>
 
-        <div style="background:#f7f5fb;border-radius:12px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #f0e8ff;">
           <span style="font-weight:700;font-size:15px;">Total estimé</span>
-          <span id="btqa-p-total" style="font-size:20px;font-weight:700;color:var(--violet);">0,00 €</span>
+          <span id="btqa-p-total" style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent;">0,00 €</span>
         </div>
 
         <button class="btn-save" onclick="btqaCreatePhysOrder()" style="width:100%">
           Créer la commande physique
         </button>
       </div>
+
     </div>
   </div>
 
