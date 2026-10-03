@@ -9317,12 +9317,18 @@ async function btqaSaveProduit(id) {
   const cat     = document.getElementById('bp-cat').value;
   const tailles = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
   const actif   = document.getElementById('bp-actif').checked;
-  const imgUrl  = document.getElementById('bp-img').value.trim();
   if (!nom) return showToast('Entre un nom', 'error');
 
   const sb = window.Auth.sb;
 
-  // Lire les designs inline depuis les rows du DOM
+  // Lire la galerie de photos
+  const images = [];
+  document.querySelectorAll('.bp-gallery-row').forEach(row => {
+    const url = row.querySelector('input[type="hidden"]')?.value.trim();
+    if (url) images.push({ url });
+  });
+
+  // Lire les designs inline
   const designs = [];
   document.querySelectorAll('.bp-design-row').forEach(row => {
     const nomInput = row.querySelector('.bp-design-nom');
@@ -9331,11 +9337,14 @@ async function btqaSaveProduit(id) {
     if (n) designs.push({ nom: n, image_url: imgInput?.value.trim() || '' });
   });
 
+  // image_url = première photo de la galerie (pour les cards et fallbacks)
+  const imageUrl = images[0]?.url || null;
+
   const payload = {
     nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
     a_designs: designs.length > 0, a_tailles: tailles.length > 0,
-    actif, image_url: imgUrl || null,
-    designs,
+    actif, image_url: imageUrl,
+    images, designs,
   };
 
   let prodId = id;
