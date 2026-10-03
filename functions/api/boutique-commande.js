@@ -72,9 +72,41 @@ export async function onRequest({ request, env }) {
 
   const numero = updated.numero;
 
-  // ── 4. URL HelloAsso — variable HELLOASSO_BOUTIQUE_SLUG = URL complète de l'événement
-  // ex: https://www.helloasso.com/associations/bde-creadien/evenements/vente
-  const helloassoUrl = env.HELLOASSO_BOUTIQUE_SLUG || null;
+  // ── 4. Créer un checkout HelloAsso avec le montant exact ────
+  let helloassoUrl = null;
+  if (env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && total >= 100) {
+    try {
+      // Découper nom_acheteur en prénom + nom
+      const parts = nom_acheteur.trim().split(/\s+/);
+      const firstName = parts[0] || 'Client';
+      const lastName  = parts.slice(1).join(' ') || parts[0] || 'BDE';
+      const SITE = 'https://bdecreadien.fr';
+
+      const haRes = await fetch(
+        `${env.SUPABASE_URL}/functions/v1/helloasso-checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify({
+            totalAmountCents: total,
+            itemName: `Commande ${numero} — BDE CREAD Boutique`,
+            backUrl:    `${SITE}/boutique.html?annule=1`,
+            errorUrl:   `${SITE}/boutique.html?erreur=1`,
+            returnUrl:  `${SITE}/boutique.html?paye=${encodeURIComponent(numero)}`,
+            payer: { firstName, lastName, email: email_acheteur },
+            metadata: { commande_id, numero },
+          }),
+        }
+      );
+      const haData = await haRes.json();
+      if (haData.redirectUrl) helloassoUrl = haData.redirectUrl;
+    } catch (e) {
+      console.error('[boutique] helloasso checkout error', e);
+    }
+  }
 
   // ── 5. E-mail de confirmation ────────────────────────────
   if (env.RESEND_API_KEY) {
