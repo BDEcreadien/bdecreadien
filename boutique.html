@@ -1076,6 +1076,18 @@ async function btqInit() {
   btqRenderGrid();
   btqUpdateCartUI();
   btqFillMarquee();
+
+  // Retour depuis HelloAsso
+  const params = new URLSearchParams(location.search);
+  if (params.get('paye')) {
+    const numero = params.get('paye');
+    btqToast(`Paiement reçu ! Commande ${numero} confirmée.`);
+    history.replaceState(null, '', location.pathname);
+    btqResetCart();
+  } else if (params.get('annule') || params.get('erreur')) {
+    btqToast('Paiement annulé ou échoué. Ta commande est sauvegardée, réessaie depuis ton e-mail.');
+    history.replaceState(null, '', location.pathname);
+  }
 }
 
 // ── Catalogue ──────────────────────────────────────────────
