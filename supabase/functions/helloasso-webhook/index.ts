@@ -134,6 +134,30 @@ async function syncTransactionFinances(vente: any, order: any) {
   await supa.from('billetterie_ventes').update({ transaction_id: tx.id }).eq('id', vente.id)
 }
 
+async function handleBoutiquePayment(order: any, meta: any) {
+  const commande_id = meta.commande_id
+  const montant = order?.amount?.total ?? 0
+
+  if (commande_id) {
+    await supa.from('boutique_commandes')
+      .update({ statut: 'payee', updated_at: new Date().toISOString() })
+      .eq('id', commande_id)
+  }
+
+  // Enregistrer en Finances
+  const payer = order?.payer ?? {}
+  const libelle = `Boutique · ${payer.firstName ?? ''} ${payer.lastName ?? ''} · ${meta.numero ?? ''}`.trim()
+  await supa.from('transactions').insert({
+    type: 'gain',
+    categorie: 'boutique',
+    libelle,
+    montant: montant / 100,
+    date_operation: (order?.date ?? new Date().toISOString()).slice(0, 10),
+    moyen_paiement: 'cb',
+    fournisseur: 'HelloAsso',
+  })
+}
+
 async function markRefunded(order: any) {
   await supa.from('billetterie_ventes')
     .update({ statut: 'remboursee', raw_payload: order, updated_at: new Date().toISOString() })
