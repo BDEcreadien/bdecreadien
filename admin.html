@@ -8997,6 +8997,34 @@ function btqaExportCSV() {
 }
 
 // ── Vente physique ───────────────────────────────────────────
+function btqaRenderPhysiqueCatalog() {
+  const el = document.getElementById('btqa-phys-catalog');
+  if (!el) return;
+  if (!_btqaProduits.length) { el.innerHTML = '<p style="color:#bbb;font-size:13px">Aucun produit actif.</p>'; return; }
+  el.innerHTML = `<div class="btqa-mini-grid">${_btqaProduits.map(p => {
+    const imgEl = p.image_url
+      ? `<img class="btqa-mini-card-img" src="${p.image_url}" alt="" loading="lazy">`
+      : `<div class="btqa-mini-card-icon">${p.emoji || '🛍️'}</div>`;
+    const sizes = p.tailles_disponibles || [];
+    const sizesHtml = sizes.length
+      ? sizes.map(t => `<button class="btqa-mini-size-btn" onclick="btqaQuickAdd('${p.id}','${t}')">${t}</button>`).join('')
+      : `<button class="btqa-mini-add-btn" onclick="btqaQuickAdd('${p.id}','')">+ Ajouter</button>`;
+    return `<div class="btqa-mini-card">
+      ${imgEl}
+      <div class="btqa-mini-card-body">
+        <p class="btqa-mini-card-name" title="${p.nom}">${p.nom}</p>
+        <p class="btqa-mini-card-price">${btqaFmt(p.prix_centimes)}</p>
+        <div class="btqa-mini-card-sizes">${sizesHtml}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function btqaQuickAdd(prodId, taille) {
+  const existing = _btqaPhysItems.find(i => i.produit_id === prodId && i.taille === taille);
+  if (existing) { existing.quantite += 1; btqaRenderPhysItems(); }
+  else { _btqaPhysItems.push({ produit_id: prodId, taille, quantite: 1 }); btqaRenderPhysItems(); }
+  showToast('Article ajouté');
+}
 function btqaAddPhysItem() {
   _btqaPhysItems.push({ produit_id: '', taille: '', quantite: 1 });
   btqaRenderPhysItems();
