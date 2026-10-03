@@ -1089,6 +1089,7 @@ async function btqLoadCatalogue() {
   _produits = (produits || []).map(p => ({
     ...p,
     designs: Array.isArray(p.designs) ? p.designs : [],
+    images:  Array.isArray(p.images)  ? p.images  : [],
   }));
 
   const statusEl = document.getElementById('btq-sale-status');
