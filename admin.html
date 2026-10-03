@@ -8868,11 +8868,11 @@ function btqaRenderStats() {
   const totalEur = all.filter(c => ['en_attente','confirmee','remise'].includes(c.statut))
                       .reduce((s, c) => s + (c.total_centimes || 0), 0);
   document.getElementById('btqa-stats').innerHTML = `
-    <div class="btqa-stat"><div class="btqa-stat-val">${all.length}</div><div class="btqa-stat-lbl">Commandes</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val orange">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val orange">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-icon">🛍️</div><div class="btqa-stat-val">${all.length}</div><div class="btqa-stat-lbl">Commandes</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-icon">⏳</div><div class="btqa-stat-val orange">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-icon">✅</div><div class="btqa-stat-val">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-icon">📦</div><div class="btqa-stat-val orange">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-icon">💶</div><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
   `;
 }
 
