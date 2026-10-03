@@ -1220,7 +1220,7 @@ function btqOpenModal(id) {
   if (thumbItems.length === 0) thumbItems.push({ type: 'gallery', idx: null, img: '', nom: p.nom });
 
   const thumbsHtml = thumbItems.map((t, ti) => `
-    <div class="btq-modal-thumb${ti===0?' active':''}" onclick="btqThumbClick(${t.idx===null?'null':t.idx},'${btqEsc(t.img)}','${btqEsc(t.nom)}',this)">
+    <div class="btq-modal-thumb${ti===0?' active':''}" onclick="btqThumbClick(${t.type==='design'?t.idx:'null'},'${btqEsc(t.img)}','${btqEsc(t.nom)}',this)">
       ${t.img ? `<img src="${t.img}" alt="${t.nom}">` : `<span>${btqProdIcon(p)}</span>`}
     </div>`).join('');
 
