@@ -157,8 +157,15 @@ Deno.serve(async (req) => {
 
   try {
     if (eventType === 'Order' || eventType === 'Payment') {
-      const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
-      await upsertVenteFromOrder(data, formSlug)
+      const meta = data?.metadata ?? {}
+      // ── Boutique BDE ─────────────────────────────────────────
+      if (meta.commande_id || meta.numero) {
+        await handleBoutiquePayment(data, meta)
+      } else {
+        // ── Billetterie ───────────────────────────────────────
+        const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
+        await upsertVenteFromOrder(data, formSlug)
+      }
     } else if (eventType === 'Refund' || data?.state === 'Refunded') {
       await markRefunded(data)
     }
