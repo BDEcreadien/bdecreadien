@@ -1277,14 +1277,38 @@ function btqSelectDesign(idx, nom, img, el) {
   _modalDesign = {idx, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  // Mise à jour preview image
-  const imgWrap = document.querySelector('.btq-modal-img');
-  if (imgWrap) {
-    if (img) {
-      imgWrap.innerHTML = `<div class="btq-modal-img-bg"></div><img src="${img}" alt="${nom}" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;padding:8px;">`;
-    } else {
-      imgWrap.innerHTML = `<div class="btq-modal-img-bg"></div><span class="btq-modal-img-icon">${btqProdIcon(_modalProd)}</span>`;
-    }
+  // Sync grande image + thumbnail actif
+  btqSetMainImg(img, nom);
+  // Activer le bon thumbnail
+  const thumbs = document.querySelectorAll('.btq-modal-thumb');
+  thumbs.forEach(t => t.classList.remove('active'));
+  // Le thumbnail correspondant = celui avec le même img src
+  thumbs.forEach(t => { const i = t.querySelector('img'); if (i && i.src.includes(img.split('/').pop())) t.classList.add('active'); });
+}
+
+function btqThumbClick(designIdx, img, nom, el) {
+  document.querySelectorAll('.btq-modal-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  btqSetMainImg(img, nom);
+  if (designIdx === null) {
+    // Retour sur l'image produit — désélectionner le design
+    _modalDesign = null;
+    document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
+  } else {
+    // Sélectionner le design correspondant
+    const chip = document.querySelectorAll('.btq-design-chip')[designIdx];
+    if (chip) { document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected')); chip.classList.add('selected'); }
+    _modalDesign = {idx: designIdx, nom};
+  }
+}
+
+function btqSetMainImg(img, nom) {
+  const wrap = document.getElementById('btq-main-img-wrap');
+  if (!wrap) return;
+  if (img) {
+    wrap.innerHTML = `<img src="${img}" alt="${nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:28px;transition:opacity .2s;">`;
+  } else {
+    wrap.innerHTML = `<span class="btq-modal-main-icon">${btqProdIcon(_modalProd)}</span>`;
   }
 }
 function btqSelectTaille(t, el) {
