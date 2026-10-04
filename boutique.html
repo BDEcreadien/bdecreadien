@@ -1171,12 +1171,14 @@ async function btqResumePay(commandeId, btn) {
 
 // ── Catalogue ──────────────────────────────────────────────
 async function btqLoadCatalogue() {
-  const [{ data: produits }, { data: packs }] = await Promise.all([
+  const [{ data: produits }, packsRes] = await Promise.all([
     _sb.from('boutique_produits').select('*').eq('actif', true).order('ordre'),
     _sb.from('boutique_packs').select('*').eq('actif', true),
   ]);
   _designs = [];
-  _packs   = packs || [];
+  if (packsRes.error) console.warn('[packs] load error:', packsRes.error);
+  _packs = packsRes.data || [];
+  console.log('[packs] chargés:', _packs.length, _packs);
   _produits = (produits || []).map(p => ({
     ...p,
     designs: Array.isArray(p.designs) ? p.designs : [],
