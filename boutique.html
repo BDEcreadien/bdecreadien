@@ -1507,17 +1507,22 @@ async function btqApplyPacks() {
   let packActive = null;
   for (const pack of _packs) {
     if (!pack.actif) continue;
-    const met = pack.conditions.every(c => (qtyMap[c.produit_id] || 0) >= c.min_qty);
-    if (met) {
-      packActive = pack;
-      break;
-    }
+    const conds = (pack.conditions || []).filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
+    const met = conds.every(c => {
+      const ids = c.produit_ids || (c.produit_id ? [c.produit_id] : []);
+      const qty = ids.reduce((s, id) => s + (qtyMap[id] || 0), 0);
+      return qty >= (c.min_qty || 1);
+    });
+    if (met && conds.length) { packActive = pack; break; }
   }
 
   const banner   = document.getElementById('btq-pack-banner');
   const packMsg  = document.getElementById('btq-pack-msg');
   if (packActive) {
-    const offreProd = _produits.find(p => p.id === packActive.offre_produit_id);
+    // Produit offert : chercher dans conditions type='offre' ou fallback offre_produit_id
+    const offreEntry = (packActive.conditions || []).find(c => c.type === 'offre');
+    const offreProdId = offreEntry?.produit_ids?.[0] || packActive.offre_produit_id;
+    const offreProd = _produits.find(p => p.id === offreProdId);
     if (offreProd) {
       const { data: item } = await _sb.from('boutique_items').insert({
         commande_id:            _cmdId,
