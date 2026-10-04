@@ -1504,8 +1504,9 @@ async function btqRemoveItem(key) {
 }
 
 // ── Pack detection ──────────────────────────────────────────
+let _packChosenOffreProdId = null; // mémorise le choix de porte-clef
+
 async function btqApplyPacks() {
-  console.log('[packs] btqApplyPacks — packs:', _packs.length, '| cart:', _cart.length);
   if (!_packs.length) return;
   // Supprimer les articles offerts actuels
   const offerts = _cart.filter(i => i.est_offert);
@@ -1514,7 +1515,6 @@ async function btqApplyPacks() {
   }
   _cart = _cart.filter(i => !i.est_offert);
 
-  // Calculer les quantités par produit
   const qtyMap = {};
   _cart.forEach(i => { qtyMap[i.produit_id] = (qtyMap[i.produit_id] || 0) + i.quantite; });
 
@@ -1530,36 +1530,72 @@ async function btqApplyPacks() {
     if (met && conds.length) { packActive = pack; break; }
   }
 
-  const banner   = document.getElementById('btq-pack-banner');
-  const packMsg  = document.getElementById('btq-pack-msg');
-  if (packActive) {
-    // Produit offert : chercher dans conditions type='offre' ou fallback offre_produit_id
-    const offreEntry = (packActive.conditions || []).find(c => c.type === 'offre');
-    const offreProdId = offreEntry?.produit_ids?.[0] || packActive.offre_produit_id;
-    const offreProd = _produits.find(p => p.id === offreProdId);
-    if (offreProd) {
-      const { data: item } = await _sb.from('boutique_items').insert({
-        commande_id:            _cmdId,
-        produit_id:             offreProd.id,
-        produit_nom:            offreProd.nom,
-        quantite:               packActive.offre_qty,
-        prix_unitaire_centimes: 0,
-        est_offert:             true,
-      }).select('id').single();
-      if (item) {
-        _cart.push({
-          _key: item.id, produit_id: offreProd.id, produit_nom: offreProd.nom,
-          design_id:null,design_nom:null,taille:null,
-          quantite: packActive.offre_qty, prix: 0, est_offert: true,
-        });
-      }
-    }
-    packMsg.textContent = packActive.description || 'Pack détecté ! Article offert ajouté.';
-    banner.style.display = 'flex';
-  } else {
+  const banner  = document.getElementById('btq-pack-banner');
+  const packMsg = document.getElementById('btq-pack-msg');
+  const choicesEl = document.getElementById('btq-pack-choices');
+
+  if (!packActive) {
     banner.style.display = 'none';
+    _packChosenOffreProdId = null;
+    await btqSaveCart();
+    return;
   }
+
+  // Produits offerts possibles
+  const offreEntry = (packActive.conditions || []).find(c => c.type === 'offre');
+  const offreProdIds = offreEntry?.produit_ids?.length
+    ? offreEntry.produit_ids
+    : [packActive.offre_produit_id].filter(Boolean);
+  const offreProds = offreProdIds.map(id => _produits.find(p => p.id === id)).filter(Boolean);
+
+  packMsg.textContent = packActive.description || 'Pack détecté !';
+
+  if (offreProds.length <= 1) {
+    // Un seul choix — auto-insert
+    choicesEl.style.display = 'none';
+    const offreProd = offreProds[0];
+    if (offreProd) await btqInsertOffert(offreProd, packActive.offre_qty || 1);
+  } else {
+    // Plusieurs choix — afficher les boutons
+    choicesEl.style.display = 'flex';
+    // Si choix mémorisé invalide (produit supprimé), reset
+    if (_packChosenOffreProdId && !offreProds.find(p => p.id === _packChosenOffreProdId)) {
+      _packChosenOffreProdId = null;
+    }
+    // Insert le choix mémorisé ou rien
+    if (_packChosenOffreProdId) {
+      const chosen = offreProds.find(p => p.id === _packChosenOffreProdId);
+      if (chosen) await btqInsertOffert(chosen, packActive.offre_qty || 1);
+    }
+    choicesEl.innerHTML = offreProds.map(p => `
+      <button class="btq-pack-choice-btn${p.id === _packChosenOffreProdId ? ' selected' : ''}"
+        onclick="btqSelectPackOffer('${p.id}')">
+        ${p.nom}
+      </button>`).join('');
+  }
+
+  banner.style.display = 'flex';
   await btqSaveCart();
+}
+
+async function btqInsertOffert(prod, qty) {
+  const { data: item } = await _sb.from('boutique_items').insert({
+    commande_id: _cmdId, produit_id: prod.id, produit_nom: prod.nom,
+    quantite: qty, prix_unitaire_centimes: 0, est_offert: true,
+  }).select('id').single();
+  if (item) {
+    _cart.push({
+      _key: item.id, produit_id: prod.id, produit_nom: prod.nom,
+      design_id: null, design_nom: null, taille: null,
+      quantite: qty, prix: 0, est_offert: true,
+    });
+  }
+}
+
+async function btqSelectPackOffer(prodId) {
+  _packChosenOffreProdId = prodId;
+  await btqApplyPacks();
+  btqUpdateCartUI();
 }
 
 // ── UI panier ───────────────────────────────────────────────
