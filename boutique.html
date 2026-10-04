@@ -1199,7 +1199,6 @@ async function btqLoadCart() {
     .select('id')
     .eq('membre_id', _user.id)
     .eq('statut', 'panier')
-    .order('created_at', {ascending:false})
     .limit(1)
     .maybeSingle();
 
