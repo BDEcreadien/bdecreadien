@@ -1153,7 +1153,7 @@ async function btqCheckPendingOrder() {
       </div>
       <div class="btq-pending-actions">
         <button class="btq-pending-pay" onclick="btqResumePay('${cmd.id}', this)">Payer maintenant</button>
-        <button class="btq-pending-dismiss" onclick="document.getElementById('btq-pb-${cmd.id}').remove()">✕</button>
+        <button class="btq-pending-dismiss" onclick="btqDismissPending('${cmd.id}')">✕</button>
       </div>
     </div>`).join('');
 }
