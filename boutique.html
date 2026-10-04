@@ -1158,14 +1158,17 @@ async function btqDismissPending(cmdId) {
 
 async function btqResumeEdit(cmdId, btn) {
   btn.disabled = true; btn.textContent = '…';
-  // Mettre l'ancienne commande en panier, vider le panier actuel
+  // Si un panier actif existe et est vide → le supprimer silencieusement (pas d'annulation)
   if (_cmdId && _cmdId !== cmdId) {
-    await _sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', _cmdId);
+    const itemsActuels = _cart.filter(i => !i.est_offert);
+    if (itemsActuels.length === 0) {
+      await _sb.from('boutique_commandes').delete().eq('id', _cmdId);
+    }
+    // Si le panier a des articles, on le laisse en 'panier' pour plus tard
   }
-  // Remettre en statut panier
+  // Remettre la commande sélectionnée en panier
   await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', cmdId);
   _cmdId = cmdId;
-  // Recharger les items
   const { data: items } = await _sb.from('boutique_items').select('*').eq('commande_id', _cmdId);
   _cart = (items || []).map(i => ({
     _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
