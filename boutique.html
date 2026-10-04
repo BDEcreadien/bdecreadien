@@ -1286,6 +1286,8 @@ async function btqLoadCart() {
 
 async function btqEnsurePanier() {
   if (_cmdId) return;
+  console.error('[btqEnsurePanier] Création d\'un nouveau panier — trace:');
+  console.trace();
   const { data: newCmd } = await _sb.from('boutique_commandes').insert({
     membre_id:     _user.id,
     statut:        'panier',
