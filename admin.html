@@ -9509,8 +9509,12 @@ async function btqaSavePack() {
     } else {
       res = await sb.from('boutique_packs').insert({ ...payload, actif: true });
     }
-    console.log('[btqaSavePack] result:', res);
-    if (res.error) return showToast('Erreur DB : ' + (res.error.message || JSON.stringify(res.error)), 'error');
+    console.log('[btqaSavePack] error:', res.error, '| status:', res.status);
+    if (res.error) {
+      const msg = res.error.message || res.error.details || JSON.stringify(res.error);
+      alert('Erreur pack: ' + msg);
+      return;
+    }
   } catch(e) {
     return showToast('Erreur : ' + e.message, 'error');
   }
