@@ -1176,7 +1176,8 @@ async function btqCheckPendingOrder() {
         <p class="btq-pending-sub">${btqFmt(cmd.total_centimes)} · Clique pour finaliser ton paiement</p>
       </div>
       <div class="btq-pending-actions">
-        <button class="btq-pending-pay" onclick="btqResumePay('${cmd.id}', this)">Payer maintenant</button>
+        <button class="btq-pending-edit" onclick="btqResumeEdit('${cmd.id}', this)">Modifier</button>
+        <button class="btq-pending-pay" onclick="btqResumePay('${cmd.id}', this)">Payer</button>
         <button class="btq-pending-dismiss" onclick="btqDismissPending('${cmd.id}')">✕</button>
       </div>
     </div>`).join('');
