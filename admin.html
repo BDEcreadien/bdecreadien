@@ -9501,13 +9501,18 @@ async function btqaSavePack() {
   };
 
   const sb = window.Auth.sb;
-  let err;
-  if (_btqaEditPackId) {
-    ({ error: err } = await sb.from('boutique_packs').update(payload).eq('id', _btqaEditPackId));
-  } else {
-    ({ error: err } = await sb.from('boutique_packs').insert({ ...payload, actif: true }));
+  try {
+    let res;
+    if (_btqaEditPackId) {
+      res = await sb.from('boutique_packs').update(payload).eq('id', _btqaEditPackId);
+    } else {
+      res = await sb.from('boutique_packs').insert({ ...payload, actif: true });
+    }
+    console.log('[btqaSavePack] result:', res);
+    if (res.error) return showToast('Erreur DB : ' + (res.error.message || JSON.stringify(res.error)), 'error');
+  } catch(e) {
+    return showToast('Erreur : ' + e.message, 'error');
   }
-  if (err) return showToast('Erreur : ' + err.message, 'error');
   document.getElementById('btqa-pack-modal').style.display = 'none';
   showToast('Pack enregistré !');
   await btqaRenderConfigProduits();
