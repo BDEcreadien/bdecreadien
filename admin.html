@@ -9223,6 +9223,7 @@ async function btqaRenderConfigProduits() {
     sb.from('boutique_packs').select('*').order('created_at')
   ]);
   _btqaProduits = prods || [];
+  window._btqaAllPacks = packs || [];
 
   // ── Produits grid ──
   const el = document.getElementById('btqa-config-produits');
