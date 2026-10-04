@@ -1511,6 +1511,9 @@ async function btqAddToCart() {
     return;
   }
 
+  // Créer le panier si besoin
+  await btqEnsurePanier();
+
   // Insert en base
   const { data: item } = await _sb.from('boutique_items').insert({
     commande_id:            _cmdId,
