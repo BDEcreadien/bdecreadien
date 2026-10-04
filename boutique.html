@@ -1257,7 +1257,7 @@ async function btqLoadCatalogue() {
 
 // ── Panier Supabase ─────────────────────────────────────────
 async function btqLoadCart() {
-  // Chercher un panier existant
+  // Chercher un panier existant (sans en créer un nouveau)
   const { data: cmd } = await _sb.from('boutique_commandes')
     .select('id')
     .eq('membre_id', _user.id)
@@ -1271,27 +1271,30 @@ async function btqLoadCart() {
       .select('*')
       .eq('commande_id', _cmdId);
     _cart = (items || []).map(i => ({
-      _key:     i.id,
-      produit_id:   i.produit_id,
-      produit_nom:  i.produit_nom,
-      design_id:    i.design_id,
-      design_nom:   i.design_nom,
-      taille:       i.taille,
-      quantite:     i.quantite,
-      prix:         i.prix_unitaire_centimes,
-      est_offert:   i.est_offert,
+      _key:       i.id,
+      produit_id: i.produit_id,
+      produit_nom:i.produit_nom,
+      design_id:  i.design_id,
+      design_nom: i.design_nom,
+      taille:     i.taille,
+      quantite:   i.quantite,
+      prix:       i.prix_unitaire_centimes,
+      est_offert: i.est_offert,
     }));
-  } else {
-    // Créer un panier vide
-    const { data: newCmd } = await _sb.from('boutique_commandes').insert({
-      membre_id:     _user.id,
-      statut:        'panier',
-      type:          'online',
-      nom_acheteur:  '',
-      email_acheteur:'',
-    }).select('id').single();
-    if (newCmd) _cmdId = newCmd.id;
   }
+  // Pas de création automatique : le panier est créé à la demande par btqEnsurePanier()
+}
+
+async function btqEnsurePanier() {
+  if (_cmdId) return;
+  const { data: newCmd } = await _sb.from('boutique_commandes').insert({
+    membre_id:     _user.id,
+    statut:        'panier',
+    type:          'online',
+    nom_acheteur:  '',
+    email_acheteur:'',
+  }).select('id').single();
+  if (newCmd) _cmdId = newCmd.id;
 }
 
 async function btqSaveCart() {
