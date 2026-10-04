@@ -9260,21 +9260,25 @@ async function btqaRenderConfigProduits() {
   if (!pel) return;
   if (!packs?.length) { pel.innerHTML = '<p style="color:#bbb">Aucun pack configuré.</p>'; return; }
   pel.innerHTML = `<div class="btqa-pack-grid">${packs.map(pk => {
-    const offreProd = (_btqaProduits||[]).find(p => p.id === pk.offre_produit_id);
-    const offreNom = offreProd?.nom || '?';
-    const condText = Array.isArray(pk.conditions) ? pk.conditions.map(c => {
-      const prod = (_btqaProduits||[]).find(p=>p.id===c.produit_id);
-      return (prod?.nom||'?') + (c.min_qty>1?` x${c.min_qty}`:'');
-    }).join(' + ') : '';
+    const conds = Array.isArray(pk.conditions) ? pk.conditions : [];
+    const achatConds = conds.filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
+    const offreEntry = conds.find(c => c.type === 'offre');
+    const offreIds   = offreEntry?.produit_ids || (pk.offre_produit_id ? [pk.offre_produit_id] : []);
+    const offreNoms  = offreIds.map(id => (_btqaProduits||[]).find(p=>p.id===id)?.nom || '?').join(' ou ');
+    const condText = achatConds.map(c => {
+      const ids = c.produit_ids || (c.produit_id ? [c.produit_id] : []);
+      const noms = ids.map(id => (_btqaProduits||[]).find(p=>p.id===id)?.nom || '?').join(' ou ');
+      return noms + (c.min_qty>1 ? ` x${c.min_qty}` : '');
+    }).join(' + ');
     return `<div class="btqa-pack-card">
       <span class="btqa-pack-badge">${pk.actif?'ACTIF':'INACTIF'}</span>
       <div class="btqa-pack-card-title">${pk.nom}</div>
       <div class="btqa-pack-card-desc">${pk.description||''}</div>
       <div style="font-size:12px;color:#555;margin-bottom:10px">
-        <strong>Condition :</strong> ${condText||'—'}
+        <strong>Requis :</strong> ${condText||'—'}
       </div>
       <div class="btqa-pack-offer">
-        🎁 <span>${pk.offre_qty}x ${offreNom} offert${pk.offre_qty>1?'s':''}</span>
+        🎁 <span>${pk.offre_qty||1}x ${offreNoms||'?'} offert</span>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btqa-act-btn detail" onclick="btqaOpenPack('${pk.id}')">Modifier</button>
