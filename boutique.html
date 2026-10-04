@@ -1111,8 +1111,61 @@ async function btqInit() {
     history.replaceState(null, '', location.pathname);
     btqResetCart();
   } else if (params.get('annule') || params.get('erreur')) {
-    btqToast('Paiement annulé ou échoué. Ta commande est sauvegardée, réessaie depuis ton e-mail.');
+    btqToast('Paiement annulé. Ta commande est sauvegardée — tu peux la retrouver ci-dessous.');
     history.replaceState(null, '', location.pathname);
+  }
+
+  // Commandes en attente de paiement
+  btqCheckPendingOrder();
+}
+
+async function btqCheckPendingOrder() {
+  if (!_user) return;
+  const { data: cmds } = await _sb
+    .from('boutique_commandes')
+    .select('id, numero, total_centimes, created_at')
+    .eq('user_id', _user.id)
+    .eq('statut', 'en_attente')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  const wrap = document.getElementById('btq-pending-wrap');
+  if (!wrap || !cmds?.length) return;
+
+  wrap.innerHTML = cmds.map(cmd => `
+    <div class="btq-pending-banner" id="btq-pb-${cmd.id}">
+      <span class="btq-pending-icon">⏳</span>
+      <div class="btq-pending-text">
+        <p class="btq-pending-title">Commande ${cmd.numero} en attente de paiement</p>
+        <p class="btq-pending-sub">${btqFmt(cmd.total_centimes)} · Clique pour finaliser ton paiement</p>
+      </div>
+      <div class="btq-pending-actions">
+        <button class="btq-pending-pay" onclick="btqResumePay('${cmd.id}', this)">Payer maintenant</button>
+        <button class="btq-pending-dismiss" onclick="document.getElementById('btq-pb-${cmd.id}').remove()">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+async function btqResumePay(commandeId, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Redirection…';
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    const res = await fetch('/api/boutique-reprise', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ commande_id: commandeId }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.redirectUrl) throw new Error(data.error || 'Erreur');
+    location.href = data.redirectUrl;
+  } catch (e) {
+    btqToast('Erreur : ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Payer maintenant';
   }
 }
 
