@@ -1276,8 +1276,7 @@ function btqRenderGrid(cat = 'tous') {
     return;
   }
   grid.innerHTML = filtered.map((p, i) => {
-    const nbDesigns = (p.designs||[]).length;
-    const designDots = nbDesigns > 0 ? `<div class="btq-card-design-dots">${'<div class="btq-card-design-dot"></div>'.repeat(Math.min(nbDesigns,4))}<span class="btq-card-design-label" style="margin-left:2px">${nbDesigns} design${nbDesigns>1?'s':''}</span></div>` : '';
+    const designDots = '';
     const metaTailles = p.a_tailles ? (p.tailles_disponibles?.length <= 4 ? p.tailles_disponibles.join(' · ') : p.tailles_disponibles?.slice(0,4).join(' · ') + '…') : 'Taille unique';
     return `
     <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
