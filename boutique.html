@@ -1754,7 +1754,6 @@ async function btqSaveOrder() {
   btqToast('Commande enregistrée ! Tu pourras la retrouver ici pour payer plus tard.');
   _cmdId = null; _cart = [];
   btqUpdateCartUI();
-  await btqApplyPacks();
   btqCheckPendingOrder();
 }
 
