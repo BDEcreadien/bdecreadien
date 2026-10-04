@@ -711,8 +711,17 @@
       background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
       color:white;
       font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
-      display:flex;align-items:center;gap:10px;
+      display:flex;align-items:flex-start;gap:10px;
       box-shadow:0 4px 20px rgba(70,1,134,.4);
+    }
+    .btq-pack-choice-btn {
+      padding:5px 12px;border-radius:20px;border:2px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.15);color:white;cursor:pointer;
+      font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
+      white-space:nowrap;transition:all .15s;
+    }
+    .btq-pack-choice-btn.selected {
+      background:white;color:var(--btq-violet);border-color:white;
     }
     /* Cart footer */
     .btq-cart-foot {
