@@ -1156,6 +1156,28 @@ async function btqDismissPending(cmdId) {
   await _sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', cmdId);
 }
 
+async function btqResumeEdit(cmdId, btn) {
+  btn.disabled = true; btn.textContent = '…';
+  // Mettre l'ancienne commande en panier, vider le panier actuel
+  if (_cmdId && _cmdId !== cmdId) {
+    await _sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', _cmdId);
+  }
+  // Remettre en statut panier
+  await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', cmdId);
+  _cmdId = cmdId;
+  // Recharger les items
+  const { data: items } = await _sb.from('boutique_items').select('*').eq('commande_id', _cmdId);
+  _cart = (items || []).map(i => ({
+    _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
+    design_id: i.design_id, design_nom: i.design_nom, taille: i.taille,
+    quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
+  }));
+  document.getElementById('btq-pb-' + cmdId)?.remove();
+  btqUpdateCartUI();
+  await btqApplyPacks();
+  btqOpenCart();
+}
+
 async function btqCheckPendingOrder() {
   if (!_user) return;
   const { data: cmds } = await _sb
