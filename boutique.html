@@ -1132,6 +1132,11 @@ async function btqInit() {
   btqCheckPendingOrder();
 }
 
+async function btqDismissPending(cmdId) {
+  document.getElementById('btq-pb-' + cmdId)?.remove();
+  await _sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', cmdId);
+}
+
 async function btqCheckPendingOrder() {
   if (!_user) return;
   const { data: cmds } = await _sb
