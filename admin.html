@@ -1787,6 +1787,50 @@
   <div class="btqa-detail-card" id="btqa-prod-card"></div>
 </div>
 
+<div id="btqa-pack-modal" style="display:none" class="btqa-detail-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="btqa-detail-card" style="max-width:560px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="margin:0;font-size:18px" id="btqa-pack-modal-title">Nouveau pack promo</h3>
+      <button onclick="document.getElementById('btqa-pack-modal').style.display='none'"
+        style="border:none;background:#f3f4f6;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
+    </div>
+
+    <div class="btqa-form-row">
+      <label>Nom du pack</label>
+      <input id="btqa-pk-nom" type="text" placeholder="Ex : Pack rentrée">
+    </div>
+    <div class="btqa-form-row">
+      <label>Description (optionnel)</label>
+      <input id="btqa-pk-desc" type="text" placeholder="Ex : 1 pull + 1 t-shirt, chaussettes offertes">
+    </div>
+
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:16px 0 8px">Conditions d'achat</p>
+    <div id="btqa-pk-conditions"></div>
+    <button onclick="btqaAddPackCondition()"
+      style="width:100%;padding:9px;border:1.5px dashed #c4b5fd;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">
+      + Ajouter un produit requis
+    </button>
+
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 8px">Produit offert</p>
+    <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;margin-bottom:20px">
+      <select id="btqa-pk-offre-prod"
+        style="padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;outline:none">
+        <option value="">— Choisir un produit —</option>
+      </select>
+      <input id="btqa-pk-offre-qty" type="number" min="1" value="1"
+        style="padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;outline:none;text-align:center">
+    </div>
+
+    <div style="display:flex;justify-content:space-between;gap:10px">
+      <button id="btqa-pk-delete" onclick="btqaDeletePack()"
+        style="padding:10px 18px;border:1.5px solid #ef4444;border-radius:10px;color:#ef4444;background:white;font-size:13px;font-weight:700;cursor:pointer;display:none">
+        Supprimer
+      </button>
+      <button onclick="btqaSavePack()" class="btn-save" style="flex:1">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div id="step-qr" style="display:none;padding:2rem;max-width:700px;margin:0 auto;">
   <div class="params-card">
     <h3>URL de destination</h3>
