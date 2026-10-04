@@ -9381,9 +9381,88 @@ async function btqaTogglePack(id, actif) {
   showToast(actif ? 'Pack activé' : 'Pack désactivé');
 }
 
+let _btqaEditPackId = null;
+let _btqaPackConditions = []; // [{produit_id, min_qty}]
+
 function btqaOpenPack(id) {
-  // Pack editing: show a simple toast for now, full editor is a future feature
-  showToast('Éditeur de pack à venir — contacte le dev pour modifier les conditions.');
+  _btqaEditPackId = id;
+  const pk = id ? (window._btqaAllPacks||[]).find(p=>p.id===id) : null;
+
+  document.getElementById('btqa-pack-modal-title').textContent = pk ? 'Modifier le pack' : 'Nouveau pack promo';
+  document.getElementById('btqa-pk-nom').value   = pk?.nom || '';
+  document.getElementById('btqa-pk-desc').value  = pk?.description || '';
+  document.getElementById('btqa-pk-offre-qty').value = pk?.offre_qty || 1;
+  document.getElementById('btqa-pk-delete').style.display = pk ? '' : 'none';
+
+  // Populate offre produit select
+  const sel = document.getElementById('btqa-pk-offre-prod');
+  sel.innerHTML = '<option value="">— Choisir un produit —</option>' +
+    _btqaProduits.map(p=>`<option value="${p.id}" ${pk?.offre_produit_id===p.id?'selected':''}>${p.nom}</option>`).join('');
+
+  // Conditions
+  _btqaPackConditions = pk?.conditions ? JSON.parse(JSON.stringify(pk.conditions)) : [];
+  if (!_btqaPackConditions.length) _btqaPackConditions.push({ produit_id:'', min_qty:1 });
+  btqaRenderPackConditions();
+
+  document.getElementById('btqa-pack-modal').style.display = 'flex';
+}
+
+function btqaRenderPackConditions() {
+  document.getElementById('btqa-pk-conditions').innerHTML = _btqaPackConditions.map((c,i) => `
+    <div style="display:grid;grid-template-columns:1fr 70px 36px;gap:8px;margin-bottom:8px;align-items:start">
+      <select onchange="_btqaPackConditions[${i}].produit_id=this.value"
+        style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-family:inherit;outline:none">
+        <option value="">— Produit —</option>
+        ${_btqaProduits.map(p=>`<option value="${p.id}" ${p.id===c.produit_id?'selected':''}>${p.nom}</option>`).join('')}
+      </select>
+      <input type="number" min="1" max="20" value="${c.min_qty||1}"
+        onchange="_btqaPackConditions[${i}].min_qty=+this.value"
+        style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;text-align:center;outline:none"
+        title="Quantité minimum">
+      <button onclick="_btqaPackConditions.splice(${i},1);btqaRenderPackConditions()"
+        style="border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;height:38px;font-size:16px">✕</button>
+    </div>`).join('');
+}
+
+function btqaAddPackCondition() {
+  _btqaPackConditions.push({ produit_id:'', min_qty:1 });
+  btqaRenderPackConditions();
+}
+
+async function btqaSavePack() {
+  const nom = document.getElementById('btqa-pk-nom').value.trim();
+  if (!nom) return showToast('Entre un nom pour le pack', 'error');
+  const offre_produit_id = document.getElementById('btqa-pk-offre-prod').value;
+  if (!offre_produit_id) return showToast('Choisis un produit offert', 'error');
+  const validConds = _btqaPackConditions.filter(c=>c.produit_id);
+  if (!validConds.length) return showToast('Ajoute au moins un produit requis', 'error');
+
+  const payload = {
+    nom,
+    description: document.getElementById('btqa-pk-desc').value.trim() || null,
+    conditions: validConds,
+    offre_produit_id,
+    offre_qty: +document.getElementById('btqa-pk-offre-qty').value || 1,
+  };
+
+  const sb = window.Auth.sb;
+  if (_btqaEditPackId) {
+    await sb.from('boutique_packs').update(payload).eq('id', _btqaEditPackId);
+  } else {
+    await sb.from('boutique_packs').insert({ ...payload, actif: true });
+  }
+  document.getElementById('btqa-pack-modal').style.display = 'none';
+  showToast('Pack enregistré !');
+  btqaRenderConfigProduits();
+}
+
+async function btqaDeletePack() {
+  if (!_btqaEditPackId) return;
+  if (!confirm('Supprimer ce pack ?')) return;
+  await window.Auth.sb.from('boutique_packs').delete().eq('id', _btqaEditPackId);
+  document.getElementById('btqa-pack-modal').style.display = 'none';
+  showToast('Pack supprimé');
+  btqaRenderConfigProduits();
 }
 
 async function btqaOpenProduit(id) {
