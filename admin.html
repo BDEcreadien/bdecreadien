@@ -1788,7 +1788,7 @@
 </div>
 
 <div id="btqa-pack-modal" style="display:none" class="btqa-detail-modal" onclick="if(event.target===this)this.style.display='none'">
-  <div class="btqa-detail-card" style="max-width:560px;width:100%">
+  <div class="btqa-detail-card" style="max-width:600px;width:100%">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
       <h3 style="margin:0;font-size:18px" id="btqa-pack-modal-title">Nouveau pack promo</h3>
       <button onclick="document.getElementById('btqa-pack-modal').style.display='none'"
@@ -1801,24 +1801,27 @@
     </div>
     <div class="btqa-form-row">
       <label>Description (optionnel)</label>
-      <input id="btqa-pk-desc" type="text" placeholder="Ex : 1 pull + 1 t-shirt, chaussettes offertes">
+      <input id="btqa-pk-desc" type="text" placeholder="Ex : T-shirt + Sweat → Porte-clef offert">
     </div>
 
-    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:16px 0 8px">Conditions d'achat</p>
+    <div style="background:#f8f5ff;border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:#6d28d9;line-height:1.6">
+      <strong>Comment ça marche :</strong> chaque ligne = un groupe de produits dont <em>au moins un</em> doit être acheté.
+      Coche plusieurs produits dans un groupe pour faire un "OU" (ex : T-shirt phrase <em>ou</em> T-shirt classique).
+    </div>
+
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Produits à acheter</p>
     <div id="btqa-pk-conditions"></div>
     <button onclick="btqaAddPackCondition()"
-      style="width:100%;padding:9px;border:1.5px dashed #c4b5fd;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;">
-      + Ajouter un produit requis
+      style="width:100%;padding:9px;border:1.5px dashed #c4b5fd;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;">
+      + Ajouter un groupe
     </button>
 
-    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 8px">Produit offert</p>
-    <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;margin-bottom:20px">
-      <select id="btqa-pk-offre-prod"
-        style="padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;outline:none">
-        <option value="">— Choisir un produit —</option>
-      </select>
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Produit(s) offert(s) <span style="font-weight:400;text-transform:none;color:#aaa">(coche ceux parmi lesquels le client choisit)</span></p>
+    <div id="btqa-pk-offre-produits" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <span style="font-size:13px;color:#555;white-space:nowrap">Quantité offerte :</span>
       <input id="btqa-pk-offre-qty" type="number" min="1" value="1"
-        style="padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;outline:none;text-align:center">
+        style="width:70px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
     </div>
 
     <div style="display:flex;justify-content:space-between;gap:10px">
