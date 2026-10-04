@@ -9036,6 +9036,31 @@ async function btqaCancel(id) {
 }
 
 // ── Export CSV ───────────────────────────────────────────────
+async function btqaRelanceCommandes(btn) {
+  const enAttente = (_btqaCommandes || []).filter(c => c.statut === 'en_attente' && c.email_acheteur);
+  if (!enAttente.length) { alert('Aucune commande en attente avec un email.'); return; }
+  if (!confirm(`Envoyer un email de relance à ${enAttente.length} personne(s) ?`)) return;
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  try {
+    const { data: { session } } = await Auth.sb.auth.getSession();
+    const res = await fetch(`${window.SUPABASE_URL}/functions/v1/relance-boutique`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    alert(`Relance envoyée : ${data.sent} email(s) envoyé(s)${data.failed ? `, ${data.failed} échec(s)` : ''}.`);
+  } catch(e) {
+    alert('Erreur : ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '📧 Relancer';
+  }
+}
+
 function btqaExportCSV() {
   const rows = [['Numéro','Nom','Email','Date','Total €','Type','Statut','Paiement','Notes']];
   _btqaCommandes.forEach(c => {
