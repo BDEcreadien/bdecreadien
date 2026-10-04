@@ -1634,6 +1634,7 @@ async function btqApplyPacks() {
 }
 
 async function btqInsertOffert(prod, qty) {
+  await btqEnsurePanier();
   const { data: item } = await _sb.from('boutique_items').insert({
     commande_id: _cmdId, produit_id: prod.id, produit_nom: prod.nom,
     quantite: qty, prix_unitaire_centimes: 0, est_offert: true,
