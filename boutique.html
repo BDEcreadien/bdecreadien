@@ -1701,10 +1701,11 @@ async function btqSaveOrder() {
   }).eq('id', _cmdId);
   btqCloseCart();
   btqToast('Commande enregistrée ! Tu pourras la retrouver ici pour payer plus tard.');
-  // Réinitialiser le panier
   _cmdId = null; _cart = [];
   await btqLoadCart();
   btqUpdateCartUI();
+  await btqApplyPacks();
+  btqCheckPendingOrder();
 }
 
 function btqOpenCheckout() {
