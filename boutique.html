@@ -1101,6 +1101,7 @@ async function btqInit() {
   await Promise.all([btqLoadCatalogue(), btqLoadCart()]);
   btqRenderGrid();
   btqUpdateCartUI();
+  await btqApplyPacks();
   btqFillMarquee();
 
   // Retour depuis HelloAsso
