@@ -9221,13 +9221,13 @@ async function btqaRemettreNum(id) {
 // ── Config produits ──────────────────────────────────────────
 async function btqaRenderConfigProduits() {
   const sb = window.Auth.sb;
-  const [{ data: prods }, packsRes] = await Promise.all([
+  const [{ data: prods }, { data: packs, error: packsErr }] = await Promise.all([
     sb.from('boutique_produits').select('*').order('ordre'),
     sb.from('boutique_packs').select('*')
   ]);
   _btqaProduits = prods || [];
-  if (packsRes.error) console.warn('[boutique_packs] fetch error:', packsRes.error);
-  window._btqaAllPacks = packsRes.data || [];
+  if (packsErr) console.warn('[boutique_packs] fetch error:', packsErr);
+  window._btqaAllPacks = packs || [];
 
   // ── Produits grid ──
   const el = document.getElementById('btqa-config-produits');
