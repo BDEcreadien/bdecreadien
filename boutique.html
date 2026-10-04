@@ -1685,6 +1685,26 @@ function btqCloseCart() {
 }
 
 // ── Checkout ────────────────────────────────────────────────
+async function btqSaveOrder() {
+  if (!_cmdId || !_cart.filter(i => !i.est_offert).length) return;
+  const btn = document.getElementById('btq-save-btn');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const nom = [_profil?.prenom, _profil?.nom].filter(Boolean).join(' ') || '';
+  const email = _profil?.email || _user?.email || '';
+  await _sb.from('boutique_commandes').update({
+    statut: 'en_attente',
+    nom_acheteur: nom,
+    email_acheteur: email,
+    total_centimes: btqCalcTotal(),
+  }).eq('id', _cmdId);
+  btqCloseCart();
+  btqToast('Commande enregistrée ! Tu pourras la retrouver ici pour payer plus tard.');
+  // Réinitialiser le panier
+  _cmdId = null; _cart = [];
+  await btqLoadCart();
+  btqUpdateCartUI();
+}
+
 function btqOpenCheckout() {
   if (!_cart.filter(i => !i.est_offert).length) return;
   btqCloseCart();
