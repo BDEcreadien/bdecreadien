@@ -1820,10 +1820,8 @@ async function btqPlaceOrder() {
         </button>
       </div>`;
 
-    // Réinitialiser le panier local
     _cart  = [];
     _cmdId = null;
-    await btqLoadCart();
     btqUpdateCartUI();
   } catch(err) {
     btqToast('Une erreur est survenue. Réessaie.');
