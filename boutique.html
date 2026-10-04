@@ -1123,10 +1123,9 @@ async function btqCheckPendingOrder() {
   if (!_user) return;
   const { data: cmds } = await _sb
     .from('boutique_commandes')
-    .select('id, numero, total_centimes, created_at')
+    .select('id, numero, total_centimes')
     .eq('user_id', _user.id)
     .eq('statut', 'en_attente')
-    .order('created_at', { ascending: false })
     .limit(3);
 
   const wrap = document.getElementById('btq-pending-wrap');
