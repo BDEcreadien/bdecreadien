@@ -568,6 +568,31 @@
     .btq-add-btn:hover::after { transform:translateX(100%); }
     .btq-add-btn:active { transform:scale(.98); opacity:.9; }
 
+    /* ── Bandeau commande en attente ── */
+    .btq-pending-banner {
+      margin:0 auto 24px;max-width:860px;padding:16px 20px;
+      border-radius:16px;
+      background:linear-gradient(135deg,rgba(70,1,134,.18),rgba(210,57,109,.12));
+      border:1.5px solid rgba(210,57,109,.35);
+      display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    }
+    .btq-pending-icon { font-size:28px;flex-shrink:0; }
+    .btq-pending-text { flex:1;min-width:180px; }
+    .btq-pending-title { font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:white;margin:0 0 2px; }
+    .btq-pending-sub { font-size:13px;color:rgba(255,255,255,.55);margin:0; }
+    .btq-pending-actions { display:flex;gap:8px;flex-shrink:0; }
+    .btq-pending-pay {
+      padding:10px 20px;border-radius:10px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
+      color:white;font-family:'Barlow Condensed',sans-serif;font-weight:700;
+      font-size:14px;letter-spacing:1px;text-transform:uppercase;
+    }
+    .btq-pending-dismiss {
+      padding:10px 14px;border-radius:10px;
+      border:1.5px solid rgba(255,255,255,.15);background:transparent;
+      color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;
+    }
+
     /* ─── CART FAB ──────────────────────────────────────────── */
     .btq-fab {
       position:fixed;bottom:28px;right:28px;z-index:500;
