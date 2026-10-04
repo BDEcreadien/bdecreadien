@@ -1632,6 +1632,8 @@ function btqUpdateCartUI() {
 
   total.textContent = btqFmt(totalVal);
   chkBtn.disabled   = totalItems === 0;
+  const saveBtn = document.getElementById('btq-save-btn');
+  if (saveBtn) saveBtn.disabled = totalItems === 0;
 
   if (!_cart.length) {
     items.innerHTML = `
