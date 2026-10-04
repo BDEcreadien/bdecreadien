@@ -1494,6 +1494,7 @@ async function btqRemoveItem(key) {
 
 // ── Pack detection ──────────────────────────────────────────
 async function btqApplyPacks() {
+  console.log('[packs] btqApplyPacks — packs:', _packs.length, '| cart:', _cart.length);
   if (!_packs.length) return;
   // Supprimer les articles offerts actuels
   const offerts = _cart.filter(i => i.est_offert);
