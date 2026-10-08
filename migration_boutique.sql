@@ -23,7 +23,7 @@ DELETE FROM boutique_items
 DELETE FROM boutique_produits
   WHERE nom IN ('Porte-clef décapsuleur', 'Porte-clef', 'Chaussettes', 'Tasse');
 
--- 4. Insérer ou mettre à jour les produits principaux
+-- 5. Insérer ou mettre à jour les produits principaux
 -- (upsert sur le nom pour éviter les doublons si relancé)
 
 -- T-shirt
