@@ -9226,7 +9226,7 @@ async function btqaLookup() {
     <span class="btqa-badge ${data.statut}">${btqaStatutLabel(data.statut)}</span>
     <hr style="border:none;border-top:1px solid #e0d8f0;margin:12px 0">
     ${items.map(i => `<div style="font-size:13px;margin-bottom:4px">
-      ${i.produit_nom}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}
+      <strong>${i.produit_nom}</strong>${i.design_nom ? ` — ${i.design_nom}` : ''}${i.couleur ? ` — ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}
       ${i.est_offert ? '<span style="color:#FF741F;font-size:11px;font-weight:700"> OFFERT</span>' : ''}
     </div>`).join('')}
     <p style="font-weight:700;margin:12px 0 0">Total : ${btqaFmt(data.total_centimes)}</p>
