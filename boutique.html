@@ -1555,6 +1555,7 @@ async function btqAddToCart() {
   const existing = _cart.filter(i => !i.est_offert
     && i.produit_id === p.id
     && i.design_nom === designNom
+    && i.couleur    === (_modalCouleur || null)
     && i.taille     === (_modalTaille || null));
   const qtyInCart = existing.reduce((s,i) => s + i.quantite, 0);
   if (qtyInCart + _modalQty > (p.max_par_commande || 10)) {
