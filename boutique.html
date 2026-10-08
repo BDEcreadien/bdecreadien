@@ -1181,8 +1181,10 @@ async function btqResumeEdit(cmdId, btn) {
     const itemsActuels = _cart.filter(i => !i.est_offert);
     if (itemsActuels.length === 0) {
       await _sb.from('boutique_commandes').delete().eq('id', _cmdId);
+    } else {
+      // Repasser l'ancien panier en en_attente pour éviter 2 paniers simultanés
+      await _sb.from('boutique_commandes').update({ statut: 'en_attente' }).eq('id', _cmdId);
     }
-    // Si le panier a des articles, on le laisse en 'panier' pour plus tard
   }
   // Remettre la commande sélectionnée en panier
   await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', cmdId);
