@@ -9274,7 +9274,7 @@ async function btqaRenderConfigProduits() {
           <div class="btqa-prod-card-meta">${meta||'Accessoire'}</div>
           <div class="btqa-prod-card-actions">
             <button class="btqa-prod-card-btn edit" onclick="btqaOpenProduit('${p.id}')">Modifier</button>
-            <button class="btqa-prod-card-btn toggle-off" onclick="btqaDeleteProduit('${p.id}','${p.nom.replace(/'/g,'\\'+'\\'')}')">Supprimer</button>
+            <button class="btqa-prod-card-btn toggle-off" onclick="btqaDeleteProduit('${p.id}')">Supprimer</button>
           </div>
         </div>
       </div>`;
