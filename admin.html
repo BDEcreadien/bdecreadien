@@ -9131,6 +9131,8 @@ function btqaRenderPhysItems() {
           <option value="">— Produit —</option>
           ${_btqaProduits.map(p => `<option value="${p.id}" ${p.id === item.produit_id ? 'selected' : ''}>${p.nom} — ${btqaFmt(p.prix_centimes)}</option>`).join('')}
         </select>
+        ${(() => { const designs = prod?.designs || []; return designs.length ? `<select onchange="_btqaPhysItems[${i}].design_nom=this.value" style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px"><option value="">— Design —</option>${designs.map(d => `<option value="${d.nom}" ${d.nom === item.design_nom ? 'selected' : ''}>${d.nom}</option>`).join('')}</select>` : ''; })()}
+        ${(() => { const couleurs = prod?.couleurs_disponibles || []; return couleurs.length ? `<select onchange="_btqaPhysItems[${i}].couleur=this.value" style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px"><option value="">— Couleur —</option>${couleurs.map(c => `<option value="${c}" ${c === item.couleur ? 'selected' : ''}>${c}</option>`).join('')}</select>` : ''; })()}
         <select onchange="_btqaPhysItems[${i}].taille=this.value;btqaUpdatePhysTotal()"
           style="padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px"
           ${!tailles.length ? 'disabled' : ''}>
