@@ -1522,6 +1522,11 @@ function btqSetMainImg(img, nom) {
     wrap.innerHTML = `<span class="btq-modal-main-icon">${btqProdIcon(_modalProd)}</span>`;
   }
 }
+function btqSelectCouleur(c, el) {
+  _modalCouleur = c;
+  document.querySelectorAll('.btq-color-chip').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
 function btqSelectTaille(t, el) {
   _modalTaille = t;
   document.querySelectorAll('.btq-size-chip').forEach(b => b.classList.remove('selected'));
