@@ -9636,7 +9636,8 @@ async function btqaSaveProduit(id) {
   const prixRaw = parseFloat(document.getElementById('bp-prix').value);
   const prix    = isNaN(prixRaw) ? 0 : Math.round(prixRaw * 100);
   const cat     = document.getElementById('bp-cat').value;
-  const tailles = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
+  const tailles  = document.getElementById('bp-tailles').value.split(',').map(s => s.trim()).filter(Boolean);
+  const couleurs = document.getElementById('bp-couleurs').value.split(',').map(s => s.trim()).filter(Boolean);
   const actif   = document.getElementById('bp-actif').checked;
   if (!nom) return showToast('Entre un nom', 'error');
 
