@@ -1201,7 +1201,8 @@ async function btqResumeEdit(cmdId, btn) {
   }
   _cart = (items || []).map(i => ({
     _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
-    design_id: i.design_id, design_nom: i.design_nom, taille: i.taille,
+    design_id: i.design_id, design_nom: i.design_nom,
+    couleur: i.couleur, taille: i.taille,
     quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
   }));
   document.getElementById('btq-pb-' + cmdId)?.remove();
