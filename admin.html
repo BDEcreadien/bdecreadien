@@ -9582,7 +9582,10 @@ async function btqaOpenProduit(id) {
       </select>
     </div>
     <div class="btqa-form-row"><label>Tailles (séparées par des virgules)</label>
-      <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}">
+      <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}" placeholder="S, M, L, XL">
+    </div>
+    <div class="btqa-form-row"><label>Couleurs (séparées par des virgules)</label>
+      <input id="bp-couleurs" value="${(prod?.couleurs_disponibles || []).join(', ')}" placeholder="Blanc, Noir, Bleu, Rose, Vert">
     </div>
     <div class="btqa-form-row" style="display:flex;gap:16px;margin-bottom:4px">
       <label style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:normal;text-transform:none;letter-spacing:0">
