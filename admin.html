@@ -9409,8 +9409,8 @@ async function btqaToggleProduit(id, actif) {
   showToast(actif ? 'Produit activé' : 'Produit désactivé');
 }
 
-async function btqaDeleteProduit(id, nom) {
-  if (!confirm(`Supprimer "${nom}" ? Cette action est irréversible.`)) return;
+async function btqaDeleteProduit(id) {
+  if (!confirm('Supprimer ce produit ? Cette action est irréversible.')) return;
   await window.Auth.sb.from('boutique_produits').delete().eq('id', id);
   btqaRenderConfigProduits();
   showToast('Produit supprimé');
