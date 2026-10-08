@@ -1,5 +1,19 @@
 [
   {
+    "titre": "Course + soirée Flam's",
+    "day": "07",
+    "month": "Octobre",
+    "lieu": "Flam's",
+    "tag": "Soirée"
+  },
+  {
+    "titre": "Inscription course",
+    "day": "07",
+    "month": "Octobre",
+    "lieu": "",
+    "tag": "Soirée"
+  },
+  {
     "titre": "Corner Airbnb",
     "day": "05",
     "month": "Octobre",
