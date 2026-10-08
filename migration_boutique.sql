@@ -11,10 +11,10 @@ ALTER TABLE boutique_produits
 ALTER TABLE boutique_items
   ADD COLUMN IF NOT EXISTS couleur text;
 
--- 3. Supprimer tous les anciens packs (qui référencent des produits via FK)
+-- 3. Supprimer tous les packs d'abord (FK vers boutique_produits)
 DELETE FROM boutique_packs;
 
--- 4. Supprimer les anciens produits (porte-clef décapsuleur, porte-clef, chaussettes, tasse)
+-- 4. Supprimer les anciens produits non voulus
 DELETE FROM boutique_items
   WHERE produit_id IN (
     SELECT id FROM boutique_produits
@@ -23,14 +23,13 @@ DELETE FROM boutique_items
 DELETE FROM boutique_produits
   WHERE nom IN ('Porte-clef décapsuleur', 'Porte-clef', 'Chaussettes', 'Tasse');
 
--- 5. Insérer ou mettre à jour les produits principaux
--- (upsert sur le nom pour éviter les doublons si relancé)
+-- 5. Insérer les produits (tailles_disponibles est text[], designs/couleurs sont jsonb)
 
 -- T-shirt
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'T-shirt', 0, true, 'vetements', 1, true,
-  '["S","M","L","XL"]'::jsonb,
+  ARRAY['S','M','L','XL'],
   '[{"nom":"Design 1","image_url":""},{"nom":"Design 2","image_url":""},{"nom":"Design 3","image_url":""},{"nom":"Design 4","image_url":""}]'::jsonb,
   '["Blanc","Noir","Bleu","Rose","Vert"]'::jsonb
 )
@@ -40,7 +39,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'Sweat col rond', 0, true, 'vetements', 2, true,
-  '["S","M","L","XL"]'::jsonb,
+  ARRAY['S','M','L','XL'],
   '[{"nom":"Design 1","image_url":""},{"nom":"Design 2","image_url":""},{"nom":"Design 3","image_url":""},{"nom":"Design 4","image_url":""}]'::jsonb,
   '["Blanc","Noir","Bleu","Rose","Vert"]'::jsonb
 )
@@ -50,7 +49,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'Sweat à capuche', 0, true, 'vetements', 3, true,
-  '["S","M","L","XL"]'::jsonb,
+  ARRAY['S','M','L','XL'],
   '[{"nom":"Design 1","image_url":""},{"nom":"Design 2","image_url":""},{"nom":"Design 3","image_url":""},{"nom":"Design 4","image_url":""}]'::jsonb,
   '["Blanc","Noir","Bleu","Rose","Vert"]'::jsonb
 )
@@ -60,7 +59,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'T-shirt phrase', 0, true, 'vetements', 4, true,
-  '["S","M","L","XL"]'::jsonb,
+  ARRAY['S','M','L','XL'],
   '[{"nom":"Phrase 1","image_url":""},{"nom":"Phrase 2","image_url":""},{"nom":"Phrase 3","image_url":""},{"nom":"Phrase 4","image_url":""}]'::jsonb,
   '[]'::jsonb
 )
@@ -70,7 +69,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'T-shirt club de sport', 0, true, 'vetements', 5, true,
-  '["S","M","L","XL"]'::jsonb,
+  ARRAY['S','M','L','XL'],
   '[]'::jsonb,
   '[]'::jsonb
 )
@@ -80,22 +79,21 @@ ON CONFLICT DO NOTHING;
 INSERT INTO boutique_produits (nom, prix_centimes, actif, categorie, ordre, a_tailles, tailles_disponibles, designs, couleurs_disponibles)
 VALUES (
   'Ecocup', 0, true, 'accessoires', 6, false,
-  '[]'::jsonb,
+  ARRAY[]::text[],
   '[]'::jsonb,
   '[]'::jsonb
 )
 ON CONFLICT DO NOTHING;
 
--- 6. Configurer le pack : T-shirt + Sweat = 1 Ecocup offert
--- Récupère les IDs des produits concernés
+-- 6. Configurer le pack T-shirt + Sweat = 1 Ecocup offert
 DO $$
 DECLARE
-  id_tshirt       uuid;
-  id_tshirt_phr   uuid;
-  id_sweat_col    uuid;
-  id_sweat_cap    uuid;
-  id_ecocup       uuid;
-  pack_conditions jsonb;
+  id_tshirt     uuid;
+  id_tshirt_phr uuid;
+  id_sweat_col  uuid;
+  id_sweat_cap  uuid;
+  id_ecocup     uuid;
+  pack_conds    jsonb;
 BEGIN
   SELECT id INTO id_tshirt     FROM boutique_produits WHERE nom = 'T-shirt' LIMIT 1;
   SELECT id INTO id_tshirt_phr FROM boutique_produits WHERE nom = 'T-shirt phrase' LIMIT 1;
@@ -103,20 +101,18 @@ BEGIN
   SELECT id INTO id_sweat_cap  FROM boutique_produits WHERE nom = 'Sweat à capuche' LIMIT 1;
   SELECT id INTO id_ecocup     FROM boutique_produits WHERE nom = 'Ecocup' LIMIT 1;
 
-  pack_conditions := jsonb_build_array(
+  pack_conds := jsonb_build_array(
     jsonb_build_object('type','achat','produit_ids', jsonb_build_array(id_tshirt, id_tshirt_phr), 'min_qty', 1),
     jsonb_build_object('type','achat','produit_ids', jsonb_build_array(id_sweat_col, id_sweat_cap), 'min_qty', 1),
     jsonb_build_object('type','offre','produit_ids', jsonb_build_array(id_ecocup))
   );
-
-  -- (les packs ont déjà été supprimés en étape 3)
 
   INSERT INTO boutique_packs (nom, description, actif, conditions, offre_qty)
   VALUES (
     'Pack T-shirt + Sweat',
     '1 T-shirt + 1 Sweat achetés = 1 Ecocup offert',
     true,
-    pack_conditions,
+    pack_conds,
     1
   );
 END $$;
