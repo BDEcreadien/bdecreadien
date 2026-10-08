@@ -1440,6 +1440,15 @@ function btqOpenModal(id) {
               </button>`).join('')}
           </div>` : ''}
 
+        ${couleurs.length ? `
+          <p class="btq-modal-label">Couleur</p>
+          <div class="btq-colors" id="btq-color-row">
+            ${couleurs.map(c => `
+              <button class="btq-color-chip" onclick="btqSelectCouleur('${c}',this)">
+                <span class="btq-color-dot" style="background:${btqCouleurHex(c)};${c==='Blanc'?'border-color:rgba(0,0,0,.2);':''}"></span>${c}
+              </button>`).join('')}
+          </div>` : ''}
+
         ${p.tailles_disponibles?.length ? `
           <p class="btq-modal-label">Taille</p>
           <div class="btq-sizes" id="btq-size-row">
