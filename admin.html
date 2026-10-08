@@ -9066,7 +9066,7 @@ function btqaExportCSV() {
   const rows = [['Numéro','Nom','Email','Date','Total €','Type','Statut','Paiement','Notes']];
   _btqaCommandes.forEach(c => {
     const items = (c.boutique_items || []).filter(i => !i.est_offert)
-      .map(i => `${i.produit_nom} ×${i.quantite}${i.taille ? ` (${i.taille})` : ''}`).join(' | ');
+      .map(i => `${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` - ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}`).join(' | ');
     rows.push([
       c.numero || '',
       c.nom_acheteur || '',
