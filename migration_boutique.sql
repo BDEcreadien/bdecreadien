@@ -109,8 +109,7 @@ BEGIN
     jsonb_build_object('type','offre','produit_ids', jsonb_build_array(id_ecocup))
   );
 
-  -- Supprimer l'ancien pack et recréer
-  DELETE FROM boutique_packs WHERE nom = 'Pack T-shirt + Sweat';
+  -- (les packs ont déjà été supprimés en étape 3)
 
   INSERT INTO boutique_packs (nom, description, actif, conditions, offre_qty)
   VALUES (
