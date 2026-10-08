@@ -9190,6 +9190,7 @@ async function btqaCreatePhysOrder() {
     const p = _btqaProduits.find(x => x.id === item.produit_id);
     return {
       commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p.nom,
+      design_nom: item.design_nom || null, couleur: item.couleur || null,
       taille: item.taille || null, quantite: item.quantite || 1,
       prix_unitaire_centimes: p.prix_centimes, est_offert: false,
     };
