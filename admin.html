@@ -9663,7 +9663,8 @@ async function btqaSaveProduit(id) {
   const imageUrl = images[0]?.url || null;
 
   const payload = {
-    nom, prix_centimes: prix, categorie: cat, tailles_disponibles: tailles,
+    nom, prix_centimes: prix, categorie: cat,
+    tailles_disponibles: tailles, couleurs_disponibles: couleurs,
     a_designs: designs.length > 0, a_tailles: tailles.length > 0,
     actif, image_url: imageUrl,
     images, designs,
