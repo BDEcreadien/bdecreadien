@@ -86,7 +86,7 @@ VALUES (
 )
 ON CONFLICT DO NOTHING;
 
--- 5. Configurer le pack : T-shirt + Sweat = 1 Ecocup offert
+-- 6. Configurer le pack : T-shirt + Sweat = 1 Ecocup offert
 -- Récupère les IDs des produits concernés
 DO $$
 DECLARE
