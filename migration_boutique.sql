@@ -11,8 +11,10 @@ ALTER TABLE boutique_produits
 ALTER TABLE boutique_items
   ADD COLUMN IF NOT EXISTS couleur text;
 
--- 3. Supprimer les anciens produits (porte-clef décapsuleur, porte-clef, chaussettes, tasse)
---    + vider les commandes liées (ATTENTION : supprime les commandes existantes liées)
+-- 3. Supprimer tous les anciens packs (qui référencent des produits via FK)
+DELETE FROM boutique_packs;
+
+-- 4. Supprimer les anciens produits (porte-clef décapsuleur, porte-clef, chaussettes, tasse)
 DELETE FROM boutique_items
   WHERE produit_id IN (
     SELECT id FROM boutique_produits
