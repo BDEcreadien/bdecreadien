@@ -1543,6 +1543,7 @@ async function btqAddToCart() {
   const p = _modalProd;
   if (!p) return;
   if (p.designs?.length && !_modalDesign) { btqToast('Choisis un design !'); return; }
+  if (p.couleurs_disponibles?.length && !_modalCouleur) { btqToast('Choisis une couleur !'); return; }
   if (p.a_tailles && !_modalTaille) { btqToast('Choisis une taille !'); return; }
 
   const btn = document.getElementById('btq-add-btn');
