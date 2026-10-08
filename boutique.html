@@ -1379,10 +1379,14 @@ document.getElementById('btq-filters').addEventListener('click', e => {
 });
 
 // ── Modal produit ───────────────────────────────────────────
-let _modalProd   = null;
-let _modalDesign = null;
-let _modalTaille = null;
-let _modalQty    = 1;
+let _modalProd    = null;
+let _modalDesign  = null;
+let _modalCouleur = null;
+let _modalTaille  = null;
+let _modalQty     = 1;
+
+const _COULEUR_HEX = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B' };
+function btqCouleurHex(c) { return _COULEUR_HEX[c] || '#888'; }
 
 function btqOpenModal(id) {
   const p = _produits.find(x => x.id === id);
