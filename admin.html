@@ -9411,7 +9411,11 @@ async function btqaToggleProduit(id, actif) {
 
 async function btqaDeleteProduit(id) {
   if (!confirm('Supprimer ce produit ? Cette action est irréversible.')) return;
-  await window.Auth.sb.from('boutique_produits').delete().eq('id', id);
+  const sb = window.Auth.sb;
+  // Supprimer les items de commandes liés d'abord (FK)
+  await sb.from('boutique_items').delete().eq('produit_id', id);
+  const { error } = await sb.from('boutique_produits').delete().eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); console.error(error); return; }
   btqaRenderConfigProduits();
   showToast('Produit supprimé');
 }
