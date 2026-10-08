@@ -1744,7 +1744,7 @@ function btqUpdateCartUI() {
       <div class="btq-cart-item-info">
         <p class="btq-cart-item-name">${i.produit_nom}</p>
         <p class="btq-cart-item-detail">
-          ${i.design_nom ? `${i.design_nom}` : ''}${i.design_nom && i.taille ? ' · ' : ''}${i.taille || ''}${(i.design_nom || i.taille) ? '' : 'Taille unique'} — ×${i.quantite}
+          ${[i.design_nom, i.couleur ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${btqCouleurHex(i.couleur)};vertical-align:middle;margin-right:3px;border:1px solid rgba(0,0,0,.15)"></span>${i.couleur}` : '', i.taille].filter(Boolean).join(' · ') || 'Taille unique'} — ×${i.quantite}
         </p>
       </div>
       <div class="btq-cart-item-right">
