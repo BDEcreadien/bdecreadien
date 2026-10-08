@@ -1391,10 +1391,12 @@ function btqCouleurHex(c) { return _COULEUR_HEX[c] || '#888'; }
 function btqOpenModal(id) {
   const p = _produits.find(x => x.id === id);
   if (!p) return;
-  _modalProd   = p;
-  _modalDesign = null;
-  _modalTaille = null;
-  _modalQty    = 1;
+  _modalProd    = p;
+  _modalDesign  = null;
+  _modalCouleur = null;
+  _modalTaille  = null;
+  _modalQty     = 1;
+  const couleurs = p.couleurs_disponibles || [];
 
   const designs = p.designs || [];
 
