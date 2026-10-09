@@ -1294,7 +1294,8 @@ async function btqLoadCart() {
   }
 
   if (cmd) {
-    _cmdId = cmd.id;
+    _cmdId     = cmd.id;
+    _cmdStatut = cmd.statut;
     const { data: items } = await _sb.from('boutique_items')
       .select('*')
       .eq('commande_id', _cmdId);
