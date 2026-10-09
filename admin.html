@@ -9299,13 +9299,12 @@ function btqaGetPhysPack() {
 function btqaCheckPhysPackBanner() {
   const banner = document.getElementById('btqa-p-pack-banner');
   if (!banner) return;
+  const hasOffert = _btqaPhysItems.some(i => i.est_offert);
+  if (!hasOffert) { banner.style.display = 'none'; return; }
   const pack = btqaGetPhysPack();
   if (!pack) { banner.style.display = 'none'; return; }
-  const offreEntry = (pack.conditions || []).find(c => c.type === 'offre');
-  const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [pack.offre_produit_id].filter(Boolean);
-  const offreNoms = offreProdIds.map(id => _btqaProduits.find(p => p.id === id)?.nom || '?').join(' ou ');
   banner.style.display = 'flex';
-  banner.textContent = `🎁 Pack "${pack.nom}" — ${offreNoms} sera ajouté OFFERT`;
+  banner.textContent = `🎁 Pack "${pack.nom}" appliqué`;
 }
 
 async function btqaCreatePhysOrder() {
