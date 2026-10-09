@@ -1151,7 +1151,8 @@ async function btqInit() {
   await Promise.all([btqLoadCatalogue(), btqLoadCart()]);
   btqRenderGrid();
   btqUpdateCartUI();
-  await btqApplyPacks();
+  // N'appliquer les packs qu'en mode panier actif (pas sur une commande en_attente)
+  if (_cmdStatut === 'panier') await btqApplyPacks();
   btqFillMarquee();
 
   // Retour depuis HelloAsso
