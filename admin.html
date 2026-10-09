@@ -9135,6 +9135,9 @@ function btqaExportCSV() {
 }
 
 // ── Vente physique ───────────────────────────────────────────
+const _COULEUR_HEX_ADMIN = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B' };
+let _btqaPM = { prod: null, design: null, couleur: null, taille: null, qty: 1 };
+
 function btqaRenderPhysiqueCatalog() {
   const el = document.getElementById('btqa-phys-catalog');
   if (!el) return;
@@ -9142,26 +9145,76 @@ function btqaRenderPhysiqueCatalog() {
   el.innerHTML = `<div class="btqa-mini-grid">${_btqaProduits.map(p => {
     const imgEl = p.image_url
       ? `<img class="btqa-mini-card-img" src="${p.image_url}" alt="" loading="lazy">`
-      : `<div class="btqa-mini-card-icon">${p.emoji || '🛍️'}</div>`;
-    const sizes = p.tailles_disponibles || [];
-    const sizesHtml = sizes.length
-      ? sizes.map(t => `<button class="btqa-mini-size-btn" onclick="btqaQuickAdd('${p.id}','${t}')">${t}</button>`).join('')
-      : `<button class="btqa-mini-add-btn" onclick="btqaQuickAdd('${p.id}','')">+ Ajouter</button>`;
-    return `<div class="btqa-mini-card">
+      : `<div class="btqa-mini-card-icon">🛍️</div>`;
+    return `<div class="btqa-mini-card" onclick="btqaOpenProdModal('${p.id}')">
       ${imgEl}
       <div class="btqa-mini-card-body">
-        <p class="btqa-mini-card-name" title="${p.nom}">${p.nom}</p>
+        <p class="btqa-mini-card-name">${p.nom}</p>
         <p class="btqa-mini-card-price">${btqaFmt(p.prix_centimes)}</p>
-        <div class="btqa-mini-card-sizes">${sizesHtml}</div>
       </div>
     </div>`;
   }).join('')}</div>`;
 }
-function btqaQuickAdd(prodId, taille) {
-  const existing = _btqaPhysItems.find(i => i.produit_id === prodId && i.taille === taille);
-  if (existing) { existing.quantite += 1; btqaRenderPhysItems(); }
-  else { _btqaPhysItems.push({ produit_id: prodId, taille, quantite: 1 }); btqaRenderPhysItems(); }
-  showToast('Article ajouté');
+
+function btqaOpenProdModal(prodId) {
+  const p = _btqaProduits.find(x => x.id === prodId);
+  if (!p) return;
+  _btqaPM = { prod: p, design: null, couleur: null, taille: null, qty: 1 };
+  document.getElementById('btqa-pm-nom').textContent   = p.nom;
+  document.getElementById('btqa-pm-price').textContent = btqaFmt(p.prix_centimes);
+  document.getElementById('btqa-pm-qty').textContent   = 1;
+
+  const designs  = p.designs || [];
+  const couleurs = p.couleurs_disponibles || [];
+  const tailles  = p.tailles_disponibles || [];
+
+  const dw = document.getElementById('btqa-pm-design-wrap');
+  dw.style.display = designs.length ? '' : 'none';
+  document.getElementById('btqa-pm-designs').innerHTML = designs.map(d =>
+    `<button class="btqa-psel-btn" onclick="btqaPMSelect('design','${d.nom}',this)">${d.nom}</button>`
+  ).join('');
+
+  const cw = document.getElementById('btqa-pm-couleur-wrap');
+  cw.style.display = couleurs.length ? '' : 'none';
+  document.getElementById('btqa-pm-couleurs').innerHTML = couleurs.map(c => {
+    const hex = _COULEUR_HEX_ADMIN[c] || '#888';
+    const border = c === 'Blanc' ? 'border:1px solid #ccc;' : '';
+    return `<button class="btqa-psel-color" onclick="btqaPMSelect('couleur','${c}',this)">
+      <span class="btqa-psel-dot" style="background:${hex};${border}"></span>${c}
+    </button>`;
+  }).join('');
+
+  const tw = document.getElementById('btqa-pm-taille-wrap');
+  tw.style.display = tailles.length ? '' : 'none';
+  document.getElementById('btqa-pm-tailles').innerHTML = tailles.map(t =>
+    `<button class="btqa-psel-btn" onclick="btqaPMSelect('taille','${t}',this)">${t}</button>`
+  ).join('');
+
+  document.getElementById('btqa-prod-modal-overlay').classList.add('open');
+}
+function btqaCloseProdModal() {
+  document.getElementById('btqa-prod-modal-overlay').classList.remove('open');
+}
+function btqaPMSelect(type, val, el) {
+  _btqaPM[type] = val;
+  const container = el.parentElement;
+  container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function btqaPMQty(delta) {
+  _btqaPM.qty = Math.max(1, Math.min(10, _btqaPM.qty + delta));
+  document.getElementById('btqa-pm-qty').textContent = _btqaPM.qty;
+}
+function btqaConfirmProdModal() {
+  const { prod, design, couleur, taille, qty } = _btqaPM;
+  if (!prod) return;
+  if ((prod.designs || []).length && !design) return showToast('Choisis un design', 'error');
+  if ((prod.couleurs_disponibles || []).length && !couleur) return showToast('Choisis une couleur', 'error');
+  if ((prod.tailles_disponibles || []).length && !taille) return showToast('Choisis une taille', 'error');
+  _btqaPhysItems.push({ produit_id: prod.id, design_nom: design, couleur, taille, quantite: qty });
+  btqaRenderPhysItems();
+  btqaCloseProdModal();
+  showToast(`${prod.nom} ajouté`);
 }
 function btqaAddPhysItem() {
   _btqaPhysItems.push({ produit_id: '', taille: '', quantite: 1 });
