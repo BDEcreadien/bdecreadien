@@ -39,7 +39,7 @@ export async function onRequest({ request, env }) {
   );
   const [cmd] = await cmdRes.json();
   if (!cmd) return json({ error: 'Commande introuvable' }, 404);
-  if (cmd.statut !== 'panier') return json({ error: 'Commande déjà validée' }, 409);
+  if (cmd.statut !== 'panier' && cmd.statut !== 'en_attente') return json({ error: 'Commande déjà payée ou annulée' }, 409);
 
   // ── 2. Récupérer les articles ────────────────────────────
   const itemsRes = await fetch(
@@ -53,24 +53,38 @@ export async function onRequest({ request, env }) {
     .filter(i => !i.est_offert)
     .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
 
-  // ── 3. Passer en en_attente (trigger génère le numéro) ───
-  const upRes = await fetch(
-    `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`,
-    {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify({
-        statut:         'en_attente',
-        nom_acheteur,
-        email_acheteur,
-        total_centimes: total,
-      }),
-    }
-  );
-  const [updated] = await upRes.json();
-  if (!updated?.numero) return json({ error: 'Erreur lors de la validation' }, 500);
-
-  const numero = updated.numero;
+  // ── 3. Passer en en_attente si encore en panier (trigger génère le numéro) ───
+  let numero;
+  if (cmd.statut === 'panier') {
+    const upRes = await fetch(
+      `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`,
+      {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({
+          statut:         'en_attente',
+          nom_acheteur,
+          email_acheteur,
+          total_centimes: total,
+        }),
+      }
+    );
+    const [updated] = await upRes.json();
+    if (!updated?.numero) return json({ error: 'Erreur lors de la validation' }, 500);
+    numero = updated.numero;
+  } else {
+    // Déjà en_attente : mettre à jour nom/email si fournis, récupérer le numéro existant
+    const upRes = await fetch(
+      `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`,
+      {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ nom_acheteur, email_acheteur }),
+      }
+    );
+    const [updated] = await upRes.json();
+    numero = updated?.numero || cmd.numero;
+  }
 
   // ── 4. Créer un checkout HelloAsso avec le montant exact ────
   let helloassoUrl = null;
