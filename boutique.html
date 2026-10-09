@@ -1316,12 +1316,21 @@ async function btqLoadCart() {
 }
 
 async function btqEnsurePanier() {
-  if (_cmdId) {
-    // Commande déjà active (peut-être en_attente) → remettre en panier, même numéro
-    await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+  if (_cmdId) return;  // commande déjà trackée en mémoire
+  // Filet de sécurité : vérifier en DB qu'il n'existe pas déjà une commande active
+  const { data: existing } = await _sb.from('boutique_commandes')
+    .select('id, statut')
+    .eq('membre_id', _user.id)
+    .in('statut', ['panier', 'en_attente'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (existing) {
+    _cmdId     = existing.id;
+    _cmdStatut = existing.statut;
     return;
   }
-  // Aucune commande active → créer (premier achat ou après paiement validé)
+  // Vraiment aucune commande active → créer (premier achat ou après paiement validé)
   const { data: newCmd } = await _sb.from('boutique_commandes').insert({
     membre_id:     _user.id,
     statut:        'panier',
@@ -1329,7 +1338,7 @@ async function btqEnsurePanier() {
     nom_acheteur:  '',
     email_acheteur:'',
   }).select('id').single();
-  if (newCmd) _cmdId = newCmd.id;
+  if (newCmd) { _cmdId = newCmd.id; _cmdStatut = 'panier'; }
 }
 
 async function btqSaveCart() {
