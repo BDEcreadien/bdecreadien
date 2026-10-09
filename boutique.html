@@ -1114,7 +1114,8 @@ let _produits= [];     // catalogue chargé
 let _designs = [];     // designs disponibles
 let _packs   = [];     // règles pack
 let _cart    = [];     // [{produit_id,produit_nom,design_id,design_nom,couleur,taille,quantite,prix,est_offert,_key}]
-let _cmdId   = null;   // id du panier Supabase
+let _cmdId     = null;   // id de la commande active
+let _cmdStatut = null;   // statut en DB : 'panier' | 'en_attente' | null
 
 // ── Initialisation ─────────────────────────────────────────
 async function btqInit() {
