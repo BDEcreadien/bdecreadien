@@ -9250,10 +9250,41 @@ function btqaRenderPhysItems() {
 }
 function btqaUpdatePhysTotal() {
   const total = _btqaPhysItems.reduce((s, item) => {
+    if (item.est_offert) return s;
     const p = _btqaProduits.find(x => x.id === item.produit_id);
     return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
   }, 0);
   document.getElementById('btqa-p-total').textContent = btqaFmt(total);
+  btqaCheckPhysPackBanner();
+}
+function btqaGetPhysPack() {
+  const packs = window._btqaAllPacks || [];
+  const qtyMap = {};
+  _btqaPhysItems.filter(i => !i.est_offert).forEach(i => {
+    if (i.produit_id) qtyMap[i.produit_id] = (qtyMap[i.produit_id] || 0) + (i.quantite || 1);
+  });
+  for (const pack of packs) {
+    if (!pack.actif) continue;
+    const conds = (pack.conditions || []).filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
+    if (!conds.length) continue;
+    const met = conds.every(c => {
+      const ids = c.produit_ids || (c.produit_id ? [c.produit_id] : []);
+      return ids.reduce((s, id) => s + (qtyMap[id] || 0), 0) >= (c.min_qty || 1);
+    });
+    if (met) return pack;
+  }
+  return null;
+}
+function btqaCheckPhysPackBanner() {
+  const banner = document.getElementById('btqa-p-pack-banner');
+  if (!banner) return;
+  const pack = btqaGetPhysPack();
+  if (!pack) { banner.style.display = 'none'; return; }
+  const offreEntry = (pack.conditions || []).find(c => c.type === 'offre');
+  const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [pack.offre_produit_id].filter(Boolean);
+  const offreNoms = offreProdIds.map(id => _btqaProduits.find(p => p.id === id)?.nom || '?').join(' ou ');
+  banner.style.display = 'flex';
+  banner.textContent = `🎁 Pack "${pack.nom}" — ${offreNoms} sera ajouté OFFERT`;
 }
 
 async function btqaCreatePhysOrder() {
