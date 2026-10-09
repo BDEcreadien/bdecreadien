@@ -1287,16 +1287,16 @@ async function btqLoadCatalogue() {
 
 // ── Panier Supabase ─────────────────────────────────────────
 async function btqLoadCart() {
-  // Chercher tous les paniers existants (nettoyer les doublons éventuels)
-  const { data: paniers } = await _sb.from('boutique_commandes')
-    .select('id')
+  // Charger la commande active unique (panier OU en_attente) — 1 seule par compte
+  const { data: cmds } = await _sb.from('boutique_commandes')
+    .select('id, statut')
     .eq('membre_id', _user.id)
-    .eq('statut', 'panier')
+    .in('statut', ['panier', 'en_attente'])
     .order('created_at', { ascending: false });
 
-  const cmd = paniers?.[0] || null;
-  // Supprimer les doublons (paniers abandonnés de sessions précédentes)
-  for (const p of (paniers || []).slice(1)) {
+  const cmd = cmds?.[0] || null;
+  // Nettoyer les doublons éventuels (bug historique)
+  for (const p of (cmds || []).slice(1)) {
     await _sb.from('boutique_items').delete().eq('commande_id', p.id);
     await _sb.from('boutique_commandes').delete().eq('id', p.id);
   }
@@ -1319,13 +1319,15 @@ async function btqLoadCart() {
       est_offert: i.est_offert,
     }));
   }
-  // Pas de création automatique : le panier est créé à la demande par btqEnsurePanier()
 }
 
 async function btqEnsurePanier() {
-  if (_cmdId) return;
-  console.error('[btqEnsurePanier] Création d\'un nouveau panier — trace:');
-  console.trace();
+  if (_cmdId) {
+    // Commande déjà active (peut-être en_attente) → remettre en panier, même numéro
+    await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+    return;
+  }
+  // Aucune commande active → créer (premier achat ou après paiement validé)
   const { data: newCmd } = await _sb.from('boutique_commandes').insert({
     membre_id:     _user.id,
     statut:        'panier',
