@@ -1176,35 +1176,26 @@ async function btqDismissPending(cmdId) {
 
 async function btqResumeEdit(cmdId, btn) {
   btn.disabled = true; btn.textContent = '…';
-  // Si un panier actif existe et est vide → le supprimer silencieusement (pas d'annulation)
-  if (_cmdId && _cmdId !== cmdId) {
-    // Supprimer l'ancien panier (vide ou abandonné) — l'utilisateur reprend une commande existante
-    await _sb.from('boutique_items').delete().eq('commande_id', _cmdId);
-    await _sb.from('boutique_commandes').delete().eq('id', _cmdId);
-    _cmdId = null;
-    _cart = [];
+  // La commande est déjà chargée dans _cmdId/_cart par btqLoadCart
+  // On remet juste en statut 'panier' et on ouvre le panier
+  if (_cmdId !== cmdId) {
+    // Cas inattendu : recharger depuis DB
+    const { data: items } = await _sb.from('boutique_items').select('*').eq('commande_id', cmdId);
+    const nonOfferts = (items || []).filter(i => !i.est_offert);
+    if (nonOfferts.length === 0) {
+      btn.disabled = false; btn.textContent = 'Modifier';
+      btqToast('Cette commande ne contient plus d\'articles — contacte le BDE.');
+      return;
+    }
+    _cmdId = cmdId;
+    _cart = items.map(i => ({
+      _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
+      design_id: i.design_id, design_nom: i.design_nom,
+      couleur: i.couleur, taille: i.taille,
+      quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
+    }));
   }
-  // Remettre la commande sélectionnée en panier
-  await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', cmdId);
-  _cmdId = cmdId;
-  const { data: items, error: itemsErr } = await _sb.from('boutique_items').select('*').eq('commande_id', _cmdId);
-  console.log('[btqResumeEdit] items chargés:', items, 'erreur:', itemsErr);
-  const nonOfferts = (items || []).filter(i => !i.est_offert);
-  if (nonOfferts.length === 0) {
-    // Commande sans articles lisibles → remettre en attente et prévenir
-    await _sb.from('boutique_commandes').update({ statut: 'en_attente' }).eq('id', cmdId);
-    _cmdId = null;
-    btn.disabled = false; btn.textContent = 'Modifier';
-    btqCheckPendingOrder();
-    btqToast('Cette commande ne contient plus d\'articles — contacte le BDE.');
-    return;
-  }
-  _cart = (items || []).map(i => ({
-    _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
-    design_id: i.design_id, design_nom: i.design_nom,
-    couleur: i.couleur, taille: i.taille,
-    quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
-  }));
+  await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
   document.getElementById('btq-pb-' + cmdId)?.remove();
   btqUpdateCartUI();
   await btqApplyPacks();
