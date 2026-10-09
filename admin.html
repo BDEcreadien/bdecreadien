@@ -9224,7 +9224,7 @@ function btqaConfirmProdModal() {
 }
 function btqaAddPhysItem() {
   _btqaPhysItems.push({ produit_id: '', taille: '', quantite: 1 });
-  btqaRenderPhysItems();
+  btqaRefreshPhysCart();
 }
 function btqaRefreshPhysCart() {
   _btqaPhysItems = _btqaPhysItems.filter(i => !i.est_offert);
