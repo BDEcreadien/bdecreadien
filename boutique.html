@@ -1806,7 +1806,7 @@ async function btqSaveOrder() {
     total_centimes: btqCalcTotal(),
   }).eq('id', _cmdId);
   btqCloseCart();
-  btqToast('Enregistrer le panier — tu pourras payer plus tard.');
+  btqToast('Panier enregistré ! Tu pourras le retrouver ici pour payer plus tard.');
   _cmdId = null; _cmdStatut = null; _cart = [];
   btqUpdateCartUI();
   btqCheckPendingOrder();
