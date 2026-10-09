@@ -9313,13 +9313,13 @@ async function btqaCreatePhysOrder() {
   const email = document.getElementById('btqa-p-email').value.trim();
   if (!nom)   return showToast('Entre le nom de l\'acheteur', 'error');
   if (!email) return showToast('Entre un e-mail', 'error');
-  const validItems = _btqaPhysItems.filter(i => i.produit_id);
+  const validItems = _btqaPhysItems.filter(i => i.produit_id && !i.est_offert);
   if (!validItems.length) return showToast('Ajoute au moins un article', 'error');
 
   const sb = window.Auth.sb;
   const moyen = document.getElementById('btqa-p-paiement').value;
   const notes = document.getElementById('btqa-p-notes').value.trim();
-  const total = _btqaPhysItems.reduce((s, item) => {
+  const total = _btqaPhysItems.filter(i => !i.est_offert).reduce((s, item) => {
     const p = _btqaProduits.find(x => x.id === item.produit_id);
     return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
   }, 0);
