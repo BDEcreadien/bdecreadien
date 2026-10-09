@@ -1578,8 +1578,13 @@ async function btqAddToCart() {
     return;
   }
 
-  // Créer le panier si besoin
+  // Créer/récupérer la commande active
   await btqEnsurePanier();
+  // Si la commande était en_attente, la remettre en panier (l'utilisateur modifie)
+  if (_cmdStatut === 'en_attente') {
+    await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+    _cmdStatut = 'panier';
+  }
 
   // Insert en base
   const { data: item } = await _sb.from('boutique_items').insert({
