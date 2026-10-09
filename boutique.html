@@ -1287,13 +1287,19 @@ async function btqLoadCatalogue() {
 
 // ── Panier Supabase ─────────────────────────────────────────
 async function btqLoadCart() {
-  // Chercher un panier existant (sans en créer un nouveau)
-  const { data: cmd } = await _sb.from('boutique_commandes')
+  // Chercher tous les paniers existants (nettoyer les doublons éventuels)
+  const { data: paniers } = await _sb.from('boutique_commandes')
     .select('id')
     .eq('membre_id', _user.id)
     .eq('statut', 'panier')
-    .limit(1)
-    .maybeSingle();
+    .order('created_at', { ascending: false });
+
+  const cmd = paniers?.[0] || null;
+  // Supprimer les doublons (paniers abandonnés de sessions précédentes)
+  for (const p of (paniers || []).slice(1)) {
+    await _sb.from('boutique_items').delete().eq('commande_id', p.id);
+    await _sb.from('boutique_commandes').delete().eq('id', p.id);
+  }
 
   if (cmd) {
     _cmdId = cmd.id;
