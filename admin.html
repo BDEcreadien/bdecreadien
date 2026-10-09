@@ -9321,6 +9321,21 @@ async function btqaCreatePhysOrder() {
       prix_unitaire_centimes: p.prix_centimes, est_offert: false,
     };
   });
+  // Ajouter l'article offert si un pack s'applique
+  const packApplied = btqaGetPhysPack();
+  if (packApplied) {
+    const offreEntry = (packApplied.conditions || []).find(c => c.type === 'offre');
+    const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [packApplied.offre_produit_id].filter(Boolean);
+    const offreProd = _btqaProduits.find(p => p.id === offreProdIds[0]);
+    if (offreProd) {
+      itemsToInsert.push({
+        commande_id: cmd.id, produit_id: offreProd.id, produit_nom: offreProd.nom,
+        design_nom: null, couleur: null, taille: null,
+        quantite: packApplied.offre_qty || 1,
+        prix_unitaire_centimes: 0, est_offert: true,
+      });
+    }
+  }
   await sb.from('boutique_items').insert(itemsToInsert);
 
   showToast(`Commande ${cmd.numero} créée !`);
