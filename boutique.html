@@ -1198,6 +1198,7 @@ async function btqResumeEdit(cmdId, btn) {
     }));
   }
   await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+  _cmdStatut = 'panier';
   document.getElementById('btq-pb-' + cmdId)?.remove();
   btqUpdateCartUI();
   await btqApplyPacks();
