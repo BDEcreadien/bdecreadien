@@ -38,8 +38,8 @@ export async function onRequest({ request, env }) {
     { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } }
   );
   const [cmd] = await cmdRes.json();
-  if (!cmd)                  return json({ error: 'Commande introuvable' }, 404);
-  if (cmd.user_id !== user_id) return json({ error: 'Accès refusé' }, 403);
+  if (!cmd)                     return json({ error: 'Commande introuvable' }, 404);
+  if (cmd.membre_id !== user_id) return json({ error: 'Accès refusé' }, 403);
   if (cmd.statut !== 'en_attente') return json({ error: 'Commande déjà payée ou annulée' }, 409);
 
   // Créer un nouveau checkout HelloAsso pour le même montant
