@@ -1552,7 +1552,10 @@
 @media(max-width:1024px) { .btqa-physique-split { grid-template-columns:1fr; } }
 .btqa-catalog-panel {
   background:#faf8ff;border-radius:16px;border:1.5px solid #f0e8ff;padding:16px;
-  max-height:calc(100vh - 240px);overflow-y:auto;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.btqa-catalog-panel #btqa-phys-catalog {
+  flex:1;overflow-y:auto;min-height:0;
 }
 .btqa-catalog-title { font-weight:800;font-size:15px;margin:0 0 14px;color:var(--noir);display:flex;align-items:center;gap:8px; }
 .btqa-mini-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
