@@ -1676,6 +1676,40 @@
     </div>
   </div>
 
+  <!-- Modal sélection produit physique -->
+  <div class="btqa-prod-modal-overlay" id="btqa-prod-modal-overlay" onclick="if(event.target===this)btqaCloseProdModal()">
+    <div class="btqa-prod-modal">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div>
+          <h4 id="btqa-pm-nom"></h4>
+          <p class="btqa-prod-modal-price" id="btqa-pm-price"></p>
+        </div>
+        <button onclick="btqaCloseProdModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+      </div>
+      <div id="btqa-pm-design-wrap" style="display:none">
+        <p class="btqa-prod-modal-label">Design</p>
+        <div class="btqa-prod-modal-btns" id="btqa-pm-designs"></div>
+      </div>
+      <div id="btqa-pm-couleur-wrap" style="display:none">
+        <p class="btqa-prod-modal-label">Couleur</p>
+        <div class="btqa-prod-modal-btns" id="btqa-pm-couleurs"></div>
+      </div>
+      <div id="btqa-pm-taille-wrap" style="display:none">
+        <p class="btqa-prod-modal-label">Taille</p>
+        <div class="btqa-prod-modal-btns" id="btqa-pm-tailles"></div>
+      </div>
+      <p class="btqa-prod-modal-label">Quantité</p>
+      <div class="btqa-prod-modal-qty">
+        <button onclick="btqaPMQty(-1)">−</button>
+        <span id="btqa-pm-qty">1</span>
+        <button onclick="btqaPMQty(1)">+</button>
+      </div>
+      <button onclick="btqaConfirmProdModal()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
+        Ajouter au panier
+      </button>
+    </div>
+  </div>
+
   <!-- ── Onglet Vente physique ─── -->
   <div class="btqa-pane" id="btqa-pane-physique">
     <div class="btqa-physique-split">
