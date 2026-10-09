@@ -9296,6 +9296,19 @@ function btqaGetPhysPack() {
   }
   return null;
 }
+function btqaGetPhysPackMultiplier(pack) {
+  const qtyMap = {};
+  _btqaPhysItems.filter(i => !i.est_offert).forEach(i => {
+    if (i.produit_id) qtyMap[i.produit_id] = (qtyMap[i.produit_id] || 0) + (i.quantite || 1);
+  });
+  const conds = (pack.conditions || []).filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
+  if (!conds.length) return 0;
+  return Math.min(...conds.map(c => {
+    const ids = c.produit_ids || (c.produit_id ? [c.produit_id] : []);
+    const total = ids.reduce((s, id) => s + (qtyMap[id] || 0), 0);
+    return Math.floor(total / (c.min_qty || 1));
+  }));
+}
 function btqaCheckPhysPackBanner() {
   const banner = document.getElementById('btqa-p-pack-banner');
   if (!banner) return;
