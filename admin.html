@@ -8961,7 +8961,7 @@ function btqaSwitchTab(tab) {
   });
   document.querySelectorAll('.btqa-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('btqa-pane-' + tab).classList.add('active');
-  if (tab === 'physique') { btqaRenderPhysiqueCatalog(); if (!_btqaPhysItems.length) btqaAddPhysItem(); }
+  if (tab === 'physique') { btqaRenderPhysiqueCatalog(); btqaRenderPhysItems(); }
 }
 
 // ── Stats ────────────────────────────────────────────────────
