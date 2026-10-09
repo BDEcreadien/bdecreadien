@@ -9333,30 +9333,26 @@ async function btqaCreatePhysOrder() {
 
   if (!cmd) return showToast('Erreur lors de la création', 'error');
 
-  const itemsToInsert = validItems.map(item => {
-    const p = _btqaProduits.find(x => x.id === item.produit_id);
-    return {
-      commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p.nom,
-      design_nom: item.design_nom || null, couleur: item.couleur || null,
-      taille: item.taille || null, quantite: item.quantite || 1,
-      prix_unitaire_centimes: p.prix_centimes, est_offert: false,
-    };
-  });
-  // Ajouter l'article offert si un pack s'applique
-  const packApplied = btqaGetPhysPack();
-  if (packApplied) {
-    const offreEntry = (packApplied.conditions || []).find(c => c.type === 'offre');
-    const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [packApplied.offre_produit_id].filter(Boolean);
-    const offreProd = _btqaProduits.find(p => p.id === offreProdIds[0]);
-    if (offreProd) {
-      itemsToInsert.push({
-        commande_id: cmd.id, produit_id: offreProd.id, produit_nom: offreProd.nom,
-        design_nom: null, couleur: null, taille: null,
-        quantite: packApplied.offre_qty || 1,
+  const offertItems = _btqaPhysItems.filter(i => i.produit_id && i.est_offert);
+  const itemsToInsert = [
+    ...validItems.map(item => {
+      const p = _btqaProduits.find(x => x.id === item.produit_id);
+      return {
+        commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p.nom,
+        design_nom: item.design_nom || null, couleur: item.couleur || null,
+        taille: item.taille || null, quantite: item.quantite || 1,
+        prix_unitaire_centimes: p.prix_centimes, est_offert: false,
+      };
+    }),
+    ...offertItems.map(item => {
+      const p = _btqaProduits.find(x => x.id === item.produit_id);
+      return {
+        commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p?.nom || '',
+        design_nom: null, couleur: null, taille: null, quantite: item.quantite || 1,
         prix_unitaire_centimes: 0, est_offert: true,
-      });
-    }
-  }
+      };
+    }),
+  ];
   await sb.from('boutique_items').insert(itemsToInsert);
 
   showToast(`Commande ${cmd.numero} créée !`);
