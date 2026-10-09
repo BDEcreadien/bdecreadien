@@ -9230,10 +9230,13 @@ function btqaRefreshPhysCart() {
   _btqaPhysItems = _btqaPhysItems.filter(i => !i.est_offert);
   const pack = btqaGetPhysPack();
   if (pack) {
-    const offreEntry = (pack.conditions || []).find(c => c.type === 'offre');
-    const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [pack.offre_produit_id].filter(Boolean);
-    const offreProd = _btqaProduits.find(p => p.id === offreProdIds[0]);
-    if (offreProd) _btqaPhysItems.push({ produit_id: offreProd.id, design_nom: null, couleur: null, taille: null, quantite: pack.offre_qty || 1, est_offert: true });
+    const multiplier = btqaGetPhysPackMultiplier(pack);
+    if (multiplier > 0) {
+      const offreEntry = (pack.conditions || []).find(c => c.type === 'offre');
+      const offreProdIds = offreEntry?.produit_ids?.length ? offreEntry.produit_ids : [pack.offre_produit_id].filter(Boolean);
+      const offreProd = _btqaProduits.find(p => p.id === offreProdIds[0]);
+      if (offreProd) _btqaPhysItems.push({ produit_id: offreProd.id, design_nom: null, couleur: null, taille: null, quantite: multiplier * (pack.offre_qty || 1), est_offert: true });
+    }
   }
   btqaRenderPhysItems();
 }
