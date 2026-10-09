@@ -9218,7 +9218,7 @@ function btqaConfirmProdModal() {
   if ((prod.couleurs_disponibles || []).length && !couleur) return showToast('Choisis une couleur', 'error');
   if ((prod.tailles_disponibles || []).length && !taille) return showToast('Choisis une taille', 'error');
   _btqaPhysItems.push({ produit_id: prod.id, design_nom: design, couleur, taille, quantite: qty });
-  btqaRenderPhysItems();
+  btqaRefreshPhysCart();
   btqaCloseProdModal();
   showToast(`${prod.nom} ajouté`);
 }
