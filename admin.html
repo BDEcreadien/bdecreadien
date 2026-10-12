@@ -1661,28 +1661,12 @@
   .btqa-search-bar { flex-direction:column;gap:8px; }
   .btqa-search-bar select { min-width:unset;width:100%; }
 
-  /* Table commandes → cards */
+  /* Table commandes → cards rendues via JS, juste masquer le thead */
   .btqa-table-wrap { box-shadow:none;border-radius:0; }
   .btqa-table thead { display:none; }
-  .btqa-table,.btqa-table tbody { display:block; }
-  .btqa-table tr {
-    display:block;background:white;
-    border-radius:14px;border:1.5px solid #f0e8ff;
-    box-shadow:0 2px 10px rgba(70,1,134,.07);
-    padding:12px 14px;margin-bottom:10px;
-  }
-  .btqa-table tr:hover td { background:transparent; }
-  .btqa-table td {
-    display:flex;justify-content:space-between;align-items:center;
-    padding:4px 0;border-bottom:none;font-size:13px;
-  }
-  /* Hide Email, Date, Type sur mobile */
-  .btqa-table td:nth-child(3),.btqa-table td:nth-child(4),.btqa-table td:nth-child(6) { display:none; }
-  /* N° + Nom en évidence */
-  .btqa-table td:nth-child(1) { font-size:15px;font-weight:800;border-bottom:1px solid #f5f0ff;padding-bottom:8px;margin-bottom:4px; }
-  /* Actions : boutons pleine largeur */
-  .btqa-table td:nth-child(8) { display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid #f5f0ff;margin-top:4px; }
-  .btqa-act-btn { flex:1;text-align:center;padding:8px 4px;font-size:12px; }
+  .btqa-table,.btqa-table tbody,.btqa-table tr,.btqa-mobile-card-row { display:block; }
+  .btqa-table tr:not(.btqa-mobile-card-row):hover td { background:transparent; }
+  .btqa-table tr:not(.btqa-mobile-card-row) td { padding:0;border:none; }
 
   /* Vente physique */
   .btqa-physique-split { min-height:0;gap:16px; }
