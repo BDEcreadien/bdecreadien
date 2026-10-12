@@ -9599,8 +9599,7 @@ async function btqaLookup() {
   if (!raw) return showToast('Entre un numéro de commande ou scanne une carte', 'error');
   const sb = window.Auth.sb;
   const res = document.getElementById('btqa-r-result');
-  res.style.display = 'block';
-  res.innerHTML = '<p style="color:#888;font-size:13px">Recherche…</p>';
+  res.innerHTML = '<p style="color:#888;font-size:13px;padding:20px;text-align:center">Recherche…</p>';
 
   // Détecter si c'est une URL de carte de fidélité (uid= ou id=)
   let data = null;
