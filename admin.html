@@ -9885,7 +9885,7 @@ async function btqaLookup() {
       <span style="font-weight:700;font-size:15px">Total</span>
       <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
     </div>
-    ${data.statut === 'confirmee' ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">📦 Confirmer la remise</button>` : ''}
+    ${['confirmee','payee'].includes(data.statut) ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">📦 Confirmer la remise</button>` : ''}
     ${data.statut === 'remise' ? '<div style="text-align:center;padding:10px;background:#e0e7ff;border-radius:10px;color:#3730a3;font-weight:700;font-size:14px">✓ Commande déjà remise</div>' : ''}
     ${data.statut === 'en_attente' ? '<div style="text-align:center;padding:10px;background:#fef3c7;border-radius:10px;color:#92400e;font-weight:700;font-size:14px">⚠ Paiement pas encore confirmé</div>' : ''}
   `;
