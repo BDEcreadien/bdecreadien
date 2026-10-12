@@ -9696,6 +9696,7 @@ async function btqaSendEmailCampagne(btn) {
     });
     const data = await r.json();
     console.log('[email-campagne] response', r.status, data);
+    if (data.errors?.length) console.warn('[email-campagne] errors', data.errors);
     if (!r.ok) throw new Error(data.error || `Erreur serveur (${r.status})`);
     if (data.message) return showToast(data.message, 'info');
     showToast(`${data.sent} email${data.sent > 1 ? 's' : ''} envoyé${data.sent > 1 ? 's' : ''}${data.failed ? ` · ${data.failed} échec${data.failed > 1 ? 's' : ''}` : ''}`);
