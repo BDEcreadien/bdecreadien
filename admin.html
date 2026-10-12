@@ -9521,31 +9521,63 @@ async function btqaCreatePhysOrder() {
 
 // ── Remise ───────────────────────────────────────────────────
 async function btqaLookup() {
-  const num = document.getElementById('btqa-r-numero').value.trim().toUpperCase();
-  if (!num) return showToast('Entre un numéro de commande', 'error');
+  const raw = document.getElementById('btqa-r-numero').value.trim();
+  if (!raw) return showToast('Entre un numéro de commande ou scanne une carte', 'error');
   const sb = window.Auth.sb;
-  const { data } = await sb.from('boutique_commandes')
-    .select('*, boutique_items(*)')
-    .eq('numero', num)
-    .maybeSingle();
-
   const res = document.getElementById('btqa-r-result');
   res.style.display = 'block';
+  res.innerHTML = '<p style="color:#888;font-size:13px">Recherche…</p>';
+
+  // Détecter si c'est une URL de carte de fidélité (uid= ou id=)
+  let data = null;
+  let memberName = null;
+  try {
+    const url = new URL(raw);
+    const uid = url.searchParams.get('uid');
+    if (uid) {
+      // Chercher la commande la plus récente de ce membre (en_attente ou confirmee ou remise)
+      const { data: profil } = await sb.from('profils').select('prenom, nom, email').eq('id', uid).maybeSingle();
+      memberName = profil ? `${profil.prenom} ${profil.nom} (${profil.email})` : `Membre ${uid.slice(0,8)}…`;
+      const { data: cmds } = await sb.from('boutique_commandes')
+        .select('*, boutique_items(*)')
+        .eq('membre_id', uid)
+        .in('statut', ['en_attente', 'confirmee', 'remise'])
+        .order('created_at', { ascending: false })
+        .limit(1);
+      data = cmds?.[0] || null;
+      if (!data) {
+        res.innerHTML = `<p style="font-weight:600;margin:0 0 4px">${memberName}</p><p style="color:#888;font-size:13px">Aucune commande boutique en cours pour ce membre.</p>`;
+        return;
+      }
+    }
+  } catch {}
+
+  // Sinon chercher par numéro de commande
   if (!data) {
-    res.innerHTML = `<p style="color:#dc2626;font-weight:600">Commande introuvable : ${num}</p>`;
-    return;
+    const num = raw.toUpperCase();
+    const { data: found } = await sb.from('boutique_commandes')
+      .select('*, boutique_items(*)')
+      .eq('numero', num)
+      .maybeSingle();
+    data = found;
+    if (!data) {
+      res.innerHTML = `<p style="color:#dc2626;font-weight:600">Commande introuvable : ${num}</p>`;
+      return;
+    }
   }
+
   const items = data.boutique_items || [];
   res.innerHTML = `
+    ${memberName ? `<p style="font-size:12px;color:#888;margin:0 0 6px">Carte de fidélité : ${memberName}</p>` : ''}
     <p style="font-weight:700;margin:0 0 4px;color:var(--violet)">${data.numero}</p>
-    <p style="margin:0 0 8px">${data.nom_acheteur} — ${data.email_acheteur}</p>
+    <p style="margin:0 0 8px;font-size:13px">${data.nom_acheteur} — ${data.email_acheteur}</p>
     <span class="btqa-badge ${data.statut}">${btqaStatutLabel(data.statut)}</span>
     <hr style="border:none;border-top:1px solid #e0d8f0;margin:12px 0">
-    ${items.map(i => `<div style="font-size:13px;margin-bottom:4px">
+    ${items.map(i => `<div style="font-size:13px;margin-bottom:6px;padding:6px 8px;background:#faf8ff;border-radius:8px">
       <strong>${i.produit_nom}</strong>${i.design_nom ? ` — ${i.design_nom}` : ''}${i.couleur ? ` — ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}
-      ${i.est_offert ? '<span style="color:#FF741F;font-size:11px;font-weight:700"> OFFERT</span>' : ''}
+      ${i.est_offert ? '<span style="color:#FF741F;font-size:11px;font-weight:700"> OFFERT</span>' : `<span style="float:right;font-weight:700;color:#460186">${btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>`}
     </div>`).join('')}
-    <p style="font-weight:700;margin:12px 0 0">Total : ${btqaFmt(data.total_centimes)}</p>
+    <p style="font-weight:700;margin:12px 0 0;font-size:15px">Total : ${btqaFmt(data.total_centimes)}</p>
     ${data.statut === 'confirmee' ? `
       <button class="btn-save" style="margin-top:12px;width:100%" onclick="btqaRemettreNum('${data.id}')">
         📦 Confirmer la remise
