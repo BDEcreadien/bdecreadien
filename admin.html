@@ -9891,9 +9891,12 @@ async function btqaLookup() {
   `;
 }
 
+let _btqaListBackHTML = null;
 async function btqaLookupById(id, memberName) {
   const sb = window.Auth.sb;
   const res = document.getElementById('btqa-r-result');
+  // Sauvegarder la liste pour pouvoir y revenir
+  _btqaListBackHTML = res.innerHTML;
   res.innerHTML = '<p style="color:#888;font-size:13px;padding:20px;text-align:center">Chargement…</p>';
   const { data } = await sb.from('boutique_commandes').select('*, boutique_items(*)').eq('id', id).maybeSingle();
   if (!data) return showToast('Commande introuvable', 'error');
