@@ -9627,7 +9627,7 @@ async function btqaSendEmailCampagne(btn) {
   if (!body)  return showToast('Entre un message', 'error');
   if (!statuts.length) return showToast('Sélectionne au moins un groupe', 'error');
 
-  const destinataires = (_btqaAllCommandes || []).filter(c => statuts.includes(c.statut));
+  const destinataires = (_btqaCommandes || []).filter(c => statuts.includes(c.statut));
   if (!destinataires.length) return showToast('Aucun destinataire', 'error');
 
   if (!confirm(`Envoyer à ${destinataires.length} personne${destinataires.length > 1 ? 's' : ''} ?`)) return;
