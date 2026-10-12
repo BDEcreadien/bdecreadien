@@ -194,6 +194,7 @@ export async function onRequest({ request, env }) {
             Une question ? Contacte-nous sur bdecreadien.fr
           </p>
         </div>
+      </div>
       </div>`;
 
     await fetch('https://api.resend.com/emails', {
