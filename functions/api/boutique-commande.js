@@ -156,46 +156,31 @@ export async function onRequest({ request, env }) {
         </p>`
       : '';
 
-    const html = `
-      <div style="background:#f4f0ff;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-      <div style="max-width:560px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,1,134,.18);color:#1a0030">
-        <div style="background:linear-gradient(145deg,#1a0045 0%,#6b0070 30%,#c8006e 60%,#ff5500 85%,#ff8c00 100%);padding:36px 36px 32px;text-align:center">
-          <p style="margin:0 0 4px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600">BDE CREAD LYON</p>
-          <h1 style="margin:0;color:white;font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.1">Boutique Merch</h1>
-        </div>
-        <div style="background:white;padding:36px">
-          <p>Bonjour <strong>${nom_acheteur}</strong>,</p>
-          <p>Votre commande a bien été enregistrée. Voici votre numéro de commande :</p>
-          <p style="font-size:28px;font-weight:700;color:#FF741F;margin:16px 0">${numero}</p>
-          <table style="width:100%;border-collapse:collapse;margin:20px 0">
-            ${lignes}
-            <tr>
-              <td style="padding:12px 0 0;font-weight:700;font-size:16px">Total</td>
-              <td style="padding:12px 0 0;text-align:right;font-weight:700;font-size:18px;color:#460186">${formatEur(total)}</td>
-            </tr>
-          </table>
-          ${payBtn}
-          <hr style="border:none;border-top:1px solid #f0e8ff;margin:28px 0">
-          <div style="text-align:center;margin:24px 0">
-            <p style="font-size:13px;color:#666;margin:0 0 14px">
-              <strong>Présente ce QR code lors du retrait de ta commande</strong>
-            </p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(numero)}&size=200x200&margin=10&color=460186"
-              alt="QR code commande ${numero}"
-              style="width:200px;height:200px;border-radius:12px;border:2px solid #f0e8ff">
-            <p style="font-size:16px;font-weight:700;color:#460186;margin:10px 0 0;letter-spacing:2px">${numero}</p>
-          </div>
-          <hr style="border:none;border-top:1px solid #f0e8ff;margin:28px 0">
-          <p style="font-size:13px;color:#999;margin:0">
-            La livraison se fait sur place une fois que nous avons reçu tous les articles.
-            Conserve cet e-mail pour le retrait.
-          </p>
-          <p style="font-size:13px;color:#999;margin:8px 0 0">
-            Une question ? Contacte-nous sur bdecreadien.fr
-          </p>
-        </div>
-      </div>
-      </div>`;
+    const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
+<body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
+<div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
+  <div style="background:linear-gradient(145deg,#1a0045,#6b0070,#c8006e,#ff5500,#ff8c00);padding:28px;text-align:center">
+    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
+    <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Goodies</p>
+  </div>
+  <div style="background:white;padding:28px">
+    <p style="margin:0 0 8px">Bonjour <strong>${nom_acheteur}</strong>,</p>
+    <p style="margin:0 0 16px">Ta commande est bien enregistrée !</p>
+    <p style="margin:0 0 20px;font-size:26px;font-weight:800;color:#ff5500;letter-spacing:1px">${numero}</p>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px">
+      ${lignes}
+      <tr><td style="padding:10px 0 0;font-weight:700">Total</td><td style="padding:10px 0 0;text-align:right;font-weight:700;color:#460186">${formatEur(total)}</td></tr>
+    </table>
+    ${payBtn}
+    <div style="text-align:center;margin:20px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
+      <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#460186">QR code de retrait</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(numero)}&size=180x180&margin=8&color=460186" alt="${numero}" style="width:180px;height:180px">
+      <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#460186;letter-spacing:2px">${numero}</p>
+    </div>
+    <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">Conserve cet e-mail pour le retrait. Une question ? bdecreadien.fr</p>
+  </div>
+</div>
+</body></html>`;
 
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
