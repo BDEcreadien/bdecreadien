@@ -9892,7 +9892,9 @@ async function btqaLookup() {
 }
 
 let _btqaListBackHTML = null;
-async function btqaLookupById(id, memberName) {
+let _btqaListMemberNames = {};
+async function btqaLookupById(id) {
+  const memberName = _btqaListMemberNames?.[id] || null;
   const sb = window.Auth.sb;
   const res = document.getElementById('btqa-r-result');
   // Sauvegarder la liste pour pouvoir y revenir
