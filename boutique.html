@@ -1690,7 +1690,7 @@ async function btqApplyPacks() {
     // Un seul choix — auto-insert
     choicesEl.style.display = 'none';
     const offreProd = offreProds[0];
-    if (offreProd) await btqInsertOffert(offreProd, packActive.offre_qty || 1);
+    if (offreProd) await btqInsertOffert(offreProd, packMultiplier * (packActive.offre_qty || 1));
   } else {
     // Plusieurs choix — afficher les boutons
     choicesEl.style.display = 'flex';
