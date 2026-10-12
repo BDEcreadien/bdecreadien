@@ -9611,7 +9611,7 @@ function btqaUpdateEmailCount() {
   if (document.getElementById('btqa-em-attente')?.checked)   statuts.push('en_attente');
   if (document.getElementById('btqa-em-confirmee')?.checked) statuts.push('confirmee');
   if (document.getElementById('btqa-em-remise')?.checked)    statuts.push('remise');
-  const count = (_btqaAllCommandes || []).filter(c => statuts.includes(c.statut)).length;
+  const count = (_btqaCommandes || []).filter(c => statuts.includes(c.statut)).length;
   const el = document.getElementById('btqa-em-count');
   if (el) el.textContent = `${count} destinataire${count > 1 ? 's' : ''}`;
 }
