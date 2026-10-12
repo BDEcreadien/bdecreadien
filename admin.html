@@ -1804,9 +1804,11 @@
       <!-- Colonne droite : formulaire -->
       <div class="btqa-form-panel">
         <h3>Créer une commande physique</h3>
-        <div class="btqa-form-row">
+        <div class="btqa-form-row" style="position:relative">
           <label>Nom de l'acheteur</label>
-          <input id="btqa-p-nom" type="text" placeholder="Prénom Nom">
+          <input id="btqa-p-nom" type="text" placeholder="Prénom Nom" autocomplete="off"
+            oninput="btqaNomAutocomplete(this.value)" onblur="setTimeout(()=>document.getElementById('btqa-p-nom-drop').style.display='none',150)">
+          <div id="btqa-p-nom-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #d0c4ff;border-radius:10px;box-shadow:0 4px 16px rgba(70,1,134,.12);z-index:200;max-height:200px;overflow-y:auto;margin-top:2px"></div>
         </div>
         <div class="btqa-form-row">
           <label>E-mail</label>
