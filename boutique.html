@@ -1701,7 +1701,7 @@ async function btqApplyPacks() {
     // Insert le choix mémorisé ou rien
     if (_packChosenOffreProdId) {
       const chosen = offreProds.find(p => p.id === _packChosenOffreProdId);
-      if (chosen) await btqInsertOffert(chosen, packActive.offre_qty || 1);
+      if (chosen) await btqInsertOffert(chosen, packMultiplier * (packActive.offre_qty || 1));
     }
     choicesEl.innerHTML = offreProds.map(p => `
       <button class="btq-pack-choice-btn${p.id === _packChosenOffreProdId ? ' selected' : ''}"
