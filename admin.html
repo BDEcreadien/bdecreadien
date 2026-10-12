@@ -9929,6 +9929,7 @@ async function btqaLookupById(id, memberName) {
     ${['confirmee','payee'].includes(data.statut) ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">📦 Confirmer la remise</button>` : ''}
     ${data.statut === 'remise' ? '<div style="text-align:center;padding:10px;background:#e0e7ff;border-radius:10px;color:#3730a3;font-weight:700;font-size:14px">✓ Commande déjà remise</div>' : ''}
     ${data.statut === 'en_attente' ? '<div style="text-align:center;padding:10px;background:#fef3c7;border-radius:10px;color:#92400e;font-weight:700;font-size:14px">⚠ Paiement pas encore confirmé</div>' : ''}
+    <button onclick="if(_btqaListBackHTML){document.getElementById('btqa-r-result').innerHTML=_btqaListBackHTML;_btqaListBackHTML=null}" style="margin-top:12px;width:100%;padding:10px;background:white;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-weight:600;color:#666;cursor:pointer">← Retour à la liste</button>
   `;
 }
 async function btqaRemettreNum(id) {
