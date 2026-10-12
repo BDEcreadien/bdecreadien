@@ -9601,6 +9601,66 @@ function btqaCheckPhysPackBanner() {
   banner.textContent = `🎁 Pack "${pack.nom}" appliqué`;
 }
 
+// ── Modal emails campagne ────────────────────────────────────
+function btqaOpenEmailModal() {
+  btqaUpdateEmailCount();
+  document.getElementById('btqa-email-modal-overlay').classList.add('open');
+}
+function btqaCloseEmailModal() {
+  document.getElementById('btqa-email-modal-overlay').classList.remove('open');
+}
+function btqaUpdateEmailCount() {
+  const statuts = [];
+  if (document.getElementById('btqa-em-panier')?.checked)    statuts.push('panier');
+  if (document.getElementById('btqa-em-attente')?.checked)   statuts.push('en_attente');
+  if (document.getElementById('btqa-em-confirmee')?.checked) statuts.push('confirmee');
+  if (document.getElementById('btqa-em-remise')?.checked)    statuts.push('remise');
+  const count = (_btqaAllCommandes || []).filter(c => statuts.includes(c.statut)).length;
+  const el = document.getElementById('btqa-em-count');
+  if (el) el.textContent = `${count} destinataire${count > 1 ? 's' : ''}`;
+}
+async function btqaSendEmailCampagne(btn) {
+  const statuts = [];
+  if (document.getElementById('btqa-em-panier')?.checked)    statuts.push('panier');
+  if (document.getElementById('btqa-em-attente')?.checked)   statuts.push('en_attente');
+  if (document.getElementById('btqa-em-confirmee')?.checked) statuts.push('confirmee');
+  if (document.getElementById('btqa-em-remise')?.checked)    statuts.push('remise');
+  const sujet = document.getElementById('btqa-em-sujet').value.trim();
+  const body  = document.getElementById('btqa-em-body').value.trim();
+  if (!sujet) return showToast('Entre un sujet', 'error');
+  if (!body)  return showToast('Entre un message', 'error');
+  if (!statuts.length) return showToast('Sélectionne au moins un groupe', 'error');
+
+  const destinataires = (_btqaAllCommandes || []).filter(c => statuts.includes(c.statut));
+  if (!destinataires.length) return showToast('Aucun destinataire', 'error');
+
+  if (!confirm(`Envoyer à ${destinataires.length} personne${destinataires.length > 1 ? 's' : ''} ?`)) return;
+
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  let ok = 0, ko = 0;
+  for (const c of destinataires) {
+    const prenom = (c.nom_acheteur || '').split(' ')[0] || 'toi';
+    const nom    = (c.nom_acheteur || '').split(' ').slice(1).join(' ') || '';
+    const html   = body
+      .replace(/\{\{prenom\}\}/g, prenom)
+      .replace(/\{\{nom\}\}/g,    nom)
+      .replace(/\{\{numero\}\}/g, c.numero || '')
+      .replace(/\{\{total\}\}/g,  c.total_centimes ? btqaFmt(c.total_centimes) : '')
+      .replace(/\n/g, '<br>');
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', Authorization: `Bearer ${window._resendKey || ''}` },
+        body: JSON.stringify({ from:'BDE CREAD Lyon <noreply@bdecreadien.fr>', to:[c.email_acheteur], subject: sujet, html }),
+      });
+      r.ok ? ok++ : ko++;
+    } catch { ko++; }
+  }
+  btn.disabled = false; btn.textContent = 'Envoyer maintenant';
+  showToast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}${ko ? ` · ${ko} échec${ko > 1 ? 's' : ''}` : ''}`);
+  if (ok > 0) btqaCloseEmailModal();
+}
+
 let _btqaMembres = [];
 async function btqaLoadMembres() {
   if (_btqaMembres.length) return;
