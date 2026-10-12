@@ -32,19 +32,23 @@ export async function onRequest({ request, env }) {
   const SB  = env.SUPABASE_URL;
   const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
-  // Vérifier que c'est un admin
+  // Vérifier que le token est valide
   const meRes = await fetch(`${SB}/auth/v1/user`, {
     headers: { apikey: KEY, Authorization: `Bearer ${userToken}` },
   });
   if (!meRes.ok) return json({ error: 'Token invalide' }, 401);
   const me = await meRes.json();
+  if (!me?.id) return json({ error: 'Token invalide' }, 401);
 
-  // Vérifier le rôle admin dans profils
-  const profRes = await fetch(`${SB}/rest/v1/profils?id=eq.${me.id}&select=role`, {
-    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` },
+  // Vérifier role admin
+  const profRes = await fetch(`${SB}/rest/v1/profils?id=eq.${me.id}&select=role,bureau`, {
+    headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, Accept: 'application/json' },
   });
-  const [prof] = await profRes.json();
-  if (!prof || prof.role !== 'admin') return json({ error: 'Accès réservé aux admins' }, 403);
+  const profData = await profRes.json();
+  const prof = Array.isArray(profData) ? profData[0] : profData;
+  if (!prof || (prof.role !== 'admin' && !(prof.role === 'membre' && prof.bureau))) {
+    return json({ error: 'Accès réservé aux admins' }, 403);
+  }
 
   let body;
   try { body = await request.json(); } catch { return json({ error: 'JSON invalide' }, 400); }
