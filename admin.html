@@ -9679,33 +9679,21 @@ async function btqaSendAutoNow(statut) {
 
 // ── Modal emails campagne ────────────────────────────────────
 function btqaOpenEmailModal() {
-  btqaUpdateEmailCount();
+  const statuts = ['en_attente', 'confirmee', 'remise'];
+  const count = (_btqaCommandes || []).filter(c => statuts.includes(c.statut)).length;
+  const el = document.getElementById('btqa-em-count');
+  if (el) el.textContent = `${count} personne${count > 1 ? 's' : ''} ayant passé commande`;
   document.getElementById('btqa-email-modal-overlay').classList.add('open');
 }
 function btqaCloseEmailModal() {
   document.getElementById('btqa-email-modal-overlay').classList.remove('open');
 }
-function btqaUpdateEmailCount() {
-  const statuts = [];
-  if (document.getElementById('btqa-em-panier')?.checked)    statuts.push('panier');
-  if (document.getElementById('btqa-em-attente')?.checked)   statuts.push('en_attente');
-  if (document.getElementById('btqa-em-confirmee')?.checked) statuts.push('confirmee');
-  if (document.getElementById('btqa-em-remise')?.checked)    statuts.push('remise');
-  const count = (_btqaCommandes || []).filter(c => statuts.includes(c.statut)).length;
-  const el = document.getElementById('btqa-em-count');
-  if (el) el.textContent = `${count} destinataire${count > 1 ? 's' : ''}`;
-}
 async function btqaSendEmailCampagne(btn) {
-  const statuts = [];
-  if (document.getElementById('btqa-em-panier')?.checked)    statuts.push('panier');
-  if (document.getElementById('btqa-em-attente')?.checked)   statuts.push('en_attente');
-  if (document.getElementById('btqa-em-confirmee')?.checked) statuts.push('confirmee');
-  if (document.getElementById('btqa-em-remise')?.checked)    statuts.push('remise');
+  const statuts = ['en_attente', 'confirmee', 'remise'];
   const sujet = document.getElementById('btqa-em-sujet').value.trim();
   const body  = document.getElementById('btqa-em-body').value.trim();
   if (!sujet) return showToast('Entre un sujet', 'error');
   if (!body)  return showToast('Entre un message', 'error');
-  if (!statuts.length) return showToast('Sélectionne au moins un groupe', 'error');
 
   const destinataires = (_btqaCommandes || []).filter(c => statuts.includes(c.statut));
   if (!destinataires.length) return showToast('Aucun destinataire', 'error');
