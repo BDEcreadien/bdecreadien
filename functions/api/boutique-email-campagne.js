@@ -66,8 +66,13 @@ export async function onRequest({ request, env }) {
   if (!commandes?.length) return json({ ok: true, sent: 0, failed: 0, message: 'Aucun destinataire' });
 
   let sent = 0, failed = 0;
+  const errors = [];
   for (const c of commandes) {
-    if (!c.email_acheteur) { failed++; continue; }
+    if (!c.email_acheteur) {
+      errors.push(`commande ${c.numero || c.id}: email_acheteur manquant`);
+      failed++;
+      continue;
+    }
     const html = `
       <div style="max-width:560px;margin:0 auto;font-family:sans-serif;color:#1a0030">
         <div style="background:linear-gradient(135deg,#460186,#D2396D,#FF741F);padding:24px 32px;border-radius:16px 16px 0 0">
@@ -92,9 +97,18 @@ export async function onRequest({ request, env }) {
           html,
         }),
       });
-      r.ok ? sent++ : failed++;
-    } catch { failed++; }
+      if (r.ok) {
+        sent++;
+      } else {
+        const errBody = await r.json().catch(() => ({}));
+        errors.push(`${c.email_acheteur}: ${errBody.message || errBody.name || r.status}`);
+        failed++;
+      }
+    } catch (e) {
+      errors.push(`${c.email_acheteur}: ${e.message}`);
+      failed++;
+    }
   }
 
-  return json({ ok: true, sent, failed, total: commandes.length });
+  return json({ ok: true, sent, failed, total: commandes.length, errors });
 }
