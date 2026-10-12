@@ -9095,12 +9095,7 @@ function btqaRenderStats() {
 
 // ── Récap & stock ────────────────────────────────────────────
 function btqaRecapStatuts() {
-  const statuts = [];
-  if (document.getElementById('btqr-cb-payee')?.checked)     statuts.push('payee');
-  if (document.getElementById('btqr-cb-confirmee')?.checked) statuts.push('confirmee');
-  if (document.getElementById('btqr-cb-remise')?.checked)    statuts.push('remise');
-  if (document.getElementById('btqr-cb-attente')?.checked)   statuts.push('en_attente');
-  return statuts;
+  return ['payee', 'confirmee', 'remise', 'physique'];
 }
 function btqaSubTab(sub) {
   document.getElementById('btqr-view-recap').style.display  = sub === 'recap'  ? '' : 'none';
