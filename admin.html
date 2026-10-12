@@ -1623,6 +1623,78 @@
   background:linear-gradient(135deg,#460186,#D2396D);color:white;margin-bottom:10px;
 }
 .btqa-pack-offer { display:flex;align-items:center;gap:8px;font-size:13px;color:#460186;font-weight:600; }
+
+/* ── Responsive mobile ── */
+@media(max-width:640px) {
+  /* Page wrapper */
+  #step-boutique { padding:1rem !important; }
+
+  /* Header */
+  .btqa-header { padding:18px 16px 16px;gap:10px; }
+  .btqa-header h2 { font-size:1.2rem; }
+  .btqa-header-actions { gap:6px;flex-wrap:wrap; }
+  .btqa-btn-outline,.btqa-btn-solid { font-size:12px;padding:7px 11px; }
+
+  /* Tabs */
+  .btqa-tabs { margin:0 -1rem 1.25rem;padding:0 0.25rem; }
+  .btqa-tab { padding:10px 10px;font-size:12px;flex:unset; }
+
+  /* Stats */
+  .btqa-stats-banner { border-radius:14px; }
+  .btqa-stat { padding:14px 6px; }
+  .btqa-stat-val { font-size:20px; }
+  .btqa-stat-lbl { font-size:8px;letter-spacing:.4px; }
+
+  /* Search bar */
+  .btqa-search-bar { flex-direction:column;gap:8px; }
+  .btqa-search-bar select { min-width:unset;width:100%; }
+
+  /* Table commandes → cards */
+  .btqa-table-wrap { box-shadow:none;border-radius:0; }
+  .btqa-table thead { display:none; }
+  .btqa-table,.btqa-table tbody { display:block; }
+  .btqa-table tr {
+    display:block;background:white;
+    border-radius:14px;border:1.5px solid #f0e8ff;
+    box-shadow:0 2px 10px rgba(70,1,134,.07);
+    padding:12px 14px;margin-bottom:10px;
+  }
+  .btqa-table tr:hover td { background:transparent; }
+  .btqa-table td {
+    display:flex;justify-content:space-between;align-items:center;
+    padding:4px 0;border-bottom:none;font-size:13px;
+  }
+  /* Hide Email, Date, Type sur mobile */
+  .btqa-table td:nth-child(3),.btqa-table td:nth-child(4),.btqa-table td:nth-child(6) { display:none; }
+  /* N° + Nom en évidence */
+  .btqa-table td:nth-child(1) { font-size:15px;font-weight:800;border-bottom:1px solid #f5f0ff;padding-bottom:8px;margin-bottom:4px; }
+  /* Actions : boutons pleine largeur */
+  .btqa-table td:nth-child(8) { display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid #f5f0ff;margin-top:4px; }
+  .btqa-act-btn { flex:1;text-align:center;padding:8px 4px;font-size:12px; }
+
+  /* Vente physique */
+  .btqa-physique-split { min-height:0;gap:16px; }
+  .btqa-form-panel { position:static;max-height:none; }
+  .btqa-mini-card-img,.btqa-mini-card-icon { height:80px; }
+  .btqa-mini-card-icon { font-size:28px; }
+
+  /* Récap & stock */
+  #btqa-pane-recap > div:first-child { gap:6px; }
+  #btqr-export-btn { width:100%;margin-top:2px;box-sizing:border-box; }
+  #btqa-pane-recap > div:nth-child(2) { flex-wrap:wrap; }
+
+  /* Modal detail commande */
+  .btqa-detail-card { padding:18px 14px;border-radius:16px; }
+
+  /* Modal produit physique : déjà max-width:90vw */
+  .btqa-prod-modal { padding:20px 16px; }
+
+  /* Config produits : grille 2 col sur petit écran */
+  .btqa-prod-grid { grid-template-columns:repeat(2,1fr);gap:10px; }
+
+  /* Remise scan box */
+  .btqa-scan-box { padding:24px 16px; }
+}
 </style>
 
 <div id="step-boutique" style="display:none;padding:2rem;max-width:1400px;margin:0 auto;">
