@@ -1597,15 +1597,17 @@
   box-shadow:0 2px 16px rgba(70,1,134,.07);
 }
 .btqa-form-panel h3 { margin:0 0 16px;font-size:16px;color:var(--noir);font-weight:800; }
-/* ── Remise ── */
-.btqa-remise-banner {
-  background:linear-gradient(135deg,#460186 0%,#D2396D 60%,#FF741F 100%);
-  border-radius:16px;padding:20px 24px;margin-bottom:20px;
-  display:flex;align-items:center;gap:16px;color:white;
+/* ── Remise split ── */
+.btqa-remise-split { display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start; }
+@media(max-width:900px) { .btqa-remise-split { grid-template-columns:1fr; } }
+.btqa-remise-search-panel {
+  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:22px;
+  box-shadow:0 2px 12px rgba(70,1,134,.06);position:sticky;top:20px;
 }
-.btqa-remise-banner-icon { font-size:40px;flex-shrink:0; }
-.btqa-remise-banner-text h4 { margin:0 0 4px;font-size:16px;font-weight:800; }
-.btqa-remise-banner-text p { margin:0;font-size:13px;opacity:.85;line-height:1.5; }
+.btqa-remise-result-panel {
+  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:24px;
+  box-shadow:0 2px 12px rgba(70,1,134,.06);min-height:260px;
+}
 /* ── Pack cards ── */
 .btqa-pack-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-pack-card {
