@@ -1660,14 +1660,8 @@
   .btqa-search-bar { flex-direction:column;gap:8px; }
   .btqa-search-bar select { min-width:unset;width:100%; }
 
-  /* Table commandes → cards pleine largeur */
-  .btqa-table-wrap { box-shadow:none;border-radius:0;overflow-x:visible;margin:0 -2rem; }
-  .btqa-table thead { display:none; }
-  .btqa-table,.btqa-table tbody,.btqa-table tr,.btqa-mobile-card-row { display:block; }
-  .btqa-table tr:not(.btqa-mobile-card-row):hover td { background:transparent; }
-  .btqa-table tr:not(.btqa-mobile-card-row) td { padding:0;border:none; }
-  /* Cards sans bordure latérale, coins plats sur les bords */
-  .btqa-mobile-card-row > td > div { border-radius:0;border-left:none;border-right:none;border-top:none; }
+  /* Table cachée sur mobile, cards dans #btqa-mobile-list */
+  #btqa-table-wrap { display:none; }
 
   /* Vente physique */
   .btqa-physique-split { min-height:0;gap:16px; }
