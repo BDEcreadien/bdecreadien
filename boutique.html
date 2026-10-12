@@ -1454,8 +1454,8 @@ function btqOpenModal(id) {
           <p class="btq-modal-label">Design</p>
           <div class="btq-designs" id="btq-design-row">
             ${designs.map((d, idx) => `
-              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}','${btqEsc(d.image_url||'')}',this)">
-                ${d.image_url ? `<img src="${d.image_url}" alt="${d.nom}" style="width:28px;height:28px;object-fit:contain;border-radius:6px;margin-right:6px;vertical-align:middle">` : ''}${d.nom}
+              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">
+                ${(() => { const img = btqDesignFirstImg(d); return img ? `<img src="${img}" alt="${d.nom}" style="width:28px;height:28px;object-fit:contain;border-radius:6px;margin-right:6px;vertical-align:middle">` : ''; })()}${d.nom}
               </button>`).join('')}
           </div>` : ''}
 
