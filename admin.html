@@ -9043,6 +9043,87 @@ function btqaRenderStats() {
   `;
 }
 
+// ── Récap & stock ────────────────────────────────────────────
+function btqaRecapStatuts() {
+  const statuts = [];
+  if (document.getElementById('btqr-cb-payee')?.checked)     statuts.push('payee');
+  if (document.getElementById('btqr-cb-confirmee')?.checked) statuts.push('confirmee');
+  if (document.getElementById('btqr-cb-remise')?.checked)    statuts.push('remise');
+  if (document.getElementById('btqr-cb-attente')?.checked)   statuts.push('en_attente');
+  return statuts;
+}
+function btqaRenderRecap() {
+  const statuts = btqaRecapStatuts();
+  const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
+
+  // ── Récap agrégé
+  const recap = {};
+  cmds.forEach(c => {
+    (c.boutique_items || []).forEach(it => {
+      const key = [it.produit_nom, it.design_nom || '—', it.couleur || '—', it.taille || '—'].join('||');
+      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom || '—', couleur: it.couleur || '—', taille: it.taille || '—', qty: 0, offert: 0 };
+      recap[key].qty    += it.quantite || 1;
+      if (it.est_offert) recap[key].offert += it.quantite || 1;
+    });
+  });
+  const rows = Object.values(recap).sort((a,b) => a.produit.localeCompare(b.produit) || a.design.localeCompare(b.design) || a.taille.localeCompare(b.taille));
+  document.getElementById('btqr-recap-body').innerHTML = rows.length
+    ? rows.map(r => `<tr style="border-top:1px solid #f0e8ff">
+        <td style="padding:9px 14px;font-weight:600">${r.produit}</td>
+        <td style="padding:9px 14px;color:#555">${r.design}</td>
+        <td style="padding:9px 14px;color:#555">${r.couleur}</td>
+        <td style="padding:9px 14px;color:#555">${r.taille}</td>
+        <td style="padding:9px 14px;text-align:center;font-weight:800;color:#460186;font-size:16px">${r.qty}</td>
+        <td style="padding:9px 14px;text-align:center;color:#FF741F;font-weight:700">${r.offert || '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" style="padding:20px;text-align:center;color:#aaa">Aucun article</td></tr>';
+
+  // ── Détail ligne par ligne
+  const lines = [];
+  cmds.forEach(c => {
+    (c.boutique_items || []).forEach(it => {
+      lines.push({ cmd: c, it });
+    });
+  });
+  document.getElementById('btqr-detail-body').innerHTML = lines.length
+    ? lines.map(({ cmd, it }) => `<tr style="border-top:1px solid #f5f0ff;${it.est_offert ? 'background:#f0fdf4' : ''}">
+        <td style="padding:8px 14px;font-weight:700;color:#460186;white-space:nowrap">${cmd.numero}</td>
+        <td style="padding:8px 14px;white-space:nowrap">${cmd.nom_acheteur || '—'}</td>
+        <td style="padding:8px 14px">
+          <span class="btqa-badge ${cmd.statut}" style="font-size:11px">${btqaStatutLabel(cmd.statut)}</span>
+        </td>
+        <td style="padding:8px 14px;font-weight:600">${it.produit_nom}${it.est_offert ? ' <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:800">OFFERT</span>' : ''}</td>
+        <td style="padding:8px 14px;color:#555">${it.design_nom || '—'}</td>
+        <td style="padding:8px 14px;color:#555">${it.couleur || '—'}</td>
+        <td style="padding:8px 14px;color:#555">${it.taille || '—'}</td>
+        <td style="padding:8px 14px;text-align:center;font-weight:700">${it.quantite || 1}</td>
+        <td style="padding:8px 14px;text-align:right;font-weight:700;color:#460186">${it.est_offert ? '<span style="color:#16a34a">OFFERT</span>' : btqaFmt((it.prix_unitaire_centimes||0)*(it.quantite||1))}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="9" style="padding:20px;text-align:center;color:#aaa">Aucune commande</td></tr>';
+}
+function btqaExportRecapCSV() {
+  const statuts = btqaRecapStatuts();
+  const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
+  const rows = [['Produit','Design','Couleur','Taille','Quantité totale','dont offerts']];
+  const recap = {};
+  cmds.forEach(c => {
+    (c.boutique_items || []).forEach(it => {
+      const key = [it.produit_nom, it.design_nom||'', it.couleur||'', it.taille||''].join('||');
+      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom||'', couleur: it.couleur||'', taille: it.taille||'', qty: 0, offert: 0 };
+      recap[key].qty += it.quantite || 1;
+      if (it.est_offert) recap[key].offert += it.quantite || 1;
+    });
+  });
+  Object.values(recap).sort((a,b) => a.produit.localeCompare(b.produit)).forEach(r => {
+    rows.push([r.produit, r.design, r.couleur, r.taille, r.qty, r.offert || 0]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('﻿' + csv);
+  a.download = `recap-stock-BDE-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
 // ── Table commandes ──────────────────────────────────────────
 function btqaRenderTable(list) {
   const tbody  = document.getElementById('btqa-tbody');
