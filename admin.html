@@ -168,6 +168,15 @@
       #screen-app { padding: 1rem; }
       .pages-grid { grid-template-columns: 1fr 1fr; }
     }
+    /* Header mobile */
+    @media(max-width:540px) {
+      header { padding:.6rem 1rem; }
+      .header-logo span { display:none; }
+      .header-logo img { width:32px;height:32px; }
+      .header-right { gap:.4rem; }
+      .btn-back, #btn-logout,
+      .header-right a { font-size:11px;padding:5px 9px;border-radius:7px; }
+    }
 
     /* STATS */
     #step-stats { display:none; }
