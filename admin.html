@@ -1748,6 +1748,54 @@
     </div>
   </div>
 
+  <!-- Modal emails boutique -->
+  <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
+    <div class="btqa-prod-modal" style="width:520px;max-width:95vw">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h4 style="margin:0;font-size:17px">✉ Envoyer un email aux commandes</h4>
+        <button onclick="btqaCloseEmailModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+      </div>
+
+      <!-- Destinataires -->
+      <p style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">Destinataires</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqa-em-panier" style="accent-color:#460186"> Panier enregistré</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqa-em-attente" checked style="accent-color:#460186"> En attente de paiement</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqa-em-confirmee" style="accent-color:#460186"> Commande confirmée</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqa-em-remise" style="accent-color:#460186"> Déjà remise</label>
+      </div>
+      <p id="btqa-em-count" style="font-size:12px;color:#888;margin:0 0 14px">— destinataires</p>
+
+      <!-- Sujet -->
+      <p class="btqa-prod-modal-label">Sujet</p>
+      <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email" oninput="btqaUpdateEmailCount()"
+        style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
+
+      <!-- Corps -->
+      <p class="btqa-prod-modal-label">Message <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span></p>
+      <textarea id="btqa-em-body" rows="6" placeholder="Salut {{prenom}},&#10;&#10;Ta commande {{numero}} est en route !&#10;&#10;À bientôt — BDE CREAD"
+        style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:16px"></textarea>
+
+      <!-- Relance auto -->
+      <details style="margin-bottom:16px">
+        <summary style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;margin-bottom:8px">Envoi automatique (optionnel)</summary>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <label style="font-size:13px">Date d'envoi :</label>
+          <input type="datetime-local" id="btqa-em-schedule"
+            style="padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;outline:none">
+          <label style="font-size:13px;display:flex;align-items:center;gap:6px">
+            <input type="checkbox" id="btqa-em-weekly" style="accent-color:#460186"> Répéter chaque semaine
+          </label>
+        </div>
+      </details>
+
+      <button onclick="btqaSendEmailCampagne(this)"
+        style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
+        Envoyer maintenant
+      </button>
+    </div>
+  </div>
+
   <!-- Modal sélection produit physique -->
   <div class="btqa-prod-modal-overlay" id="btqa-prod-modal-overlay" onclick="if(event.target===this)btqaCloseProdModal()">
     <div class="btqa-prod-modal">
