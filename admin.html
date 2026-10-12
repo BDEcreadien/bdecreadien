@@ -9674,8 +9674,13 @@ async function btqaLookup() {
 
 async function btqaRemettreNum(id) {
   await btqaRemettre(id);
-  document.getElementById('btqa-r-result').style.display = 'none';
   document.getElementById('btqa-r-numero').value = '';
+  document.getElementById('btqa-r-result').innerHTML = `
+    <div style="text-align:center;padding:48px 20px">
+      <div style="font-size:52px;margin-bottom:12px">✅</div>
+      <p style="font-weight:800;font-size:18px;color:#065f46;margin:0 0 6px">Remise confirmée !</p>
+      <p style="font-size:13px;color:#888;margin:0">La commande a bien été marquée comme remise.</p>
+    </div>`;
 }
 
 // ── Config produits ──────────────────────────────────────────
