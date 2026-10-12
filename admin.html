@@ -10325,9 +10325,19 @@ async function btqaSaveProduit(id) {
   const designs = [];
   document.querySelectorAll('.bp-design-row').forEach(row => {
     const nomInput = row.querySelector('.bp-design-nom');
-    const imgInput = row.querySelector('input[type="hidden"]');
     const n = nomInput?.value.trim();
-    if (n) designs.push({ nom: n, image_url: imgInput?.value.trim() || '' });
+    if (!n) return;
+    const images = {};
+    row.querySelectorAll('input[type="hidden"][data-side]').forEach(inp => {
+      const colorName = inp.dataset.colorName;
+      const side = inp.dataset.side;
+      const url = inp.value.trim();
+      if (url && colorName) {
+        if (!images[colorName]) images[colorName] = {};
+        images[colorName][side] = url;
+      }
+    });
+    designs.push({ nom: n, images });
   });
 
   // image_url = première photo de la galerie (pour les cards et fallbacks)
