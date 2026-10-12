@@ -1880,43 +1880,52 @@
 
   <!-- ── Onglet Remise ─── -->
   <div class="btqa-pane" id="btqa-pane-remise">
-    <div style="max-width:560px">
-      <div class="btqa-remise-banner">
-        <div class="btqa-remise-banner-icon">📦</div>
-        <div class="btqa-remise-banner-text">
-          <h4>Remise de commande</h4>
-          <p>Scanne le QR code de l'étudiant ou entre le numéro de commande pour retrouver et valider la remise.</p>
-        </div>
-      </div>
-      <div class="params-card">
-        <h3 style="margin-top:0">Rechercher une commande</h3>
+    <div class="btqa-remise-split">
 
-        <!-- Scanner caméra -->
-        <div style="margin-bottom:16px">
-          <button id="btqa-scan-toggle" class="btn-save" onclick="btqaToggleScanner()"
-            style="background:white;color:var(--violet);border:1.5px solid var(--violet);width:100%;margin-bottom:10px">
-            📷 Scanner un QR code
+      <!-- Gauche : recherche -->
+      <div class="btqa-remise-search-panel">
+        <h3 style="margin:0 0 18px;font-size:16px;font-weight:800;color:var(--noir)">Rechercher une commande</h3>
+
+        <button id="btqa-scan-toggle" onclick="btqaToggleScanner()"
+          style="width:100%;padding:13px;border:1.5px solid var(--violet);border-radius:12px;background:white;color:var(--violet);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01M17 20h.01M14 20h.01"/></svg>
+          Scanner une carte / QR code
+        </button>
+        <div id="btqa-scanner-wrap" style="display:none;margin-bottom:14px">
+          <div id="btqa-qr-reader" style="width:100%;border-radius:12px;overflow:hidden;background:#000"></div>
+          <button onclick="btqaStopScanner()" style="margin-top:8px;width:100%;padding:8px;border:1.5px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:13px;color:#666">
+            Arrêter le scanner
           </button>
-          <div id="btqa-scanner-wrap" style="display:none">
-            <div id="btqa-qr-reader" style="width:100%;border-radius:12px;overflow:hidden;background:#000"></div>
-            <button onclick="btqaStopScanner()" style="margin-top:8px;width:100%;padding:8px;border:1.5px solid #ddd;border-radius:8px;background:white;cursor:pointer;font-size:13px;color:#666">
-              Arrêter le scanner
-            </button>
-          </div>
         </div>
 
-        <div class="btqa-form-row">
-          <label>Ou saisis le numéro manuellement</label>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="flex:1;height:1px;background:#e0d8f0"></div>
+          <span style="font-size:12px;color:#aaa;font-weight:600">OU</span>
+          <div style="flex:1;height:1px;background:#e0d8f0"></div>
+        </div>
+
+        <div class="btqa-form-row" style="margin-bottom:0">
+          <label>Numéro de commande</label>
           <div style="display:flex;gap:8px">
             <input id="btqa-r-numero" type="text" placeholder="BDE-2026-XXXX"
-              style="text-transform:uppercase"
+              style="text-transform:uppercase;flex:1"
               onkeydown="if(event.key==='Enter')btqaLookup()">
-            <button class="btn-save" onclick="btqaLookup()">Chercher</button>
+            <button class="btn-save" onclick="btqaLookup()" style="white-space:nowrap">Chercher</button>
           </div>
         </div>
-
-        <div id="btqa-r-result" style="display:none" class="btqa-order-result"></div>
       </div>
+
+      <!-- Droite : résultat -->
+      <div class="btqa-remise-result-panel">
+        <div id="btqa-r-result">
+          <div style="text-align:center;padding:40px 20px;color:#ccc">
+            <svg width="56" height="56" fill="none" stroke="#d0c4ff" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01M17 20h.01M14 20h.01"/></svg>
+            <p style="font-size:14px;font-weight:600;color:#bbb;margin:0">Scanne ou cherche une commande</p>
+            <p style="font-size:12px;color:#ccc;margin:6px 0 0">Le détail apparaîtra ici</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
