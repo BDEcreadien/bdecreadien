@@ -1650,11 +1650,12 @@
   .btqa-tabs { margin:0 -1rem 1.25rem;padding:0 0.25rem; }
   .btqa-tab { padding:10px 10px;font-size:12px;flex:unset; }
 
-  /* Stats */
-  .btqa-stats-banner { border-radius:14px; }
-  .btqa-stat { padding:14px 6px; }
-  .btqa-stat-val { font-size:20px; }
-  .btqa-stat-lbl { font-size:8px;letter-spacing:.4px; }
+  /* Stats : 2 colonnes sur mobile */
+  .btqa-stats-banner { border-radius:14px;flex-wrap:wrap; }
+  .btqa-stat { padding:14px 8px;flex:0 0 50%;min-width:0; }
+  .btqa-stat:nth-child(odd)::before { display:none; }
+  .btqa-stat-val { font-size:22px; }
+  .btqa-stat-lbl { font-size:9px;letter-spacing:.3px; }
 
   /* Search bar */
   .btqa-search-bar { flex-direction:column;gap:8px; }
