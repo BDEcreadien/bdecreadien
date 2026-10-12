@@ -157,12 +157,13 @@ export async function onRequest({ request, env }) {
       : '';
 
     const html = `
-      <div style="max-width:560px;margin:0 auto;font-family:sans-serif;color:#1a0030">
-        <div style="background:linear-gradient(135deg,#460186,#D2396D,#FF741F);padding:32px;text-align:center;border-radius:16px 16px 0 0">
-          <p style="margin:0;color:rgba(255,255,255,.7);font-size:12px;letter-spacing:3px;text-transform:uppercase">BDE CREAD LYON</p>
-          <h1 style="margin:8px 0 0;color:white;font-size:36px;letter-spacing:-1px">Boutique Goodies</h1>
+      <div style="background:#f4f0ff;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      <div style="max-width:560px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,1,134,.18);color:#1a0030">
+        <div style="background:linear-gradient(145deg,#1a0045 0%,#6b0070 30%,#c8006e 60%,#ff5500 85%,#ff8c00 100%);padding:36px 36px 32px;text-align:center">
+          <p style="margin:0 0 4px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600">BDE CREAD LYON</p>
+          <h1 style="margin:0;color:white;font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1.1">Boutique Goodies</h1>
         </div>
-        <div style="background:white;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 24px rgba(70,1,134,.1)">
+        <div style="background:white;padding:36px">
           <p>Bonjour <strong>${nom_acheteur}</strong>,</p>
           <p>Votre commande a bien été enregistrée. Voici votre numéro de commande :</p>
           <p style="font-size:28px;font-weight:700;color:#FF741F;margin:16px 0">${numero}</p>
