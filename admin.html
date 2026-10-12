@@ -9891,6 +9891,14 @@ async function btqaLookup() {
   `;
 }
 
+async function btqaLookupById(id) {
+  const sb = window.Auth.sb;
+  const { data } = await sb.from('boutique_commandes').select('*, boutique_items(*)').eq('id', id).maybeSingle();
+  if (!data) return showToast('Commande introuvable', 'error');
+  // Simuler le résultat comme si on avait cherché par numéro
+  document.getElementById('btqa-r-numero').value = data.numero;
+  await btqaLookup();
+}
 async function btqaRemettreNum(id) {
   await btqaRemettre(id);
   document.getElementById('btqa-r-numero').value = '';
