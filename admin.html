@@ -9957,22 +9957,46 @@ async function btqaRenderConfigProduits() {
 }
 
 // ── Helpers designs inline ───────────────────────────────────
-function btqaDesignRowHtml(idx, nom, imageUrl) {
-  return `<div class="bp-design-row" data-idx="${idx}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
-    <div class="btqa-img-picker" style="flex-shrink:0">
-      <div class="btqa-img-preview-wrap" id="dp-w-${idx}" style="${imageUrl ? '' : 'display:none'}">
-        <img src="${imageUrl}" id="dp-img-${idx}" class="btqa-img-preview-img">
-        <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-dimg-${idx}','dp-w-${idx}')">✕</button>
+function btqaImgPickerHtml(idx, cKey, colorName, side, url, label) {
+  const id = `dp-${idx}-${cKey}-${side}`;
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+    <div style="font-size:10px;color:#666;font-weight:600">${label}</div>
+    <div class="btqa-img-picker">
+      <div class="btqa-img-preview-wrap" id="${id}-w" style="${url ? '' : 'display:none'}">
+        <img src="${url}" id="${id}-img" class="btqa-img-preview-img">
+        <button type="button" class="btqa-img-clear" onclick="btqaClearImg('${id}-v','${id}-w')">✕</button>
       </div>
-      <input type="hidden" id="bp-dimg-${idx}" value="${imageUrl}">
-      <label class="btqa-img-btn" for="dp-file-${idx}" id="dp-lbl-${idx}" style="padding:6px 10px;font-size:11px">${imageUrl ? '📷 Changer' : '📷 Photo'}</label>
-      <input type="file" id="dp-file-${idx}" accept="image/*" style="display:none"
-             onchange="btqaUploadImg(this,'bp-dimg-${idx}','dp-img-${idx}','dp-w-${idx}','dp-lbl-${idx}')">
+      <input type="hidden" id="${id}-v" value="${url}" data-color-name="${colorName.replace(/"/g,'&quot;')}" data-side="${side}">
+      <label class="btqa-img-btn" for="${id}-file" id="${id}-lbl" style="padding:5px 8px;font-size:10px">${url ? '📷 Changer' : '📷 Photo'}</label>
+      <input type="file" id="${id}-file" accept="image/*" style="display:none"
+             onchange="btqaUploadImg(this,'${id}-v','${id}-img','${id}-w','${id}-lbl')">
     </div>
-    <input type="text" class="bp-design-nom" placeholder="Nom du design (ex: Design 1)" value="${nom}"
-      style="flex:1;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">
-    <button type="button" onclick="this.closest('.bp-design-row').remove()"
-      style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>`;
+}
+
+function btqaDesignRowHtml(idx, nom, designImages, couleurs) {
+  // designImages = { "Blanc": { front: url, dos: url }, ... }  (new structure)
+  // couleurs = ["Blanc", "Noir", ...] — if empty, show no image fields (added later when colors are set)
+  const colorsHtml = (couleurs || []).map(c => {
+    const cKey = c.replace(/[^a-zA-Z0-9]/g, '_');
+    const existing = (designImages || {})[c] || {};
+    return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#f5f0ff;border:1px solid #e0d8f0">
+      <div style="font-size:11px;font-weight:700;color:#460186;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">${c}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${btqaImgPickerHtml(idx, cKey, c, 'front', existing.front || '', 'Devant')}
+        ${btqaImgPickerHtml(idx, cKey, c, 'dos', existing.dos || '', 'Dos')}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="bp-design-row" data-idx="${idx}" style="padding:12px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:${(couleurs||[]).length ? '4px' : '0'}">
+      <input type="text" class="bp-design-nom" placeholder="Nom du design (ex: Design 1)" value="${nom}"
+        style="flex:1;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">
+      <button type="button" onclick="this.closest('.bp-design-row').remove()"
+        style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    ${colorsHtml}
   </div>`;
 }
 
@@ -9980,8 +10004,9 @@ function btqaAddDesignRow() {
   const list = document.getElementById('bp-designs-list');
   if (!list) return;
   const idx = Date.now();
+  const couleurs = document.getElementById('bp-couleurs')?.value.split(',').map(s => s.trim()).filter(Boolean) || [];
   const div = document.createElement('div');
-  div.innerHTML = btqaDesignRowHtml(idx, '', '');
+  div.innerHTML = btqaDesignRowHtml(idx, '', {}, couleurs);
   list.appendChild(div.firstElementChild);
 }
 
