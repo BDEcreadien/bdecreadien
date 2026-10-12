@@ -73,20 +73,19 @@ export async function onRequest({ request, env }) {
       failed++;
       continue;
     }
-    const html = `
-      <div style="background:#f4f0ff;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-      <div style="max-width:560px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(70,1,134,.18)">
-        <div style="background:linear-gradient(145deg,#1a0045 0%,#6b0070 30%,#c8006e 60%,#ff5500 85%,#ff8c00 100%);padding:36px 36px 32px">
-          <p style="margin:0 0 4px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600">BDE CREAD LYON</p>
-          <h1 style="margin:0;color:white;font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.1">Boutique Goodies</h1>
-        </div>
-        <div style="background:white;padding:36px">
-          <div style="font-size:15px;line-height:1.7;color:#1a0030">${renderHtml(templateBody, c)}</div>
-          <hr style="border:none;border-top:1.5px solid #f0e8ff;margin:28px 0">
-          <p style="font-size:12px;color:#bbb;margin:0;text-align:center">BDE CREAD Lyon &mdash; <a href="https://bdecreadien.fr" style="color:#bbb">bdecreadien.fr</a></p>
-        </div>
-      </div>
-      </div>`;
+    const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
+<body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
+<div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden">
+  <div style="background:linear-gradient(145deg,#1a0045,#6b0070,#c8006e,#ff5500,#ff8c00);padding:28px 28px 24px">
+    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
+    <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Goodies</p>
+  </div>
+  <div style="background:white;padding:28px;color:#1a0030;font-size:15px;line-height:1.7">
+    ${renderHtml(templateBody, c)}
+    <p style="margin:24px 0 0;font-size:11px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:16px">BDE CREAD Lyon — bdecreadien.fr</p>
+  </div>
+</div>
+</body></html>`;
 
     try {
       const r = await fetch('https://api.resend.com/emails', {
