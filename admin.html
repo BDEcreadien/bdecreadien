@@ -10243,32 +10243,52 @@ let _btqaHtml5QrCode = null;
 
 async function btqaToggleScanner() {
   const wrap = document.getElementById('btqa-scanner-wrap');
-  if (wrap.style.display === 'none') {
-    // Charger la lib html5-qrcode si besoin
+  const btn  = document.getElementById('btqa-scan-toggle');
+  if (wrap.style.display !== 'none') { btqaStopScanner(); return; }
+
+  const origText = btn.innerHTML;
+  btn.innerHTML  = 'Chargement caméra…';
+  btn.style.opacity = '.7';
+  btn.disabled = true;
+
+  try {
     if (!window.Html5Qrcode) {
       await new Promise((res, rej) => {
         const s = document.createElement('script');
-        s.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
-        s.onload = res; s.onerror = rej;
+        s.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        s.onload = res; s.onerror = () => rej(new Error('Impossible de charger le scanner'));
         document.head.appendChild(s);
       });
     }
     wrap.style.display = 'block';
-    document.getElementById('btqa-scan-toggle').style.display = 'none';
+    btn.innerHTML = '⏹ Arrêter le scanner';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    btn.style.background = '#fef3c7';
+    btn.style.color = '#92400e';
+    btn.style.borderColor = '#f59e0b';
+
     _btqaHtml5QrCode = new Html5Qrcode('btqa-qr-reader');
-    const cameras = await Html5Qrcode.getCameras();
-    const camId = cameras.length ? cameras[cameras.length - 1].id : undefined; // caméra arrière
-    _btqaHtml5QrCode.start(
-      camId || { facingMode: 'environment' },
+    await _btqaHtml5QrCode.start(
+      { facingMode: 'environment' },
       { fps: 10, qrbox: { width: 220, height: 220 } },
       decoded => {
-        const num = decoded.trim().toUpperCase();
-        document.getElementById('btqa-r-numero').value = num;
+        document.getElementById('btqa-r-numero').value = decoded.trim();
         btqaStopScanner();
         btqaLookup();
       },
       () => {}
-    ).catch(err => { showToast('Caméra inaccessible : ' + err, 'error'); btqaStopScanner(); });
+    );
+  } catch(err) {
+    showToast('Caméra inaccessible : ' + (err?.message || err), 'error');
+    btn.innerHTML  = origText;
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    wrap.style.display = 'none';
+    if (_btqaHtml5QrCode) { _btqaHtml5QrCode.stop().catch(()=>{}); _btqaHtml5QrCode = null; }
   }
 }
 
