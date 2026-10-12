@@ -9037,15 +9037,23 @@ function btqaRecapStatuts() {
   if (document.getElementById('btqr-cb-attente')?.checked)   statuts.push('en_attente');
   return statuts;
 }
+function btqaSubTab(sub) {
+  document.getElementById('btqr-view-recap').style.display  = sub === 'recap'  ? '' : 'none';
+  document.getElementById('btqr-view-detail').style.display = sub === 'detail' ? '' : 'none';
+  const active   = 'font-weight:800;font-size:13px;color:#460186;border-bottom:3px solid #460186;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
+  const inactive = 'font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
+  document.getElementById('btqr-sub-recap').style.cssText   = sub === 'recap'  ? active : inactive;
+  document.getElementById('btqr-sub-detail').style.cssText  = sub === 'detail' ? active : inactive;
+}
 function btqaRenderRecap() {
   const statuts = btqaRecapStatuts();
   const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
 
-  // ── Récap agrégé
+  // ── Récap agrégé (1 ligne par produit/design/couleur/taille)
   const recap = {};
   cmds.forEach(c => {
     (c.boutique_items || []).forEach(it => {
-      const key = [it.produit_nom, it.design_nom || '—', it.couleur || '—', it.taille || '—'].join('||');
+      const key = [it.produit_nom, it.design_nom || '', it.couleur || '', it.taille || ''].join('||');
       if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom || '—', couleur: it.couleur || '—', taille: it.taille || '—', qty: 0, offert: 0 };
       recap[key].qty    += it.quantite || 1;
       if (it.est_offert) recap[key].offert += it.quantite || 1;
@@ -9063,28 +9071,34 @@ function btqaRenderRecap() {
       </tr>`).join('')
     : '<tr><td colspan="6" style="padding:20px;text-align:center;color:#aaa">Aucun article</td></tr>';
 
-  // ── Détail ligne par ligne
-  const lines = [];
-  cmds.forEach(c => {
-    (c.boutique_items || []).forEach(it => {
-      lines.push({ cmd: c, it });
-    });
-  });
-  document.getElementById('btqr-detail-body').innerHTML = lines.length
-    ? lines.map(({ cmd, it }) => `<tr style="border-top:1px solid #f5f0ff;${it.est_offert ? 'background:#f0fdf4' : ''}">
-        <td style="padding:8px 14px;font-weight:700;color:#460186;white-space:nowrap">${cmd.numero}</td>
-        <td style="padding:8px 14px;white-space:nowrap">${cmd.nom_acheteur || '—'}</td>
-        <td style="padding:8px 14px">
-          <span class="btqa-badge ${cmd.statut}" style="font-size:11px">${btqaStatutLabel(cmd.statut)}</span>
-        </td>
-        <td style="padding:8px 14px;font-weight:600">${it.produit_nom}${it.est_offert ? ' <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:800">OFFERT</span>' : ''}</td>
-        <td style="padding:8px 14px;color:#555">${it.design_nom || '—'}</td>
-        <td style="padding:8px 14px;color:#555">${it.couleur || '—'}</td>
-        <td style="padding:8px 14px;color:#555">${it.taille || '—'}</td>
-        <td style="padding:8px 14px;text-align:center;font-weight:700">${it.quantite || 1}</td>
-        <td style="padding:8px 14px;text-align:right;font-weight:700;color:#460186">${it.est_offert ? '<span style="color:#16a34a">OFFERT</span>' : btqaFmt((it.prix_unitaire_centimes||0)*(it.quantite||1))}</td>
-      </tr>`).join('')
-    : '<tr><td colspan="9" style="padding:20px;text-align:center;color:#aaa">Aucune commande</td></tr>';
+  // ── Détail groupé par commande
+  const el = document.getElementById('btqr-detail-body');
+  if (!cmds.length) { el.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px">Aucune commande</p>'; return; }
+  el.innerHTML = cmds.map(c => {
+    const items = c.boutique_items || [];
+    const itemsHtml = items.map(it => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #f0e8ff;font-size:13px">
+        <span style="flex:2;font-weight:${it.est_offert ? '700' : '500'};color:${it.est_offert ? '#166534' : 'var(--noir)'}">
+          ${it.produit_nom}${it.est_offert ? ' <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:800">OFFERT</span>' : ''}
+        </span>
+        <span style="flex:1;color:#888">${it.design_nom || '—'}</span>
+        <span style="flex:1;color:#888">${it.couleur || '—'}</span>
+        <span style="flex:0 0 48px;color:#888;text-align:center">${it.taille || '—'}</span>
+        <span style="flex:0 0 28px;font-weight:700;text-align:center">×${it.quantite || 1}</span>
+        <span style="flex:0 0 72px;text-align:right;font-weight:700;color:${it.est_offert ? '#16a34a' : '#460186'}">${it.est_offert ? 'OFFERT' : btqaFmt((it.prix_unitaire_centimes||0)*(it.quantite||1))}</span>
+      </div>`).join('');
+    return `
+      <div style="border:1.5px solid #e0d8f0;border-radius:12px;margin-bottom:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f8f5ff;flex-wrap:wrap">
+          <span style="font-weight:800;color:#460186;font-size:14px">${c.numero}</span>
+          <span style="font-weight:600;font-size:13px">${c.nom_acheteur || '—'}</span>
+          <span style="font-size:12px;color:#888">${c.email_acheteur || ''}</span>
+          <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
+          <span style="margin-left:auto;font-weight:800;color:#460186">${btqaFmt(c.total_centimes)}</span>
+        </div>
+        <div style="padding:4px 16px 10px">${itemsHtml || '<p style="color:#aaa;font-size:13px;margin:8px 0">Aucun article</p>'}</div>
+      </div>`;
+  }).join('');
 }
 function btqaExportRecapCSV() {
   const statuts = btqaRecapStatuts();
