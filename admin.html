@@ -10280,7 +10280,7 @@ async function btqaOpenProduit(id) {
         <button type="button" onclick="btqaAddDesignRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
       </div>
       <div id="bp-designs-list" style="display:flex;flex-direction:column;gap:10px">
-        ${existingDesigns.map((d, idx) => btqaDesignRowHtml(idx, d.nom, d.image_url || '')).join('')}
+        ${existingDesigns.map((d, idx) => btqaDesignRowHtml(idx, d.nom, d.images || {}, prod?.couleurs_disponibles || [])).join('')}
       </div>
     </div>
 
