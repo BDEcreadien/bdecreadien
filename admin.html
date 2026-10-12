@@ -1846,14 +1846,7 @@
   <!-- ── Onglet Récap & stock ─── -->
   <div class="btqa-pane" id="btqa-pane-recap" style="padding:0 0 2rem">
 
-    <!-- Filtre statut + sous-onglets -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-      <span style="font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px">Inclure :</span>
-      <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqr-cb-payee"    checked onchange="btqaRenderRecap()"> Payées</label>
-      <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqr-cb-confirmee" checked onchange="btqaRenderRecap()"> Confirmées</label>
-      <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqr-cb-remise"     checked onchange="btqaRenderRecap()"> Remises</label>
-      <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox" id="btqr-cb-attente"         onchange="btqaRenderRecap()"> En attente</label>
-    </div>
+    <!-- Sous-onglets seulement (toutes les commandes payées incluses automatiquement) -->
     <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #e0d8f0">
       <button id="btqr-sub-recap" onclick="btqaSubTab('recap')" style="padding:8px 20px;border:none;background:none;font-weight:800;font-size:13px;color:#460186;border-bottom:3px solid #460186;margin-bottom:-2px;cursor:pointer">Récap stock</button>
       <button id="btqr-sub-detail" onclick="btqaSubTab('detail')" style="padding:8px 20px;border:none;background:none;font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer">Détail commandes</button>
