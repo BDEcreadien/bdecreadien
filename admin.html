@@ -9538,9 +9538,13 @@ async function btqaCreatePhysOrder() {
     return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
   }, 0);
 
+  // Chercher si l'email correspond à un compte
+  const { data: profil } = await sb.from('profils').select('id').eq('email', email).maybeSingle();
+  const membre_id = profil?.id || null;
+
   const { data: cmd } = await sb.from('boutique_commandes').insert({
     type: 'physique', statut: 'confirmee',
-    membre_id: null, nom_acheteur: nom, email_acheteur: email,
+    membre_id, nom_acheteur: nom, email_acheteur: email,
     total_centimes: total, moyen_paiement: moyen,
     cree_par: window._monProfilId, notes,
   }).select('id,numero').single();
