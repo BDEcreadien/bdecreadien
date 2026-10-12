@@ -9636,29 +9636,23 @@ async function btqaSendEmailCampagne(btn) {
 
   if (!confirm(`Envoyer à ${destinataires.length} personne${destinataires.length > 1 ? 's' : ''} ?`)) return;
 
-  btn.disabled = true; btn.textContent = 'Envoi…';
-  let ok = 0, ko = 0;
-  for (const c of destinataires) {
-    const prenom = (c.nom_acheteur || '').split(' ')[0] || 'toi';
-    const nom    = (c.nom_acheteur || '').split(' ').slice(1).join(' ') || '';
-    const html   = body
-      .replace(/\{\{prenom\}\}/g, prenom)
-      .replace(/\{\{nom\}\}/g,    nom)
-      .replace(/\{\{numero\}\}/g, c.numero || '')
-      .replace(/\{\{total\}\}/g,  c.total_centimes ? btqaFmt(c.total_centimes) : '')
-      .replace(/\n/g, '<br>');
-    try {
-      const r = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', Authorization: `Bearer ${window._resendKey || ''}` },
-        body: JSON.stringify({ from:'BDE CREAD Lyon <noreply@bdecreadien.fr>', to:[c.email_acheteur], subject: sujet, html }),
-      });
-      r.ok ? ok++ : ko++;
-    } catch { ko++; }
+  btn.disabled = true; btn.textContent = 'Envoi en cours…';
+  try {
+    const session = await window.Auth.sb.auth.getSession();
+    const token   = session?.data?.session?.access_token;
+    const r = await fetch('/api/boutique-email-campagne', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ statuts, sujet, body }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erreur serveur');
+    showToast(`${data.sent} email${data.sent > 1 ? 's' : ''} envoyé${data.sent > 1 ? 's' : ''}${data.failed ? ` · ${data.failed} échec${data.failed > 1 ? 's' : ''}` : ''}`);
+    if (data.sent > 0) btqaCloseEmailModal();
+  } catch (e) {
+    showToast('Erreur : ' + e.message, 'error');
   }
   btn.disabled = false; btn.textContent = 'Envoyer maintenant';
-  showToast(`${ok} email${ok > 1 ? 's' : ''} envoyé${ok > 1 ? 's' : ''}${ko ? ` · ${ko} échec${ko > 1 ? 's' : ''}` : ''}`);
-  if (ok > 0) btqaCloseEmailModal();
 }
 
 let _btqaMembres = [];
