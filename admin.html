@@ -9695,7 +9695,9 @@ async function btqaSendEmailCampagne(btn) {
       body: JSON.stringify({ statuts, sujet, body }),
     });
     const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Erreur serveur');
+    console.log('[email-campagne] response', r.status, data);
+    if (!r.ok) throw new Error(data.error || `Erreur serveur (${r.status})`);
+    if (data.message) return showToast(data.message, 'info');
     showToast(`${data.sent} email${data.sent > 1 ? 's' : ''} envoyé${data.sent > 1 ? 's' : ''}${data.failed ? ` · ${data.failed} échec${data.failed > 1 ? 's' : ''}` : ''}`);
     if (data.sent > 0) btqaCloseEmailModal();
   } catch (e) {
