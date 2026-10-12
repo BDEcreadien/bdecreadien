@@ -9018,7 +9018,7 @@ async function initBoutiqueAdmin() {
 // ── Onglets ──────────────────────────────────────────────────
 function btqaSwitchTab(tab) {
   document.querySelectorAll('.btqa-tab').forEach((b, i) => {
-    b.classList.toggle('active', ['commandes','physique','recap','remise','config'][i] === tab);
+    b.classList.toggle('active', ['commandes','physique','remise','recap','config'][i] === tab);
   });
   document.querySelectorAll('.btqa-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('btqa-pane-' + tab).classList.add('active');
