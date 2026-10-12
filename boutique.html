@@ -1526,11 +1526,55 @@ function btqThumbClick(designIdx, img, nom, el) {
   }
 }
 
-function btqSetMainImg(img, nom) {
+function btqDesignFirstImg(design) {
+  if (design.image_url) return design.image_url;
+  if (!design.images) return '';
+  for (const c of Object.keys(design.images)) {
+    if (design.images[c]?.front) return design.images[c].front;
+    if (design.images[c]?.dos) return design.images[c].dos;
+  }
+  return '';
+}
+
+function btqUpdateMainImgForSelection() {
+  if (!_modalProd || _modalDesign === null) return;
+  const design = _modalProd.designs?.[_modalDesign.idx];
+  if (!design) return;
+
+  let front = '';
+  let dos = '';
+  if (design.images && _modalCouleur) {
+    const ci = design.images[_modalCouleur] || {};
+    front = ci.front || '';
+    dos   = ci.dos   || '';
+  }
+  if (!front && !dos) {
+    front = design.image_url || btqDesignFirstImg(design);
+  }
+  _modalImgFront = front;
+  _modalImgDos   = dos;
+  btqSetMainImg(front || dos, _modalDesign.nom, front, dos);
+}
+
+function btqShowImgSide(side) {
+  const img = document.getElementById('btq-main-img');
+  if (!img) return;
+  img.src = side === 'front' ? _modalImgFront : _modalImgDos;
+  const btnF = document.getElementById('btq-toggle-front');
+  const btnD = document.getElementById('btq-toggle-dos');
+  if (btnF) { btnF.style.background = side === 'front' ? '#460186' : 'white'; btnF.style.color = side === 'front' ? 'white' : '#460186'; }
+  if (btnD) { btnD.style.background = side === 'dos'   ? '#460186' : 'white'; btnD.style.color = side === 'dos'   ? 'white' : '#460186'; }
+}
+
+function btqSetMainImg(img, nom, frontImg, dosImg) {
   const wrap = document.getElementById('btq-main-img-wrap');
   if (!wrap) return;
+  const toggleHtml = (frontImg && dosImg) ? `<div style="display:flex;gap:8px;justify-content:center;padding:0 0 10px">
+    <button id="btq-toggle-front" onclick="btqShowImgSide('front')" style="padding:4px 14px;border-radius:8px;border:1.5px solid #460186;background:#460186;color:white;font-size:12px;font-weight:700;cursor:pointer">Devant</button>
+    <button id="btq-toggle-dos"   onclick="btqShowImgSide('dos')"   style="padding:4px 14px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">Dos</button>
+  </div>` : '';
   if (img) {
-    wrap.innerHTML = `<img src="${img}" alt="${nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:28px;transition:opacity .2s;">`;
+    wrap.innerHTML = `<img src="${img}" alt="${nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:${toggleHtml ? '20px 28px 8px' : '28px'};transition:opacity .2s;">${toggleHtml}`;
   } else {
     wrap.innerHTML = `<span class="btq-modal-main-icon">${btqProdIcon(_modalProd)}</span>`;
   }
