@@ -1745,6 +1745,65 @@
     </div>
   </div>
 
+  <!-- Modal auto-emails boutique -->
+  <div class="btqa-prod-modal-overlay" id="btqa-autoemail-modal-overlay" onclick="if(event.target===this)document.getElementById('btqa-autoemail-modal-overlay').classList.remove('open')">
+    <div class="btqa-prod-modal" style="width:500px;max-width:95vw">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h4 style="margin:0;font-size:17px">⏰ Emails automatiques</h4>
+        <button onclick="document.getElementById('btqa-autoemail-modal-overlay').classList.remove('open')" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <!-- Relance panier -->
+        <div style="border:1.5px solid #f0e8ff;border-radius:12px;padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+              <p style="margin:0;font-weight:700;font-size:14px">Relance panier non validé</p>
+              <p style="margin:2px 0 0;font-size:12px;color:#888">Envoyé chaque lundi aux paniers enregistrés</p>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" id="btqa-auto-panier" style="opacity:0;width:0;height:0" onchange="btqaSaveAutoEmail('panier',this.checked)">
+              <span onclick="this.previousElementSibling.click()" style="position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:11px;transition:.3s" id="btqa-auto-panier-knob"></span>
+            </label>
+          </div>
+          <textarea id="btqa-auto-panier-body" rows="3" placeholder="Salut {{prenom}}, tu as un panier en attente sur la boutique BDE !"
+            style="width:100%;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;font-family:inherit;resize:none;box-sizing:border-box;outline:none"></textarea>
+        </div>
+
+        <!-- Relance paiement en attente -->
+        <div style="border:1.5px solid #f0e8ff;border-radius:12px;padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+              <p style="margin:0;font-weight:700;font-size:14px">Relance paiement en attente</p>
+              <p style="margin:2px 0 0;font-size:12px;color:#888">Envoyé chaque lundi aux commandes non payées</p>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" id="btqa-auto-attente" style="opacity:0;width:0;height:0" onchange="btqaSaveAutoEmail('attente',this.checked)">
+              <span onclick="this.previousElementSibling.click()" style="position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:11px;transition:.3s" id="btqa-auto-attente-knob"></span>
+            </label>
+          </div>
+          <textarea id="btqa-auto-attente-body" rows="3" placeholder="Salut {{prenom}}, ta commande {{numero}} ({{total}}) attend ton paiement !"
+            style="width:100%;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;font-family:inherit;resize:none;box-sizing:border-box;outline:none"></textarea>
+        </div>
+
+        <!-- Commande confirmée -->
+        <div style="border:1.5px solid #f0e8ff;border-radius:12px;padding:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+              <p style="margin:0;font-weight:700;font-size:14px">Commande en route</p>
+              <p style="margin:2px 0 0;font-size:12px;color:#888">Envoyé manuellement via ce bouton</p>
+            </div>
+            <button onclick="btqaSendAutoNow('confirmee')" style="padding:6px 14px;background:#460186;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Envoyer maintenant</button>
+          </div>
+          <textarea id="btqa-auto-confirmee-body" rows="3" placeholder="Salut {{prenom}}, ta commande {{numero}} est confirmée et en route !"
+            style="width:100%;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;font-family:inherit;resize:none;box-sizing:border-box;outline:none"></textarea>
+        </div>
+      </div>
+
+      <p style="font-size:11px;color:#aaa;margin:14px 0 0">Variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</p>
+    </div>
+  </div>
+
   <!-- Modal emails boutique -->
   <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
     <div class="btqa-prod-modal" style="width:520px;max-width:95vw">
