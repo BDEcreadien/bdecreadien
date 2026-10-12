@@ -10293,14 +10293,15 @@ async function btqaToggleScanner() {
 }
 
 function btqaStopScanner() {
-  if (_btqaHtml5QrCode) {
-    _btqaHtml5QrCode.stop().catch(() => {});
-    _btqaHtml5QrCode = null;
-  }
+  if (_btqaHtml5QrCode) { _btqaHtml5QrCode.stop().catch(() => {}); _btqaHtml5QrCode = null; }
   const wrap = document.getElementById('btqa-scanner-wrap');
   if (wrap) wrap.style.display = 'none';
   const btn = document.getElementById('btqa-scan-toggle');
-  if (btn) btn.style.display = 'block';
+  if (btn) {
+    btn.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01M17 20h.01M14 20h.01"/></svg> Scanner une carte / QR code`;
+    btn.style.background = 'white'; btn.style.color = 'var(--violet)'; btn.style.borderColor = 'var(--violet)';
+    btn.style.opacity = '1'; btn.disabled = false;
+  }
 }
 
 // ── Helpers ──────────────────────────────────────────────────
