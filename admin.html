@@ -9657,6 +9657,50 @@ function btqaCheckPhysPackBanner() {
   banner.textContent = `🎁 Pack "${pack.nom}" appliqué`;
 }
 
+// ── Modal auto-emails ────────────────────────────────────────
+const _BTQA_AUTO_EMAIL_KEY = 'btqa_auto_emails';
+function btqaOpenAutoEmailModal() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(_BTQA_AUTO_EMAIL_KEY) || '{}');
+    ['panier','attente','confirmee'].forEach(k => {
+      const bodyEl = document.getElementById(`btqa-auto-${k}-body`);
+      if (bodyEl && saved[k]?.body) bodyEl.value = saved[k].body;
+      const cb = document.getElementById(`btqa-auto-${k}`);
+      const knob = document.getElementById(`btqa-auto-${k}-knob`);
+      if (cb && saved[k]?.active) {
+        cb.checked = true;
+        if (knob) { knob.style.background = '#460186'; knob.style.paddingLeft = '18px'; }
+      }
+    });
+  } catch {}
+  document.getElementById('btqa-autoemail-modal-overlay').classList.add('open');
+}
+function btqaSaveAutoEmail(key, active) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(_BTQA_AUTO_EMAIL_KEY) || '{}');
+    const body  = document.getElementById(`btqa-auto-${key}-body`)?.value || '';
+    saved[key]  = { active, body };
+    localStorage.setItem(_BTQA_AUTO_EMAIL_KEY, JSON.stringify(saved));
+    const knob  = document.getElementById(`btqa-auto-${key}-knob`);
+    if (knob) { knob.style.background = active ? '#460186' : '#ccc'; }
+    showToast(active ? 'Relance activée' : 'Relance désactivée');
+  } catch {}
+}
+async function btqaSendAutoNow(statut) {
+  const body = document.getElementById(`btqa-auto-${statut === 'confirmee' ? 'confirmee' : statut}-body`)?.value?.trim();
+  if (!body) return showToast('Entre un message', 'error');
+  const sujetMap = { confirmee: 'Ta commande BDE est en route !', panier: 'Tu as un panier en attente sur la boutique BDE', attente: 'Ta commande BDE attend ton paiement' };
+  const session = await window.Auth.sb.auth.getSession();
+  const token   = session?.data?.session?.access_token;
+  const r = await fetch('/api/boutique-email-campagne', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ statuts: [statut === 'attente' ? 'en_attente' : statut], sujet: sujetMap[statut], body }),
+  });
+  const data = await r.json();
+  showToast(`${data.sent} email${data.sent > 1 ? 's' : ''} envoyé${data.sent > 1 ? 's' : ''}`);
+}
+
 // ── Modal emails campagne ────────────────────────────────────
 function btqaOpenEmailModal() {
   btqaUpdateEmailCount();
