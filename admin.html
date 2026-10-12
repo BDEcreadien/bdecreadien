@@ -9535,6 +9535,40 @@ function btqaCheckPhysPackBanner() {
   banner.textContent = `🎁 Pack "${pack.nom}" appliqué`;
 }
 
+let _btqaMembres = [];
+async function btqaLoadMembres() {
+  if (_btqaMembres.length) return;
+  const { data } = await window.Auth.sb.from('profils').select('id, prenom, nom, email').order('nom');
+  _btqaMembres = data || [];
+}
+
+function btqaNomAutocomplete(q) {
+  const drop = document.getElementById('btqa-p-nom-drop');
+  if (!q || q.length < 2) { drop.style.display = 'none'; return; }
+  const low = q.toLowerCase();
+  const matches = _btqaMembres.filter(m =>
+    (m.prenom + ' ' + m.nom).toLowerCase().includes(low) ||
+    (m.nom + ' ' + m.prenom).toLowerCase().includes(low)
+  ).slice(0, 8);
+  if (!matches.length) { drop.style.display = 'none'; return; }
+  drop.innerHTML = matches.map(m => `
+    <div onclick="btqaSelectMembre('${m.id}')"
+      style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0e8ff;display:flex;justify-content:space-between;align-items:center"
+      onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">
+      <span style="font-weight:600">${m.prenom} ${m.nom}</span>
+      <span style="color:#888;font-size:11px">${m.email}</span>
+    </div>`).join('');
+  drop.style.display = 'block';
+}
+
+function btqaSelectMembre(id) {
+  const m = _btqaMembres.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('btqa-p-nom').value   = m.prenom + ' ' + m.nom;
+  document.getElementById('btqa-p-email').value  = m.email;
+  document.getElementById('btqa-p-nom-drop').style.display = 'none';
+}
+
 async function btqaCreatePhysOrder() {
   const nom   = document.getElementById('btqa-p-nom').value.trim();
   const email = document.getElementById('btqa-p-email').value.trim();
