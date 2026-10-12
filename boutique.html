@@ -1647,6 +1647,7 @@ async function btqApplyPacks() {
   _cart.forEach(i => { qtyMap[i.produit_id] = (qtyMap[i.produit_id] || 0) + i.quantite; });
 
   let packActive = null;
+  let packMultiplier = 1;
   for (const pack of _packs) {
     if (!pack.actif) continue;
     const conds = (pack.conditions || []).filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
@@ -1655,7 +1656,14 @@ async function btqApplyPacks() {
       const qty = ids.reduce((s, id) => s + (qtyMap[id] || 0), 0);
       return qty >= (c.min_qty || 1);
     });
-    if (met && conds.length) { packActive = pack; break; }
+    if (met && conds.length) {
+      packActive = pack;
+      packMultiplier = Math.min(...conds.map(c => {
+        const ids = c.produit_ids || (c.produit_id ? [c.produit_id] : []);
+        return Math.floor(ids.reduce((s, id) => s + (qtyMap[id] || 0), 0) / (c.min_qty || 1));
+      }));
+      break;
+    }
   }
 
   const banner  = document.getElementById('btq-pack-banner');
