@@ -9891,13 +9891,42 @@ async function btqaLookup() {
   `;
 }
 
-async function btqaLookupById(id) {
+async function btqaLookupById(id, memberName) {
   const sb = window.Auth.sb;
+  const res = document.getElementById('btqa-r-result');
+  res.innerHTML = '<p style="color:#888;font-size:13px;padding:20px;text-align:center">Chargement…</p>';
   const { data } = await sb.from('boutique_commandes').select('*, boutique_items(*)').eq('id', id).maybeSingle();
   if (!data) return showToast('Commande introuvable', 'error');
-  // Simuler le résultat comme si on avait cherché par numéro
   document.getElementById('btqa-r-numero').value = data.numero;
-  await btqaLookup();
+  // Réutiliser le rendu de btqaLookup en injectant directement
+  const items = data.boutique_items || [];
+  res.innerHTML = `
+    ${memberName ? `<div style="background:#f8f5ff;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#6d28d9;font-weight:600">🪪 Carte : ${memberName}</div>` : ''}
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-weight:800;font-size:20px;color:var(--violet)">${data.numero}</span>
+      <span class="btqa-badge ${data.statut}">${btqaStatutLabel(data.statut)}</span>
+    </div>
+    <p style="margin:0 0 16px;font-size:14px;font-weight:600">${data.nom_acheteur}</p>
+    <p style="margin:-12px 0 16px;font-size:12px;color:#888">${data.email_acheteur || ''}</p>
+    <div style="border-top:1.5px solid #f0e8ff;padding-top:14px;margin-bottom:14px">
+      ${items.map(i => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#faf8ff;border-radius:10px;margin-bottom:6px;gap:8px">
+        <div style="flex:1;min-width:0">
+          <span style="font-weight:700;font-size:13px">${i.produit_nom}</span>
+          <span style="font-size:12px;color:#888"> ${[i.design_nom,i.couleur,i.taille].filter(Boolean).join(' · ')}</span>
+          <span style="font-size:12px;color:#555"> ×${i.quantite}</span>
+          ${i.est_offert ? '<span style="background:#bbf7d0;color:#166534;font-size:10px;padding:1px 6px;border-radius:99px;font-weight:800;margin-left:4px">OFFERT</span>' : ''}
+        </div>
+        <span style="font-weight:700;font-size:13px;color:${i.est_offert ? '#16a34a' : '#460186'};white-space:nowrap">${i.est_offert ? '0,00 €' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:12px;border:1px solid #f0e8ff;margin-bottom:14px">
+      <span style="font-weight:700;font-size:15px">Total</span>
+      <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
+    </div>
+    ${['confirmee','payee'].includes(data.statut) ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">📦 Confirmer la remise</button>` : ''}
+    ${data.statut === 'remise' ? '<div style="text-align:center;padding:10px;background:#e0e7ff;border-radius:10px;color:#3730a3;font-weight:700;font-size:14px">✓ Commande déjà remise</div>' : ''}
+    ${data.statut === 'en_attente' ? '<div style="text-align:center;padding:10px;background:#fef3c7;border-radius:10px;color:#92400e;font-weight:700;font-size:14px">⚠ Paiement pas encore confirmé</div>' : ''}
+  `;
 }
 async function btqaRemettreNum(id) {
   await btqaRemettre(id);
