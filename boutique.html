@@ -1503,17 +1503,11 @@ function btqCloseModal(e) {
   }
 }
 
-function btqSelectDesign(idx, nom, img, el) {
+function btqSelectDesign(idx, nom, el) {
   _modalDesign = {idx, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  // Sync grande image + thumbnail actif
-  btqSetMainImg(img, nom);
-  // Activer le bon thumbnail
-  const thumbs = document.querySelectorAll('.btq-modal-thumb');
-  thumbs.forEach(t => t.classList.remove('active'));
-  // Le thumbnail correspondant = celui avec le même img src
-  thumbs.forEach(t => { const i = t.querySelector('img'); if (i && i.src.includes(img.split('/').pop())) t.classList.add('active'); });
+  btqUpdateMainImgForSelection();
 }
 
 function btqThumbClick(designIdx, img, nom, el) {
