@@ -48,27 +48,39 @@ export async function onRequest({ request, env }) {
   const firstName = parts[0] || 'Client';
   const lastName  = parts.slice(1).join(' ') || parts[0] || 'BDE';
 
-  const haRes = await fetch(
-    `${SB}/functions/v1/helloasso-checkout`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${KEY}`,
-      },
-      body: JSON.stringify({
-        totalAmountCents: cmd.total_centimes,
-        itemName: `Commande ${cmd.numero} — BDE CREAD Boutique`,
-        backUrl:   `${SITE}/boutique.html?annule=1`,
-        errorUrl:  `${SITE}/boutique.html?erreur=1`,
-        returnUrl: `${SITE}/boutique.html?paye=${encodeURIComponent(cmd.numero)}`,
-        payer: { firstName, lastName, email: cmd.email_acheteur },
-        metadata: { commande_id, numero: cmd.numero },
-      }),
-    }
-  );
-  const haData = await haRes.json();
-  if (!haData.redirectUrl) return json({ error: 'Impossible de créer le checkout', details: haData }, 500);
+  if (!cmd.total_centimes || cmd.total_centimes < 100) {
+    return json({ error: `Montant invalide : ${cmd.total_centimes} centimes` }, 400);
+  }
+
+  let haData;
+  try {
+    const haRes = await fetch(
+      `${SB}/functions/v1/helloasso-checkout`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${KEY}`,
+        },
+        body: JSON.stringify({
+          totalAmountCents: cmd.total_centimes,
+          itemName: `Commande ${cmd.numero} — BDE CREAD Boutique`,
+          backUrl:   `${SITE}/boutique.html?annule=1`,
+          errorUrl:  `${SITE}/boutique.html?erreur=1`,
+          returnUrl: `${SITE}/boutique.html?paye=${encodeURIComponent(cmd.numero)}`,
+          payer: { firstName, lastName, email: cmd.email_acheteur },
+          metadata: { commande_id, numero: cmd.numero },
+        }),
+      }
+    );
+    haData = await haRes.json();
+  } catch (e) {
+    return json({ error: `Erreur HelloAsso : ${e.message}` }, 502);
+  }
+
+  if (!haData.redirectUrl) {
+    return json({ error: 'HelloAsso n\'a pas retourné d\'URL', details: haData }, 502);
+  }
 
   return json({ ok: true, redirectUrl: haData.redirectUrl, numero: cmd.numero, total: cmd.total_centimes });
 }
