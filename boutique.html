@@ -1513,13 +1513,13 @@ function btqSelectDesign(idx, nom, el) {
 function btqThumbClick(designIdx, img, nom, el) {
   document.querySelectorAll('.btq-modal-thumb').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  _modalImgFront = '';
+  _modalImgDos   = '';
   btqSetMainImg(img, nom);
   if (designIdx === null) {
-    // Retour sur l'image produit — désélectionner le design
     _modalDesign = null;
     document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   } else {
-    // Sélectionner le design correspondant
     const chip = document.querySelectorAll('.btq-design-chip')[designIdx];
     if (chip) { document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected')); chip.classList.add('selected'); }
     _modalDesign = {idx: designIdx, nom};
