@@ -206,7 +206,7 @@ export async function onRequest({ request, env }) {
       body: JSON.stringify({
         from:    RESEND_FROM,
         to:      [email_acheteur],
-        subject: `🎁 Commande ${numero} — BDE CREAD Boutique`,
+        subject: `Commande ${numero} — BDE CREAD Boutique`,
         html,
       }),
     }).catch(() => {}); // non-bloquant
