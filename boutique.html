@@ -1425,7 +1425,8 @@ function btqOpenModal(id) {
     if (img.url) thumbItems.push({ type: 'gallery', idx: i, img: img.url, nom: p.nom });
   });
   designs.forEach((d, i) => {
-    if (d.image_url) thumbItems.push({ type: 'design', idx: i, img: d.image_url, nom: d.nom });
+    const img = btqDesignFirstImg(d);
+    if (img) thumbItems.push({ type: 'design', idx: i, img, nom: d.nom });
   });
   // Fallback si aucune image
   if (thumbItems.length === 0) thumbItems.push({ type: 'gallery', idx: null, img: '', nom: p.nom });
