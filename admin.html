@@ -9304,9 +9304,12 @@ function btqaRenderTable(list) {
       ? '<span class="btqa-badge physique">Physique</span>'
       : '<span style="font-size:11px;color:#999">En ligne</span>';
     const actions = [];
-    if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaConfirm('${c.id}')">Confirmer</button>`);
+    if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Payée</button>`);
+    if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production')">Production</button>`);
+    if (c.statut === 'production') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison')">Livraison</button>`);
+    if (c.statut === 'livraison')  actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee')">Récupérable</button>`);
     if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
-    if (['en_attente','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+    if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
     return `<tr>
       <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '—'}</td>
