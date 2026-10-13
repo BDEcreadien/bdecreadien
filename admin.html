@@ -9754,7 +9754,50 @@ function btqaSelectMembre(id) {
   document.getElementById('btqa-p-nom-drop').style.display = 'none';
 }
 
+function btqaConfirmPhysOrder() {
+  const nom   = document.getElementById('btqa-p-nom').value.trim();
+  const email = document.getElementById('btqa-p-email').value.trim();
+  if (!nom)   return showToast('Entre le nom de l\'acheteur', 'error');
+  if (!email) return showToast('Entre un e-mail', 'error');
+  const validItems = _btqaPhysItems.filter(i => i.produit_id && !i.est_offert);
+  if (!validItems.length) return showToast('Ajoute au moins un article', 'error');
+
+  const total = _btqaPhysItems.filter(i => !i.est_offert).reduce((s, item) => {
+    const p = _btqaProduits.find(x => x.id === item.produit_id);
+    return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
+  }, 0);
+
+  const lignes = _btqaPhysItems.map(item => {
+    const p = _btqaProduits.find(x => x.id === item.produit_id);
+    const detail = [item.design_nom, item.couleur, item.taille].filter(Boolean).join(' · ');
+    const prix = item.est_offert ? '<span style="color:#ff741f;font-weight:700">OFFERT</span>'
+      : `<strong>${((p?.prix_centimes || 0) * item.quantite / 100).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €'}</strong>`;
+    return `<div style="display:flex;justify-content:space-between;gap:8px">
+      <span>${p?.nom || '—'}${detail ? ` <span style="color:#aaa">(${detail})</span>` : ''} ×${item.quantite}</span>
+      ${prix}
+    </div>`;
+  }).join('');
+
+  document.getElementById('btqa-phys-confirm-recap').innerHTML = `
+    <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0e8ff">
+      <strong>${nom}</strong> — ${email}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">${lignes}</div>
+    <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #f0e8ff">
+      <strong>Total</strong>
+      <strong style="color:#460186">${(total/100).toLocaleString('fr-FR',{minimumFractionDigits:2})} €</strong>
+    </div>`;
+
+  const overlay = document.getElementById('btqa-phys-confirm-overlay');
+  overlay.style.display = 'flex';
+}
+
+function btqaClosePhysConfirm() {
+  document.getElementById('btqa-phys-confirm-overlay').style.display = 'none';
+}
+
 async function btqaCreatePhysOrder() {
+  btqaClosePhysConfirm();
   const nom   = document.getElementById('btqa-p-nom').value.trim();
   const email = document.getElementById('btqa-p-email').value.trim();
   if (!nom)   return showToast('Entre le nom de l\'acheteur', 'error');
