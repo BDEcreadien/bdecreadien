@@ -9365,7 +9365,10 @@ function btqaShowDetail(id) {
     </div>
     ${c.moyen_paiement ? `<p style="margin:12px 0 0;font-size:12px;color:#888">Paiement : ${c.moyen_paiement}</p>` : ''}
     <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
-      ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaConfirm('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">✓ Confirmer le paiement</button>` : ''}
+      ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee');document.getElementById('btqa-detail-modal').style.display='none'">Paiement confirmé</button>` : ''}
+      ${c.statut === 'payee'      ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production');document.getElementById('btqa-detail-modal').style.display='none'">Lancer production</button>` : ''}
+      ${c.statut === 'production' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison');document.getElementById('btqa-detail-modal').style.display='none'">En livraison</button>` : ''}
+      ${c.statut === 'livraison'  ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee');document.getElementById('btqa-detail-modal').style.display='none'">Récupérable à l'école</button>` : ''}
       ${c.statut === 'confirmee'  ? `<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">📦 Marquer remis</button>` : ''}
     </div>`;
   document.getElementById('btqa-detail-modal').style.display = 'flex';
