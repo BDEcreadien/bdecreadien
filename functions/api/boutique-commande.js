@@ -86,15 +86,7 @@ export async function onRequest({ request, env }) {
     numero = updated?.numero || cmd.numero;
   }
 
-  // ── 4a. Commande gratuite → passer directement en payee ────
-  if (total === 0) {
-    await fetch(
-      `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`,
-      { method: 'PATCH', headers, body: JSON.stringify({ statut: 'payee' }) }
-    );
-  }
-
-  // ── 4b. Créer un checkout HelloAsso avec le montant exact ────
+  // ── 4. Créer un checkout HelloAsso avec le montant exact ────
   let helloassoUrl = null;
   if (env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && total >= 100) {
     try {
