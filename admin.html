@@ -9375,19 +9375,22 @@ function btqaShowDetail(id) {
 }
 
 // ── Actions statut ───────────────────────────────────────────
-async function btqaConfirm(id) {
-  if (!confirm('Confirmer le paiement de cette commande ? Un e-mail "prête à retirer" sera envoyé au client.')) return;
-  await window.Auth.sb.from('boutique_commandes').update({ statut: 'confirmee' }).eq('id', id);
+const _btqaEtapeLabels = { payee:'Paiement confirmé', production:'Production lancée', livraison:'En livraison', confirmee:'Récupérable à l\'école' };
+
+async function btqaEtape(id, etape) {
+  const label = _btqaEtapeLabels[etape] || etape;
+  if (!confirm(`Passer la commande en "${label}" ? Un e-mail sera envoyé au client.`)) return;
+  await window.Auth.sb.from('boutique_commandes').update({ statut: etape }).eq('id', id);
   const c = _btqaCommandes.find(x => x.id === id);
-  if (c) c.statut = 'confirmee';
+  if (c) c.statut = etape;
   btqaRenderStats();
   btqaFilterTable();
-  fetch('/api/boutique-pret-retrait', {
+  fetch('/api/boutique-email-etape', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ commande_id: id }),
+    body: JSON.stringify({ commande_id: id, etape }),
   }).catch(() => {});
-  showToast('Commande confirmée — e-mail de retrait envoyé');
+  showToast(`${label} — e-mail envoyé`);
 }
 async function btqaRemettre(id) {
   if (!confirm('Marquer cette commande comme remise au client ?')) return;
