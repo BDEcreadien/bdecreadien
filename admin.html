@@ -9789,6 +9789,7 @@ function btqaConfirmPhysOrder() {
     </div>`;
 
   const overlay = document.getElementById('btqa-phys-confirm-overlay');
+  document.body.appendChild(overlay); // sortir du parent pour que position:fixed fonctionne
   overlay.style.display = 'flex';
 }
 
