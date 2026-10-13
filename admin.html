@@ -10631,7 +10631,7 @@ function btqaFmt(c) {
   return (c / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 }
 function btqaStatutLabel(s) {
-  const m = { panier:'Panier',en_attente:'En attente',confirmee:'Confirmée',remise:'Remise',annulee:'Annulée',expiree:'Expirée' };
+  const m = { panier:'Panier',en_attente:'En attente',payee:'Payée',production:'Production',livraison:'Livraison',confirmee:'Récupérable',remise:'Remise',annulee:'Annulée',expiree:'Expirée' };
   return m[s] || s;
 }
 </script>
