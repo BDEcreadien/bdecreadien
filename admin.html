@@ -4551,28 +4551,21 @@ function renderFideliteList() {
   const empty = document.getElementById('fid-empty');
   const query = (document.getElementById('fid-search')?.value || '').toLowerCase().trim();
   const sortMode = document.getElementById('fid-sort')?.value || 'nom';
-  const eventFilter = document.getElementById('fid-event-filter')?.value || '';
+  const eventFilter = (document.getElementById('fid-event-filter')?.value || '').trim();
   const toutes = fideliteData.cartes || [];
 
-  // Mettre à jour la liste des événements dans le select
-  const allEvents = [...new Set(
-    toutes.flatMap(c => (c.historique || []).map(h => h.event).filter(Boolean))
-  )].sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
-  const sel = document.getElementById('fid-event-filter');
-  if (sel) {
-    const current = sel.value;
-    sel.innerHTML = '<option value="">Tous les événements</option>' +
-      allEvents.map(e => `<option value="${e}"${e === current ? ' selected' : ''}>${e}</option>`).join('');
-  }
+  // Normalise : retire accents, met en minuscule
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
   let cartes = toutes.filter(c => {
     if (query) {
       const mots = query.split(/\s+/);
-      const cibles = [c.prenom, c.nom].map(s => (s || '').toLowerCase());
-      if (!mots.every(mot => cibles.some(cib => cib.startsWith(mot) || cib.includes(' ' + mot)))) return false;
+      const cibles = [c.prenom, c.nom].map(s => norm(s));
+      if (!mots.every(mot => cibles.some(cib => cib.startsWith(norm(mot)) || cib.includes(' ' + norm(mot))))) return false;
     }
     if (eventFilter) {
-      return (c.historique || []).some(h => h.event === eventFilter);
+      const nf = norm(eventFilter);
+      return (c.historique || []).some(h => h.event && norm(h.event).includes(nf));
     }
     return true;
   });
