@@ -9273,9 +9273,12 @@ function btqaRenderTable(list) {
     mList.innerHTML = list.map(c => {
       const d = new Date(c.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' });
       const actions = [];
-      if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaConfirm('${c.id}')">Confirmer</button>`);
+      if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Payée</button>`);
+      if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production')">Production</button>`);
+      if (c.statut === 'production') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison')">Livraison</button>`);
+      if (c.statut === 'livraison')  actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee')">Récupérable</button>`);
       if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
-      if (['en_attente','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+      if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
       actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
       return `<div style="background:white;border-top:1.5px solid #f0e8ff;border-bottom:1.5px solid #f0e8ff;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#faf8ff;border-bottom:1px solid #f0e8ff">
