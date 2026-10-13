@@ -9364,13 +9364,18 @@ function btqaShowDetail(id) {
 
 // ── Actions statut ───────────────────────────────────────────
 async function btqaConfirm(id) {
-  if (!confirm('Confirmer le paiement de cette commande ?')) return;
+  if (!confirm('Confirmer le paiement de cette commande ? Un e-mail "prête à retirer" sera envoyé au client.')) return;
   await window.Auth.sb.from('boutique_commandes').update({ statut: 'confirmee' }).eq('id', id);
   const c = _btqaCommandes.find(x => x.id === id);
   if (c) c.statut = 'confirmee';
   btqaRenderStats();
   btqaFilterTable();
-  showToast('Commande confirmée');
+  fetch('/api/boutique-pret-retrait', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ commande_id: id }),
+  }).catch(() => {});
+  showToast('Commande confirmée — e-mail de retrait envoyé');
 }
 async function btqaRemettre(id) {
   if (!confirm('Marquer cette commande comme remise au client ?')) return;
