@@ -1875,6 +1875,7 @@ function btqOpenCheckout() {
   btqCloseCart();
   // Remplir le résumé
   const summary = document.getElementById('btq-checkout-summary');
+  if (!summary) return;
   summary.innerHTML = _cart.map(i => `
     <div class="btq-checkout-row">
       <span>${i.produit_nom}${i.design_nom ? ` — ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
