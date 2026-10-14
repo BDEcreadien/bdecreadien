@@ -1,22 +1,5 @@
 [
   {
-    "titre": "Semaine Octobre Rose",
-    "date": "2026-10-13",
-    "dateAffichage": "mardi 13 octobre 2026",
-    "horaire": "",
-    "horaireDebut": "",
-    "horaireFin": "",
-    "lieu": "",
-    "adresse": "",
-    "description": "",
-    "prix": "",
-    "categorie": "soiree",
-    "imageUrl": "",
-    "lien": "",
-    "typeLien": "billetterie",
-    "phare": false
-  },
-  {
     "titre": "Soirée Six Education - Six Brotteaux",
     "date": "2026-10-21",
     "dateAffichage": "Mercredi 21 octobre 2026",
