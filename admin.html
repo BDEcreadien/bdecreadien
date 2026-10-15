@@ -9620,7 +9620,22 @@ function btqaConfirmProdModal() {
   if ((prod.designs || []).length && !design) return showToast('Choisis un design', 'error');
   if ((prod.couleurs_disponibles || []).length && !couleur) return showToast('Choisis une couleur', 'error');
   if ((prod.tailles_disponibles || []).length && !taille) return showToast('Choisis une taille', 'error');
-  _btqaPhysItems.push({ produit_id: prod.id, design_nom: design, couleur, taille, quantite: qty });
+
+  // Calcul remise des options cochées
+  let remise = 0;
+  document.querySelectorAll('#btqa-pm-options input:checked').forEach(cb => {
+    remise += parseInt(cb.dataset.remise || '0');
+  });
+  const prixProd = Math.max(0, prod.prix_centimes - remise);
+  _btqaPhysItems.push({ produit_id: prod.id, design_nom: design, couleur, taille, quantite: qty, prix_unitaire_centimes: prixProd });
+
+  // Ajouter les options cochées comme articles séparés
+  document.querySelectorAll('#btqa-pm-options input:checked').forEach(cb => {
+    const oi = parseInt(cb.dataset.oi);
+    const opt = (prod.options_payantes || [])[oi];
+    if (opt) _btqaPhysItems.push({ produit_id: prod.id, produit_nom_override: opt.nom, design_nom: null, couleur: null, taille: null, quantite: qty, prix_unitaire_centimes: opt.prix_centimes });
+  });
+
   btqaRefreshPhysCart();
   btqaCloseProdModal();
   showToast(`${prod.nom} ajouté`);
