@@ -10580,12 +10580,20 @@ async function btqaSaveProduit(id) {
   // image_url = première photo de la galerie (pour les cards et fallbacks)
   const imageUrl = images[0]?.url || null;
 
+  // Lire les options payantes
+  const options_payantes = [];
+  document.querySelectorAll('#bp-options-list [data-opt-idx]').forEach(row => {
+    const nom = row.querySelector('.bp-opt-nom')?.value.trim();
+    const prixVal = parseFloat(row.querySelector('.bp-opt-prix')?.value || '0');
+    if (nom && prixVal > 0) options_payantes.push({ nom, prix_centimes: Math.round(prixVal * 100) });
+  });
+
   const payload = {
     nom, prix_centimes: prix, categorie: cat,
     tailles_disponibles: tailles, couleurs_disponibles: couleurs,
     a_designs: designs.length > 0, a_tailles: tailles.length > 0,
     actif, image_url: imageUrl,
-    images, designs,
+    images, designs, options_payantes,
   };
 
   let prodId = id;
