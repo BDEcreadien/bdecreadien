@@ -9694,7 +9694,8 @@ function btqaUpdatePhysTotal() {
   const total = _btqaPhysItems.reduce((s, item) => {
     if (item.est_offert) return s;
     const p = _btqaProduits.find(x => x.id === item.produit_id);
-    return s + (p ? p.prix_centimes * (item.quantite || 1) : 0);
+    const prix = item.prix_unitaire_centimes ?? p?.prix_centimes ?? 0;
+    return s + prix * (item.quantite || 1);
   }, 0);
   document.getElementById('btqa-p-total').textContent = btqaFmt(total);
   btqaCheckPhysPackBanner();
