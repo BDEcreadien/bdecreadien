@@ -10235,6 +10235,26 @@ function btqaGalleryRowHtml(idx, imageUrl) {
   </div>`;
 }
 
+function btqaOptionRowHtml(idx, nom, prix_centimes) {
+  return `<div style="display:flex;gap:8px;align-items:center" data-opt-idx="${idx}">
+    <input class="bp-opt-nom" placeholder="Nom de l'option (ex: Adhésion club)" value="${nom || ''}"
+      style="flex:1;padding:8px 10px;border:1.5px solid #e8d8ff;border-radius:8px;font-size:13px">
+    <input class="bp-opt-prix" type="number" step="0.01" min="0" placeholder="Prix (€)" value="${prix_centimes ? (prix_centimes/100).toFixed(2) : ''}"
+      style="width:90px;padding:8px 10px;border:1.5px solid #e8d8ff;border-radius:8px;font-size:13px">
+    <button type="button" onclick="this.closest('[data-opt-idx]').remove()"
+      style="border:none;background:#fef2f2;color:#ef4444;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:14px">✕</button>
+  </div>`;
+}
+
+function btqaAddOptionRow() {
+  const list = document.getElementById('bp-options-list');
+  if (!list) return;
+  const idx = Date.now();
+  const div = document.createElement('div');
+  div.innerHTML = btqaOptionRowHtml(idx, '', 0);
+  list.appendChild(div.firstElementChild);
+}
+
 function btqaAddGalleryRow() {
   const list = document.getElementById('bp-gallery-list');
   if (!list) return;
