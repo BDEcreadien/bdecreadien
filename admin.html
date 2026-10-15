@@ -9575,7 +9575,31 @@ function btqaOpenProdModal(prodId) {
     `<button class="btqa-psel-btn" onclick="btqaPMSelect('taille','${t}',this)">${t}</button>`
   ).join('');
 
+  const options = p.options_payantes || [];
+  const ow = document.getElementById('btqa-pm-options-wrap');
+  ow.style.display = options.length ? '' : 'none';
+  document.getElementById('btqa-pm-options').innerHTML = options.map((opt, oi) => `
+    <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid #e8d8ff;border-radius:8px;cursor:pointer;font-size:13px">
+      <input type="checkbox" data-oi="${oi}" data-remise="${opt.remise_produit_centimes||0}"
+        onchange="btqaPMRecalc()" style="accent-color:#460186;cursor:pointer">
+      <span style="flex:1">${opt.nom}</span>
+      <span style="font-weight:700;color:#460186">+${btqaFmt(opt.prix_centimes)}${opt.remise_produit_centimes ? ` <span style="color:#10b981;font-size:11px">(−${btqaFmt(opt.remise_produit_centimes)})</span>` : ''}</span>
+    </label>`).join('');
+
   document.getElementById('btqa-prod-modal-overlay').classList.add('open');
+}
+function btqaPMRecalc() {
+  const p = _btqaPM.prod;
+  if (!p) return;
+  let remise = 0;
+  document.querySelectorAll('#btqa-pm-options input:checked').forEach(cb => {
+    remise += parseInt(cb.dataset.remise || '0');
+  });
+  const prix = Math.max(0, p.prix_centimes - remise);
+  const el = document.getElementById('btqa-pm-price');
+  if (el) el.innerHTML = remise > 0
+    ? `<span style="text-decoration:line-through;opacity:.5">${btqaFmt(p.prix_centimes)}</span> ${btqaFmt(prix)}`
+    : btqaFmt(p.prix_centimes);
 }
 function btqaCloseProdModal() {
   document.getElementById('btqa-prod-modal-overlay').classList.remove('open');
