@@ -10507,7 +10507,7 @@ async function btqaOpenProduit(id) {
         <button type="button" onclick="btqaAddOptionRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
       </div>
       <div id="bp-options-list" style="display:flex;flex-direction:column;gap:8px">
-        ${(prod?.options_payantes || []).map((opt, idx) => btqaOptionRowHtml(idx, opt.nom, opt.prix_centimes)).join('')}
+        ${(prod?.options_payantes || []).map((opt, idx) => btqaOptionRowHtml(idx, opt.nom, opt.prix_centimes, opt.remise_produit_centimes)).join('')}
       </div>
     </div>
 
