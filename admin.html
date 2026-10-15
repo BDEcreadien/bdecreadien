@@ -10595,7 +10595,12 @@ async function btqaSaveProduit(id) {
   document.querySelectorAll('#bp-options-list [data-opt-idx]').forEach(row => {
     const nom = row.querySelector('.bp-opt-nom')?.value.trim();
     const prixVal = parseFloat(row.querySelector('.bp-opt-prix')?.value || '0');
-    if (nom && prixVal > 0) options_payantes.push({ nom, prix_centimes: Math.round(prixVal * 100) });
+    const remiseVal = parseFloat(row.querySelector('.bp-opt-remise')?.value || '0');
+    if (nom && prixVal > 0) {
+      const opt = { nom, prix_centimes: Math.round(prixVal * 100) };
+      if (remiseVal > 0) opt.remise_produit_centimes = Math.round(remiseVal * 100);
+      options_payantes.push(opt);
+    }
   });
 
   const payload = {
