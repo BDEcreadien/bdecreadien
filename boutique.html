@@ -1609,10 +1609,7 @@ function btqQty(delta) {
   document.getElementById('btq-qty-val').textContent = _modalQty;
 }
 
-function btqToggleOption(oi, labelEl) {
-  const cb = labelEl.querySelector('input[type="checkbox"]');
-  cb.checked = !cb.checked;
-  // Recalculer le prix affiché du produit
+function btqRecalcOptions() {
   const p = _modalProd;
   if (!p) return;
   let remiseTotal = 0;
@@ -1623,7 +1620,7 @@ function btqToggleOption(oi, labelEl) {
   const priceEl = document.querySelector('.btq-modal-price');
   if (priceEl) {
     priceEl.innerHTML = remiseTotal > 0
-      ? `<span style="text-decoration:line-through;color:#bbb;font-size:16px">${btqFmt(p.prix_centimes)}</span> <span style="color:#10b981">${btqFmt(prixAffiche)}</span>`
+      ? `<span style="text-decoration:line-through;opacity:.5;font-size:16px">${btqFmt(p.prix_centimes)}</span> <span style="color:#10b981">${btqFmt(prixAffiche)}</span>`
       : btqFmt(p.prix_centimes);
   }
 }
