@@ -1641,6 +1641,13 @@ async function btqAddToCart() {
 
   const designNom = _modalDesign?.nom || null;
 
+  // Calculer remise totale des options cochées
+  let remiseTotale = 0;
+  document.querySelectorAll('#btq-options-list input[type="checkbox"]:checked').forEach(cb => {
+    remiseTotale += parseInt(cb.dataset.remise || '0');
+  });
+  const prixProduit = Math.max(0, p.prix_centimes - remiseTotale);
+
   // Vérifier quantité déjà dans le panier pour ce produit/design/taille
   const existing = _cart.filter(i => !i.est_offert
     && i.produit_id === p.id
