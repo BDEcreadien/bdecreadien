@@ -1609,6 +1609,25 @@ function btqQty(delta) {
   document.getElementById('btq-qty-val').textContent = _modalQty;
 }
 
+function btqToggleOption(oi, labelEl) {
+  const cb = labelEl.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+  // Recalculer le prix affiché du produit
+  const p = _modalProd;
+  if (!p) return;
+  let remiseTotal = 0;
+  document.querySelectorAll('#btq-options-list input[type="checkbox"]:checked').forEach(c => {
+    remiseTotal += parseInt(c.dataset.remise || '0');
+  });
+  const prixAffiche = Math.max(0, p.prix_centimes - remiseTotal);
+  const priceEl = document.querySelector('.btq-modal-price');
+  if (priceEl) {
+    priceEl.innerHTML = remiseTotal > 0
+      ? `<span style="text-decoration:line-through;color:#bbb;font-size:16px">${btqFmt(p.prix_centimes)}</span> <span style="color:#10b981">${btqFmt(prixAffiche)}</span>`
+      : btqFmt(p.prix_centimes);
+  }
+}
+
 // ── Ajouter au panier ───────────────────────────────────────
 async function btqAddToCart() {
   const p = _modalProd;
