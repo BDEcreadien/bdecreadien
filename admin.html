@@ -9441,12 +9441,7 @@ async function btqaEtape(id, etape) {
   if (c) c.statut = etape;
   btqaRenderStats();
   btqaFilterTable();
-  fetch('/api/boutique-email-etape', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ commande_id: id, etape }),
-  }).catch(() => {});
-  showToast(`${label} — e-mail envoyé`);
+  showToast(`Statut mis à jour : ${label}`);
 }
 async function btqaRemettre(id) {
   if (!confirm('Marquer cette commande comme remise au client ?')) return;
