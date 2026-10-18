@@ -142,6 +142,13 @@ async function handleBoutiquePayment(order: any, meta: any) {
     await supa.from('boutique_commandes')
       .update({ statut: 'payee', updated_at: new Date().toISOString() })
       .eq('id', commande_id)
+
+    // E-mail automatique "paiement confirmé"
+    fetch('https://bdecreadien.fr/api/boutique-email-etape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id, etape: 'payee' }),
+    }).catch(() => {})
   }
 
   // Enregistrer en Finances
