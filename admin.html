@@ -9805,6 +9805,48 @@ function btqaOpenEmailModal() {
 function btqaCloseEmailModal() {
   document.getElementById('btqa-email-modal-overlay').classList.remove('open');
 }
+const _btqaTemplates = {
+  production: {
+    sujet: 'Production lancée — Boutique Merch BDE CREAD',
+    body: `Salut {{prenom}} !
+
+Bonne nouvelle : la production de ta commande {{numero}} vient d'être lancée !
+
+On te recontacte dès que tes articles arrivent à l'école. En attendant, si tu as la moindre question n'hésite pas à nous contacter sur Instagram ou sur bdecreadien.fr.
+
+À très bientôt,
+Le BDE CREAD Lyon`,
+  },
+  livraison: {
+    sujet: 'Ta commande est en route — Boutique Merch BDE CREAD',
+    body: `Salut {{prenom}} !
+
+Ta commande {{numero}} est en cours de livraison vers l'école.
+
+Tu recevras un nouvel email dès qu'elle sera disponible pour le retrait. On y est presque !
+
+À très bientôt,
+Le BDE CREAD Lyon`,
+  },
+  confirmee: {
+    sujet: 'Ta commande est disponible à l\'école — Boutique Merch BDE CREAD',
+    body: `Salut {{prenom}} !
+
+Tes articles sont arrivés ! Ta commande {{numero}} est prête à être retirée à l'école.
+
+Passe nous voir avec le QR code de ta commande (reçu par email lors de la confirmation de paiement) et on te remettra tes articles.
+
+À très bientôt,
+Le BDE CREAD Lyon`,
+  },
+  vide: { sujet: '', body: '' },
+};
+function btqaLoadTemplate(key) {
+  const t = _btqaTemplates[key];
+  if (!t) return;
+  document.getElementById('btqa-em-sujet').value = t.sujet;
+  document.getElementById('btqa-em-body').value  = t.body;
+}
 async function btqaSendEmailCampagne(btn) {
   const statuts = ['en_attente', 'confirmee', 'remise'];
   const sujet = document.getElementById('btqa-em-sujet').value.trim();
