@@ -78,7 +78,7 @@ export async function onRequest({ request, env }) {
 <div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden">
   <div style="background:linear-gradient(145deg,#1a0045,#6b0070,#c8006e,#ff5500,#ff8c00);padding:28px 28px 24px">
     <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
-    <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Goodies</p>
+    <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Merch</p>
   </div>
   <div style="background:white;padding:28px;color:#1a0030;font-size:15px;line-height:1.7">
     ${renderHtml(templateBody, c)}
