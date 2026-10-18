@@ -1791,19 +1791,27 @@
 
   <!-- Modal emails boutique -->
   <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
-    <div class="btqa-prod-modal" style="width:500px;max-width:95vw">
+    <div class="btqa-prod-modal" style="width:540px;max-width:95vw">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <h4 style="margin:0;font-size:17px">✉ Email à tous les acheteurs</h4>
         <button onclick="btqaCloseEmailModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
       </div>
-      <p id="btqa-em-count" style="font-size:12px;color:#888;margin:0 0 18px">Chargement…</p>
+      <p id="btqa-em-count" style="font-size:12px;color:#888;margin:0 0 16px">Chargement…</p>
+
+      <p class="btqa-prod-modal-label" style="margin-bottom:8px">Template</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+        <button onclick="btqaLoadTemplate('production')" style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🏭 Production</button>
+        <button onclick="btqaLoadTemplate('livraison')"  style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🚚 Livraison</button>
+        <button onclick="btqaLoadTemplate('confirmee')" style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🎉 Récupérable</button>
+        <button onclick="btqaLoadTemplate('vide')"      style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:#f9f5ff;font-size:12px;font-weight:600;cursor:pointer;color:#888">✏️ Vide</button>
+      </div>
 
       <p class="btqa-prod-modal-label">Sujet</p>
       <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email"
         style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
 
       <p class="btqa-prod-modal-label">Message <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span></p>
-      <textarea id="btqa-em-body" rows="7" placeholder="Salut {{prenom}},&#10;&#10;Ta commande {{numero}} est en route !&#10;&#10;À bientôt — BDE CREAD"
+      <textarea id="btqa-em-body" rows="8"
         style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:18px"></textarea>
 
       <button onclick="btqaSendEmailCampagne(this)"
