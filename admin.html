@@ -10201,7 +10201,7 @@ async function btqaRenderConfigProduits() {
   const el = document.getElementById('btqa-config-produits');
   if (!prods?.length) { el.innerHTML = '<p style="color:#bbb">Aucun produit configuré.</p>'; }
   else {
-    el.innerHTML = `<div class="btqa-prod-grid">${prods.map(p => {
+    el.innerHTML = `<div class="btqa-prod-grid" id="btqa-prod-grid-inner">${prods.map(p => {
       const icon = {T:'👕','Pull sans capuche':'🧥','Pull à capuche':'🧣','T-shirt Club de Sport':'👕',Chaussettes:'🧦',Tasse:'☕','Porte-clef':'🔑'}[p.nom] || (p.categorie==='vetement'?'👕':'🎁');
       const meta = [p.a_designs?`${(p.designs||[]).length} designs`:null, p.couleurs_disponibles?.length?`${p.couleurs_disponibles.length} couleurs`:null, p.a_tailles?'Tailles':null, p.actif?null:'Inactif'].filter(Boolean).join(' · ');
       return `<div class="btqa-prod-card" draggable="true" data-id="${p.id}">
