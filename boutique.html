@@ -1935,7 +1935,7 @@ function btqUpdateCartUI() {
 }
 
 function btqCalcTotal() {
-  return _cart.filter(i => !i.est_offert).reduce((s,i) => s + i.prix * i.quantite, 0);
+  return _cart.reduce((s,i) => s + (i.est_offert && i.prix >= 0 ? 0 : i.prix * i.quantite), 0);
 }
 function btqFmt(centimes) {
   return (centimes / 100).toLocaleString('fr-FR', {minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
