@@ -1418,21 +1418,18 @@ function btqOpenModal(id) {
 
   const designs = p.designs || [];
 
-  // Thumbnails : galerie produit d'abord, puis images de chaque design
+  // Thumbnails initiaux : galerie produit uniquement (les thumbs de design se mettent à jour à la sélection)
   const thumbItems = [];
-  const gallery = p.images && p.images.length ? p.images : (p.image_url ? [{url: p.image_url}] : []);
-  gallery.forEach((img, i) => {
-    if (img.url) thumbItems.push({ type: 'gallery', idx: i, img: img.url, nom: p.nom });
-  });
-  designs.forEach((d, i) => {
-    const img = btqDesignFirstImg(d);
-    if (img) thumbItems.push({ type: 'design', idx: i, img, nom: d.nom });
-  });
-  // Fallback si aucune image
-  if (thumbItems.length === 0) thumbItems.push({ type: 'gallery', idx: null, img: '', nom: p.nom });
+  if (!designs.length) {
+    const gallery = p.images && p.images.length ? p.images : (p.image_url ? [{url: p.image_url}] : []);
+    gallery.forEach((img, i) => {
+      if (img.url) thumbItems.push({ type: 'gallery', idx: i, img: img.url, nom: p.nom });
+    });
+  }
+  if (thumbItems.length === 0) thumbItems.push({ type: 'gallery', idx: null, img: btqDesignFirstImg(designs[0] || {}), nom: p.nom });
 
   const thumbsHtml = thumbItems.map((t, ti) => `
-    <div class="btq-modal-thumb${ti===0?' active':''}" onclick="btqThumbClick(${t.type==='design'?t.idx:'null'},'${btqEsc(t.img)}','${btqEsc(t.nom)}',this)">
+    <div class="btq-modal-thumb${ti===0?' active':''}" onclick="btqThumbClick(null,'${btqEsc(t.img)}','${btqEsc(t.nom)}',this)">
       ${t.img ? `<img src="${t.img}" alt="${t.nom}">` : `<span>${btqProdIcon(p)}</span>`}
     </div>`).join('');
 
