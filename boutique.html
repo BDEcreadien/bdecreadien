@@ -1547,13 +1547,12 @@ function btqDesignFirstImg(design) {
   return '';
 }
 
-function btqUpdateMainImgForSelection() {
-  if (!_modalProd || _modalDesign === null) return;
+function btqUpdateThumbs() {
+  if (!_modalProd || !_modalDesign) return;
   const design = _modalProd.designs?.[_modalDesign.idx];
   if (!design) return;
 
-  let front = '';
-  let dos = '';
+  let front = '', dos = '';
   if (design.images && _modalCouleur) {
     const ci = design.images[_modalCouleur] || {};
     front = ci.front || '';
@@ -1564,37 +1563,48 @@ function btqUpdateMainImgForSelection() {
   }
   _modalImgFront = front;
   _modalImgDos   = dos;
-  btqSetMainImg(front || dos, _modalDesign.nom, front, dos);
-}
 
-function btqShowImgSide(side) {
-  const img = document.getElementById('btq-main-img');
-  if (!img) return;
-  img.src = side === 'front' ? _modalImgFront : _modalImgDos;
-  const btnF = document.getElementById('btq-toggle-front');
-  const btnD = document.getElementById('btq-toggle-dos');
-  if (btnF) { btnF.style.background = side === 'front' ? '#460186' : 'white'; btnF.style.color = side === 'front' ? 'white' : '#460186'; }
-  if (btnD) { btnD.style.background = side === 'dos'   ? '#460186' : 'white'; btnD.style.color = side === 'dos'   ? 'white' : '#460186'; }
-}
+  const container = document.querySelector('.btq-modal-thumbs');
+  if (container) {
+    const thumbs = [];
+    if (front) thumbs.push({ side: 'front', img: front, label: 'Devant' });
+    if (dos)   thumbs.push({ side: 'dos',   img: dos,   label: 'Dos'    });
+    if (thumbs.length) {
+      container.innerHTML = thumbs.map((t, i) => `
+        <div class="btq-modal-thumb${i===0?' active':''}" onclick="btqThumbSide('${t.side}',this)" style="position:relative">
+          <img src="${t.img}" alt="${t.label}">
+          <span style="position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:9px;font-weight:700;color:#460186;background:rgba(255,255,255,.82);padding:2px 0;border-radius:0 0 8px 8px">${t.label}</span>
+        </div>`).join('');
+    } else {
+      container.innerHTML = '';
+    }
+  }
 
-function btqSetMainImg(img, nom, frontImg, dosImg) {
   const wrap = document.getElementById('btq-main-img-wrap');
   if (!wrap) return;
-  const toggleHtml = (frontImg && dosImg) ? `<div style="display:flex;gap:8px;justify-content:center;padding:0 0 10px">
-    <button id="btq-toggle-front" onclick="btqShowImgSide('front')" style="padding:4px 14px;border-radius:8px;border:1.5px solid #460186;background:#460186;color:white;font-size:12px;font-weight:700;cursor:pointer">Devant</button>
-    <button id="btq-toggle-dos"   onclick="btqShowImgSide('dos')"   style="padding:4px 14px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">Dos</button>
-  </div>` : '';
+  const img = front || dos;
   if (img) {
-    wrap.innerHTML = `<img src="${img}" alt="${nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:${toggleHtml ? '20px 28px 8px' : '28px'};transition:opacity .2s;">${toggleHtml}`;
+    wrap.innerHTML = `<img src="${img}" alt="${_modalDesign.nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:28px;transition:opacity .2s;">`;
   } else {
     wrap.innerHTML = `<span class="btq-modal-main-icon">${btqProdIcon(_modalProd)}</span>`;
   }
 }
+
+function btqSetMainImg(img, nom) {
+  const wrap = document.getElementById('btq-main-img-wrap');
+  if (!wrap) return;
+  if (img) {
+    wrap.innerHTML = `<img src="${img}" alt="${nom}" id="btq-main-img" style="max-width:100%;max-height:100%;object-fit:contain;padding:28px;transition:opacity .2s;">`;
+  } else {
+    wrap.innerHTML = `<span class="btq-modal-main-icon">${btqProdIcon(_modalProd)}</span>`;
+  }
+}
+
 function btqSelectCouleur(c, el) {
   _modalCouleur = c;
   document.querySelectorAll('.btq-color-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  btqUpdateMainImgForSelection();
+  btqUpdateThumbs();
 }
 function btqSelectTaille(t, el) {
   _modalTaille = t;
