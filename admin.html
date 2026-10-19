@@ -2072,12 +2072,36 @@
       + Ajouter un groupe
     </button>
 
-    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Produit(s) offert(s) <span style="font-weight:400;text-transform:none;color:#aaa">(coche ceux parmi lesquels le client choisit)</span></p>
-    <div id="btqa-pk-offre-produits" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-      <span style="font-size:13px;color:#555;white-space:nowrap">Quantité offerte :</span>
-      <input id="btqa-pk-offre-qty" type="number" min="1" value="1"
-        style="width:70px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Avantage accordé</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button id="btqa-pk-type-offre" onclick="btqaSetPackType('offre')"
+        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #460186;background:#460186;color:white;transition:all .15s">
+        🎁 Produit offert
+      </button>
+      <button id="btqa-pk-type-remise" onclick="btqaSetPackType('remise')"
+        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #e0d8f0;background:white;color:#888;transition:all .15s">
+        🏷️ Remise
+      </button>
+    </div>
+
+    <div id="btqa-pk-offre-section">
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Produit(s) offert(s) <span style="font-weight:400;text-transform:none;color:#aaa">(coche ceux parmi lesquels le client choisit)</span></p>
+      <div id="btqa-pk-offre-produits" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <span style="font-size:13px;color:#555;white-space:nowrap">Quantité offerte :</span>
+        <input id="btqa-pk-offre-qty" type="number" min="1" value="1"
+          style="width:70px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
+      </div>
+    </div>
+
+    <div id="btqa-pk-remise-section" style="display:none;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;color:#555;white-space:nowrap">Montant de la remise :</span>
+        <input id="btqa-pk-remise-montant" type="number" step="0.01" min="0" placeholder="0.00"
+          style="width:90px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
+        <span style="font-size:13px;color:#555">€</span>
+      </div>
+      <p style="font-size:12px;color:#888;margin:8px 0 0">Remise déduite du total de la commande.</p>
     </div>
 
     <div style="display:flex;justify-content:space-between;gap:10px">
