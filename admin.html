@@ -10280,7 +10280,7 @@ async function btqaRenderConfigProduits() {
       </div>
       <div class="btqa-pack-offer">
         ${remiseEntry
-          ? `🏷️ <span style="color:#d97706;font-weight:700">−${btqaFmt(remiseEntry.montant_centimes)} sur la commande</span>`
+          ? `🏷️ <span style="color:#d97706;font-weight:700">−${remiseEntry.unite==='pct' ? `${remiseEntry.valeur}%` : btqaFmt(remiseEntry.montant_centimes)}${remiseEntry.produit_ids?.length ? ` sur ${remiseEntry.produit_ids.map(id=>(_btqaProduits||[]).find(p=>p.id===id)?.nom||'?').join(', ')}` : ' sur la commande'}</span>`
           : `🎁 <span>${pk.offre_qty||1}x ${offreNoms||'?'} offert</span>`}
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
