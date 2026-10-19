@@ -9643,6 +9643,10 @@ function btqaOpenProdModal(prodId) {
   document.getElementById('btqa-pm-designs').innerHTML = designs.map(d =>
     `<button class="btqa-psel-btn" onclick="btqaPMSelect('design','${d.nom}',this)">${d.nom}</button>`
   ).join('');
+  if (designs.length === 1) {
+    _btqaPM.design = designs[0].nom;
+    document.querySelector('#btqa-pm-designs button')?.classList.add('selected');
+  }
 
   const cw = document.getElementById('btqa-pm-couleur-wrap');
   cw.style.display = couleurs.length ? '' : 'none';
