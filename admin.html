@@ -1598,22 +1598,38 @@
   display:flex;flex-direction:column;
 }
 .btqa-pm-layout {
-  display:grid;grid-template-columns:300px 1fr;min-height:0;flex:1;overflow:hidden;
+  display:grid;grid-template-columns:64px 1fr 1fr;min-height:0;flex:1;overflow:hidden;
 }
-.btqa-pm-img-col {
+/* Col 1 : vignettes */
+.btqa-pm-thumbs {
+  display:flex;flex-direction:column;gap:8px;padding:12px 8px;
+  border-right:1px solid #f0e8ff;overflow-y:auto;
+}
+.btqa-pm-thumb {
+  width:48px;height:48px;border-radius:8px;border:2px solid #e0d8f0;
+  background:#f8f5ff;cursor:pointer;overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  transition:border-color .15s;position:relative;
+}
+.btqa-pm-thumb img { width:100%;height:100%;object-fit:contain;padding:3px; }
+.btqa-pm-thumb.active { border-color:#460186; }
+.btqa-pm-thumb-lbl {
+  position:absolute;bottom:0;left:0;right:0;text-align:center;
+  font-size:8px;font-weight:700;color:#460186;
+  background:rgba(255,255,255,.85);padding:1px 0;
+}
+/* Col 2 : grande image */
+.btqa-pm-img-main {
   background:linear-gradient(135deg,#f8f5ff,#fff0f7);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;padding:20px;min-height:420px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.btqa-pm-img-col img {
-  max-width:100%;max-height:180px;object-fit:contain;border-radius:8px;
-}
-.btqa-pm-detail-col {
-  padding:24px;overflow-y:auto;display:flex;flex-direction:column;
-}
+.btqa-pm-img-main img { max-width:100%;max-height:100%;object-fit:contain;padding:20px; }
+/* Col 3 : détails */
+.btqa-pm-detail-col { padding:20px;overflow-y:auto;display:flex;flex-direction:column; }
 @media(max-width:640px) {
-  .btqa-pm-layout { grid-template-columns:1fr; }
-  .btqa-pm-img-col { min-height:200px;padding:16px; }
+  .btqa-pm-layout { grid-template-columns:1fr;grid-template-rows:auto auto auto; }
+  .btqa-pm-thumbs { flex-direction:row;border-right:none;border-bottom:1px solid #f0e8ff;padding:8px 12px; }
+  .btqa-pm-img-main { height:200px; }
 }
 .btqa-prod-modal-overlay.open .btqa-prod-modal { transform:scale(1); }
 .btqa-prod-modal h4 { margin:0 0 4px;font-size:17px;color:var(--noir); }
