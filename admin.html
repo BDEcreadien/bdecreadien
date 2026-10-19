@@ -9653,6 +9653,10 @@ function btqaOpenProdModal(prodId) {
       <span class="btqa-psel-dot" style="background:${hex};${border}"></span>${c}
     </button>`;
   }).join('');
+  if (couleurs.length === 1) {
+    _btqaPM.couleur = couleurs[0];
+    document.querySelector('#btqa-pm-couleurs button')?.classList.add('selected');
+  }
 
   const tw = document.getElementById('btqa-pm-taille-wrap');
   tw.style.display = tailles.length ? '' : 'none';
