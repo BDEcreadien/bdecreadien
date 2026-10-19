@@ -1526,13 +1526,16 @@
 /* ── Config produits visual grid ── */
 .btqa-prod-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-prod-card {
-  border-radius:16px;overflow:hidden;cursor:pointer;
+  border-radius:16px;overflow:hidden;cursor:grab;
   background:linear-gradient(135deg,#f8f5ff,#fff0f7);
   border:1.5px solid #f0e8ff;
-  transition:transform .2s,box-shadow .2s,border-color .2s;
+  transition:transform .2s,box-shadow .2s,border-color .2s,opacity .15s;
   box-shadow:0 2px 10px rgba(70,1,134,.06);
 }
 .btqa-prod-card:hover { transform:translateY(-4px);box-shadow:0 10px 28px rgba(70,1,134,.16);border-color:#c084fc; }
+.btqa-prod-card.dragging { opacity:.35;transform:scale(.97); }
+.btqa-prod-card.drag-over { border-color:#460186;box-shadow:0 0 0 3px rgba(70,1,134,.2); transform:scale(1.03); }
+.btqa-prod-drag-handle { position:absolute;top:6px;left:6px;color:rgba(255,255,255,.75);font-size:14px;cursor:grab;z-index:2;line-height:1; }
 .btqa-prod-card-img {
   width:100%;height:120px;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
