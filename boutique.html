@@ -1497,7 +1497,7 @@ function btqOpenModal(id) {
           <div class="btq-designs" id="btq-design-row">
             ${designs.map((d, idx) => `
               <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">
-                ${(() => { const img = btqDesignFirstImg(d); return img ? `<img src="${img}" alt="${d.nom}" style="width:28px;height:28px;object-fit:contain;border-radius:6px;margin-right:6px;vertical-align:middle">` : ''; })()}${d.nom}
+                ${d.nom}
               </button>`).join('')}
           </div>` : ''}
 
