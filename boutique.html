@@ -1517,23 +1517,24 @@ function btqSelectDesign(idx, nom, el) {
   _modalDesign = {idx, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
-  btqUpdateMainImgForSelection();
+  btqUpdateThumbs();
 }
 
 function btqThumbClick(designIdx, img, nom, el) {
   document.querySelectorAll('.btq-modal-thumb').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  _modalImgFront = '';
-  _modalImgDos   = '';
-  btqSetMainImg(img, nom);
-  if (designIdx === null) {
-    _modalDesign = null;
-    document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
-  } else {
-    const chip = document.querySelectorAll('.btq-design-chip')[designIdx];
-    if (chip) { document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected')); chip.classList.add('selected'); }
-    _modalDesign = {idx: designIdx, nom};
+  if (img) {
+    const mainImg = document.getElementById('btq-main-img');
+    if (mainImg) mainImg.src = img;
   }
+}
+
+function btqThumbSide(side, el) {
+  document.querySelectorAll('.btq-modal-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const img = document.getElementById('btq-main-img');
+  if (!img) return;
+  img.src = side === 'front' ? _modalImgFront : _modalImgDos;
 }
 
 function btqDesignFirstImg(design) {
