@@ -1606,8 +1606,8 @@ function btqUpdateThumbs() {
   const container = document.querySelector('.btq-modal-thumbs');
   if (container) {
     const thumbs = [];
-    if (front) thumbs.push({ side: 'front', img: front, label: 'Devant' });
     if (dos)   thumbs.push({ side: 'dos',   img: dos,   label: 'Dos'    });
+    if (front) thumbs.push({ side: 'front', img: front, label: 'Devant' });
     if (thumbs.length) {
       container.innerHTML = thumbs.map((t, i) => `
         <div class="btq-modal-thumb${i===0?' active':''}" onclick="btqThumbSide('${t.side}',this)" style="position:relative">
