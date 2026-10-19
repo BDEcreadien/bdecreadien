@@ -10662,11 +10662,17 @@ async function btqaSavePack() {
 
   let conditions, payload;
   if (_btqaPackType === 'remise') {
-    const montant = Math.round(parseFloat(document.getElementById('btqa-pk-remise-montant').value || '0') * 100);
-    if (!montant) return showToast('Entre un montant de remise', 'error');
+    const rawVal = parseFloat(document.getElementById('btqa-pk-remise-montant').value || '0');
+    if (!rawVal) return showToast('Entre un montant de remise', 'error');
+    const remiseCond = { type: 'remise', unite: _btqaPackRemiseUnit, produit_ids: _btqaPackRemiseProdIds };
+    if (_btqaPackRemiseUnit === 'pct') {
+      remiseCond.valeur = rawVal; // ex: 10 pour 10%
+    } else {
+      remiseCond.montant_centimes = Math.round(rawVal * 100);
+    }
     conditions = [
       ...validConds.map(c=>({ type:'achat', produit_ids:c.produit_ids, min_qty:c.min_qty })),
-      { type:'remise', montant_centimes: montant, produit_ids: _btqaPackRemiseProdIds }
+      remiseCond
     ];
     payload = { nom, description: document.getElementById('btqa-pk-desc').value.trim() || null, conditions, offre_produit_id: null, offre_qty: 0 };
   } else {
