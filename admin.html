@@ -10232,6 +10232,7 @@ async function btqaRenderConfigProduits() {
     const conds = Array.isArray(pk.conditions) ? pk.conditions : [];
     const achatConds = conds.filter(c => c.type === 'achat' || (!c.type && (c.produit_id || c.produit_ids)));
     const offreEntry = conds.find(c => c.type === 'offre');
+    const remiseEntry = conds.find(c => c.type === 'remise');
     const offreIds   = offreEntry?.produit_ids || (pk.offre_produit_id ? [pk.offre_produit_id] : []);
     const offreNoms  = offreIds.map(id => (_btqaProduits||[]).find(p=>p.id===id)?.nom || '?').join(' ou ');
     const condText = achatConds.map(c => {
