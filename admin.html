@@ -9635,6 +9635,7 @@ function btqaOpenProdModal(prodId) {
       <span style="font-weight:700;color:#460186">+${btqaFmt(opt.prix_centimes)}${opt.remise_produit_centimes ? ` <span style="color:#10b981;font-size:11px">(−${btqaFmt(opt.remise_produit_centimes)})</span>` : ''}</span>
     </label>`).join('');
 
+  btqaPMUpdateImg();
   document.getElementById('btqa-prod-modal-overlay').classList.add('open');
 }
 function btqaPMRecalc() {
