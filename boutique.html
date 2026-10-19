@@ -1541,6 +1541,13 @@ function btqOpenModal(id) {
     </div>
   `;
 
+  // Auto-sélection si une seule couleur
+  if (couleurs.length === 1) {
+    _modalCouleur = couleurs[0];
+    document.querySelector('#btq-color-row button')?.classList.add('selected');
+    btqUpdateThumbs();
+  }
+
   document.getElementById('btq-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
