@@ -10542,6 +10542,67 @@ function btqaTogglePackOffre(prodId) {
   btqaRenderPackOffreProduits();
 }
 
+let _btqaPackType = 'offre';
+function btqaSetPackType(type) {
+  _btqaPackType = type;
+  const isOffre = type === 'offre';
+  document.getElementById('btqa-pk-type-offre').style.cssText += isOffre
+    ? ';background:#460186;color:white;border-color:#460186'
+    : ';background:white;color:#888;border-color:#e0d8f0';
+  document.getElementById('btqa-pk-type-remise').style.cssText += !isOffre
+    ? ';background:#d97706;color:white;border-color:#d97706'
+    : ';background:white;color:#888;border-color:#e0d8f0';
+  document.getElementById('btqa-pk-offre-section').style.display = isOffre ? '' : 'none';
+  document.getElementById('btqa-pk-remise-section').style.display = isOffre ? 'none' : '';
+}
+
+function btqaInitDrag() {
+  const grid = document.getElementById('btqa-prod-grid-inner');
+  if (!grid) return;
+  let dragSrcEl = null;
+  grid.querySelectorAll('.btqa-prod-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragSrcEl = card;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => card.classList.add('dragging'), 0);
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      grid.querySelectorAll('.btqa-prod-card').forEach(c => c.classList.remove('drag-over'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (card !== dragSrcEl) {
+        grid.querySelectorAll('.btqa-prod-card').forEach(c => c.classList.remove('drag-over'));
+        card.classList.add('drag-over');
+      }
+    });
+    card.addEventListener('drop', async e => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if (!dragSrcEl || dragSrcEl === card) return;
+      const cards = [...grid.querySelectorAll('.btqa-prod-card')];
+      const fromIdx = cards.indexOf(dragSrcEl);
+      const toIdx   = cards.indexOf(card);
+      if (fromIdx < toIdx) grid.insertBefore(dragSrcEl, card.nextSibling);
+      else grid.insertBefore(dragSrcEl, card);
+      await btqaSaveProduitsOrdre();
+    });
+  });
+}
+
+async function btqaSaveProduitsOrdre() {
+  const grid = document.getElementById('btqa-prod-grid-inner');
+  if (!grid) return;
+  const sb = window.Auth.sb;
+  const cards = [...grid.querySelectorAll('.btqa-prod-card')];
+  for (let i = 0; i < cards.length; i++) {
+    await sb.from('boutique_produits').update({ ordre: i }).eq('id', cards[i].dataset.id);
+  }
+  showToast('Ordre sauvegardé');
+}
+
 async function btqaSavePack() {
   const nom = document.getElementById('btqa-pk-nom').value.trim();
   if (!nom) return showToast('Entre un nom pour le pack', 'error');
