@@ -1784,14 +1784,39 @@ async function btqApplyPacks() {
     return;
   }
 
+  packMsg.textContent = packActive.description || 'Pack détecté !';
+
+  // Pack remise
+  const remiseEntry = (packActive.conditions || []).find(c => c.type === 'remise');
+  if (remiseEntry) {
+    choicesEl.style.display = 'none';
+    // Insérer une ligne de remise négative
+    const { data: cmd } = await _sb.from('boutique_commandes').select('id').eq('id', _cmdId).single();
+    if (cmd) {
+      await _sb.from('boutique_items').insert({
+        commande_id: _cmdId,
+        produit_id: null,
+        quantite: 1,
+        prix_unitaire_centimes: -remiseEntry.montant_centimes * packMultiplier,
+        est_offert: true,
+        produit_nom_override: `Remise ${packActive.nom}`
+      });
+      const { data: item } = await _sb.from('boutique_items')
+        .select('*').eq('commande_id', _cmdId).eq('est_offert', true)
+        .like('produit_nom_override', `Remise ${packActive.nom}%`).maybeSingle();
+      if (item) _cart.push({ ...item, _key: item.id });
+    }
+    banner.style.display = 'flex';
+    await btqSaveCart();
+    return;
+  }
+
   // Produits offerts possibles
   const offreEntry = (packActive.conditions || []).find(c => c.type === 'offre');
   const offreProdIds = offreEntry?.produit_ids?.length
     ? offreEntry.produit_ids
     : [packActive.offre_produit_id].filter(Boolean);
   const offreProds = offreProdIds.map(id => _produits.find(p => p.id === id)).filter(Boolean);
-
-  packMsg.textContent = packActive.description || 'Pack détecté !';
 
   if (offreProds.length <= 1) {
     // Un seul choix — auto-insert
