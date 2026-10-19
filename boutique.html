@@ -1369,25 +1369,18 @@ function btqRenderGrid(cat = 'tous') {
           const remiseEntry = conds.find(c => c.type === 'remise');
           const offreEntry  = conds.find(c => c.type === 'offre');
           const achatNoms   = conds.filter(c => c.type === 'achat').flatMap(c => (c.produit_ids || []).map(id => _produits.find(p => p.id === id)?.nom || '?'));
-          let badge = '', desc = '';
+          let badge = '';
           if (remiseEntry) {
             const val = remiseEntry.unite === 'pct'
               ? `${remiseEntry.valeur}%`
               : btqFmt(remiseEntry.montant_centimes);
-            const remiseSur = (remiseEntry.produit_ids || []).map(id => _produits.find(p => p.id === id)?.nom || '?').join(', ') || 'le total';
             badge = `<span style="background:#10b981;color:white;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;">-${val}</span>`;
-            desc  = `Achetez ${achatNoms.join(' + ')} et obtenez <strong>${val} de remise</strong> sur ${remiseSur}.`;
           } else if (offreEntry || pk.offre_produit_id) {
-            const offreIds  = offreEntry?.produit_ids || (pk.offre_produit_id ? [pk.offre_produit_id] : []);
-            const offreNoms = offreIds.map(id => _produits.find(p => p.id === id)?.nom || '?').join(', ');
             badge = `<span style="background:#a855f7;color:white;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;">OFFERT</span>`;
-            desc  = `Achetez ${achatNoms.join(' + ')} et recevez <strong>${offreNoms} offert</strong>.`;
           }
-          return `<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 16px;display:flex;align-items:flex-start;gap:12px;">
-            <div style="flex:1;">
-              <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:white;margin-bottom:4px;">${pk.nom} ${badge}</div>
-              <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.4;">${desc}${pk.description ? ` <span style="opacity:.6;">— ${pk.description}</span>` : ''}</div>
-            </div>
+          return `<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 16px;">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:white;margin-bottom:${pk.description ? '4px' : '0'};">${pk.nom} ${badge}</div>
+            ${pk.description ? `<div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.4;">${pk.description}</div>` : ''}
           </div>`;
         }).join('')}
       </div>`;
