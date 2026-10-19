@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0015">
-  <title>Boutique Goodies — BDE CREAD Lyon</title>
+  <title>Boutique Goodies - BDE CREAD Lyon</title>
   <link rel="icon" type="image/png" href="/favicon-48x48.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -432,7 +432,7 @@
       grid-template-columns:72px 1fr 1fr;
       min-height:520px;max-height:88vh;
     }
-    /* Colonne 1 — thumbnails */
+    /* Colonne 1 - thumbnails */
     .btq-modal-thumbs {
       display:flex;flex-direction:column;gap:8px;
       padding:16px 8px;overflow-y:auto;
@@ -449,7 +449,7 @@
     .btq-modal-thumb img { width:100%;height:100%;object-fit:contain;padding:4px; }
     .btq-modal-thumb.active { border-color:var(--btq-pink); }
     .btq-modal-thumb:hover:not(.active) { border-color:rgba(255,255,255,.3); }
-    /* Colonne 2 — grande image */
+    /* Colonne 2 - grande image */
     .btq-modal-main-img {
       position:relative;
       background:#fff;
@@ -460,7 +460,7 @@
       transition:opacity .2s;
     }
     .btq-modal-main-icon { font-size:110px; }
-    /* Colonne 3 — détails */
+    /* Colonne 3 - détails */
     .btq-modal-details {
       padding:36px 28px 28px;overflow-y:auto;
       border-left:1px solid rgba(255,255,255,.06);
@@ -481,7 +481,7 @@
     }
     .btq-modal-add-wrap { margin-top:auto;padding-top:20px; }
 
-    /* Mobile — bottom sheet */
+    /* Mobile - bottom sheet */
     @media (max-width:767px) {
       .btq-modal-overlay { align-items:flex-end;padding:0; }
       .btq-modal-card {
@@ -1117,7 +1117,7 @@
 
 <script>
 /* ============================================================
-   BOUTIQUE — logique principale
+   BOUTIQUE - logique principale
    ============================================================ */
 
 const BTQ_CART_KEY = 'btq_cart_v2';
@@ -1178,7 +1178,7 @@ async function btqInit() {
     history.replaceState(null, '', location.pathname);
     btqResetCart();
   } else if (params.get('annule') || params.get('erreur')) {
-    btqToast('Paiement annulé. Ta commande est sauvegardée — tu peux la retrouver ci-dessous.');
+    btqToast('Paiement annulé. Ta commande est sauvegardée - tu peux la retrouver ci-dessous.');
     history.replaceState(null, '', location.pathname);
   }
 
@@ -1201,7 +1201,7 @@ async function btqResumeEdit(cmdId, btn) {
     const nonOfferts = (items || []).filter(i => !i.est_offert);
     if (nonOfferts.length === 0) {
       btn.disabled = false; btn.textContent = 'Modifier';
-      btqToast('Cette commande ne contient plus d\'articles — contacte le BDE.');
+      btqToast('Cette commande ne contient plus d\'articles - contacte le BDE.');
       return;
     }
     _cmdId = cmdId;
@@ -1288,7 +1288,7 @@ async function btqLoadCatalogue() {
 
   const statusEl = document.getElementById('btq-sale-status');
   if (_produits.length) {
-    statusEl.textContent = `${_produits.length} article${_produits.length > 1 ? 's' : ''} disponibles — livraison sur place`;
+    statusEl.textContent = `${_produits.length} article${_produits.length > 1 ? 's' : ''} disponibles - livraison sur place`;
   } else {
     statusEl.textContent = 'Catalogue bientôt disponible';
   }
@@ -1296,7 +1296,7 @@ async function btqLoadCatalogue() {
 
 // ── Panier Supabase ─────────────────────────────────────────
 async function btqLoadCart() {
-  // Charger la commande active unique (panier OU en_attente) — 1 seule par compte
+  // Charger la commande active unique (panier OU en_attente) - 1 seule par compte
   const { data: cmds } = await _sb.from('boutique_commandes')
     .select('id, statut')
     .eq('membre_id', _user.id)
@@ -1894,12 +1894,12 @@ async function btqApplyPacks() {
   const offreProds = offreProdIds.map(id => _produits.find(p => p.id === id)).filter(Boolean);
 
   if (offreProds.length <= 1) {
-    // Un seul choix — auto-insert
+    // Un seul choix - auto-insert
     choicesEl.style.display = 'none';
     const offreProd = offreProds[0];
     if (offreProd) await btqInsertOffert(offreProd, packMultiplier * (packActive.offre_qty || 1));
   } else {
-    // Plusieurs choix — afficher les boutons
+    // Plusieurs choix - afficher les boutons
     choicesEl.style.display = 'flex';
     // Si choix mémorisé invalide (produit supprimé), reset
     if (_packChosenOffreProdId && !offreProds.find(p => p.id === _packChosenOffreProdId)) {
@@ -1971,23 +1971,40 @@ function btqUpdateCartUI() {
     return;
   }
 
-  items.innerHTML = _cart.map(i => `
+  const remiseMap = {};
+  _cart.filter(i => i.est_offert && i.prix < 0).forEach(r => {
+    if (r.produit_id) remiseMap[r.produit_id] = r;
+  });
+
+  items.innerHTML = _cart.filter(i => !(i.est_offert && i.prix < 0)).map(i => {
+    const remise = remiseMap[i.produit_id];
+    const prixTotal = i.est_offert && i.prix >= 0 ? 0 : (i.prix * i.quantite + (remise ? remise.prix : 0));
+    let priceHtml;
+    if (i.est_offert && i.prix >= 0) {
+      priceHtml = `<span class="btq-cart-item-price offert">OFFERT</span>`;
+    } else if (remise) {
+      priceHtml = `<span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+        <span style="text-decoration:line-through;opacity:.45;font-size:11px;">${btqFmt(i.prix * i.quantite)}</span>
+        <span class="btq-cart-item-price remise">${btqFmt(prixTotal)}</span>
+      </span>`;
+    } else {
+      priceHtml = `<span class="btq-cart-item-price">${btqFmt(i.prix * i.quantite)}</span>`;
+    }
+    return `
     <div class="btq-cart-item">
       <div class="btq-cart-item-img">${btqProdIconById(i.produit_id)}</div>
       <div class="btq-cart-item-info">
         <p class="btq-cart-item-name">${i.produit_nom}</p>
         <p class="btq-cart-item-detail">
-          ${[i.design_nom, i.couleur ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${btqCouleurHex(i.couleur)};vertical-align:middle;margin-right:3px;border:1px solid rgba(0,0,0,.15)"></span>${i.couleur}` : '', i.taille].filter(Boolean).join(' · ') || 'Taille unique'} — ×${i.quantite}
+          ${[i.design_nom, i.couleur ? `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${btqCouleurHex(i.couleur)};vertical-align:middle;margin-right:3px;border:1px solid rgba(0,0,0,.15)"></span>${i.couleur}` : '', i.taille].filter(Boolean).join(' · ') || 'Taille unique'} - ×${i.quantite}
         </p>
       </div>
       <div class="btq-cart-item-right">
-        <span class="btq-cart-item-price${i.est_offert && i.prix >= 0 ? ' offert' : i.prix < 0 ? ' remise' : ''}">
-          ${i.est_offert && i.prix >= 0 ? 'OFFERT' : btqFmt(i.prix * i.quantite)}
-        </span>
+        ${priceHtml}
         <button class="btq-cart-item-del" onclick="btqRemoveItem('${i._key}')" title="Supprimer">✕</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function btqCalcTotal() {
@@ -2042,7 +2059,7 @@ function btqOpenCheckout() {
   if (!summary) return;
   summary.innerHTML = _cart.map(i => `
     <div class="btq-checkout-row">
-      <span>${i.produit_nom}${i.design_nom ? ` — ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
+      <span>${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
       <span>${i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}</span>
     </div>
   `).join('') + `
