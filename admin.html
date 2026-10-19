@@ -10484,6 +10484,7 @@ function btqaOpenPack(id) {
   _btqaPackOffreIds = offreEntry?.produit_ids || (pk?.offre_produit_id ? [pk.offre_produit_id] : []);
 
   const remiseEntry2 = rawConds.find(c => c.type === 'remise');
+  _btqaPackRemiseProdIds = remiseEntry2?.produit_ids || [];
   btqaSetPackType(remiseEntry2 ? 'remise' : 'offre');
   if (remiseEntry2) {
     document.getElementById('btqa-pk-remise-montant').value = remiseEntry2.montant_centimes ? (remiseEntry2.montant_centimes / 100).toFixed(2) : '';
