@@ -10490,9 +10490,15 @@ function btqaOpenPack(id) {
 
   const remiseEntry2 = rawConds.find(c => c.type === 'remise');
   _btqaPackRemiseProdIds = remiseEntry2?.produit_ids || [];
+  const savedUnit = remiseEntry2?.unite || 'euro';
+  _btqaPackRemiseUnit = savedUnit;
   btqaSetPackType(remiseEntry2 ? 'remise' : 'offre');
+  btqaSetRemiseUnit(savedUnit);
   if (remiseEntry2) {
-    document.getElementById('btqa-pk-remise-montant').value = remiseEntry2.montant_centimes ? (remiseEntry2.montant_centimes / 100).toFixed(2) : '';
+    const val = savedUnit === 'pct'
+      ? (remiseEntry2.valeur ?? '')
+      : (remiseEntry2.montant_centimes ? (remiseEntry2.montant_centimes / 100).toFixed(2) : '');
+    document.getElementById('btqa-pk-remise-montant').value = val;
   } else {
     document.getElementById('btqa-pk-remise-montant').value = '';
   }
