@@ -1925,8 +1925,8 @@ function btqUpdateCartUI() {
         </p>
       </div>
       <div class="btq-cart-item-right">
-        <span class="btq-cart-item-price${i.est_offert ? ' offert' : ''}">
-          ${i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}
+        <span class="btq-cart-item-price${i.est_offert && i.prix >= 0 ? ' offert' : i.prix < 0 ? ' remise' : ''}">
+          ${i.est_offert && i.prix >= 0 ? 'OFFERT' : btqFmt(i.prix * i.quantite)}
         </span>
         <button class="btq-cart-item-del" onclick="btqRemoveItem('${i._key}')" title="Supprimer">✕</button>
       </div>
