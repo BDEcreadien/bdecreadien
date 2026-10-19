@@ -10481,6 +10481,14 @@ function btqaOpenPack(id) {
   const offreEntry = rawConds.find(c => c.type === 'offre');
   _btqaPackOffreIds = offreEntry?.produit_ids || (pk?.offre_produit_id ? [pk.offre_produit_id] : []);
 
+  const remiseEntry2 = rawConds.find(c => c.type === 'remise');
+  btqaSetPackType(remiseEntry2 ? 'remise' : 'offre');
+  if (remiseEntry2) {
+    document.getElementById('btqa-pk-remise-montant').value = remiseEntry2.montant_centimes ? (remiseEntry2.montant_centimes / 100).toFixed(2) : '';
+  } else {
+    document.getElementById('btqa-pk-remise-montant').value = '';
+  }
+
   btqaRenderPackConditions();
   btqaRenderPackOffreProduits();
   document.getElementById('btqa-pack-modal').style.display = 'flex';
