@@ -9699,12 +9699,9 @@ function btqaPMSelect(type, val, el) {
 }
 function btqaPMUpdateImg() {
   const p = _btqaPM?.prod;
-  const imgDos   = document.getElementById('btqa-pm-img-dos');
-  const imgFront = document.getElementById('btqa-pm-img-front');
-  const lblDos   = document.getElementById('btqa-pm-lbl-dos');
-  const lblFront = document.getElementById('btqa-pm-lbl-front');
-  const icon     = document.getElementById('btqa-pm-img-icon');
-  if (!imgDos || !imgFront) return;
+  const thumbsEl = document.getElementById('btqa-pm-thumbs');
+  const mainEl   = document.getElementById('btqa-pm-img-main');
+  if (!thumbsEl || !mainEl) return;
 
   let front = '', dos = '';
   if (p) {
@@ -9719,20 +9716,28 @@ function btqaPMUpdateImg() {
     }
   }
 
-  imgDos.style.display   = dos   ? '' : 'none';
-  lblDos.style.display   = dos   ? '' : 'none';
-  imgFront.style.display = front ? '' : 'none';
-  lblFront.style.display = front ? '' : 'none';
-  icon.style.display     = (!dos && !front) ? '' : 'none';
+  // Construire les vignettes (dos en premier, comme la boutique)
+  const thumbs = [];
+  if (dos)   thumbs.push({ side:'dos',   img:dos,   lbl:'DOS'    });
+  if (front) thumbs.push({ side:'front', img:front, lbl:'DEVANT' });
 
-  if (dos)   imgDos.src   = dos;
-  if (front) imgFront.src = front;
-
-  // Si une seule image, cacher le label
-  if (!dos || !front) {
-    lblDos.style.display   = 'none';
-    lblFront.style.display = 'none';
+  if (thumbs.length) {
+    thumbsEl.innerHTML = thumbs.map((t, i) => `
+      <div class="btqa-pm-thumb${i===0?' active':''}" onclick="btqaPMThumb('${t.side}','${t.img}',this)">
+        <img src="${t.img}" alt="${t.lbl}">
+        ${thumbs.length > 1 ? `<span class="btqa-pm-thumb-lbl">${t.lbl}</span>` : ''}
+      </div>`).join('');
+    mainEl.innerHTML = `<img src="${thumbs[0].img}" alt="" id="btqa-pm-main-img">`;
+  } else {
+    thumbsEl.innerHTML = '';
+    mainEl.innerHTML   = `<span style="font-size:60px">🛍️</span>`;
   }
+}
+function btqaPMThumb(side, img, el) {
+  document.querySelectorAll('.btqa-pm-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const main = document.getElementById('btqa-pm-main-img');
+  if (main) main.src = img;
 }
 function btqaPMQty(delta) {
   _btqaPM.qty = Math.max(1, Math.min(10, _btqaPM.qty + delta));
