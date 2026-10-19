@@ -10553,6 +10553,26 @@ function btqaTogglePackOffre(prodId) {
 }
 
 let _btqaPackType = 'offre';
+let _btqaPackRemiseProdIds = [];
+
+function btqaRenderPackRemiseProduits() {
+  const el = document.getElementById('btqa-pk-remise-produits');
+  if (!el) return;
+  el.innerHTML = _btqaProduits.map(p => {
+    const sel = _btqaPackRemiseProdIds.includes(p.id);
+    return `<button type="button" onclick="btqaTogglePackRemise('${p.id}')"
+      style="padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${sel?'#d97706':'#e0d8f0'};background:${sel?'#d97706':'white'};color:${sel?'white':'#555'};transition:all .12s">
+      ${p.nom}
+    </button>`;
+  }).join('');
+}
+
+function btqaTogglePackRemise(prodId) {
+  const i = _btqaPackRemiseProdIds.indexOf(prodId);
+  if (i === -1) _btqaPackRemiseProdIds.push(prodId); else _btqaPackRemiseProdIds.splice(i, 1);
+  btqaRenderPackRemiseProduits();
+}
+
 function btqaSetPackType(type) {
   _btqaPackType = type;
   const isOffre = type === 'offre';
