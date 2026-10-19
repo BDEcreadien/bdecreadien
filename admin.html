@@ -1847,49 +1847,52 @@
   <!-- Modal sélection produit physique -->
   <div class="btqa-prod-modal-overlay" id="btqa-prod-modal-overlay" onclick="if(event.target===this)btqaCloseProdModal()">
     <div class="btqa-prod-modal">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-        <div>
-          <h4 id="btqa-pm-nom"></h4>
-          <p class="btqa-prod-modal-price" id="btqa-pm-price"></p>
-        </div>
+      <!-- Bouton fermer -->
+      <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;flex-shrink:0">
         <button onclick="btqaCloseProdModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
       </div>
-      <div id="btqa-pm-img-wrap" style="width:100%;height:200px;border-radius:12px;overflow:hidden;margin-bottom:14px;background:linear-gradient(135deg,rgba(70,1,134,.08),rgba(210,57,109,.04));display:flex;align-items:center;justify-content:center;gap:12px">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-          <img id="btqa-pm-img-dos" src="" alt="Dos" style="max-width:160px;max-height:170px;object-fit:contain;display:none;border-radius:8px">
-          <span id="btqa-pm-lbl-dos" style="font-size:10px;font-weight:700;color:#460186;display:none">DOS</span>
+      <div class="btqa-pm-layout">
+        <!-- Colonne gauche : image -->
+        <div class="btqa-pm-img-col">
+          <img id="btqa-pm-img-dos"   src="" alt="Dos"    style="display:none">
+          <span id="btqa-pm-lbl-dos"  style="font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;display:none">DOS</span>
+          <img id="btqa-pm-img-front" src="" alt="Devant" style="display:none">
+          <span id="btqa-pm-lbl-front" style="font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;display:none">DEVANT</span>
+          <span id="btqa-pm-img-icon" style="font-size:60px">🛍️</span>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-          <img id="btqa-pm-img-front" src="" alt="Devant" style="max-width:160px;max-height:170px;object-fit:contain;display:none;border-radius:8px">
-          <span id="btqa-pm-lbl-front" style="font-size:10px;font-weight:700;color:#460186;display:none">DEVANT</span>
+        <!-- Colonne droite : sélecteurs -->
+        <div class="btqa-pm-detail-col">
+          <h4 id="btqa-pm-nom" style="margin:0 0 4px;font-size:18px;color:var(--noir)"></h4>
+          <p class="btqa-prod-modal-price" id="btqa-pm-price"></p>
+          <div id="btqa-pm-design-wrap" style="display:none">
+            <p class="btqa-prod-modal-label">Design</p>
+            <div class="btqa-prod-modal-btns" id="btqa-pm-designs"></div>
+          </div>
+          <div id="btqa-pm-couleur-wrap" style="display:none">
+            <p class="btqa-prod-modal-label">Couleur</p>
+            <div class="btqa-prod-modal-btns" id="btqa-pm-couleurs"></div>
+          </div>
+          <div id="btqa-pm-taille-wrap" style="display:none">
+            <p class="btqa-prod-modal-label">Taille</p>
+            <div class="btqa-prod-modal-btns" id="btqa-pm-tailles"></div>
+          </div>
+          <div id="btqa-pm-options-wrap" style="display:none">
+            <p class="btqa-prod-modal-label">Options</p>
+            <div id="btqa-pm-options" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+          </div>
+          <p class="btqa-prod-modal-label">Quantité</p>
+          <div class="btqa-prod-modal-qty">
+            <button onclick="btqaPMQty(-1)">−</button>
+            <span id="btqa-pm-qty">1</span>
+            <button onclick="btqaPMQty(1)">+</button>
+          </div>
+          <div style="margin-top:auto;padding-top:16px">
+            <button onclick="btqaConfirmProdModal()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
+              Ajouter au panier
+            </button>
+          </div>
         </div>
-        <span id="btqa-pm-img-icon" style="font-size:60px;color:#ccc">🛍️</span>
       </div>
-      <div id="btqa-pm-design-wrap" style="display:none">
-        <p class="btqa-prod-modal-label">Design</p>
-        <div class="btqa-prod-modal-btns" id="btqa-pm-designs"></div>
-      </div>
-      <div id="btqa-pm-couleur-wrap" style="display:none">
-        <p class="btqa-prod-modal-label">Couleur</p>
-        <div class="btqa-prod-modal-btns" id="btqa-pm-couleurs"></div>
-      </div>
-      <div id="btqa-pm-taille-wrap" style="display:none">
-        <p class="btqa-prod-modal-label">Taille</p>
-        <div class="btqa-prod-modal-btns" id="btqa-pm-tailles"></div>
-      </div>
-      <div id="btqa-pm-options-wrap" style="display:none">
-        <p class="btqa-prod-modal-label">Options</p>
-        <div id="btqa-pm-options" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
-      </div>
-      <p class="btqa-prod-modal-label">Quantité</p>
-      <div class="btqa-prod-modal-qty">
-        <button onclick="btqaPMQty(-1)">−</button>
-        <span id="btqa-pm-qty">1</span>
-        <button onclick="btqaPMQty(1)">+</button>
-      </div>
-      <button onclick="btqaConfirmProdModal()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
-        Ajouter au panier
-      </button>
     </div>
   </div>
 
