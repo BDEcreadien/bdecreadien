@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — BDE CREAD Lyon</title>
+  <title>Admin - BDE CREAD Lyon</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
   <style>
@@ -228,7 +228,7 @@
 <header>
   <div class="header-logo">
     <img loading="lazy" decoding="async" src="assets/Logo.png?v=6" alt="BDE CREAD">
-    <span>ADMIN — BDE CREAD</span>
+    <span>ADMIN - BDE CREAD</span>
   </div>
   <div class="header-right">
     <a href="/mon-espace.html" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.75);padding:6px 14px;border-radius:8px;font-size:13px;text-decoration:none;">← Espace BDE</a>
@@ -236,7 +236,7 @@
   </div>
 </header>
 
-<!-- SETUP — token GitHub (visible uniquement pour admin lors du premier setup) -->
+<!-- SETUP - token GitHub (visible uniquement pour admin lors du premier setup) -->
 <div id="screen-login" style="display:none;">
   <div class="login-card">
     <h1>Configuration initiale</h1>
@@ -247,7 +247,7 @@
   </div>
 </div>
 
-<!-- ATTENTE — visible pour un membre BDE si aucun token n'a encore été configuré -->
+<!-- ATTENTE - visible pour un membre BDE si aucun token n'a encore été configuré -->
 <div id="screen-wait-admin" style="display:none;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem;">
   <div class="login-card">
     <h1>En attente de configuration</h1>
@@ -465,7 +465,7 @@
     <div class="stats-header">
       <h2>Newsletter</h2>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <span id="nl-count-badge" class="page-badge" style="font-size:13px;">— abonnés</span>
+        <span id="nl-count-badge" class="page-badge" style="font-size:13px;">- abonnés</span>
         <button class="stats-ext-btn" onclick="exportNewsletterCsv()">↓ Export CSV</button>
       </div>
     </div>
@@ -570,7 +570,7 @@
       <!-- Vue annuelle : courbes Recettes / Dépenses -->
       <div class="form-card visible" id="fin-courbe-wrap" style="margin-bottom:1.5rem;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:0.75rem;">
-          <h3 style="margin:0;">Vue annuelle — Recettes vs Dépenses</h3>
+          <h3 style="margin:0;">Vue annuelle - Recettes vs Dépenses</h3>
           <select id="fin-courbe-annee" onchange="finLoadCourbeAnnuelle()" style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--gris-border);font-size:14px;font-weight:600;background:white;cursor:pointer;"></select>
         </div>
         <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--gris-texte);margin-bottom:10px;">
@@ -888,7 +888,7 @@
       <div class="form-row" id="pln-ev-template-wrap">
         <label>Modèle de tâches (optionnel)</label>
         <select id="pln-ev-template">
-          <option value="">— Aucun (tâches vides) —</option>
+          <option value="">- Aucun (tâches vides) -</option>
         </select>
       </div>
     </div>
@@ -946,10 +946,10 @@
 
   <!-- Statistiques -->
   <div id="lnk-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1.5rem;">
-    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Vues page /menu</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-views">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-views-sub">30 derniers jours</div></div>
-    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Clics totaux</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-clicks">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-clicks-sub">30 derniers jours</div></div>
-    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Taux de clic</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-ctr">—</div><div style="font-size:11px;color:var(--gris-texte);">clics / vues</div></div>
-    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Liens actifs</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-active">—</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-total-sub">sur — total</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Vues page /menu</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-views">-</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-views-sub">30 derniers jours</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Clics totaux</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-clicks">-</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-clicks-sub">30 derniers jours</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Taux de clic</div><div style="font-size:28px;font-weight:700;color:var(--violet);margin-top:4px;" id="lnk-stat-ctr">-</div><div style="font-size:11px;color:var(--gris-texte);">clics / vues</div></div>
+    <div class="form-card visible" style="text-align:center;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">Liens actifs</div><div style="font-size:28px;font-weight:700;color:var(--orange);margin-top:4px;" id="lnk-stat-active">-</div><div style="font-size:11px;color:var(--gris-texte);" id="lnk-stat-total-sub">sur - total</div></div>
   </div>
 
   <!-- Formulaire création/édition -->
@@ -996,7 +996,7 @@
       <div class="form-row">
         <label>Icône du réseau *</label>
         <select id="lnk-social-icon" style="width:100%;">
-          <option value="">— Choisir —</option>
+          <option value="">- Choisir -</option>
           <option value="instagram">📷 Instagram</option>
           <option value="tiktok">🎵 TikTok</option>
           <option value="website">🌐 Site web</option>
@@ -1149,7 +1149,7 @@
       <div class="fac-emetteur-grid">
         <div class="field"><label>Mode de paiement par défaut</label><input id="fac-p-mode" placeholder="Chèque ou Virement"></div>
         <div class="field"><label>Mention TVA</label><input id="fac-p-tva" placeholder="TVA non applicable, article 293 B du Code Général des Impôts."></div>
-        <div class="field" style="grid-column:1/-1;"><label>Mention légale bas de page</label><textarea id="fac-p-legal" rows="3" placeholder="Association Loi 1901 enregistrée — Num RNA : W691100565&#10;En cas de retard de paiement sera exigible…"></textarea></div>
+        <div class="field" style="grid-column:1/-1;"><label>Mention légale bas de page</label><textarea id="fac-p-legal" rows="3" placeholder="Association Loi 1901 enregistrée - Num RNA : W691100565&#10;En cas de retard de paiement sera exigible…"></textarea></div>
       </div>
     </div>
     <div style="text-align:right;">
@@ -1244,7 +1244,7 @@
   .bil-wrap { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
   @media (max-width:1000px) { .bil-wrap { grid-template-columns:1fr; } }
   .bil-card { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:12px; padding:20px; }
-  /* Liste billetteries — style carte "premium" */
+  /* Liste billetteries - style carte "premium" */
   .bil-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap:16px; }
   .bil-item {
     background:white; border-radius:16px; overflow:hidden;
@@ -1340,7 +1340,7 @@
     <!-- URL preview + copie rapide -->
     <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:linear-gradient(135deg, #faf5ff, #fff5f0);border:1px solid #e9d5ff;border-radius:12px;margin-bottom:16px;">
       <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--violet);white-space:nowrap;">🔗 URL publique</span>
-      <span id="bil-e-url-preview" style="font-family:monospace;font-size:13px;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">—</span>
+      <span id="bil-e-url-preview" style="font-family:monospace;font-size:13px;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">-</span>
       <button onclick="bilCopierLienEditor(this)" style="background:white;border:1px solid #d8b4fe;color:var(--violet);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;">📋 Copier</button>
     </div>
 
@@ -1401,7 +1401,7 @@
 
       <!-- Preview iframe -->
       <div>
-        <div class="bil-preview-note">👁️ Aperçu en direct — enregistre pour que le public voie les modifs</div>
+        <div class="bil-preview-note">👁️ Aperçu en direct - enregistre pour que le public voie les modifs</div>
         <iframe id="bil-preview" class="bil-preview-frame" title="Aperçu billetterie"></iframe>
       </div>
     </div>
@@ -1849,7 +1849,7 @@
       <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email"
         style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
 
-      <p class="btqa-prod-modal-label">Message <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">— variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span></p>
+      <p class="btqa-prod-modal-label">Message <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">- variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span></p>
       <textarea id="btqa-em-body" rows="8"
         style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:18px"></textarea>
 
@@ -2401,7 +2401,7 @@ function selectPage(page) {
   } else if (page === 'boutique') {
     navStack.push('boutique');
     showStep('boutique');
-    document.title = 'Merchandising — Admin BDE';
+    document.title = 'Merchandising - Admin BDE';
     initBoutiqueAdmin();
   }
 }
@@ -2439,7 +2439,7 @@ async function saveFile(path, content, sha, message) {
     headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), sha, branch: BRANCH })
   });
-  if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(`${res.status} — ${b.message || ''}`); }
+  if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(`${res.status} - ${b.message || ''}`); }
 }
 function showAuthError() {
   const app = document.getElementById('screen-app');
@@ -2993,9 +2993,9 @@ function buildEditor(type) {
   const listHtml = items.length
     ? items.map((item, i) => {
         let title = '', sub = '';
-        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} — ${item.lieu}${item.inscrits ? ` · ${item.inscrits} inscrits` : ''}`; }
+        if (type === 'evenements') { title = item.titre; sub = `${item.dateAffichage} - ${item.lieu}${item.inscrits ? ` · ${item.inscrits} inscrits` : ''}`; }
         if (type === 'annonces') { title = item.titre; sub = `${item.prix} · ${item.auteur}`; }
-        if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} — ${item.lieu}`; }
+        if (type === 'archives') { title = item.titre; sub = `${item.day} ${item.month} - ${item.lieu}`; }
         if (type === 'partenaires') { title = item.nom; sub = item.description || item.lien || ''; }
 
         // Galerie : carte photo
@@ -3156,7 +3156,7 @@ function formEvenement() {
       </div>
     </div>
     <div class="form-row">
-      <label>Lieu <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(nom affiché librement — ex: Six Brotteaux)</span></label>
+      <label>Lieu <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(nom affiché librement - ex: Six Brotteaux)</span></label>
       <input type="text" id="ev-lieu" placeholder="Ex: Six Brotteaux">
     </div>
     <div class="form-row">
@@ -3185,7 +3185,7 @@ function formEvenement() {
       </div>
     </div>
     <div class="form-row">
-      <label>Photo de couverture <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel — s'affiche sur la carte phare de l'accueil)</span></label>
+      <label>Photo de couverture <span style="font-weight:400;color:var(--gris-texte);font-size:12px;">(optionnel - s'affiche sur la carte phare de l'accueil)</span></label>
       <input type="file" id="ev-cover" accept="image/*" onchange="previewEvCover(this)">
       <div id="ev-cover-preview-wrap" style="display:none;margin-top:8px;">
         <img loading="lazy" decoding="async" id="ev-cover-preview-img" src="" alt="Aperçu" style="max-width:100%;max-height:140px;border-radius:8px;object-fit:cover;">
@@ -3308,7 +3308,7 @@ function formGalerie() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouvelle photo</h3>
     <div class="form-row">
-      <label>Photo(s) * — sélectionne-en plusieurs d'un coup</label>
+      <label>Photo(s) * - sélectionne-en plusieurs d'un coup</label>
       <input type="file" id="gl-file" accept="image/*" multiple onchange="onGalerieSelected()">
     </div>
     <div id="gl-preview-wrap" style="display:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:0.75rem;"></div>
@@ -3338,7 +3338,7 @@ function formPartenaire() {
       <input type="url" id="pt-lien" placeholder="https://…">
     </div>
     <div class="form-row">
-      <label>Lien direct promotion (optionnel — sinon on utilise le lien du site)</label>
+      <label>Lien direct promotion (optionnel - sinon on utilise le lien du site)</label>
       <input type="url" id="pt-lien-promo" placeholder="https://…/promo-cread">
     </div>
     <div class="form-row">
@@ -3359,7 +3359,7 @@ function formMedia() {
   return `<div class="form-card" id="the-form">
     <h3 id="form-title">Nouveau média</h3>
     <div class="form-row">
-      <label>Fichier(s) * — sélectionne-en plusieurs d'un coup</label>
+      <label>Fichier(s) * - sélectionne-en plusieurs d'un coup</label>
       <input type="file" id="vi-file" accept="image/*,video/*" multiple onchange="onMediaSelected()">
       <p id="vi-size-warn" style="margin-top:0.5rem;font-size:12px;color:#c0392b;line-height:1.5;"></p>
       <p style="margin-top:0.4rem;font-size:11px;color:var(--gris-texte);">Photos OK · Vidéos MP4 max 25 Mo.</p>
@@ -3489,7 +3489,7 @@ function editItem(type, i) {
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
-    const [hD, hF] = (ev.horaire || '').split(/\s*[–—-]\s*/);
+    const [hD, hF] = (ev.horaire || '').split(/\s*[–--]\s*/);
     document.getElementById('ev-horaire-debut').value = hD ? hD.replace('h',':') : '';
     document.getElementById('ev-horaire-fin').value = hF ? hF.replace('h',':') : '';
     document.getElementById('ev-prix').value = (ev.prix || '').replace(/€/g, '').trim();
@@ -3803,7 +3803,7 @@ async function syncGcal() {
     const existingKeys = new Set(existing.map(keyOf));
 
     const toAdd = gcalEvents.filter(e => !existingKeys.has(keyOf(e)));
-    if (!toAdd.length) { showToast('Déjà à jour — aucun nouvel événement', 'success'); return; }
+    if (!toAdd.length) { showToast('Déjà à jour - aucun nouvel événement', 'success'); return; }
 
     for (const e of toAdd) {
       data.evenements.push({
@@ -4447,14 +4447,14 @@ async function loadSbStats(days) {
             ${t.top_clicks.map(c => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gris-clair);font-size:13px;"><span style="color:var(--noir);font-weight:500;">${escapeHtmlNl(c.label)}</span><span style="color:var(--violet);font-weight:700;">${c.nb}</span></div>`).join('')}
           </div>
         ` : ''}
-      ` : '<p style="text-align:center;font-size:12px;color:var(--gris-texte);margin-top:1.5rem;padding:1rem;background:#FFF3E0;border-radius:8px;">⚠️ Migration analytics non exécutée — colle et exécute <code>017_analytics.sql</code> dans le SQL Editor Supabase pour activer les stats de trafic.</p>'}
+      ` : '<p style="text-align:center;font-size:12px;color:var(--gris-texte);margin-top:1.5rem;padding:1rem;background:#FFF3E0;border-radius:8px;">⚠️ Migration analytics non exécutée - colle et exécute <code>017_analytics.sql</code> dans le SQL Editor Supabase pour activer les stats de trafic.</p>'}
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Stockage global du site</h3>
       <div id="stats-storage-body" style="background:white;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
         <p style="font-size:13px;color:var(--gris-texte);margin:0;">Chargement…</p>
       </div>
 
-      <p style="text-align:right;font-size:11px;color:var(--gris-texte);margin-top:1rem;">Données Supabase — temps réel · uniquement les visiteurs ayant accepté les cookies sont comptés</p>
+      <p style="text-align:right;font-size:11px;color:var(--gris-texte);margin-top:1rem;">Données Supabase - temps réel · uniquement les visiteurs ayant accepté les cookies sont comptés</p>
     `;
     loadStorageStats();
   } catch (e) {
@@ -4551,7 +4551,7 @@ async function loadStorageStats() {
         <div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
             <div style="font-size:13px;font-weight:700;color:var(--noir);">🐙 GitHub</div>
-            <div style="font-size:11px;color:var(--gris-texte);">${ghErr ? '—' : ghPct.toFixed(1) + '% / 1 Go'}</div>
+            <div style="font-size:11px;color:var(--gris-texte);">${ghErr ? '-' : ghPct.toFixed(1) + '% / 1 Go'}</div>
           </div>
           ${ghErr ? '<p style="font-size:12px;color:var(--gris-texte);margin:8px 0;">' + ghErr + '</p>' : bar(ghSize, GH_QUOTA, ghColor)}
           <div style="font-size:18px;font-weight:800;color:var(--noir);margin-top:6px;">${fmtBytes(ghSize)}</div>
@@ -4712,7 +4712,7 @@ function renderFideliteList() {
 
   const nf = eventFilter ? norm(eventFilter) : '';
 
-  // Mode filtre event : affichage simplifié — juste qui a participé
+  // Mode filtre event : affichage simplifié - juste qui a participé
   if (nf) {
     list.innerHTML = `
       <div style="margin-bottom:16px;padding:10px 16px;background:#f8f5ff;border-radius:10px;border:1px solid #e8d8ff;font-size:13px;font-weight:700;color:#460186">
@@ -4739,7 +4739,7 @@ function renderFideliteList() {
                 <div style="font-size:12px;padding:5px 0;border-bottom:1px solid #f0e8ff;display:flex;flex-direction:column;gap:1px">
                   <span style="font-weight:700;color:#460186">${h.date}${h.heure ? ' · ' + h.heure : ''}</span>
                   <span style="color:#555">${h.event || ''}</span>
-                  <span style="color:#aaa;font-size:11px">par ${h.validateur || '—'}</span>
+                  <span style="color:#aaa;font-size:11px">par ${h.validateur || '-'}</span>
                 </div>`).join('')}
             </div>
           </div>`;
@@ -4761,7 +4761,7 @@ function renderFideliteList() {
           const realIndex = (c.historique.length - 1) - hi;
           return `<div style="font-size:12px;color:var(--gris-texte);padding:6px 0;border-bottom:1px solid var(--gris-border);display:flex;gap:8px;align-items:center;">
             <span style="color:var(--violet);font-weight:600;white-space:nowrap;flex-shrink:0;">${h.date}${h.heure ? ' ' + h.heure : ''}</span>
-            <span style="flex:1;">validé par <strong>${h.validateur || '—'}</strong>${h.event ? ' · ' + h.event : ''}</span>
+            <span style="flex:1;">validé par <strong>${h.validateur || '-'}</strong>${h.event ? ' · ' + h.event : ''}</span>
             <button onclick="supprimerPassage(${i},${realIndex})" style="background:none;border:none;cursor:pointer;color:rgba(220,50,50,0.5);font-size:16px;line-height:1;padding:0 4px;" title="Supprimer ce passage">×</button>
           </div>`;
         }).join('')}
@@ -4810,7 +4810,7 @@ async function supprimerPassage(carteIndex, passageIndex) {
       const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons, historique: c.historique }).eq('user_id', c.user_id);
       if (error) throw error;
     } else {
-      await saveFidelite(`Fidélité : suppression passage — ${c.prenom} ${c.nom}`);
+      await saveFidelite(`Fidélité : suppression passage - ${c.prenom} ${c.nom}`);
     }
     renderFideliteList();
     showToast('Passage supprimé', 'success');
@@ -4867,7 +4867,7 @@ async function creerCarte() {
   const carte = { id: genId(), prenom, nom, email, tampons: 0, total: 10, createdAt: new Date().toISOString().split('T')[0] };
   fideliteData.cartes.push(carte);
   try {
-    await saveFidelite(`Fidélité : nouvelle carte — ${prenom} ${nom}`);
+    await saveFidelite(`Fidélité : nouvelle carte - ${prenom} ${nom}`);
     hideFormFidelite();
     renderFideliteList();
     showToast('Carte créée !', 'success');
@@ -4910,7 +4910,7 @@ async function confirmerTampon() {
       const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: c.tampons, historique: c.historique }).eq('user_id', c.user_id);
       if (error) throw error;
     } else {
-      await saveFidelite(`Fidélité : tampon #${c.tampons} — ${c.prenom} ${c.nom} (${event})`);
+      await saveFidelite(`Fidélité : tampon #${c.tampons} - ${c.prenom} ${c.nom} (${event})`);
     }
     renderFideliteList();
     showToast(`Tampon ${c.tampons}/${c.total||10} ajouté !`, 'success');
@@ -4933,7 +4933,7 @@ async function reinitialiserCarte(i) {
       const { error } = await window.Auth.sb.from('cartes_fidelite').update({ tampons: 0, historique: [] }).eq('user_id', c.user_id);
       if (error) throw error;
     } else {
-      await saveFidelite(`Fidélité : réinitialisation carte — ${c.prenom} ${c.nom}`);
+      await saveFidelite(`Fidélité : réinitialisation carte - ${c.prenom} ${c.nom}`);
     }
     renderFideliteList();
     showToast('Carte réinitialisée', 'success');
@@ -4948,7 +4948,7 @@ async function supprimerCarte(i) {
   if (!confirm(`Supprimer la carte de ${c.prenom} ${c.nom} ?`)) return;
   fideliteData.cartes.splice(i, 1);
   try {
-    await saveFidelite(`Fidélité : suppression carte — ${c.prenom} ${c.nom}`);
+    await saveFidelite(`Fidélité : suppression carte - ${c.prenom} ${c.nom}`);
     renderFideliteList();
     showToast('Carte supprimée', 'success');
   } catch(e) { fideliteData.cartes.splice(i, 0, c); showToast('Erreur : ' + e.message, 'error'); }
@@ -5039,7 +5039,7 @@ async function loadHistorique() {
   }).join('');
 }
 
-// Barre d'outils — insertion dans le textarea
+// Barre d'outils - insertion dans le textarea
 function nlWrap(before, after, placeholder) {
   const ta = document.getElementById('nl-contenu');
   const start = ta.selectionStart, end = ta.selectionEnd;
@@ -5128,7 +5128,7 @@ function nlTextToHtml(txt) {
     if (/^##\s+/.test(block)) {
       return `<h2 style="font-size:20px;color:#460186;margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
     }
-    // Paragraphe normal — un simple saut de ligne devient <br>
+    // Paragraphe normal - un simple saut de ligne devient <br>
     const inner = block.split('\n').map(l => nlInline(esc(l))).join('<br>');
     return `<p style="margin:0 0 14px;">${inner}</p>`;
   }).filter(Boolean).join('\n');
@@ -5138,7 +5138,7 @@ function nlInline(s) {
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   // *italique* (mais pas si collé à un autre *)
   s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
-  // [label](url) — validation URL basique
+  // [label](url) - validation URL basique
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
     '<a href="$2" style="color:#460186;">$1</a>');
   return s;
@@ -5211,7 +5211,7 @@ async function sendNewsletter() {
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Erreur inconnue');
 
-    showNlMsg('✓ Envoyé à ' + json.sent + ' destinataire' + (json.sent > 1 ? 's' : '') + (json.errors ? ' — ' + json.errors + ' erreur(s)' : ''), 'success');
+    showNlMsg('✓ Envoyé à ' + json.sent + ' destinataire' + (json.sent > 1 ? 's' : '') + (json.errors ? ' - ' + json.errors + ' erreur(s)' : ''), 'success');
     if (!testOnly) {
       document.getElementById('nl-sujet').value = '';
       document.getElementById('nl-contenu').value = '';
@@ -5731,7 +5731,7 @@ function finRender() {
 }
 
 // ============================================================
-// COURBE ANNUELLE — Recettes/Dépenses sur l'année scolaire (Sept→Août)
+// COURBE ANNUELLE - Recettes/Dépenses sur l'année scolaire (Sept→Août)
 // ============================================================
 function finRemplirAnneesCourbe() {
   const sel = document.getElementById('fin-courbe-annee');
@@ -6006,7 +6006,7 @@ function finBarShowTip(evt, type, val, label) {
   tip.innerHTML = `
     <div style="font-weight:700;margin-bottom:4px;color:#111;">${label}</div>
     <div style="color:${color};font-weight:700;font-size:14px;">${kind} : ${sign}${Math.abs(val).toFixed(2)} €</div>
-    ${isPrev ? '<div style="font-size:11px;color:#999;margin-top:2px;">Event non validé — pas encore compté</div>' : ''}`;
+    ${isPrev ? '<div style="font-size:11px;color:#999;margin-top:2px;">Event non validé - pas encore compté</div>' : ''}`;
   tip.style.display = 'block';
   const x = evt.clientX - rect.left;
   const y = evt.clientY - rect.top;
@@ -6142,7 +6142,7 @@ async function finDelete(id) {
 }
 
 // ============================================================
-// FINANCES — ÉVÉNEMENTS PRÉVISIONNELS
+// FINANCES - ÉVÉNEMENTS PRÉVISIONNELS
 // ============================================================
 let _finEvenements = [];
 let _finEvEditingId = null;
@@ -6190,8 +6190,8 @@ function finRenderEvenements() {
     const soldePrev = (gPrev != null || cPrev != null) ? (gPrev || 0) - (cPrev || 0) : null;
     const soldeReel = (gReel != null || cReel != null) ? (gReel || 0) - (cReel || 0) : null;
     const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(2) + ' €';
-    const soldePrevTxt = soldePrev != null ? fmt(soldePrev) : '—';
-    const soldeReelTxt = soldeReel != null ? fmt(soldeReel) : '—';
+    const soldePrevTxt = soldePrev != null ? fmt(soldePrev) : '-';
+    const soldeReelTxt = soldeReel != null ? fmt(soldeReel) : '-';
     const badgeValide = ev.valide
       ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">Validé</span>'
       : (passe ? '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">À valider</span>' : '');
@@ -6365,7 +6365,7 @@ function finRenderEvTxSelectors(preselectedIds, montantsPartiels) {
       availableForThis = Math.max(0, txTotal - claimedByOthers);
       disabled = availableForThis <= 0.005 && !isPreset;
     } else {
-      // Dépenses : logique historique — un seul event peut la lier
+      // Dépenses : logique historique - un seul event peut la lier
       const linkedElsewhere = t.finance_evenement_id && t.finance_evenement_id !== evId;
       claimedByOthers = 0;
       availableForThis = txTotal;
@@ -6423,7 +6423,7 @@ async function finAutoEstimation() {
   try {
     const { data } = await window.Auth.sb.rpc('moyenne_cout_categorie', { p_categorie: cat, p_limit: 5 });
     if (data != null) {
-      hint.textContent = `— moyenne des 5 derniers ${cat} : ${Number(data).toFixed(2)} €`;
+      hint.textContent = `- moyenne des 5 derniers ${cat} : ${Number(data).toFixed(2)} €`;
       const budgetInput = document.getElementById('ev-budget');
       if (!budgetInput.value) budgetInput.placeholder = Number(data).toFixed(2);
     }
@@ -6505,7 +6505,7 @@ async function finSaveEv() {
   try {
     const checkedCbs = [...document.querySelectorAll('#ev-tx-recettes-list input:checked, #ev-tx-depenses-list input:checked')];
     const checkedIds = checkedCbs.map(cb => cb.getAttribute('data-tx-id')).filter(Boolean);
-    // Collecte les montants partiels — recettes ET dépenses (uniquement pour les cases cochées)
+    // Collecte les montants partiels - recettes ET dépenses (uniquement pour les cases cochées)
     const montantsPartiels = {};
     checkedCbs.forEach(cb => {
       const txId = cb.getAttribute('data-tx-id');
@@ -6855,7 +6855,7 @@ function pdfPreview(doc, filename) {
   modal.innerHTML = `
     <div style="background:white;border-radius:16px;max-width:900px;width:100%;height:90vh;display:flex;flex-direction:column;overflow:hidden;">
       <div style="padding:14px 20px;border-bottom:1px solid var(--gris-border);display:flex;justify-content:space-between;align-items:center;gap:12px;">
-        <h3 style="margin:0;font-size:16px;">Aperçu du PDF — ${filename}</h3>
+        <h3 style="margin:0;font-size:16px;">Aperçu du PDF - ${filename}</h3>
         <div style="display:flex;gap:8px;">
           <button onclick="this.closest('.pdf-preview-modal').remove()" style="padding:8px 14px;background:none;border:1px solid var(--gris-border);border-radius:6px;cursor:pointer;font-size:13px;">Fermer</button>
           <button onclick="(function(u,f){const a=document.createElement('a');a.href=u;a.download=f;document.body.appendChild(a);a.click();a.remove();})('${url}','${filename}')" style="padding:8px 14px;background:var(--gradient);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">⬇ Télécharger</button>
@@ -6884,7 +6884,7 @@ function pdfChangerType(type) {
   pdfRegenererPreview();
 }
 
-// PDF.js — chargé à la demande (rend le PDF en canvas image, pas d'iframe = pas d'auto-download Windows)
+// PDF.js - chargé à la demande (rend le PDF en canvas image, pas d'iframe = pas d'auto-download Windows)
 let _pdfjsLoaded = false;
 function loadPdfJs() {
   return new Promise((resolve, reject) => {
@@ -6954,12 +6954,12 @@ async function pdfConstruire() {
   _pdfCurrentUrl = URL.createObjectURL(typedBlob);
 }
 
-// Prévisualisation à la demande (compat — plus utilisée directement mais gardée pour d'anciens appels)
+// Prévisualisation à la demande (compat - plus utilisée directement mais gardée pour d'anciens appels)
 async function pdfApercu() {
   return pdfRegenererPreview();
 }
 
-// Téléchargement à la demande (bouton "Télécharger" — ancien flux, gardé pour compat)
+// Téléchargement à la demande (bouton "Télécharger" - ancien flux, gardé pour compat)
 async function pdfTelecharger() {
   try {
     if (!_pdfCurrentUrl || !_pdfCurrentFilename) {
@@ -6992,7 +6992,7 @@ async function pdfTelechargerType(type) {
 // Détection Windows : c'est là qu'on a le pb d'auto-download PDF en iframe
 const _isWindows = /Windows/i.test(navigator.userAgent || '');
 
-// Régénère l'aperçu — iframe natif sur Mac/Linux (net et rapide), canvas PDF.js sur Windows (pas d'auto-download)
+// Régénère l'aperçu - iframe natif sur Mac/Linux (net et rapide), canvas PDF.js sur Windows (pas d'auto-download)
 async function pdfRegenererPreview() {
   const iframe = document.getElementById('pdf-preview-iframe');
   const wrap = document.getElementById('pdf-preview-wrap');
@@ -7143,7 +7143,7 @@ async function pdfConstruireDetaille(doc) {
     });
   pdfFooter(doc);
 
-  // P2 — Détail des transactions (aperçu global)
+  // P2 - Détail des transactions (aperçu global)
   doc.addPage(); pdfHeader(doc, 'Détail des transactions');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   const virtuelsPdf = finExpandRecurrentes(_finDateDebut, _finDateFin);
@@ -7184,7 +7184,7 @@ async function pdfConstruireDetaille(doc) {
       if (tx._virtuel) suffix = ' [récur.]';
       else if (tx._fromEvent) suffix = ' [event]';
       const libelleBase = (tx.libelle || '') + suffix;
-      const libelleAvecFournisseur = tx.fournisseur ? `${libelleBase} — ${tx.fournisseur}` : libelleBase;
+      const libelleAvecFournisseur = tx.fournisseur ? `${libelleBase} - ${tx.fournisseur}` : libelleBase;
       const libelleShort = libelleAvecFournisseur.length > 45 ? libelleAvecFournisseur.slice(0, 42) + '…' : libelleAvecFournisseur;
       doc.text(libelleShort, 40, y);
       doc.text(c.label, 130, y);
@@ -7217,7 +7217,7 @@ async function pdfConstruireDetaille(doc) {
   }
   pdfFooter(doc);
 
-  // P3 — Événements validés (dans le budget réel)
+  // P3 - Événements validés (dans le budget réel)
   doc.addPage(); pdfHeader(doc, 'Événements validés');
   doc.setFontSize(10); doc.setTextColor(110); doc.text(periodeLabel, 15, 62);
   const evs = await pdfChargerEvenements(_finDateDebut, _finDateFin);
@@ -7253,7 +7253,7 @@ async function pdfConstruireDetaille(doc) {
       }
       const solde = gR - cR;
       totRec += gR; totDep += cR;
-      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
       doc.setFontSize(9); doc.setTextColor(50);
       doc.text(dateStr, 15, y);
       const titre = ((ev.titre || '') + (ev.lieu ? ' · ' + ev.lieu : '')).slice(0, 55);
@@ -7323,7 +7323,7 @@ async function pdfConstruireDetaille(doc) {
   }
   pdfFooter(doc);
 
-  // P4 — Prévisionnel du mois SUIVANT (M+1)
+  // P4 - Prévisionnel du mois SUIVANT (M+1)
   doc.addPage(); pdfHeader(doc, 'Prévisionnel du mois suivant');
   // Calcule mois+1 par rapport à _finDateDebut (mois de la période courante)
   const nextStart = new Date(_finDateDebut.getFullYear(), _finDateDebut.getMonth() + 1, 1);
@@ -7358,7 +7358,7 @@ async function pdfConstruireDetaille(doc) {
       const cP = Number(ev.budget_previsionnel) || 0;
       const solde = gP - cP;
       totalPrevEv += solde;
-      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
+      const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
       doc.setFontSize(9); doc.setTextColor(50);
       doc.text(dateStr, 15, y);
       doc.text((ev.titre || '').slice(0, 45), 40, y);
@@ -7438,13 +7438,13 @@ async function pdfConstruireDetaille(doc) {
   doc.text((prevTotal >= 0 ? '+' : '') + prevTotal.toFixed(2) + ' EUR', 195, y, { align: 'right' });
   doc.setFont(undefined, 'normal');
   pdfFooter(doc);
-  // (Page "Vue annuelle" retirée du PDF — visible uniquement dans l'admin)
+  // (Page "Vue annuelle" retirée du PDF - visible uniquement dans l'admin)
 }
 
 // Snapshot du graphique SVG converti en image, ajouté en page 5
 async function pdfAjouterGraphique(doc) {
   doc.addPage();
-  pdfHeader(doc, 'Vue annuelle — Recettes vs Dépenses');
+  pdfHeader(doc, 'Vue annuelle - Recettes vs Dépenses');
   const sel = document.getElementById('fin-courbe-annee');
   if (sel) {
     doc.setFontSize(10); doc.setTextColor(110);
@@ -7503,7 +7503,7 @@ async function pdfChargerEvenements(debut, fin) {
 }
 
 function pdfHeader(doc, titre) {
-  // Logo à gauche (non encadré) — JPEG blanc pour éviter fond noir
+  // Logo à gauche (non encadré) - JPEG blanc pour éviter fond noir
   if (_logoDataUrl) {
     try { doc.addImage(_logoDataUrl, 'JPEG', 15, 12, 22, 22); } catch (_) {}
   }
@@ -7661,7 +7661,7 @@ function plnEventCardHtml(ev, past) {
 
   const tachesHtml = taches.length ? taches.map(t => plnTacheRowHtml(t, past)).join('') : `
     <div style="padding:14px;background:var(--gris-clair);border-radius:8px;text-align:center;font-size:13px;color:var(--gris-texte);">
-      Aucune tâche définie${!past ? ' — <a href="#" onclick="plnOpenTacheForm(null,\''+ev.id+'\');return false;" style="color:var(--violet);font-weight:600;">en ajouter</a>' : '.'}
+      Aucune tâche définie${!past ? ' - <a href="#" onclick="plnOpenTacheForm(null,\''+ev.id+'\');return false;" style="color:var(--violet);font-weight:600;">en ajouter</a>' : '.'}
     </div>`;
 
   const actions = !past ? `
@@ -7678,7 +7678,7 @@ function plnEventCardHtml(ev, past) {
       <div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
         <div style="flex:1;min-width:200px;">
           <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">${dateFmt}</div>
-          <div style="font-weight:700;font-size:18px;margin-top:2px;">${escapeHtml(ev.titre || '—')}</div>
+          <div style="font-weight:700;font-size:18px;margin-top:2px;">${escapeHtml(ev.titre || '-')}</div>
           ${ev.lieu ? `<div style="font-size:13px;color:var(--gris-texte);margin-top:2px;">📍 ${escapeHtml(ev.lieu)}</div>` : ''}
           ${ev.description ? `<div style="font-size:13px;color:var(--noir);margin-top:8px;white-space:pre-wrap;">${escapeHtml(ev.description)}</div>` : ''}
         </div>
@@ -7754,7 +7754,7 @@ async function plnValiderInsc(id) {
   const insc = _plnInscriptions.find(i => i.id === id);
   if (insc) insc.valide = true;
   plnRenderEvents();
-  showToast('Inscription validée — visible en couleur dans Mon planning', 'success');
+  showToast('Inscription validée - visible en couleur dans Mon planning', 'success');
 }
 
 async function plnDevaliderInsc(id) {
@@ -7783,7 +7783,7 @@ function plnOpenEventForm(evId) {
   // Template : dispo aussi en édition (permet d'ajouter les tâches d'un modèle à un event existant)
   document.getElementById('pln-ev-template-wrap').style.display = '';
   const tplSel = document.getElementById('pln-ev-template');
-  tplSel.innerHTML = '<option value="">— Aucun (tâches vides) —</option>' + _plnTemplates.map(t => `<option value="${t.id}">${escapeHtml(t.nom)}</option>`).join('');
+  tplSel.innerHTML = '<option value="">- Aucun (tâches vides) -</option>' + _plnTemplates.map(t => `<option value="${t.id}">${escapeHtml(t.nom)}</option>`).join('');
   tplSel.value = '';
   modal.classList.add('visible');
 }
@@ -7846,7 +7846,7 @@ async function plnDeleteEvent(id) {
 function plnSharEvent(eventId) {
   const url = `https://bdecreadien.fr/event.html?id=${eventId}`;
   navigator.clipboard.writeText(url).then(() => {
-    showToast('Lien copié — envoie-le aux membres BDE', 'success');
+    showToast('Lien copié - envoie-le aux membres BDE', 'success');
   }).catch(() => {
     prompt('Copie ce lien :', url);
   });
@@ -7870,8 +7870,8 @@ async function plnNotifyBureau(eventId, includeSelf) {
         'apikey': SUPABASE_ANON,
       },
       body: JSON.stringify({
-        title: (includeSelf ? '🧪 TEST — ' : '🔔 ') + ev.titre,
-        message: `${dateStr}${ev.lieu ? ' · ' + ev.lieu : ''} — inscris-toi aux tâches`,
+        title: (includeSelf ? '🧪 TEST - ' : '🔔 ') + ev.titre,
+        message: `${dateStr}${ev.lieu ? ' · ' + ev.lieu : ''} - inscris-toi aux tâches`,
         url: 'https://bdecreadien.fr/mon-espace.html#bde-planning',
         include_self: !!includeSelf,
       }),
@@ -7971,14 +7971,14 @@ function plnRenderMembers() {
   }
   const cellStyle = 'padding:12px;border-bottom:1px solid var(--gris-border);vertical-align:top;font-size:14px;';
   const rows = stats.map((s, i) => {
-    const nom = `${s.membre.prenom || ''} ${s.membre.nom || ''}`.trim() || '—';
-    const evList = s.events.slice(0, 4).map(e => escapeHtml(e.titre || '—')).join(', ') + (s.events.length > 4 ? `, +${s.events.length - 4}` : '');
+    const nom = `${s.membre.prenom || ''} ${s.membre.nom || ''}`.trim() || '-';
+    const evList = s.events.slice(0, 4).map(e => escapeHtml(e.titre || '-')).join(', ') + (s.events.length > 4 ? `, +${s.events.length - 4}` : '');
     const medal = i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '';
     return `<tr>
       <td style="${cellStyle}font-weight:600;">${medal}${escapeHtml(nom)}</td>
       <td style="${cellStyle}text-align:center;"><span style="background:var(--violet);color:white;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;">${s.nbTaches}</span></td>
       <td style="${cellStyle}text-align:center;">${s.nbEvents}</td>
-      <td style="${cellStyle}color:var(--gris-texte);font-size:13px;">${evList || '—'}</td>
+      <td style="${cellStyle}color:var(--gris-texte);font-size:13px;">${evList || '-'}</td>
     </tr>`;
   }).join('');
   const headStyle = 'padding:10px 12px;background:var(--gris-clair);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gris-texte);font-weight:700;';
@@ -8004,7 +8004,7 @@ function plnRenderTemplates() {
     const taches = Array.isArray(t.taches) ? t.taches : [];
     const tHtml = taches.map(x => `
       <div style="padding:6px 10px;background:var(--gris-clair);border-radius:6px;font-size:12px;">
-        ${escapeHtml(x.titre || '—')}${x.capacite != null ? ` <span style="color:var(--gris-texte);">(${x.capacite})</span>` : ''}
+        ${escapeHtml(x.titre || '-')}${x.capacite != null ? ` <span style="color:var(--gris-texte);">(${x.capacite})</span>` : ''}
       </div>`).join('');
     return `
       <div class="form-card visible" style="margin-bottom:12px;">
@@ -8457,7 +8457,7 @@ async function lnkMove(id, delta) {
   const j = i + delta;
   if (j < 0 || j >= _lnkList.length) return;
   const a = _lnkList[i], b = _lnkList[j];
-  // Swap ordre — MAJ optimiste
+  // Swap ordre - MAJ optimiste
   const ordreA = a.ordre, ordreB = b.ordre;
   [_lnkList[i], _lnkList[j]] = [b, a];
   a.ordre = ordreB; b.ordre = ordreA;
@@ -8502,7 +8502,7 @@ async function lnkMove(id, delta) {
 window.addEventListener('DOMContentLoaded', async () => {
   // btn-logout removed
 
-  // 1. Auth Supabase — role >= membre
+  // 1. Auth Supabase - role >= membre
   const ok = await Auth.requireRole('membre');
   if (!ok) return; // redirect vers /connexion.html?next=/admin.html
 
@@ -8550,7 +8550,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 4. Aucun token — admin voit le setup, membre voit l'écran d'attente
+  // 4. Aucun token - admin voit le setup, membre voit l'écran d'attente
   if (profil.role === 'admin') {
     document.getElementById('screen-login').style.display = 'flex';
   } else {
@@ -8569,7 +8569,7 @@ const FAC_EMETTEUR_DEFAUT = {
   domiciliation: 'Code banque : 13825\nCode guichet : 00200\nNuméro de compte : 08014344104\nClé RIB : 76\nIBAN : FR76 1382 5002 0008 0143 4410 476\nCode BIC - code SWIFT : CEPAFRPP382',
   mode: 'Chèque ou Virement',
   tva: 'TVA non applicable, article 293 B du Code de Général des Impôts.',
-  legal: "Association Loi 1901 enregistrée — Num RNA : W691100565\nEn cas de retard de paiement sera exigible, conformément à l'article L 441-10 du Code de Commerce, une pénalité de retard de 10%, ainsi qu'une indémnité forfaitaire pour frais de recouvrement de 40 €.\nAucun escompte ne sera accordé en cas de paiement anticipé."
+  legal: "Association Loi 1901 enregistrée - Num RNA : W691100565\nEn cas de retard de paiement sera exigible, conformément à l'article L 441-10 du Code de Commerce, une pénalité de retard de 10%, ainsi qu'une indémnité forfaitaire pour frais de recouvrement de 40 €.\nAucun escompte ne sera accordé en cas de paiement anticipé."
 };
 let _facEmetteur = { ...FAC_EMETTEUR_DEFAUT };
 let _facCourante = null;
@@ -8631,7 +8631,7 @@ async function facChargerListe() {
     <div class="fac-row">
       <div style="font-weight:600;">${facEscapeHtml(f.numero)}</div>
       <div>${facFmtDate(f.date_facturation)}</div>
-      <div style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${facEscapeHtml(f.client_nom || '—')}</div>
+      <div style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${facEscapeHtml(f.client_nom || '-')}</div>
       <div style="text-align:right;font-weight:600;">${facFmtMontant(f.total_ttc)}</div>
       <div class="fac-row-actions" style="justify-content:flex-end;">
         <button onclick="facOuvrir('${f.id}')">Ouvrir</button>
@@ -8936,7 +8936,7 @@ async function bilChargerListe() {
     const tarifs = Array.isArray(b.tarifs) ? b.tarifs : (typeof b.tarifs === 'string' ? JSON.parse(b.tarifs) : []);
     const min = tarifs.length ? Math.min(...tarifs.map(t => t.prix_centimes)) : 0;
     const max = tarifs.length ? Math.max(...tarifs.map(t => t.prix_centimes)) : 0;
-    const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€–${(max/100).toFixed(0)}€`) : '—';
+    const prixTxt = tarifs.length ? (min === max ? `${(min/100).toFixed(0)}€` : `${(min/100).toFixed(0)}€–${(max/100).toFixed(0)}€`) : '-';
     const publicUrl = `${location.origin}/billetterie/${b.slug}`;
     const nbTarifs = tarifs.length;
     return `
@@ -8980,7 +8980,7 @@ async function bilCopierLien(url, btn) {
       btn.style.borderColor = '';
     }, 1500);
   } catch (e) {
-    showToast('Impossible de copier — copie manuellement le lien', 'error');
+    showToast('Impossible de copier - copie manuellement le lien', 'error');
   }
 }
 
@@ -9025,7 +9025,7 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
   document.getElementById('bil-e-actif').checked = !!b.actif;
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '-';
   bilRenderTarifs();
   bilRefreshPreview();
 }
@@ -9107,7 +9107,7 @@ function bilOnChange() {
   b.actif = document.getElementById('bil-e-actif').checked;
   // Mise à jour du preview URL en direct
   const urlPrev = document.getElementById('bil-e-url-preview');
-  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '—';
+  if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '-';
   // Debounce preview iframe
   clearTimeout(window._bilPrevTimer);
   window._bilPrevTimer = setTimeout(bilRefreshPreview, 400);
@@ -9115,7 +9115,7 @@ function bilOnChange() {
 
 async function bilCopierLienEditor(btn) {
   const url = document.getElementById('bil-e-url-preview').textContent;
-  if (!url || url === '—') { showToast('Renseigne un slug d\'abord.', 'error'); return; }
+  if (!url || url === '-') { showToast('Renseigne un slug d\'abord.', 'error'); return; }
   await bilCopierLien(url, btn);
 }
 
@@ -9334,7 +9334,7 @@ function btqaRenderRecap() {
   cmds.forEach(c => {
     (c.boutique_items || []).forEach(it => {
       const key = [it.produit_nom, it.design_nom || '', it.couleur || '', it.taille || ''].join('||');
-      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom || '—', couleur: it.couleur || '—', taille: it.taille || '—', qty: 0, offert: 0 };
+      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom || '-', couleur: it.couleur || '-', taille: it.taille || '-', qty: 0, offert: 0 };
       recap[key].qty    += it.quantite || 1;
       if (it.est_offert) recap[key].offert += it.quantite || 1;
     });
@@ -9347,7 +9347,7 @@ function btqaRenderRecap() {
         <td style="padding:9px 14px;color:#555">${r.couleur}</td>
         <td style="padding:9px 14px;color:#555">${r.taille}</td>
         <td style="padding:9px 14px;text-align:center;font-weight:800;color:#460186;font-size:16px">${r.qty}</td>
-        <td style="padding:9px 14px;text-align:center;color:#FF741F;font-weight:700">${r.offert || '—'}</td>
+        <td style="padding:9px 14px;text-align:center;color:#FF741F;font-weight:700">${r.offert || '-'}</td>
       </tr>`).join('')
     : '<tr><td colspan="6" style="padding:20px;text-align:center;color:#aaa">Aucun article</td></tr>';
 
@@ -9361,9 +9361,9 @@ function btqaRenderRecap() {
         <span style="flex:2;font-weight:${it.est_offert ? '700' : '500'};color:${it.est_offert ? '#166534' : 'var(--noir)'}">
           ${it.produit_nom}${it.est_offert ? ' <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:800">OFFERT</span>' : ''}
         </span>
-        <span style="flex:1;color:#888">${it.design_nom || '—'}</span>
-        <span style="flex:1;color:#888">${it.couleur || '—'}</span>
-        <span style="flex:0 0 48px;color:#888;text-align:center">${it.taille || '—'}</span>
+        <span style="flex:1;color:#888">${it.design_nom || '-'}</span>
+        <span style="flex:1;color:#888">${it.couleur || '-'}</span>
+        <span style="flex:0 0 48px;color:#888;text-align:center">${it.taille || '-'}</span>
         <span style="flex:0 0 28px;font-weight:700;text-align:center">×${it.quantite || 1}</span>
         <span style="flex:0 0 72px;text-align:right;font-weight:700;color:${it.est_offert ? '#16a34a' : '#460186'}">${it.est_offert ? 'OFFERT' : btqaFmt((it.prix_unitaire_centimes||0)*(it.quantite||1))}</span>
       </div>`).join('');
@@ -9371,7 +9371,7 @@ function btqaRenderRecap() {
       <div style="border:1.5px solid #e0d8f0;border-radius:12px;margin-bottom:12px;overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f8f5ff;flex-wrap:wrap">
           <span style="font-weight:800;color:#460186;font-size:14px">${c.numero}</span>
-          <span style="font-weight:600;font-size:13px">${c.nom_acheteur || '—'}</span>
+          <span style="font-weight:600;font-size:13px">${c.nom_acheteur || '-'}</span>
           <span style="font-size:12px;color:#888">${c.email_acheteur || ''}</span>
           <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
           <span style="margin-left:auto;font-weight:800;color:#460186">${btqaFmt(c.total_centimes)}</span>
@@ -9428,12 +9428,12 @@ function btqaRenderTable(list) {
       actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
       return `<div style="background:white;border-top:1.5px solid #f0e8ff;border-bottom:1.5px solid #f0e8ff;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#faf8ff;border-bottom:1px solid #f0e8ff">
-          <span style="font-weight:800;font-size:14px;color:var(--violet)">${c.numero || '—'}</span>
+          <span style="font-weight:800;font-size:14px;color:var(--violet)">${c.numero || '-'}</span>
           <span class="btqa-badge ${c.statut}" style="font-size:10px">${btqaStatutLabel(c.statut)}</span>
         </div>
         <div style="padding:10px 16px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-            <span style="font-weight:700;font-size:14px">${c.nom_acheteur || '—'}</span>
+            <span style="font-weight:700;font-size:14px">${c.nom_acheteur || '-'}</span>
             <span style="font-weight:800;font-size:15px;color:var(--violet)">${btqaFmt(c.total_centimes || 0)}</span>
           </div>
           <div style="margin-bottom:10px;font-size:11px;color:#aaa">${d}${c.type === 'physique' ? ' · <span class="btqa-badge physique" style="font-size:9px">Physique</span>' : ''}</div>
@@ -9458,9 +9458,9 @@ function btqaRenderTable(list) {
     if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
     return `<tr>
-      <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '—'}</td>
-      <td>${c.nom_acheteur || '—'}</td>
-      <td style="font-size:12px;color:#666">${c.email_acheteur || '—'}</td>
+      <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '-'}</td>
+      <td>${c.nom_acheteur || '-'}</td>
+      <td style="font-size:12px;color:#666">${c.email_acheteur || '-'}</td>
       <td style="font-size:12px;color:#999">${d}</td>
       <td style="font-weight:700">${btqaFmt(c.total_centimes || 0)}</td>
       <td>${typeLabel}</td>
@@ -9502,8 +9502,8 @@ function btqaShowDetail(id) {
     <hr style="border:none;border-top:1px solid #f0e8ff;margin:16px 0">
     ${items.map(i => `
       <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px">
-        <span>${i.produit_nom}${i.design_nom ? ` — ${i.design_nom}` : ''}${i.couleur ? ` — ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}${i.est_offert ? ' <span style="color:#FF741F;font-size:11px;font-weight:700">OFFERT</span>' : ''}</span>
-        <span style="font-weight:700;color:var(--violet)">${i.est_offert ? '—' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
+        <span>${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` - ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}${i.est_offert ? ' <span style="color:#FF741F;font-size:11px;font-weight:700">OFFERT</span>' : ''}</span>
+        <span style="font-weight:700;color:var(--violet)">${i.est_offert ? '-' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
       </div>`).join('')}
     <hr style="border:none;border-top:1px solid #f0e8ff;margin:12px 0">
     <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px">
@@ -9804,7 +9804,7 @@ function btqaRenderPhysItems() {
       return `
       <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border-radius:10px;margin-bottom:8px;border:1.5px solid #86efac">
         <div style="flex:1;min-width:0">
-          <p style="margin:0;font-weight:700;font-size:13px;color:#166534">${prod?.nom || '—'}${item.quantite > 1 ? ` ×${item.quantite}` : ''} <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:800;letter-spacing:.5px">OFFERT</span></p>
+          <p style="margin:0;font-weight:700;font-size:13px;color:#166534">${prod?.nom || '-'}${item.quantite > 1 ? ` ×${item.quantite}` : ''} <span style="background:#bbf7d0;color:#166534;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:800;letter-spacing:.5px">OFFERT</span></p>
           <p style="margin:0;font-size:11px;color:#4ade80">${details}</p>
         </div>
         <span style="font-weight:700;font-size:13px;color:#16a34a">0,00 €</span>
@@ -9813,7 +9813,7 @@ function btqaRenderPhysItems() {
     return `
       <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#faf8ff;border-radius:10px;margin-bottom:8px;border:1.5px solid #f0e8ff">
         <div style="flex:1;min-width:0">
-          <p style="margin:0;font-weight:700;font-size:13px;color:var(--noir)">${item.produit_nom_override || prod?.nom || '—'}</p>
+          <p style="margin:0;font-weight:700;font-size:13px;color:var(--noir)">${item.produit_nom_override || prod?.nom || '-'}</p>
           <p style="margin:0;font-size:11px;color:#888">${details}</p>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
@@ -9941,7 +9941,7 @@ function btqaCloseEmailModal() {
 }
 const _btqaTemplates = {
   production: {
-    sujet: 'Production lancée — Boutique Merch BDE CREAD',
+    sujet: 'Production lancée - Boutique Merch BDE CREAD',
     body: `Salut {{prenom}} !
 
 Bonne nouvelle : la production de ta commande {{numero}} vient d'être lancée !
@@ -9952,7 +9952,7 @@ On te recontacte dès que tes articles arrivent à l'école. En attendant, si tu
 Le BDE CREAD Lyon`,
   },
   livraison: {
-    sujet: 'Ta commande est en route — Boutique Merch BDE CREAD',
+    sujet: 'Ta commande est en route - Boutique Merch BDE CREAD',
     body: `Salut {{prenom}} !
 
 Ta commande {{numero}} est en cours de livraison vers l'école.
@@ -9963,7 +9963,7 @@ Tu recevras un nouvel email dès qu'elle sera disponible pour le retrait. On y e
 Le BDE CREAD Lyon`,
   },
   confirmee: {
-    sujet: 'Ta commande est disponible à l\'école — Boutique Merch BDE CREAD',
+    sujet: 'Ta commande est disponible à l\'école - Boutique Merch BDE CREAD',
     body: `Salut {{prenom}} !
 
 Tes articles sont arrivés ! Ta commande {{numero}} est prête à être retirée à l'école.
@@ -10068,14 +10068,14 @@ function btqaConfirmPhysOrder() {
     const prix = item.est_offert ? '<span style="color:#ff741f;font-weight:700">OFFERT</span>'
       : `<strong>${((p?.prix_centimes || 0) * item.quantite / 100).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €'}</strong>`;
     return `<div style="display:flex;justify-content:space-between;gap:8px">
-      <span>${p?.nom || '—'}${detail ? ` <span style="color:#aaa">(${detail})</span>` : ''} ×${item.quantite}</span>
+      <span>${p?.nom || '-'}${detail ? ` <span style="color:#aaa">(${detail})</span>` : ''} ×${item.quantite}</span>
       ${prix}
     </div>`;
   }).join('');
 
   document.getElementById('btqa-phys-confirm-recap').innerHTML = `
     <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0e8ff">
-      <strong>${nom}</strong> — ${email}
+      <strong>${nom}</strong> - ${email}
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">${lignes}</div>
     <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #f0e8ff">
@@ -10206,7 +10206,7 @@ async function btqaLookup() {
         // Plusieurs commandes : afficher la liste pour choisir
         res.innerHTML = `
           <div style="background:#f8f5ff;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#6d28d9;font-weight:600">🪪 Carte : ${memberName}</div>
-          <p style="font-size:13px;font-weight:700;margin:0 0 10px">${cmds.length} commandes trouvées — choisis :</p>
+          <p style="font-size:13px;font-weight:700;margin:0 0 10px">${cmds.length} commandes trouvées - choisis :</p>
           ${cmds.map((c,i) => { _btqaListMemberNames = _btqaListMemberNames || {}; _btqaListMemberNames[c.id] = memberName; return `
             <button onclick="btqaLookupById('${c.id}')" style="width:100%;text-align:left;background:white;border:1.5px solid #e0d8f0;border-radius:10px;padding:10px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px">
               <span style="font-weight:700;color:#460186">${c.numero}</span>
@@ -10376,7 +10376,7 @@ async function btqaRenderConfigProduits() {
       <div class="btqa-pack-card-title">${pk.nom}</div>
       <div class="btqa-pack-card-desc">${pk.description||''}</div>
       <div style="font-size:12px;color:#555;margin-bottom:10px">
-        <strong>Requis :</strong> ${condText||'—'}
+        <strong>Requis :</strong> ${condText||'-'}
       </div>
       <div class="btqa-pack-offer">
         ${remiseEntry
@@ -10411,7 +10411,7 @@ function btqaImgPickerHtml(idx, cKey, colorName, side, url, label) {
 
 function btqaDesignRowHtml(idx, nom, designImages, couleurs) {
   // designImages = { "Blanc": { front: url, dos: url }, ... }  (new structure)
-  // couleurs = ["Blanc", "Noir", ...] — if empty, show no image fields (added later when colors are set)
+  // couleurs = ["Blanc", "Noir", ...] - if empty, show no image fields (added later when colors are set)
   const colorsHtml = (couleurs || []).map(c => {
     const cKey = c.replace(/[^a-zA-Z0-9]/g, '_');
     const existing = (designImages || {})[c] || {};
@@ -10584,7 +10584,7 @@ function btqaOpenPack(id) {
     }));
   if (!_btqaPackConditions.length) _btqaPackConditions.push({ produit_ids:[], min_qty:1 });
 
-  // Offre IDs — stored as {type:'offre',produit_ids:[...]} in conditions, OR from offre_produit_id
+  // Offre IDs - stored as {type:'offre',produit_ids:[...]} in conditions, OR from offre_produit_id
   const offreEntry = rawConds.find(c => c.type === 'offre');
   _btqaPackOffreIds = offreEntry?.produit_ids || (pk?.offre_produit_id ? [pk.offre_produit_id] : []);
 
@@ -10620,7 +10620,7 @@ function btqaRenderPackConditions() {
     }).join('');
     return `<div style="background:#faf8ff;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1.5px solid #f0e8ff">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:12px;font-weight:700;color:#460186">Groupe ${i+1} <span style="font-weight:400;color:#888">— au moins un de ces produits</span></span>
+        <span style="font-size:12px;font-weight:700;color:#460186">Groupe ${i+1} <span style="font-weight:400;color:#888">- au moins un de ces produits</span></span>
         <button onclick="_btqaPackConditions.splice(${i},1);btqaRenderPackConditions()"
           style="border:none;background:#fee2e2;color:#dc2626;border-radius:6px;cursor:pointer;padding:2px 8px;font-size:12px;font-weight:700">Supprimer</button>
       </div>
