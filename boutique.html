@@ -1798,22 +1798,23 @@ async function btqApplyPacks() {
   const remiseEntry = (packActive.conditions || []).find(c => c.type === 'remise');
   if (remiseEntry) {
     choicesEl.style.display = 'none';
-    // Insérer une ligne de remise négative
-    const { data: cmd } = await _sb.from('boutique_commandes').select('id').eq('id', _cmdId).single();
-    if (cmd) {
-      await _sb.from('boutique_items').insert({
-        commande_id: _cmdId,
-        produit_id: null,
-        quantite: 1,
-        prix_unitaire_centimes: -remiseEntry.montant_centimes * packMultiplier,
-        est_offert: true,
-        produit_nom_override: `Remise ${packActive.nom}`
-      });
-      const { data: item } = await _sb.from('boutique_items')
-        .select('*').eq('commande_id', _cmdId).eq('est_offert', true)
-        .like('produit_nom_override', `Remise ${packActive.nom}%`).maybeSingle();
-      if (item) _cart.push({ ...item, _key: item.id });
-    }
+    const remiseProdIds = remiseEntry.produit_ids || [];
+    // Nom descriptif de la remise
+    const remiseLabel = remiseProdIds.length
+      ? `Remise ${packActive.nom} (${remiseProdIds.map(id => _produits.find(p=>p.id===id)?.nom||'?').join(', ')})`
+      : `Remise ${packActive.nom}`;
+    await _sb.from('boutique_items').insert({
+      commande_id: _cmdId,
+      produit_id: remiseProdIds[0] || null,
+      quantite: 1,
+      prix_unitaire_centimes: -remiseEntry.montant_centimes * packMultiplier,
+      est_offert: true,
+      produit_nom_override: remiseLabel
+    });
+    const { data: items } = await _sb.from('boutique_items')
+      .select('*').eq('commande_id', _cmdId).eq('est_offert', true)
+      .eq('produit_nom_override', remiseLabel);
+    if (items?.length) _cart.push({ ...items[items.length-1], _key: items[items.length-1].id });
     banner.style.display = 'flex';
     await btqSaveCart();
     return;
