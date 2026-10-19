@@ -1541,12 +1541,18 @@ function btqOpenModal(id) {
     </div>
   `;
 
+  // Auto-sélection si un seul design
+  if (designs.length === 1) {
+    _modalDesign = { idx: 0, nom: designs[0].nom };
+    document.querySelector('#btq-design-row button')?.classList.add('selected');
+  }
   // Auto-sélection si une seule couleur
   if (couleurs.length === 1) {
     _modalCouleur = couleurs[0];
     document.querySelector('#btq-color-row button')?.classList.add('selected');
-    btqUpdateThumbs();
   }
+  // Afficher les visuels si design+couleur sont déjà connus
+  if (_modalDesign && _modalCouleur) btqUpdateThumbs();
 
   document.getElementById('btq-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
