@@ -10204,8 +10204,9 @@ async function btqaRenderConfigProduits() {
     el.innerHTML = `<div class="btqa-prod-grid">${prods.map(p => {
       const icon = {T:'👕','Pull sans capuche':'🧥','Pull à capuche':'🧣','T-shirt Club de Sport':'👕',Chaussettes:'🧦',Tasse:'☕','Porte-clef':'🔑'}[p.nom] || (p.categorie==='vetement'?'👕':'🎁');
       const meta = [p.a_designs?`${(p.designs||[]).length} designs`:null, p.couleurs_disponibles?.length?`${p.couleurs_disponibles.length} couleurs`:null, p.a_tailles?'Tailles':null, p.actif?null:'Inactif'].filter(Boolean).join(' · ');
-      return `<div class="btqa-prod-card">
+      return `<div class="btqa-prod-card" draggable="true" data-id="${p.id}">
         <div class="btqa-prod-card-img">
+          <span class="btqa-prod-drag-handle">⠿</span>
           ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btqa-prod-card-icon">${icon}</span>`}
           <div class="btqa-prod-card-status" style="background:${p.actif?'#10b981':'#ef4444'}"></div>
           <div class="btqa-prod-card-price-badge">${btqaFmt(p.prix_centimes)}</div>
