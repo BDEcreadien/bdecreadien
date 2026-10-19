@@ -9658,6 +9658,44 @@ function btqaPMSelect(type, val, el) {
   const container = el.parentElement;
   container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  btqaPMUpdateImg();
+}
+function btqaPMUpdateImg() {
+  const p = _btqaPM?.prod;
+  const imgDos   = document.getElementById('btqa-pm-img-dos');
+  const imgFront = document.getElementById('btqa-pm-img-front');
+  const lblDos   = document.getElementById('btqa-pm-lbl-dos');
+  const lblFront = document.getElementById('btqa-pm-lbl-front');
+  const icon     = document.getElementById('btqa-pm-img-icon');
+  if (!imgDos || !imgFront) return;
+
+  let front = '', dos = '';
+  if (p) {
+    const design = (p.designs || []).find(d => d.nom === _btqaPM.design) || (p.designs || [])[0];
+    if (design?.images && _btqaPM.couleur) {
+      const ci = design.images[_btqaPM.couleur] || {};
+      front = ci.front || '';
+      dos   = ci.dos   || '';
+    }
+    if (!front && !dos) {
+      front = design?.image_url || p.image_url || '';
+    }
+  }
+
+  imgDos.style.display   = dos   ? '' : 'none';
+  lblDos.style.display   = dos   ? '' : 'none';
+  imgFront.style.display = front ? '' : 'none';
+  lblFront.style.display = front ? '' : 'none';
+  icon.style.display     = (!dos && !front) ? '' : 'none';
+
+  if (dos)   imgDos.src   = dos;
+  if (front) imgFront.src = front;
+
+  // Si une seule image, cacher le label
+  if (!dos || !front) {
+    lblDos.style.display   = 'none';
+    lblFront.style.display = 'none';
+  }
 }
 function btqaPMQty(delta) {
   _btqaPM.qty = Math.max(1, Math.min(10, _btqaPM.qty + delta));
