@@ -10645,7 +10645,7 @@ async function btqaSavePack() {
     if (!montant) return showToast('Entre un montant de remise', 'error');
     conditions = [
       ...validConds.map(c=>({ type:'achat', produit_ids:c.produit_ids, min_qty:c.min_qty })),
-      { type:'remise', montant_centimes: montant }
+      { type:'remise', montant_centimes: montant, produit_ids: _btqaPackRemiseProdIds }
     ];
     payload = { nom, description: document.getElementById('btqa-pk-desc').value.trim() || null, conditions, offre_produit_id: null, offre_qty: 0 };
   } else {
