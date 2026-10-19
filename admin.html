@@ -10614,22 +10614,26 @@ async function btqaSaveProduitsOrdre() {
 async function btqaSavePack() {
   const nom = document.getElementById('btqa-pk-nom').value.trim();
   if (!nom) return showToast('Entre un nom pour le pack', 'error');
-  if (!_btqaPackOffreIds.length) return showToast('Coche au moins un produit offert', 'error');
   const validConds = _btqaPackConditions.filter(c=>c.produit_ids.length);
   if (!validConds.length) return showToast('Ajoute au moins un groupe de produits requis', 'error');
 
-  // Store everything in conditions JSONB + keep offre_produit_id for compatibility
-  const conditions = [
-    ...validConds.map(c=>({ type:'achat', produit_ids:c.produit_ids, min_qty:c.min_qty })),
-    { type:'offre', produit_ids:_btqaPackOffreIds }
-  ];
-  const payload = {
-    nom,
-    description: document.getElementById('btqa-pk-desc').value.trim() || null,
-    conditions,
-    offre_produit_id: _btqaPackOffreIds[0],
-    offre_qty: +document.getElementById('btqa-pk-offre-qty').value || 1,
-  };
+  let conditions, payload;
+  if (_btqaPackType === 'remise') {
+    const montant = Math.round(parseFloat(document.getElementById('btqa-pk-remise-montant').value || '0') * 100);
+    if (!montant) return showToast('Entre un montant de remise', 'error');
+    conditions = [
+      ...validConds.map(c=>({ type:'achat', produit_ids:c.produit_ids, min_qty:c.min_qty })),
+      { type:'remise', montant_centimes: montant }
+    ];
+    payload = { nom, description: document.getElementById('btqa-pk-desc').value.trim() || null, conditions, offre_produit_id: null, offre_qty: 0 };
+  } else {
+    if (!_btqaPackOffreIds.length) return showToast('Coche au moins un produit offert', 'error');
+    conditions = [
+      ...validConds.map(c=>({ type:'achat', produit_ids:c.produit_ids, min_qty:c.min_qty })),
+      { type:'offre', produit_ids:_btqaPackOffreIds }
+    ];
+    payload = { nom, description: document.getElementById('btqa-pk-desc').value.trim() || null, conditions, offre_produit_id: _btqaPackOffreIds[0], offre_qty: +document.getElementById('btqa-pk-offre-qty').value || 1 };
+  }
 
   const sb = window.Auth.sb;
   try {
