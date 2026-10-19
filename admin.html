@@ -10576,14 +10576,13 @@ function btqaTogglePackRemise(prodId) {
 function btqaSetPackType(type) {
   _btqaPackType = type;
   const isOffre = type === 'offre';
-  document.getElementById('btqa-pk-type-offre').style.cssText += isOffre
-    ? ';background:#460186;color:white;border-color:#460186'
-    : ';background:white;color:#888;border-color:#e0d8f0';
-  document.getElementById('btqa-pk-type-remise').style.cssText += !isOffre
-    ? ';background:#d97706;color:white;border-color:#d97706'
-    : ';background:white;color:#888;border-color:#e0d8f0';
+  const btnOffre = document.getElementById('btqa-pk-type-offre');
+  const btnRemise = document.getElementById('btqa-pk-type-remise');
+  if (btnOffre) { btnOffre.style.background = isOffre ? '#460186' : 'white'; btnOffre.style.color = isOffre ? 'white' : '#888'; btnOffre.style.borderColor = isOffre ? '#460186' : '#e0d8f0'; }
+  if (btnRemise) { btnRemise.style.background = !isOffre ? '#d97706' : 'white'; btnRemise.style.color = !isOffre ? 'white' : '#888'; btnRemise.style.borderColor = !isOffre ? '#d97706' : '#e0d8f0'; }
   document.getElementById('btqa-pk-offre-section').style.display = isOffre ? '' : 'none';
   document.getElementById('btqa-pk-remise-section').style.display = isOffre ? 'none' : '';
+  if (!isOffre) btqaRenderPackRemiseProduits();
 }
 
 function btqaInitDrag() {
