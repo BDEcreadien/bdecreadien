@@ -1828,12 +1828,23 @@
   <!-- Modal sélection produit physique -->
   <div class="btqa-prod-modal-overlay" id="btqa-prod-modal-overlay" onclick="if(event.target===this)btqaCloseProdModal()">
     <div class="btqa-prod-modal">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
         <div>
           <h4 id="btqa-pm-nom"></h4>
           <p class="btqa-prod-modal-price" id="btqa-pm-price"></p>
         </div>
         <button onclick="btqaCloseProdModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+      </div>
+      <div id="btqa-pm-img-wrap" style="width:100%;height:200px;border-radius:12px;overflow:hidden;margin-bottom:14px;background:linear-gradient(135deg,rgba(70,1,134,.08),rgba(210,57,109,.04));display:flex;align-items:center;justify-content:center;gap:12px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <img id="btqa-pm-img-dos" src="" alt="Dos" style="max-width:160px;max-height:170px;object-fit:contain;display:none;border-radius:8px">
+          <span id="btqa-pm-lbl-dos" style="font-size:10px;font-weight:700;color:#460186;display:none">DOS</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <img id="btqa-pm-img-front" src="" alt="Devant" style="max-width:160px;max-height:170px;object-fit:contain;display:none;border-radius:8px">
+          <span id="btqa-pm-lbl-front" style="font-size:10px;font-weight:700;color:#460186;display:none">DEVANT</span>
+        </div>
+        <span id="btqa-pm-img-icon" style="font-size:60px;color:#ccc">🛍️</span>
       </div>
       <div id="btqa-pm-design-wrap" style="display:none">
         <p class="btqa-prod-modal-label">Design</p>
