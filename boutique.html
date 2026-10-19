@@ -1799,7 +1799,17 @@ async function btqApplyPacks() {
   if (remiseEntry) {
     choicesEl.style.display = 'none';
     const remiseProdIds = remiseEntry.produit_ids || [];
-    // Nom descriptif de la remise
+    // Calcul du montant selon l'unité
+    let remiseCentimes;
+    if (remiseEntry.unite === 'pct') {
+      // Applique le % sur le prix des produits ciblés (ou sur le total si aucun ciblé)
+      const base = remiseProdIds.length
+        ? _cart.filter(i => remiseProdIds.includes(i.produit_id)).reduce((s, i) => s + (i.prix_unitaire_centimes ?? 0) * i.quantite, 0)
+        : _cart.filter(i => !i.est_offert).reduce((s, i) => s + (i.prix_unitaire_centimes ?? 0) * i.quantite, 0);
+      remiseCentimes = Math.round(base * (remiseEntry.valeur / 100));
+    } else {
+      remiseCentimes = remiseEntry.montant_centimes;
+    }
     const remiseLabel = remiseProdIds.length
       ? `Remise ${packActive.nom} (${remiseProdIds.map(id => _produits.find(p=>p.id===id)?.nom||'?').join(', ')})`
       : `Remise ${packActive.nom}`;
@@ -1807,7 +1817,7 @@ async function btqApplyPacks() {
       commande_id: _cmdId,
       produit_id: remiseProdIds[0] || null,
       quantite: 1,
-      prix_unitaire_centimes: -remiseEntry.montant_centimes * packMultiplier,
+      prix_unitaire_centimes: -remiseCentimes * packMultiplier,
       est_offert: true,
       produit_nom_override: remiseLabel
     });
