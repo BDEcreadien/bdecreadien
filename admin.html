@@ -1868,15 +1868,13 @@
         <button onclick="btqaCloseProdModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
       </div>
       <div class="btqa-pm-layout">
-        <!-- Colonne gauche : image -->
-        <div class="btqa-pm-img-col">
-          <img id="btqa-pm-img-dos"   src="" alt="Dos"    style="display:none">
-          <span id="btqa-pm-lbl-dos"  style="font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;display:none">DOS</span>
-          <img id="btqa-pm-img-front" src="" alt="Devant" style="display:none">
-          <span id="btqa-pm-lbl-front" style="font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;display:none">DEVANT</span>
-          <span id="btqa-pm-img-icon" style="font-size:60px">🛍️</span>
+        <!-- Col 1 : vignettes -->
+        <div class="btqa-pm-thumbs" id="btqa-pm-thumbs"></div>
+        <!-- Col 2 : grande image -->
+        <div class="btqa-pm-img-main" id="btqa-pm-img-main">
+          <span style="font-size:60px">🛍️</span>
         </div>
-        <!-- Colonne droite : sélecteurs -->
+        <!-- Col 3 : sélecteurs -->
         <div class="btqa-pm-detail-col">
           <h4 id="btqa-pm-nom" style="margin:0 0 4px;font-size:18px;color:var(--noir)"></h4>
           <p class="btqa-prod-modal-price" id="btqa-pm-price"></p>
