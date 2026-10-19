@@ -10560,6 +10560,16 @@ function btqaTogglePackOffre(prodId) {
 
 let _btqaPackType = 'offre';
 let _btqaPackRemiseProdIds = [];
+let _btqaPackRemiseUnit = 'euro'; // 'euro' | 'pct'
+
+function btqaSetRemiseUnit(unit) {
+  _btqaPackRemiseUnit = unit;
+  const isEuro = unit === 'euro';
+  const be = document.getElementById('btqa-pk-remise-euro');
+  const bp = document.getElementById('btqa-pk-remise-pct');
+  if (be) { be.style.background = isEuro ? '#460186' : 'white'; be.style.color = isEuro ? 'white' : '#888'; }
+  if (bp) { bp.style.background = !isEuro ? '#460186' : 'white'; bp.style.color = !isEuro ? 'white' : '#888'; }
+}
 
 function btqaRenderPackRemiseProduits() {
   const el = document.getElementById('btqa-pk-remise-produits');
