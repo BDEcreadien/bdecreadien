@@ -537,7 +537,14 @@
       .btq-designs,.btq-colors,.btq-sizes { margin-bottom:12px; }
       .btq-qty-row { margin-bottom:12px; }
       .btq-size-chip { width:44px;height:36px;font-size:13px; }
-      .btq-design-chip { padding:5px 12px;font-size:13px; }
+      .btq-design-chip {
+        padding:5px 12px;font-size:13px;
+        border-color:rgba(255,255,255,.22);
+      }
+      /* Quantité compacte */
+      .btq-qty-row { gap:10px;margin-bottom:10px; }
+      .btq-qty-btn { width:30px;height:30px;font-size:16px; }
+      .btq-qty-val { font-size:22px;min-width:22px; }
 
       /* Bouton fixe en bas de l'écran (évite conflit overflow+sticky) */
       .btq-modal-add-wrap {
