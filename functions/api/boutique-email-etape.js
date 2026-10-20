@@ -73,27 +73,30 @@ export async function onRequest({ request, env }) {
   const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
 <div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
-  <div style="background:linear-gradient(145deg,#1a0045,#6b0070,#c8006e,#ff5500,#ff8c00);padding:28px;text-align:center">
-    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:10px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
-    <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Merch</p>
+  <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:14px 24px;text-align:center">
+    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:9px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
+    <p style="margin:0;color:white;font-size:32px;font-weight:800;letter-spacing:1px">Boutique Merch</p>
   </div>
-  <div style="background:white;padding:28px">
+  <div style="background:white;padding:24px">
     <p style="margin:0 0 8px">Bonjour <strong>${cmd.nom_acheteur}</strong>,</p>
     <p style="margin:0 0 20px;font-size:16px;font-weight:700;color:${e.couleur}">${e.titre}</p>
     <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#444">${e.message(cmd)}</p>
     <p style="margin:0 0 6px;font-size:12px;color:#aaa;letter-spacing:1px;text-transform:uppercase">Numéro de commande</p>
-    <p style="margin:0 0 20px;font-size:24px;font-weight:800;color:#ff5500;letter-spacing:1px">${cmd.numero}</p>
+    <p style="margin:0 0 20px;font-size:24px;font-weight:800;color:#460186;letter-spacing:1px">${cmd.numero}</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px">
       ${lignes}
       <tr><td style="padding:10px 0 0;font-weight:700">Total</td><td style="padding:10px 0 0;text-align:right;font-weight:700;color:#460186">${formatEur(total)}</td></tr>
     </table>
     ${showQr ? `
+    <div style="border-left:3px solid #D2396D;border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;background:#fdf9ff;font-size:13px;color:#555">
+      <strong>Où retirer ?</strong><br>Hall de l'école &nbsp;·&nbsp; Midi de 12h30 à 14h
+    </div>
     <div style="text-align:center;margin:20px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
       <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#460186">Présente ce QR code lors du retrait</p>
       <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(cmd.numero)}&size=180x180&margin=8&color=460186" alt="${cmd.numero}" style="width:180px;height:180px">
       <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#460186;letter-spacing:2px">${cmd.numero}</p>
     </div>` : ''}
-    <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">Une question ? bdecreadien.fr</p>
+    <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">Conserve cet e-mail pour le retrait. Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a> &nbsp;·&nbsp; <a href="https://bdecreadien.fr" style="color:#D2396D;text-decoration:none">bdecreadien.fr</a></p>
   </div>
 </div>
 </body></html>`;
