@@ -10335,25 +10335,7 @@ async function btqaCreatePhysOrder() {
   ];
   await sb.from('boutique_items').insert(itemsToInsert);
 
-  // E-mail de confirmation
-  fetch('/api/boutique-confirm-physique', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      numero:         cmd.numero,
-      nom_acheteur:   nom,
-      email_acheteur: email,
-      total_centimes: total,
-      items: itemsToInsert.map(i => ({
-        produit_nom:            i.produit_nom,
-        design_nom:             i.design_nom,
-        taille:                 i.taille,
-        quantite:               i.quantite,
-        prix_unitaire_centimes: i.prix_unitaire_centimes,
-        est_offert:             i.est_offert,
-      })),
-    }),
-  }).catch(() => {});
+  // L'e-mail sera envoyé quand l'admin marque "Payée"
 
   showToast(`Commande ${cmd.numero} créée !`);
   _btqaPhysItems = [];
