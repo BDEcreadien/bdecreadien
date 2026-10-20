@@ -475,9 +475,9 @@
 
     /* Mobile - bottom sheet */
     /* Mobile header bar (hidden on desktop) */
-    .btq-modal-mob-header {
-      display:none;
-    }
+    .btq-modal-mob-header { display:none; }
+    .btq-modal-back-btn { display:none; }
+    .btq-modal-mob-name { display:none; }
 
     @media (max-width:767px) {
       /* Full-screen bottom sheet */
@@ -488,29 +488,19 @@
         display:flex;flex-direction:column;
         transform:translateY(60px);
         overflow:hidden;
+        border:1.5px solid rgba(255,255,255,.15);
+        border-bottom:none;
       }
       .btq-modal-overlay.open .btq-modal-card { transform:translateY(0); }
 
-      /* Mobile header: back button + product name */
-      .btq-modal-mob-header {
-        display:flex;align-items:center;gap:10px;
-        padding:10px 16px 8px;flex-shrink:0;
-        border-bottom:1px solid rgba(255,255,255,.08);
-        background:#12001f;
+      /* X button: visible, gray, top-right */
+      .btq-modal-close-btn {
+        position:absolute;top:14px;right:14px;z-index:20;
+        width:40px;height:40px;border-radius:50%;
+        border:1.5px solid rgba(255,255,255,.25);
+        background:rgba(255,255,255,.12);
+        color:rgba(255,255,255,.8);font-size:16px;
       }
-      .btq-modal-back-btn {
-        font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
-        letter-spacing:.5px;color:rgba(255,255,255,.6);
-        background:none;border:none;cursor:pointer;padding:6px 0;flex-shrink:0;
-      }
-      .btq-modal-mob-name {
-        font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;
-        color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
-        text-align:right;
-      }
-
-      /* Hide desktop close button on mobile */
-      .btq-modal-close-btn { display:none; }
 
       .btq-modal-drag {
         display:block;width:36px;height:4px;border-radius:2px;
