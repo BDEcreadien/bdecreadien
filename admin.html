@@ -10305,7 +10305,7 @@ async function btqaCreatePhysOrder() {
   const membre_id = profil?.id || null;
 
   const { data: cmd } = await sb.from('boutique_commandes').insert({
-    type: 'physique', statut: 'confirmee',
+    type: 'physique', statut: 'en_attente',
     membre_id, nom_acheteur: nom, email_acheteur: email,
     total_centimes: total, moyen_paiement: moyen,
     cree_par: window._monProfilId, notes,
