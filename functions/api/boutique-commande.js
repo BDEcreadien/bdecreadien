@@ -21,6 +21,9 @@ export async function onRequest({ request, env }) {
   if (!commande_id || !nom_acheteur || !email_acheteur) {
     return json({ error: 'Paramètres manquants' }, 400);
   }
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(commande_id)) {
+    return json({ error: 'commande_id invalide' }, 400);
+  }
 
   const SB  = env.SUPABASE_URL;
   const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
