@@ -1716,7 +1716,7 @@ async function btqAddToCart() {
     && i.couleur    === (_modalCouleur || null)
     && i.taille     === (_modalTaille || null));
   const qtyInCart = existing.reduce((s,i) => s + i.quantite, 0);
-  if (qtyInCart + _modalQty > (p.max_par_commande || 10)) {
+  if (qtyInCart + _modalQty > (p.quantite_max || p.max_par_commande || 10)) {
     btqToast(`Max ${p.max_par_commande || 10} par article`);
     btn.disabled = false;btn.textContent = 'Ajouter au panier';
     return;
