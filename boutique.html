@@ -1223,6 +1223,10 @@ async function btqInit() {
   if (_cmdStatut === 'panier') await btqApplyPacks();
   btqFillMarquee();
 
+  // Masquer le loader
+  const loader = document.getElementById('btq-loader');
+  if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 420); }
+
   // Retour depuis HelloAsso
   const params = new URLSearchParams(location.search);
   if (params.get('paye')) {
