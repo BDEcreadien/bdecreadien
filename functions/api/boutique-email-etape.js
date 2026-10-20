@@ -68,7 +68,7 @@ export async function onRequest({ request, env }) {
   }).join('');
 
   const e = ETAPES[etape];
-  const showQr = etape === 'confirmee';
+  const showQr = etape === 'confirmee' || etape === 'payee';
 
   const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
