@@ -618,6 +618,10 @@ function btqOpenModal(id) {
     : `<span class="btq-modal-main-icon">${btqProdIcon(p)}</span>`;
 
   document.getElementById('btq-modal-inner').innerHTML = `
+    <div class="btq-modal-mob-header">
+      <button class="btq-modal-back-btn" onclick="btqCloseModal({target:null})">← Retour</button>
+      <span class="btq-modal-mob-name">${p.nom}</span>
+    </div>
     <button class="btq-modal-close-btn" onclick="btqCloseModal({target:null})">✕</button>
     <div class="btq-modal-layout">
       <div class="btq-modal-thumbs">${thumbsHtml}</div>
