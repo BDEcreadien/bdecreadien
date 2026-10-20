@@ -9683,6 +9683,11 @@ async function btqaEtape(id, etape) {
   btqaUpdateBulkBar();
   btqaFilterTable();
   showToast(`Statut mis à jour : ${label}`);
+  fetch('/api/boutique-email-etape', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ commande_id: id, etape }),
+  }).catch(() => {});
 }
 async function btqaRemettre(id) {
   if (!confirm('Marquer cette commande comme remise au client ?')) return;
