@@ -2265,7 +2265,7 @@ async function login() {
     id: 'github_token', value: t, updated_at: new Date().toISOString(), updated_by: user.id
   });
   if (error) return showToast('Erreur : ' + error.message, 'error');
-  localStorage.setItem('bde_admin_token', t); // cache local
+  sessionStorage.setItem('bde_admin_token', t); // cache session (non persistant)
   token = t;
   document.getElementById('screen-login').style.display = 'none';
   init();
