@@ -2266,8 +2266,6 @@ function _startWhenReady() {
       btqInit();
     } else {
       document.getElementById('btq-gate').style.display = 'flex';
-      const loader = document.getElementById('btq-loader');
-      if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 420); }
     }
   });
 }
