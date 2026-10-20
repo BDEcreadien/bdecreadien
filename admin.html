@@ -9607,6 +9607,7 @@ function btqaExportCSV() {
 // ── Vente physique ───────────────────────────────────────────
 const _COULEUR_HEX_ADMIN = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B' };
 let _btqaPM = { prod: null, design: null, couleur: null, taille: null, qty: 1 };
+let _btqaPMCouleurExplicite = false;
 
 function btqaRenderPhysiqueCatalog() {
   const el = document.getElementById('btqa-phys-catalog');
