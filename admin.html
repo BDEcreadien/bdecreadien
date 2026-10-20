@@ -10948,12 +10948,15 @@ async function btqaSaveProduit(id) {
     }
   });
 
+  const description = document.getElementById('bp-desc')?.value.trim() || null;
+  const quantite_max = parseInt(document.getElementById('bp-qmax')?.value || '0') || null;
+
   const payload = {
-    nom, prix_centimes: prix, categorie: cat,
+    nom, description, prix_centimes: prix, categorie: cat,
     tailles_disponibles: tailles, couleurs_disponibles: couleurs,
     a_designs: designs.length > 0, a_tailles: tailles.length > 0,
     actif, image_url: imageUrl,
-    images, designs, options_payantes,
+    images, designs, options_payantes, quantite_max,
   };
 
   let prodId = id;
