@@ -2298,6 +2298,40 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
 
 <script defer src="js/main.js?v=20"></script>
 <script defer src="js/notif.js"></script>
+<style>
+.btq-cd-box{background:rgba(255,255,255,.07);border-radius:16px;padding:16px 22px;min-width:80px}
+.btq-cd-num{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:#fff;display:block}
+.btq-cd-lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);display:block;margin-top:5px}
+@media(max-width:480px){.btq-cd-box{padding:12px 14px;min-width:60px}.btq-cd-num{font-size:36px}}
+</style>
+<script>
+(function(){
+  const END = new Date('2026-11-18T23:59:00');
+  const wrap = document.getElementById('btq-countdown');
+  const closed = document.getElementById('btq-countdown-closed');
+  function pad(n){return String(n).padStart(2,'0')}
+  function tick(){
+    const diff = END - Date.now();
+    if(diff <= 0){
+      if(wrap) wrap.style.display='none';
+      if(closed) closed.style.display='';
+      return;
+    }
+    const j = Math.floor(diff/86400000);
+    const h = Math.floor((diff%86400000)/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    if(wrap) wrap.innerHTML = [
+      [j, j>1?'Jours':'Jour'],
+      [pad(h),'Heures'],
+      [pad(m),'Minutes'],
+      [pad(s),'Secondes']
+    ].map(([v,l])=>`<div class="btq-cd-box"><span class="btq-cd-num">${v}</span><span class="btq-cd-lbl">${l}</span></div>`).join('');
+  }
+  tick();
+  setInterval(tick,1000);
+})();
+</script>
 
 <footer style="text-align:center;padding:32px 24px 40px;border-top:1px solid rgba(255,255,255,.06);margin-top:60px">
   <p style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:14px">BDE CREAD Lyon &middot; 2026-2027</p>
