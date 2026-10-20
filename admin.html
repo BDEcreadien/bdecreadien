@@ -9347,7 +9347,10 @@ async function btqaLoadAnalytics(days) {
   const pageViews   = byEvent('page_view').length;
   const prodViews   = byEvent('product_view').length;
   const addCarts    = byEvent('add_to_cart').length;
+  const helpClicks  = byEvent('help_click').length;
   const convCart    = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
+  const mobile      = byEvent('page_view').filter(r => r.data?.device === 'mobile').length;
+  const pctMobile   = pageViews ? Math.round(mobile / pageViews * 100) : 0;
 
   // Top produits vus
   const prodCount = {};
