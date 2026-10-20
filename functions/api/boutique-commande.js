@@ -195,6 +195,10 @@ export async function onRequest({ request, env }) {
   return json({ ok: true, numero, helloasso_url: helloassoUrl });
 }
 
+function escHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function formatEur(centimes) {
   return (centimes / 100).toLocaleString('fr-FR', {
     minimumFractionDigits: 2,
