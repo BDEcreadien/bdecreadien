@@ -1543,10 +1543,9 @@ function btqOpenModal(id) {
     </div>
   `;
 
-  // Auto-sélection si un seul design
-  if (designs.length === 1) {
+  // Design 1 sélectionné silencieusement par défaut (pas de chip surligné)
+  if (designs.length) {
     _modalDesign = { idx: 0, nom: designs[0].nom };
-    document.querySelector('#btq-design-row button')?.classList.add('selected');
   }
   // Auto-sélection couleur : Blanc en priorité, sinon première couleur
   if (couleurs.length) {
@@ -1555,7 +1554,7 @@ function btqOpenModal(id) {
     const idx = couleurs.indexOf(defaultCouleur);
     document.querySelectorAll('#btq-color-row button')[idx]?.classList.add('selected');
   }
-  // Afficher les visuels si design+couleur sont déjà connus
+  // Afficher les visuels
   if (_modalDesign && _modalCouleur) btqUpdateThumbs();
 
   document.getElementById('btq-modal').classList.add('open');
