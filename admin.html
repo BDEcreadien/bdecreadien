@@ -9706,6 +9706,7 @@ function btqaCloseProdModal() {
 }
 function btqaPMSelect(type, val, el) {
   _btqaPM[type] = val;
+  if (type === 'couleur') _btqaPMCouleurExplicite = true;
   const container = el.parentElement;
   container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
