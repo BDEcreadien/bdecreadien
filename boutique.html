@@ -2117,6 +2117,14 @@ async function btqSaveOrder() {
     email_acheteur: email,
     total_centimes: btqCalcTotal(),
   }).eq('id', _cmdId);
+  // Envoyer l'e-mail de confirmation
+  try {
+    await fetch('/api/boutique-commande', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: _cmdId, nom_acheteur: nom, email_acheteur: email }),
+    });
+  } catch(e) {}
   btqCloseCart();
   btqToast('Panier enregistré ! Tu pourras le retrouver ici pour payer plus tard.');
   _cmdId = null; _cmdStatut = null; _cart = [];
