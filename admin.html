@@ -9949,7 +9949,8 @@ function btqaPMThumb(side, img, el) {
   if (main) main.src = img;
 }
 function btqaPMQty(delta) {
-  _btqaPM.qty = Math.max(1, Math.min(10, _btqaPM.qty + delta));
+  const qmax = _btqaPM.prod?.quantite_max || _btqaPM.prod?.max_par_commande || 10;
+  _btqaPM.qty = Math.max(1, Math.min(qmax, _btqaPM.qty + delta));
   document.getElementById('btqa-pm-qty').textContent = _btqaPM.qty;
 }
 function btqaConfirmProdModal() {
