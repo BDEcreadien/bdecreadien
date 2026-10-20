@@ -10825,7 +10825,9 @@ async function btqaOpenProduit(id) {
     </div>
 
     <div class="btqa-form-row"><label>Nom</label><input id="bp-nom" value="${prod?.nom || ''}"></div>
+    <div class="btqa-form-row"><label>Description (optionnel)</label><input id="bp-desc" value="${prod?.description || ''}" placeholder="Ex: Accès à tous les clubs de sport de l'école"></div>
     <div class="btqa-form-row"><label>Prix (en euros)</label><input id="bp-prix" type="number" step="0.01" min="0" value="${((prod?.prix_centimes ?? 0) / 100).toFixed(2)}"></div>
+    <div class="btqa-form-row"><label>Quantité max par commande <span style="font-weight:400;color:#aaa">(0 = illimité)</span></label><input id="bp-qmax" type="number" min="0" value="${prod?.quantite_max || 0}" placeholder="0"></div>
     <div class="btqa-form-row"><label>Catégorie</label>
       <select id="bp-cat">
         <option value="vetement" ${prod?.categorie === 'vetement' ? 'selected' : ''}>Vêtement</option>
