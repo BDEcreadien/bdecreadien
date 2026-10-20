@@ -1803,6 +1803,7 @@ async function btqAddToCart() {
       }
     }
 
+    btqTrack('add_to_cart', p.id, p.nom, { design: designNom, couleur: _modalCouleur||null, taille: _modalTaille||null, qty: _modalQty });
     await btqApplyPacks();
     btqUpdateCartUI();
     btqToast(`${p.nom} ajouté !`);
