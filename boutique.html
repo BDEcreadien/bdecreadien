@@ -1592,6 +1592,7 @@ function btqSelectDesign(idx, nom, el) {
   _modalDesign = {idx, nom};
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  btqTrack('design_select', _modalProd?.id, _modalProd?.nom, { design: nom });
   btqUpdateThumbs();
 }
 
