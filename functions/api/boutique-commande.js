@@ -159,7 +159,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Merch</p>
   </div>
   <div style="background:white;padding:28px">
-    <p style="margin:0 0 8px">Bonjour <strong>${nom_acheteur}</strong>,</p>
+    <p style="margin:0 0 8px">Bonjour <strong>${escHtml(nom_acheteur)}</strong>,</p>
     <p style="margin:0 0 16px">Ta commande est bien enregistrée !</p>
     <p style="margin:0 0 20px;font-size:26px;font-weight:800;color:#ff5500;letter-spacing:1px">${numero}</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px">
