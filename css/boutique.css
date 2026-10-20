@@ -526,20 +526,25 @@
       }
       .btq-modal-main-img img { object-fit:contain; }
 
-      /* Details scrollable */
-      .btq-modal-details { order:3;padding:14px 16px 8px; }
-      .btq-modal-name { display:none; } /* shown in mobile header */
-      .btq-modal-price { font-size:20px;margin-bottom:14px;margin-top:0; }
+      /* Details scrollable avec bouton sticky en bas */
+      .btq-modal-details {
+        order:3;padding:14px 16px 0;
+        overflow-y:auto;flex:1;
+        display:flex;flex-direction:column;
+      }
+      .btq-modal-name { font-size:20px;padding-right:0;margin-bottom:2px; }
+      .btq-modal-price { font-size:20px;margin-bottom:14px; }
       .btq-modal-label { font-size:11px;margin-bottom:6px; }
       .btq-designs,.btq-colors,.btq-sizes { margin-bottom:12px; }
       .btq-qty-row { margin-bottom:12px; }
       .btq-size-chip { width:44px;height:36px;font-size:13px; }
       .btq-design-chip { padding:5px 12px;font-size:13px; }
 
-      /* Sticky add button at bottom */
+      /* Bouton sticky en bas du scroll */
       .btq-modal-add-wrap {
-        flex-shrink:0;
-        padding:12px 16px 28px;
+        position:sticky;bottom:0;
+        margin-top:auto;
+        padding:12px 0 24px;
         background:#12001f;
         border-top:1px solid rgba(255,255,255,.1);
       }
