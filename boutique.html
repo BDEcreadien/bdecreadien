@@ -2250,11 +2250,22 @@ document.addEventListener('click', e => {
 });
 
 // ── Démarrage ────────────────────────────────────────────────
-function _waitSbAndInit() {
-  if (window._sb) { btqInit(); return; }
-  setTimeout(_waitSbAndInit, 50);
+let _initDone = false;
+function _startWhenReady() {
+  if (!window._sb) { setTimeout(_startWhenReady, 50); return; }
+  // Écoute l'état auth : déclenche btqInit dès que la session est connue
+  window._sb.auth.onAuthStateChange((event, session) => {
+    if (_initDone) return;
+    _initDone = true;
+    if (session) {
+      _user = session.user;
+      btqInit();
+    } else {
+      document.getElementById('btq-gate').style.display = 'flex';
+    }
+  });
 }
-document.addEventListener('DOMContentLoaded', _waitSbAndInit);
+document.addEventListener('DOMContentLoaded', _startWhenReady);
 </script>
 
 <script defer src="js/main.js?v=20"></script>
