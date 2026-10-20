@@ -9959,6 +9959,9 @@ function btqaConfirmProdModal() {
   if ((prod.designs || []).length && !design) return showToast('Choisis un design', 'error');
   if ((prod.couleurs_disponibles || []).length > 1 && !_btqaPMCouleurExplicite) return showToast('Choisis une couleur', 'error');
   if ((prod.tailles_disponibles || []).length && !taille) return showToast('Choisis une taille', 'error');
+  const qmax = prod.quantite_max || prod.max_par_commande || 10;
+  const qtyInCart = _btqaPhysItems.filter(i => i.produit_id === prod.id && !i.est_offert).reduce((s, i) => s + (i.quantite || 1), 0);
+  if (qtyInCart + qty > qmax) return showToast(`Max ${qmax} par article`, 'error');
 
   // Calcul remise des options cochées
   let remise = 0;
