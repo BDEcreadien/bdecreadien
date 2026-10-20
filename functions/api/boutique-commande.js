@@ -128,11 +128,11 @@ export async function onRequest({ request, env }) {
   // ── 5. E-mail de confirmation ────────────────────────────
   if (env.RESEND_API_KEY) {
     const lignes = items.map(i => {
-      const detail = [i.design_nom, i.taille].filter(Boolean).join(' · ');
+      const detail = [i.design_nom, i.taille].filter(Boolean).map(escHtml).join(' · ');
       const prixStr = i.est_offert ? 'OFFERT' : formatEur(i.prix_unitaire_centimes * i.quantite);
       return `<tr>
         <td style="padding:8px 0;border-bottom:1px solid #f0e8ff">
-          ${i.produit_nom}${detail ? ` <span style="color:#999;font-size:12px">(${detail})</span>` : ''} ×${i.quantite}
+          ${escHtml(i.produit_nom)}${detail ? ` <span style="color:#999;font-size:12px">(${detail})</span>` : ''} ×${i.quantite}
         </td>
         <td style="padding:8px 0;border-bottom:1px solid #f0e8ff;text-align:right;font-weight:700;color:${i.est_offert ? '#FF741F' : '#460186'}">
           ${prixStr}
