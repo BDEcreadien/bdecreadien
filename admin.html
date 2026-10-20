@@ -1800,6 +1800,13 @@
         <option value="expiree">Expirée</option>
       </select>
     </div>
+    <!-- Actions groupées -->
+    <div id="btqa-bulk-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;background:rgba(70,1,134,.06);border-radius:14px;margin-bottom:12px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#460186;flex-shrink:0">Passer en masse :</span>
+      <button id="btqa-bulk-production" onclick="btqaBulk('payee','production')" style="padding:7px 16px;background:linear-gradient(135deg,#460186,#6b0070);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🏭 Payées → Production <span id="btqa-bulk-count-production" style="opacity:.7"></span></button>
+      <button id="btqa-bulk-livraison" onclick="btqaBulk('production','livraison')" style="padding:7px 16px;background:linear-gradient(135deg,#D2396D,#ff5500);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🚚 Production → Livraison <span id="btqa-bulk-count-livraison" style="opacity:.7"></span></button>
+      <button id="btqa-bulk-confirmee" onclick="btqaBulk('livraison','confirmee')" style="padding:7px 16px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">✅ Livraison → Récupérable <span id="btqa-bulk-count-confirmee" style="opacity:.7"></span></button>
+    </div>
     <div class="btqa-table-wrap" id="btqa-table-wrap">
       <table class="btqa-table">
         <thead><tr>
