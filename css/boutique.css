@@ -537,8 +537,11 @@
       .btq-designs,.btq-colors,.btq-sizes { margin-bottom:12px; }
       .btq-qty-row { margin-bottom:12px; }
       .btq-size-chip { width:44px;height:36px;font-size:13px; }
+      /* Chips design: wrap au lieu de scroll horizontal (évite conflit overflow) */
+      .btq-designs { flex-wrap:wrap;overflow-x:visible; }
       .btq-design-chip {
         padding:5px 12px;font-size:13px;
+        background:rgba(255,255,255,.08);
         border-color:rgba(255,255,255,.22);
       }
       /* Quantité compacte */
