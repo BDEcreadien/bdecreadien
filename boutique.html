@@ -1666,9 +1666,11 @@ function btqSelectTaille(t, el) {
   el.classList.add('selected');
 }
 function btqQty(delta) {
-  const max = _modalProd?.max_par_commande || 10;
+  const max = _modalProd?.quantite_max || _modalProd?.max_par_commande || 10;
   _modalQty = Math.max(1, Math.min(max, _modalQty + delta));
   document.getElementById('btq-qty-val').textContent = _modalQty;
+  const plusBtn = document.getElementById('btq-qty-plus');
+  if (plusBtn) plusBtn.disabled = _modalQty >= max;
 }
 
 function btqRecalcOptions() {
