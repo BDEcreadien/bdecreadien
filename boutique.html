@@ -1464,6 +1464,8 @@ function btqOpenModal(id) {
   _modalTaille  = null;
   _modalQty     = 1;
   _modalImgFront = '';
+  _modalOpenTime = Date.now();
+  btqTrack('product_view', p.id, p.nom);
   _modalImgDos   = '';
   const couleurs = p.couleurs_disponibles || [];
 
