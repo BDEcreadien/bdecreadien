@@ -9680,6 +9680,7 @@ async function btqaEtape(id, etape) {
   const c = _btqaCommandes.find(x => x.id === id);
   if (c) c.statut = etape;
   btqaRenderStats();
+  btqaUpdateBulkBar();
   btqaFilterTable();
   showToast(`Statut mis à jour : ${label}`);
 }
@@ -9691,6 +9692,7 @@ async function btqaRemettre(id) {
   const c = _btqaCommandes.find(x => x.id === id);
   if (c) c.statut = 'remise';
   btqaRenderStats();
+  btqaUpdateBulkBar();
   btqaFilterTable();
   showToast('Commande marquée comme remise');
 }
@@ -9700,6 +9702,7 @@ async function btqaCancel(id) {
   const c = _btqaCommandes.find(x => x.id === id);
   if (c) c.statut = 'annulee';
   btqaRenderStats();
+  btqaUpdateBulkBar();
   btqaFilterTable();
   showToast('Commande annulée');
 }
