@@ -2219,6 +2219,23 @@ function btqEsc(s) { return s.replace(/'/g,'\\\'').replace(/"/g,'&quot;'); }
   onScroll();
 })();
 
+// ── Bouton aide ──────────────────────────────────────────────
+function btqToggleHelp() {
+  const popup = document.getElementById('btq-help-popup');
+  const isOpen = popup.style.display !== 'none';
+  popup.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) btqTrack('help_click', _modalProd?.id || null, _modalProd?.nom || null, { on_product: !!_modalProd });
+}
+function btqTrackHelp(channel) {
+  btqTrack('help_contact', _modalProd?.id || null, _modalProd?.nom || null, { channel });
+  document.getElementById('btq-help-popup').style.display = 'none';
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#btq-help-btn') && !e.target.closest('#btq-help-popup')) {
+    document.getElementById('btq-help-popup').style.display = 'none';
+  }
+});
+
 // ── Démarrage ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', btqInit);
 </script>
