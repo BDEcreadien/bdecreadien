@@ -10316,8 +10316,9 @@ async function btqaCreatePhysOrder() {
   const { data: profil } = await sb.from('profils').select('id').eq('email', email).maybeSingle();
   const membre_id = profil?.id || null;
 
+  const statut = _btqaPhysOrderMode === 'payee' ? 'payee' : 'en_attente';
   const { data: cmd } = await sb.from('boutique_commandes').insert({
-    type: 'physique', statut: 'en_attente',
+    type: 'physique', statut,
     membre_id, nom_acheteur: nom, email_acheteur: email,
     total_centimes: total, moyen_paiement: moyen,
     cree_par: window._monProfilId, notes,
@@ -10333,7 +10334,7 @@ async function btqaCreatePhysOrder() {
         commande_id: cmd.id, produit_id: item.produit_id, produit_nom: p.nom,
         design_nom: item.design_nom || null, couleur: item.couleur || null,
         taille: item.taille || null, quantite: item.quantite || 1,
-        prix_unitaire_centimes: p.prix_centimes, est_offert: false,
+        prix_unitaire_centimes: item.prix_unitaire_centimes ?? p.prix_centimes, est_offert: false,
       };
     }),
     ...offertItems.map(item => {
@@ -10347,12 +10348,21 @@ async function btqaCreatePhysOrder() {
   ];
   await sb.from('boutique_items').insert(itemsToInsert);
 
-  // Envoyer l'e-mail de confirmation (avec lien de paiement HelloAsso si applicable)
-  fetch('/api/boutique-commande', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ commande_id: cmd.id, nom_acheteur: nom, email_acheteur: email }),
-  }).catch(() => {});
+  if (statut === 'payee') {
+    // Envoyer directement le QR code de retrait
+    fetch('/api/boutique-email-etape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: cmd.id, etape: 'payee' }),
+    }).catch(() => {});
+  } else {
+    // Envoyer l'e-mail de confirmation avec lien de paiement HelloAsso
+    fetch('/api/boutique-commande', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: cmd.id, nom_acheteur: nom, email_acheteur: email }),
+    }).catch(() => {});
+  }
 
   showToast(`Commande ${cmd.numero} créée !`);
   _btqaPhysItems = [];
