@@ -9659,11 +9659,13 @@ function btqaOpenProdModal(prodId) {
       <span class="btqa-psel-dot" style="background:${hex};${border}"></span>${c}
     </button>`;
   }).join('');
-  if (couleurs.length) {
-    const defaultCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
-    _btqaPM.couleur = defaultCouleur;
-    const idx = couleurs.indexOf(defaultCouleur);
-    document.querySelectorAll('#btqa-pm-couleurs button')[idx]?.classList.add('selected');
+  if (couleurs.length === 1) {
+    _btqaPM.couleur = couleurs[0];
+    _btqaPMCouleurExplicite = true;
+    document.querySelectorAll('#btqa-pm-couleurs button')[0]?.classList.add('selected');
+  } else if (couleurs.length > 1) {
+    _btqaPM.couleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
+    _btqaPMCouleurExplicite = false;
   }
 
   const tw = document.getElementById('btqa-pm-taille-wrap');
