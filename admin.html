@@ -3489,7 +3489,7 @@ function editItem(type, i) {
     document.getElementById('ev-titre').value = ev.titre || '';
     document.getElementById('ev-date').value = ev.date || '';
     document.getElementById('ev-dateAffichage').value = ev.dateAffichage || '';
-    const [hD, hF] = (ev.horaire || '').split(/\s*[–--]\s*/);
+    const [hD, hF] = (ev.horaire || '').split(/\s*[–\-]\s*/);
     document.getElementById('ev-horaire-debut').value = hD ? hD.replace('h',':') : '';
     document.getElementById('ev-horaire-fin').value = hF ? hF.replace('h',':') : '';
     document.getElementById('ev-prix').value = (ev.prix || '').replace(/€/g, '').trim();
