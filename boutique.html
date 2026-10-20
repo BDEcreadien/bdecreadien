@@ -964,6 +964,26 @@
 </head>
 <body>
 
+<!-- ── LOADING SCREEN ────────────────────────────────────────── -->
+<div id="btq-loader" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#460186 0%,#6A0F9E 30%,#D2396D 70%,#FF741F 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .4s ease;
+">
+  <p style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,8vw,64px);letter-spacing:3px;color:#fff;margin:0;opacity:.95">BOUTIQUE</p>
+  <div style="width:48px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden">
+    <div style="width:40%;height:100%;border-radius:2px;background:#fff;animation:btqLoadBar 1s ease-in-out infinite alternate"></div>
+  </div>
+  <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin:0">BDE CREAD Lyon</p>
+</div>
+<style>
+@keyframes btqLoadBar {
+  0%   { transform:translateX(0); width:40%; }
+  100% { transform:translateX(150%); width:60%; }
+}
+</style>
+
 <!-- ── NAV (identique aux autres pages) ─────────────────────── -->
 <header class="nav-header" id="main-nav">
   <a href="/" class="nav-logo">
