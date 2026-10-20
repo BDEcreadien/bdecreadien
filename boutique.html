@@ -1426,7 +1426,11 @@ function btqRenderGrid(cat = 'tous') {
 
   grid.innerHTML = filtered.map((p, i) => {
     const designDots = '';
-    const metaTailles = p.a_tailles ? (p.tailles_disponibles?.length <= 4 ? p.tailles_disponibles.join(' · ') : p.tailles_disponibles?.slice(0,4).join(' · ') + '…') : '';
+    const _metaParts = [];
+    if (p.designs?.length) _metaParts.push(`${p.designs.length} design${p.designs.length > 1 ? 's' : ''}`);
+    if (p.couleurs_disponibles?.length) _metaParts.push(`${p.couleurs_disponibles.length} couleur${p.couleurs_disponibles.length > 1 ? 's' : ''}`);
+    if (p.a_tailles) _metaParts.push('Tailles');
+    const metaTailles = p.categorie === 'Accessoire' ? '' : _metaParts.join(' · ');
     return `
     <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
       <div class="btq-card-img">
