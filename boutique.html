@@ -280,10 +280,10 @@
       cursor:pointer;
       transition:all .2s;backdrop-filter:blur(4px);
     }
-    .btq-filter-btn.active {
+    .btq-filter-btn.active, .btq-filter-btn.active:focus, .btq-filter-btn.active:focus-visible {
       background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
       color:white;
-      box-shadow:0 4px 16px rgba(70,1,134,.35);
+      box-shadow:0 4px 16px rgba(70,1,134,.35) !important;
     }
     .btq-filter-btn:hover:not(.active) {
       background:rgba(255,255,255,.14);color:white;
