@@ -1579,6 +1579,10 @@ function btqOpenModal(id) {
 
 function btqCloseModal(e) {
   if (e.target === document.getElementById('btq-modal') || e.target === null) {
+    if (_modalProd && _modalOpenTime) {
+      const secs = Math.round((Date.now() - _modalOpenTime) / 1000);
+      btqTrack('product_time', _modalProd.id, _modalProd.nom, { seconds: secs });
+    }
     document.getElementById('btq-modal').classList.remove('open');
     document.body.style.overflow = '';
     _modalProd = null;
