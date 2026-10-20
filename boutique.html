@@ -2250,7 +2250,11 @@ document.addEventListener('click', e => {
 });
 
 // ── Démarrage ────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', btqInit);
+function _waitSbAndInit() {
+  if (window._sb) { btqInit(); return; }
+  setTimeout(_waitSbAndInit, 50);
+}
+document.addEventListener('DOMContentLoaded', _waitSbAndInit);
 </script>
 
 <script defer src="js/main.js?v=20"></script>
