@@ -9631,6 +9631,7 @@ function btqaOpenProdModal(prodId) {
   const p = _btqaProduits.find(x => x.id === prodId);
   if (!p) return;
   _btqaPM = { prod: p, design: null, couleur: null, taille: null, qty: 1 };
+  _btqaPMCouleurExplicite = false;
   document.getElementById('btqa-pm-nom').textContent   = p.nom;
   document.getElementById('btqa-pm-price').textContent = btqaFmt(p.prix_centimes);
   document.getElementById('btqa-pm-qty').textContent   = 1;
