@@ -8515,7 +8515,7 @@ async function lnkMove(id, delta) {
 
   function doLogout(reason) {
     console.log('[admin] auto-logout:', reason);
-    try { localStorage.removeItem('bde_admin_token'); } catch (_) {}
+    try { sessionStorage.removeItem('bde_admin_token'); } catch (_) {}
     if (window.Auth && Auth.logout) Auth.logout();
     else window.location.href = '/connexion.html?next=/admin.html&expired=1';
   }
