@@ -1679,6 +1679,33 @@
 }
 .btqa-pack-offer { display:flex;align-items:center;gap:8px;font-size:13px;color:#460186;font-weight:600; }
 
+/* ── Analytiques ── */
+.btqa-an-kpis { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem; }
+.btqa-an-kpi { background:#fff;border:1.5px solid #f0e8ff;border-radius:14px;padding:16px 18px;text-align:center; }
+.btqa-an-kpi .val { font-size:2rem;font-weight:800;color:#460186;line-height:1; }
+.btqa-an-kpi .lbl { font-size:11px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.5px; }
+.btqa-an-section { background:#fff;border:1.5px solid #f0e8ff;border-radius:14px;padding:18px 20px;margin-bottom:1rem; }
+.btqa-an-section h4 { margin:0 0 14px;font-size:13px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:.5px; }
+.btqa-an-bar-row { display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px; }
+.btqa-an-bar-label { width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#333;font-weight:600; }
+.btqa-an-bar-track { flex:1;background:#f0e8ff;border-radius:99px;height:10px;overflow:hidden; }
+.btqa-an-bar-fill { height:100%;background:linear-gradient(90deg,#460186,#D2396D);border-radius:99px;transition:width .4s; }
+.btqa-an-bar-count { width:36px;text-align:right;color:#666;font-size:12px; }
+.btqa-an-day-row { display:flex;gap:6px;align-items:flex-end;height:80px; }
+.btqa-an-day-col { flex:1;display:flex;flex-direction:column;align-items:center;gap:4px; }
+.btqa-an-day-bar { width:100%;background:linear-gradient(180deg,#460186,#D2396D);border-radius:6px 6px 0 0;transition:height .4s;min-height:2px; }
+.btqa-an-day-label { font-size:9px;color:#aaa;white-space:nowrap; }
+.btqa-an-funnel { display:flex;gap:0;align-items:stretch; }
+.btqa-an-funnel-step { flex:1;text-align:center;padding:14px 8px;background:#faf8ff;border:1px solid #f0e8ff; }
+.btqa-an-funnel-step:first-child { border-radius:12px 0 0 12px; }
+.btqa-an-funnel-step:last-child { border-radius:0 12px 12px 0; }
+.btqa-an-funnel-step .fval { font-size:1.5rem;font-weight:800;color:#460186; }
+.btqa-an-funnel-step .flbl { font-size:11px;color:#888;margin-top:2px; }
+.btqa-an-funnel-step .fpct { font-size:11px;color:#D2396D;font-weight:700;margin-top:4px; }
+.btqa-an-period { display:flex;gap:6px;margin-bottom:1.5rem; }
+.btqa-an-period button { padding:6px 14px;border-radius:99px;border:1.5px solid #e0d0f0;background:#fff;font-size:12px;font-weight:600;color:#666;cursor:pointer; }
+.btqa-an-period button.active { background:#460186;color:#fff;border-color:#460186; }
+
 /* ── Responsive mobile ── */
 @media(max-width:640px) {
   /* Page wrapper */
