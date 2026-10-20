@@ -9703,6 +9703,37 @@ async function btqaCancel(id) {
   showToast('Commande annulée');
 }
 
+// ── Actions groupées ─────────────────────────────────────────
+function btqaUpdateBulkBar() {
+  const counts = { payee: 0, production: 0, livraison: 0 };
+  (_btqaCommandes || []).forEach(c => { if (counts[c.statut] !== undefined) counts[c.statut]++; });
+  const map = { production: 'payee', livraison: 'production', confirmee: 'livraison' };
+  for (const [target, source] of Object.entries(map)) {
+    const btn = document.getElementById(`btqa-bulk-${target}`);
+    const cnt = document.getElementById(`btqa-bulk-count-${target}`);
+    if (!btn) continue;
+    if (counts[source] > 0) {
+      btn.style.display = '';
+      if (cnt) cnt.textContent = `(${counts[source]})`;
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+}
+async function btqaBulk(from, to) {
+  const targets = (_btqaCommandes || []).filter(c => c.statut === from);
+  if (!targets.length) return;
+  const label = _btqaEtapeLabels[to] || to;
+  if (!confirm(`Passer ${targets.length} commande(s) en "${label}" ? Un e-mail sera envoyé à chaque client.`)) return;
+  const ids = targets.map(c => c.id);
+  await window.Auth.sb.from('boutique_commandes').update({ statut: to }).in('id', ids);
+  targets.forEach(c => c.statut = to);
+  btqaRenderStats();
+  btqaUpdateBulkBar();
+  btqaFilterTable();
+  showToast(`${targets.length} commande(s) passées en "${label}"`);
+}
+
 // ── Export CSV ───────────────────────────────────────────────
 async function btqaRelanceCommandes(btn) {
   const enAttente = (_btqaCommandes || []).filter(c => c.statut === 'en_attente' && c.email_acheteur);
