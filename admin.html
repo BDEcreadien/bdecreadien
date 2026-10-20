@@ -8572,8 +8572,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 3. Fallback : token dans localStorage (compat avec l'ancien flow)
-  token = localStorage.getItem('bde_admin_token') || '';
+  // 3. Fallback : token dans sessionStorage (compat avec l'ancien flow)
+  token = sessionStorage.getItem('bde_admin_token') || '';
   if (token) {
     // Si admin, migrer le token vers Supabase pour le partager
     if (profil.role === 'admin') {
