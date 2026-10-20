@@ -8567,7 +8567,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (cfg && cfg.value) {
     token = cfg.value;
-    localStorage.setItem('bde_admin_token', token);
+    sessionStorage.setItem('bde_admin_token', token);
     init();
     return;
   }
