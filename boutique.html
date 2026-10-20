@@ -1688,6 +1688,7 @@ function btqSelectTaille(t, el) {
   _modalTaille = t;
   document.querySelectorAll('.btq-size-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  btqTrack('taille_select', _modalProd?.id, _modalProd?.nom, { taille: t });
 }
 function btqQty(delta) {
   const max = _modalProd?.quantite_max || _modalProd?.max_par_commande || 10;
