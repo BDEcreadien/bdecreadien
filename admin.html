@@ -10250,7 +10250,9 @@ function btqaSelectMembre(id) {
   document.getElementById('btqa-p-nom-drop').style.display = 'none';
 }
 
-function btqaConfirmPhysOrder() {
+let _btqaPhysOrderMode = 'en_attente';
+function btqaConfirmPhysOrder(mode = 'en_attente') {
+  _btqaPhysOrderMode = mode;
   const nom   = document.getElementById('btqa-p-nom').value.trim();
   const email = document.getElementById('btqa-p-email').value.trim();
   if (!nom)   return showToast('Entre le nom de l\'acheteur', 'error');
