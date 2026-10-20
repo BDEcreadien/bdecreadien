@@ -167,6 +167,11 @@ export async function onRequest({ request, env }) {
       <tr><td style="padding:10px 0 0;font-weight:700">Total</td><td style="padding:10px 0 0;text-align:right;font-weight:700;color:#460186">${formatEur(total)}</td></tr>
     </table>
     ${payBtn}
+    <p style="margin:16px 0 0">
+      <a href="https://bdecreadien.fr/boutique.html?commande=${encodeURIComponent(commande_id)}" style="display:inline-block;padding:10px 24px;background:white;color:#460186;text-decoration:none;border-radius:10px;font-family:sans-serif;font-weight:600;font-size:14px;border:2px solid #460186">
+        Voir / modifier ma commande
+      </a>
+    </p>
     <p style="margin:20px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">Conserve cet e-mail pour le retrait. Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a> &nbsp;·&nbsp; <a href="https://bdecreadien.fr" style="color:#D2396D;text-decoration:none">bdecreadien.fr</a></p>
   </div>
 </div>
