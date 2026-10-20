@@ -4,464 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mentions légales — BDE CREAD Lyon</title>
-  <meta name="description" content="Mentions légales du site BDE CREAD Lyon — éditeur, hébergeur, données personnelles, cookies.">
-  <meta name="robots" content="noindex, follow">
-  <link rel="canonical" href="https://bdecreadien.fr/mentions-legales.html">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://bdecreadien.fr/mentions-legales.html">
-  <meta property="og:title" content="Mentions légales — BDE CREAD Lyon">
-  <meta property="og:description" content="Mentions légales du site BDE CREAD Lyon.">
-  <meta property="og:locale" content="fr_FR">
-  <meta property="og:site_name" content="BDE CREAD Lyon">
-  <meta property="og:image" content="https://bdecreadien.fr/assets/Logo.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Mentions légales — BDE CREAD Lyon">
-  <meta name="twitter:description" content="Mentions légales du site BDE CREAD Lyon.">
-  <meta name="twitter:image" content="https://bdecreadien.fr/assets/Logo.png">
-    <link rel="preconnect" href="https://zgscyfpqwbmwemzqtvpx.supabase.co" crossorigin>
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@300;400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@300;400;600;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=31">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="BDE CREAD">
-  <style>
-    .ml-wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 3rem 2rem 6rem;
-    }
-    .ml-intro {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      background: var(--gris-clair);
-      border-radius: 14px;
-      padding: 1.5rem;
-      margin-bottom: 3rem;
-      font-size: 13px;
-      line-height: 1.8;
-      color: var(--gris-texte);
-    }
-    .ml-intro-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--gradient);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .ml-intro-icon svg { width: 18px; height: 18px; stroke: white; }
-    .ml-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-    }
-    .ml-card {
-      background: var(--gris-clair);
-      border-radius: 16px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .ml-card.full { grid-column: 1 / -1; }
-    .ml-card-head {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .ml-card-icon {
-      width: 38px;
-      height: 38px;
-      background: var(--gradient);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .ml-card-icon svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .ml-card-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--noir);
-    }
-    .ml-card-body {
-      font-size: 13px;
-      line-height: 1.85;
-      color: var(--gris-texte);
-    }
-    .ml-card-body strong { color: var(--noir); font-weight: 600; }
-    .ml-card-body a { color: var(--violet); text-decoration: none; font-weight: 500; }
-    .ml-card-body a:hover { text-decoration: underline; }
-    .ml-card-body em { font-style: italic; }
-    .ml-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 0.25rem;
-    }
-    .ml-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 1rem;
-      padding: 0.6rem 0;
-      border-bottom: 1px solid rgba(70,1,134,0.08);
-    }
-    .ml-row:last-child { border-bottom: none; }
-    .ml-row-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gris-texte);
-      white-space: nowrap;
-    }
-    .ml-row-value {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--noir);
-      text-align: right;
-    }
-    .ml-row-value a { color: var(--violet); text-decoration: none; }
-    .ml-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: rgba(70,1,134,0.1);
-      color: var(--violet);
-      margin-bottom: 0.75rem;
-    }
-    .ml-card-body ul {
-      padding-left: 1rem;
-      margin-top: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-    .ml-card-body li::marker { color: var(--violet); }
-    @media (max-width: 640px) {
-      .ml-grid { grid-template-columns: 1fr; }
-      .ml-card.full { grid-column: 1; }
-    }
-  </style>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg?v=4">
-  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-v2-96x96.png?v=4">
-  <link rel="shortcut icon" href="/favicon-v2.ico?v=4">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png?v=4">
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://bdecreadien.fr/"},{"@type":"ListItem","position":2,"name":"Mentions légales","item":"https://bdecreadien.fr/mentions-legales.html"}]}
-  </script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#0d0820;color:#fff;min-height:100vh;padding:0 0 60px}
+    .hero{background:linear-gradient(135deg,#460186,#D2396D);padding:60px 24px 40px;text-align:center}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,72px);letter-spacing:2px;margin-bottom:8px}
+    .hero p{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;opacity:.7}
+    .back{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.6);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:32px 24px 0;transition:color .2s}
+    .back:hover{color:#fff}
+    .content{max-width:760px;margin:40px auto;padding:0 24px}
+    .section{background:rgba(255,255,255,.04);border-radius:16px;padding:28px;margin-bottom:20px}
+    h2{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#D2396D;margin-bottom:16px}
+    p{font-size:15px;line-height:1.7;color:rgba(255,255,255,.75);margin-bottom:12px}
+    p:last-child{margin-bottom:0}
+    a{color:#D2396D;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .footer-nav{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:48px;padding:0 24px}
+    .footer-nav a{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);text-decoration:none}
+    .footer-nav a:hover{color:rgba(255,255,255,.8)}
+  </style>
 </head>
 <body>
-
-  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
-
-  <!-- @include nav @start -->
-<nav id="navbar" aria-label="Navigation principale">
-  <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
-    <img src="assets/Logo-nav.png" alt="Logo BDE CREAD Lyon" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
-    <div class="nav-logo-text">
-      <span class="bde">BDE LYON</span>
-      <span class="cread">CREAD</span>
-    </div>
+  <a href="/boutique" class="back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    Retour boutique
   </a>
-  <ul class="nav-links">
-    <li><a href="index.html">Accueil</a></li>
-    <li><a href="agenda.html">Agenda</a></li>
-    <li><a href="communication.html">Communication</a></li>
-    <li><a href="annonces.html">Annonces</a></li>
-    <li><a href="partenaires.html">Partenaires</a></li>
-    <li><a href="contact.html">Contact</a></li>
-    <li id="nav-auth-li"></li>
-  </ul>
-  <button class="nav-burger" id="nav-burger" aria-expanded="false" aria-label="Ouvrir le menu">
-    <span class="nav-burger-line"></span>
-    <span class="nav-burger-line"></span>
-    <span class="nav-burger-line"></span>
-  </button>
-</nav>
-<script>
-(function(){var norm=function(s){return (s||'').toLowerCase().replace(/^\//,'').replace(/\.html$/,'')||'index';};var c=norm(location.pathname.split('/').pop());document.querySelectorAll('.nav-links a').forEach(function(a){var h=norm(a.getAttribute('href'));if(h===c){a.setAttribute('aria-current','page');a.classList.add('nav-active');}});})();
-</script>
-<!-- @include nav @end -->
-
-  <div class="agenda-hero">
-    <div class="page-title-block">
-      <p class="eyebrow">BDE CREAD Lyon</p>
-      <h1>MENTIONS LÉGALES</h1>
+  <div class="hero">
+    <h1>Mentions légales</h1>
+    <p>Informations légales du site</p>
+  </div>
+  <div class="content">
+    <div class="section">
+      <h2>Éditeur du site</h2>
+      <p><strong>BDE CREAD Lyon</strong><br>
+      Bureau des Étudiants de l'école CREAD Lyon<br>
+      Association loi 1901<br>
+      Adresse : CREAD Lyon, Lyon, France<br>
+      E-mail : <a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></p>
+    </div>
+    <div class="section">
+      <h2>Hébergement</h2>
+      <p><strong>Cloudflare Pages</strong><br>
+      Cloudflare, Inc.<br>
+      101 Townsend St, San Francisco, CA 94107, USA<br>
+      <a href="https://www.cloudflare.com" target="_blank" rel="noopener">www.cloudflare.com</a></p>
+    </div>
+    <div class="section">
+      <h2>Responsable de la publication</h2>
+      <p>Le Bureau des Étudiants du CREAD Lyon, représenté par son président en exercice.</p>
+    </div>
+    <div class="section">
+      <h2>Propriété intellectuelle</h2>
+      <p>L'ensemble du contenu de ce site (textes, images, visuels, logos) est la propriété du BDE CREAD Lyon. Toute reproduction, même partielle, est interdite sans autorisation écrite préalable.</p>
+    </div>
+    <div class="section">
+      <h2>Données personnelles</h2>
+      <p>Les données collectées sur ce site (nom, e-mail) sont utilisées uniquement dans le cadre de la gestion des commandes de la boutique BDE. Elles ne sont jamais revendues à des tiers. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données en écrivant à <a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a>.</p>
+    </div>
+    <div class="section">
+      <h2>Cookies</h2>
+      <p>Ce site utilise des cookies techniques nécessaires à son fonctionnement (authentification, session). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.</p>
     </div>
   </div>
-
-  <main id="main-content">
-    <div class="ml-wrap">
-
-      <div class="ml-intro">
-        <div class="ml-intro-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <p>Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance en l'économie numérique, voici les informations relatives à l'édition et à l'hébergement de ce site.</p>
-      </div>
-
-      <div class="ml-grid">
-
-        <!-- Éditeur -->
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-            <p class="ml-card-title">Éditeur du site</p>
-          </div>
-          <div class="ml-card-body">
-            <div class="ml-rows">
-              <div class="ml-row"><span class="ml-row-label">Nom</span><span class="ml-row-value">BDE CREAD Lyon</span></div>
-              <div class="ml-row"><span class="ml-row-label">Nature</span><span class="ml-row-value">Association étudiante</span></div>
-              <div class="ml-row"><span class="ml-row-label">Email</span><span class="ml-row-value"><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></span></div>
-              <div class="ml-row"><span class="ml-row-label">Instagram</span><span class="ml-row-value"><a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer">@bdecreadien</a></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Directeur -->
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-            <p class="ml-card-title">Directeur de publication</p>
-          </div>
-          <div class="ml-card-body">
-            <div class="ml-rows">
-              <div class="ml-row"><span class="ml-row-label">Nom</span><span class="ml-row-value">Tom Maradan</span></div>
-              <div class="ml-row"><span class="ml-row-label">Fonction</span><span class="ml-row-value">Président BDE CREAD</span></div>
-              <div class="ml-row"><span class="ml-row-label">Contact</span><span class="ml-row-value"><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hébergeur -->
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
-            <p class="ml-card-title">Hébergeur</p>
-          </div>
-          <div class="ml-card-body">
-            <div class="ml-rows">
-              <div class="ml-row"><span class="ml-row-label">Société</span><span class="ml-row-value">Cloudflare, Inc.</span></div>
-              <div class="ml-row"><span class="ml-row-label">Adresse</span><span class="ml-row-value">101 Townsend St, San Francisco</span></div>
-              <div class="ml-row"><span class="ml-row-label">Site</span><span class="ml-row-value"><a href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer">cloudflare.com</a></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cookies -->
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2z"/><circle cx="8.5" cy="9" r="1.5"/><circle cx="15" cy="9" r="1.5"/><path d="M8.5 15a5.5 5.5 0 007 0"/></svg></div>
-            <p class="ml-card-title">Cookies</p>
-          </div>
-          <div class="ml-card-body">
-            <span class="ml-tag">Google Analytics 4</span>
-            <p>Cookies de mesure d'audience, durée max. <strong>2 ans</strong>. Collecte anonymisée uniquement.</p>
-            <span class="ml-tag" style="margin-top:0.75rem;">Cloudflare Analytics</span>
-            <p><em>Sans cookie</em> — aucun dépôt sur ton navigateur.</p>
-          </div>
-        </div>
-
-        <!-- RGPD -->
-        <div class="ml-card full">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <p class="ml-card-title">Données personnelles &amp; RGPD</p>
-          </div>
-          <div class="ml-card-body">
-            <p>Aucune donnée personnelle n'est vendue ni cédée à des tiers. Conformément au <strong>RGPD (UE 2016/679)</strong>, tu disposes des droits suivants :</p>
-            <ul>
-              <li>Droit d'accès, de rectification et d'effacement</li>
-              <li>Droit à la portabilité et à la limitation du traitement</li>
-              <li>Droit d'opposition au traitement</li>
-            </ul>
-            <p style="margin-top:0.75rem;">Pour exercer ces droits : <a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></p>
-
-            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Données collectées</h3>
-            <ul style="font-size:13px;">
-              <li><strong>Formulaire contact</strong> : prénom, email, message → <em>finalité :</em> répondre à la demande → <em>conservation :</em> 1 an → <em>base légale :</em> intérêt légitime.</li>
-              <li><strong>Compte étudiant</strong> (mon-espace) : prénom, nom, email, téléphone, année d'étude, avatar → <em>finalité :</em> gestion des membres BDE, carte fidélité, annonces → <em>conservation :</em> durée de l'adhésion + 1 an → <em>base légale :</em> exécution du contrat d'adhésion.</li>
-              <li><strong>Annonces</strong> : titre, description, prix, contact (email/tel/insta), photos → <em>finalité :</em> mise en relation entre étudiants → <em>conservation :</em> jusqu'à suppression par l'auteur → <em>base légale :</em> consentement.</li>
-              <li><strong>Google Analytics 4</strong> : données de navigation anonymisées (pages vues, durée) → <em>finalité :</em> mesure d'audience → <em>conservation :</em> 2 ans → <em>base légale :</em> consentement (bandeau cookies).</li>
-              <li><strong>Newsletter</strong> : email et nom (optionnel) → <em>finalité :</em> envoi d'informations sur les événements et actualités du BDE → <em>conservation :</em> jusqu'à désinscription → <em>base légale :</em> consentement (opt-in explicite, désinscription en 1 clic dans chaque email).</li>
-            </ul>
-
-            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Sous-traitants et transferts hors UE</h3>
-            <ul style="font-size:13px;">
-              <li><strong>Supabase</strong> (Frankfurt, UE) : hébergement de la base de données et authentification. Données hébergées en Union Européenne.</li>
-              <li><strong>Cloudflare</strong> (USA) : hébergement du site et routage email. Transfert encadré par les <a href="https://www.cloudflare.com/gdpr/introduction/" target="_blank" rel="noopener">Clauses Contractuelles Types</a>.</li>
-              <li><strong>Resend</strong> (USA) : envoi d'emails transactionnels. Transfert encadré par les Clauses Contractuelles Types.</li>
-              <li><strong>Google Analytics 4</strong> (Google LLC, USA) : mesure d'audience. Voir <a href="https://policies.google.com/privacy/frameworks" target="_blank" rel="noopener">garanties Google</a>.</li>
-              <li><strong>GitHub</strong> (USA) : hébergement des fichiers médias publics du site.</li>
-            </ul>
-
-            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Cookies</h3>
-            <p style="font-size:13px;">Nous utilisons uniquement des cookies de mesure d'audience (Google Analytics 4, IP anonymisée), déposés <strong>après consentement explicite</strong> via le bandeau. Tu peux modifier ton choix à tout moment en cliquant <a href="#" onclick="event.preventDefault();window.openCookieSettings&&window.openCookieSettings();">ici pour rouvrir les paramètres cookies</a>.</p>
-
-            <h3 style="margin-top:1.5rem;font-size:15px;color:var(--violet);">Réclamation</h3>
-            <p style="font-size:13px;">Si tu estimes que tes droits ne sont pas respectés, tu peux introduire une réclamation auprès de la <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">CNIL</a>.</p>
-          </div>
-        </div>
-
-        <!-- Propriété + Liens -->
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/></svg></div>
-            <p class="ml-card-title">Propriété intellectuelle</p>
-          </div>
-          <div class="ml-card-body">
-            <p>Tout le contenu (textes, visuels, logos) est la propriété du <strong>BDE CREAD Lyon</strong>.<br>© 2026 — Reproduction interdite sans accord écrit.</p>
-          </div>
-        </div>
-
-        <div class="ml-card">
-          <div class="ml-card-head">
-            <div class="ml-card-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div>
-            <p class="ml-card-title">Liens hypertextes</p>
-          </div>
-          <div class="ml-card-body">
-            <p>Ce site peut contenir des liens vers des sites tiers. Le BDE CREAD Lyon n'est pas responsable de leur contenu. La création de liens vers ce site est libre sous réserve de ne pas porter atteinte à notre image.</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </main>
-
-  <!-- @include footer @start -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
-        <img src="assets/Logo-nav.png" alt="Logo BDE CREAD Lyon" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
-        <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
-      </a>
-      <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon. Architecture intérieure & design.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Navigation</h4>
-      <ul>
-        <li><a href="index.html">Accueil</a></li>
-        <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="communication.html">Communication</a></li>
-        <li><a href="annonces.html">Annonces</a></li>
-        <li><a href="partenaires.html">Partenaires</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <ul>
-        <li><a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a></li>
-        <li><a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer">@bdecreadien</a></li>
-      </ul>
-    </div>
+  <div class="footer-nav">
+    <a href="/mentions-legales">Mentions légales</a>
+    <a href="/cgu">CGU</a>
+    <a href="/cgv">CGV</a>
+    <a href="/confidentialite">Confidentialité</a>
   </div>
-  <div class="footer-bottom">
-    <p class="footer-copy">© 2026 <span>BDE CREAD Lyon</span> — Tous droits réservés</p>
-    <a href="mentions-legales.html" class="footer-mentions">Mentions légales</a>
-    <a href="https://www.instagram.com/bdecreadien" target="_blank" rel="noopener noreferrer" class="footer-insta" aria-label="Instagram BDE CREAD">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      @bdecreadien
-    </a>
-  </div>
-</footer>
-<!-- @include footer @end -->
-
-  <script defer src="js/main.js?v=20"></script>
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "868cda79a5844d4a842363b412470415"}'></script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){if(r.active&&r.active.scriptURL&&r.active.scriptURL.endsWith('/service-worker.js'))r.unregister();});}).catch(function(){});
-    }
-  </script>
-
-  <!-- NOTIF BANNER -->
-  <div id="notif-banner" role="dialog" aria-label="Newsletter BDE CREAD">
-  <div class="nb-icon">📧</div>
-  <div class="nb-text" id="nb-default-text">
-    <p class="nb-title">Newsletter BDE CREAD</p>
-    <p class="nb-sub">Reste au courant : soirées, actus, deals partenaires</p>
-  </div>
-  <div class="nb-actions" id="nb-default-actions">
-    <button class="nb-later" onclick="dismissNotifBanner()">Plus tard</button>
-    <button class="nb-subscribe" onclick="openNewsletterForm()">S'abonner</button>
-  </div>
-  <form id="nb-form" onsubmit="submitNewsletterInline(event)" style="display:none;flex:1;gap:8px;"><input type="text" name="url" id="nb-hp" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
-    <input type="email" id="nb-email" required placeholder="ton@email.com"
-      style="flex:1;min-width:0;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow',sans-serif;font-size:13px;">
-    <button type="submit" class="nb-subscribe">OK</button>
-  </form>
-  <p id="nb-success" style="display:none;margin:0;color:#a5f3c4;font-size:13px;font-family:'Barlow',sans-serif;">✓ Inscrit ! Bienvenue.</p>
-</div>
-<script>
-  (function() {
-    if (localStorage.getItem('nl-dismissed') || localStorage.getItem('nl-subscribed') || sessionStorage.getItem('nl-shown')) return;
-    setTimeout(function() {
-      var b = document.getElementById('notif-banner');
-      if (b) { b.classList.add('show'); sessionStorage.setItem('nl-shown', '1'); }
-    }, 3000);
-  })();
-  function dismissNotifBanner() {
-    document.getElementById('notif-banner').classList.remove('show');
-    localStorage.setItem('nl-dismissed', '1');
-  }
-  function openNewsletterForm() {
-    document.getElementById('nb-default-text').style.display = 'none';
-    document.getElementById('nb-default-actions').style.display = 'none';
-    var f = document.getElementById('nb-form');
-    f.style.display = 'flex';
-    window._nbOpenedAt = Date.now();
-    setTimeout(function(){ document.getElementById('nb-email').focus(); }, 50);
-  }
-  async function submitNewsletterInline(e) {
-    e.preventDefault();
-    // Anti-bot : honeypot + délai minimum d'affichage
-    var hp = document.getElementById('nb-hp');
-    if (hp && hp.value) { console.warn('[newsletter] honeypot rempli, requête ignorée'); return; }
-    if (window._nbOpenedAt && (Date.now() - window._nbOpenedAt) < 1500) { console.warn('[newsletter] soumission trop rapide, requête ignorée'); return; }
-    var email = document.getElementById('nb-email').value.trim().toLowerCase();
-    if (!email) return;
-    var btn = e.target.querySelector('button');
-    btn.disabled = true; btn.textContent = '…';
-    try {
-      var sbClient = window.sb || (window.supabase && window.SUPABASE_URL ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null);
-      if (sbClient) {
-        var res = await sbClient.from('newsletter_subscribers').insert({ email: email, source: 'banner' });
-        if (res.error && res.error.code && res.error.code !== '23505') { console.warn(res.error); }
-      }
-    } catch (_) {}
-    document.getElementById('nb-form').style.display = 'none';
-    document.getElementById('nb-success').style.display = 'block';
-    localStorage.setItem('nl-subscribed', '1');
-    setTimeout(function(){
-      document.getElementById('notif-banner').classList.remove('show');
-    }, 2000);
-  }
-</script>
-<script defer src="/js/cookie-banner.js?v=1"></script>
-<script defer src="/js/tracker.js?v=1"></script>
 </body>
 </html>
