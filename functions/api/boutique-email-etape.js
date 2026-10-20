@@ -91,7 +91,7 @@ export async function onRequest({ request, env }) {
     <div style="border-left:3px solid #D2396D;border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;background:#fdf9ff;font-size:13px;color:#555">
       <strong>Où retirer ?</strong><br>Hall de l'école &nbsp;·&nbsp; Midi de 12h30 à 14h
     </div>
-    <div style="text-align:center;margin:20px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
+    <div style="text-align:center;margin:16px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
       <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#460186">Présente ce QR code lors du retrait</p>
       <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(cmd.numero)}&size=180x180&margin=8&color=460186" alt="${cmd.numero}" style="width:180px;height:180px">
       <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#460186;letter-spacing:2px">${cmd.numero}</p>
