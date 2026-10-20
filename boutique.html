@@ -1681,6 +1681,7 @@ function btqSelectCouleur(c, el) {
   _modalCouleurExplicite = true;
   document.querySelectorAll('.btq-color-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  btqTrack('couleur_select', _modalProd?.id, _modalProd?.nom, { couleur: c });
   btqUpdateThumbs();
 }
 function btqSelectTaille(t, el) {
