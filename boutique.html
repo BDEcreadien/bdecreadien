@@ -1217,6 +1217,7 @@ async function btqInit() {
   btqTrack('page_view', null, null, { device: window.innerWidth < 768 ? 'mobile' : 'desktop' });
   // Charger catalogue + panier
   await Promise.all([btqLoadCatalogue(), btqLoadCart()]);
+  btqUpdateHeroImages();
   btqRenderGrid();
   btqUpdateCartUI();
   // N'appliquer les packs qu'en mode panier actif (pas sur une commande en_attente)
