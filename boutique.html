@@ -1325,6 +1325,27 @@ async function btqResumePay(commandeId, btn) {
   }
 }
 
+// ── Hero images dynamiques ─────────────────────────────────
+function btqUpdateHeroImages() {
+  const withImg = _produits.filter(p => p.image_url);
+  if (!withImg.length) return;
+  // Mélange pour varier à chaque chargement
+  const shuffled = withImg.slice().sort(() => Math.random() - 0.5);
+  for (let i = 1; i <= 5; i++) {
+    const el = document.querySelector(`.btq-fi-${i}`);
+    if (!el) continue;
+    const p = shuffled[(i - 1) % shuffled.length];
+    if (p?.image_url) {
+      const img = document.createElement('img');
+      img.src = p.image_url;
+      img.alt = p.nom;
+      img.loading = 'lazy';
+      el.innerHTML = '';
+      el.appendChild(img);
+    }
+  }
+}
+
 // ── Catalogue ──────────────────────────────────────────────
 async function btqLoadCatalogue() {
   const [{ data: produits }, packsRes] = await Promise.all([
