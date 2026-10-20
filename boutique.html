@@ -1983,8 +1983,8 @@ function btqUpdateCartUI() {
     if (i.est_offert && i.prix >= 0) {
       priceHtml = `<span class="btq-cart-item-price offert">OFFERT</span>`;
     } else if (remise) {
-      priceHtml = `<span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
-        <span style="text-decoration:line-through;opacity:.45;font-size:11px;">${btqFmt(i.prix * i.quantite)}</span>
+      priceHtml = `<span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+        <span style="text-decoration:line-through;color:rgba(255,255,255,.4);font-size:12px;font-weight:600;">${btqFmt(i.prix * i.quantite)}</span>
         <span class="btq-cart-item-price remise">${btqFmt(prixTotal)}</span>
       </span>`;
     } else {
