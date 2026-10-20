@@ -1179,8 +1179,9 @@ async function btqInit() {
   }
 
   // Afficher boutique
-  document.getElementById('btq-shop').style.display = 'block';
-  document.getElementById('btq-fab').style.display   = 'flex';
+  document.getElementById('btq-shop').style.display      = 'block';
+  document.getElementById('btq-fab').style.display       = 'flex';
+  document.getElementById('btq-help-btn').style.display  = 'flex';
 
   btqTrack('page_view', null, null, { device: window.innerWidth < 768 ? 'mobile' : 'desktop' });
   // Charger catalogue + panier
