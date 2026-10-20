@@ -1166,12 +1166,15 @@ async function btqInit() {
   _sb = window._sb || null;
   if (!_sb) return console.error('[BTQ] Supabase client introuvable');
 
-  const { data: { session } } = await _sb.auth.getSession();
-  if (!session) {
-    document.getElementById('btq-gate').style.display = 'flex';
-    return;
+  // _user peut déjà être défini par onAuthStateChange
+  if (!_user) {
+    const { data: { session } } = await _sb.auth.getSession();
+    if (!session) {
+      document.getElementById('btq-gate').style.display = 'flex';
+      return;
+    }
+    _user = session.user;
   }
-  _user = session.user;
 
   // Profil
   const { data: profil } = await _sb.from('profils').select('*').eq('id', _user.id).single();
