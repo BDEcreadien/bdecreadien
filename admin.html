@@ -2271,7 +2271,7 @@ async function login() {
   init();
 }
 function logout() {
-  localStorage.removeItem('bde_admin_token');
+  sessionStorage.removeItem('bde_admin_token');
   if (window.Auth && Auth.logout) Auth.logout();
   else window.location.href = '/';
 }
