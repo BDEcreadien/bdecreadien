@@ -75,7 +75,7 @@ export async function onRequest({ request, env }) {
 <div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
   <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:14px 24px;text-align:center">
     <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:9px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
-    <p style="margin:0;color:white;font-size:32px;font-weight:800;letter-spacing:1px">Boutique Merch</p>
+    <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
   </div>
   <div style="background:white;padding:24px">
     <p style="margin:0 0 8px">Bonjour <strong>${cmd.nom_acheteur}</strong>,</p>
