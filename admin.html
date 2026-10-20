@@ -9332,6 +9332,107 @@ function btqaSwitchTab(tab) {
   if (tab === 'analytiques') { btqaLoadAnalytics(); }
 }
 
+// ── Analytiques ──────────────────────────────────────────────
+let _anPeriod = 7;
+async function btqaLoadAnalytics(days) {
+  if (days) _anPeriod = days;
+  const wrap = document.getElementById('btqa-analytics-content');
+  wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#999">Chargement…</div>';
+  const sb = window.Auth.sb;
+  const since = new Date(Date.now() - _anPeriod * 86400000).toISOString();
+  const { data: rows } = await sb.from('btq_analytics').select('event,product_id,product_nom,data,created_at').gte('created_at', since);
+  if (!rows) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
+
+  const byEvent = t => rows.filter(r => r.event === t);
+  const pageViews   = byEvent('page_view').length;
+  const prodViews   = byEvent('product_view').length;
+  const addCarts    = byEvent('add_to_cart').length;
+  const convCart    = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
+
+  // Top produits vus
+  const prodCount = {};
+  byEvent('product_view').forEach(r => { prodCount[r.product_nom||'?'] = (prodCount[r.product_nom||'?']||0)+1; });
+  const topProds = Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const maxProd  = topProds[0]?.[1] || 1;
+
+  // Temps moyen par produit (secondes)
+  const timeMap = {};
+  const timeCnt = {};
+  byEvent('product_time').forEach(r => {
+    const n = r.product_nom||'?'; const s = r.data?.seconds||0;
+    timeMap[n] = (timeMap[n]||0)+s; timeCnt[n]=(timeCnt[n]||0)+1;
+  });
+  const topTime = Object.entries(timeMap).map(([n,s])=>([n, Math.round(s/(timeCnt[n]||1))])).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // Visites par jour
+  const dayMap = {};
+  for (let i=0;i<_anPeriod;i++) {
+    const d = new Date(Date.now()-i*86400000);
+    dayMap[d.toISOString().slice(0,10)] = 0;
+  }
+  byEvent('page_view').forEach(r => { const d=r.created_at.slice(0,10); if(d in dayMap) dayMap[d]++; });
+  const days7 = Object.entries(dayMap).sort((a,b)=>a[0]>b[0]?1:-1);
+  const maxDay = Math.max(...days7.map(d=>d[1]),1);
+
+  const periodBtns = [7,14,30].map(d=>
+    `<button class="btqa-an-period${_anPeriod===d?' active':''}" onclick="btqaLoadAnalytics(${d})">${d} jours</button>`).join('');
+
+  wrap.innerHTML = `
+    <div class="btqa-an-period">${periodBtns}</div>
+    <div class="btqa-an-kpis">
+      <div class="btqa-an-kpi"><div class="val">${pageViews}</div><div class="lbl">Visites boutique</div></div>
+      <div class="btqa-an-kpi"><div class="val">${prodViews}</div><div class="lbl">Produits vus</div></div>
+      <div class="btqa-an-kpi"><div class="val">${addCarts}</div><div class="lbl">Ajouts panier</div></div>
+      <div class="btqa-an-kpi"><div class="val">${convCart}%</div><div class="lbl">Taux panier</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="btqa-an-section">
+        <h4>Produits les plus vus</h4>
+        ${topProds.length ? topProds.map(([n,c])=>`
+          <div class="btqa-an-bar-row">
+            <div class="btqa-an-bar-label" title="${n}">${n}</div>
+            <div class="btqa-an-bar-track"><div class="btqa-an-bar-fill" style="width:${Math.round(c/maxProd*100)}%"></div></div>
+            <div class="btqa-an-bar-count">${c}</div>
+          </div>`).join('') : '<div style="color:#aaa;font-size:13px">Aucune donnée</div>'}
+      </div>
+      <div class="btqa-an-section">
+        <h4>Visites par jour</h4>
+        <div class="btqa-an-day-row">
+          ${days7.map(([d,c])=>`
+            <div class="btqa-an-day-col">
+              <div class="btqa-an-day-bar" style="height:${Math.round(c/maxDay*68)+2}px" title="${c} visite(s)"></div>
+              <div class="btqa-an-day-label">${d.slice(5)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="btqa-an-section">
+        <h4>Temps moyen par produit</h4>
+        ${topTime.length ? topTime.map(([n,s])=>`
+          <div class="btqa-an-bar-row">
+            <div class="btqa-an-bar-label" title="${n}">${n}</div>
+            <div class="btqa-an-bar-track"><div class="btqa-an-bar-fill" style="width:${Math.round(s/Math.max(...topTime.map(x=>x[1]),1)*100)}%"></div></div>
+            <div class="btqa-an-bar-count">${s}s</div>
+          </div>`).join('') : '<div style="color:#aaa;font-size:13px">Aucune donnée</div>'}
+      </div>
+      <div class="btqa-an-section">
+        <h4>Entonnoir conversion</h4>
+        <div class="btqa-an-funnel">
+          <div class="btqa-an-funnel-step">
+            <div class="fval">${pageViews}</div><div class="flbl">Visites</div>
+          </div>
+          <div class="btqa-an-funnel-step">
+            <div class="fval">${prodViews}</div><div class="flbl">Produits vus</div>
+            <div class="fpct">${pageViews?Math.round(prodViews/pageViews*100):0}%</div>
+          </div>
+          <div class="btqa-an-funnel-step">
+            <div class="fval">${addCarts}</div><div class="flbl">Paniers</div>
+            <div class="fpct">${prodViews?Math.round(addCarts/prodViews*100):0}%</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
 // ── Stats ────────────────────────────────────────────────────
 function btqaRenderStats() {
   const all     = _btqaCommandes;
