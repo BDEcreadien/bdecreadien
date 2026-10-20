@@ -1164,7 +1164,7 @@ async function btqInit() {
   document.getElementById('btq-shop').style.display = 'block';
   document.getElementById('btq-fab').style.display   = 'flex';
 
-  btqTrack('page_view');
+  btqTrack('page_view', null, null, { device: window.innerWidth < 768 ? 'mobile' : 'desktop' });
   // Charger catalogue + panier
   await Promise.all([btqLoadCatalogue(), btqLoadCart()]);
   btqRenderGrid();
