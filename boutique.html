@@ -1486,6 +1486,7 @@ function btqOpenModal(id) {
       <div class="btq-modal-details">
         <p class="btq-modal-name">${p.nom}</p>
         <p class="btq-modal-price">${btqFmt(p.prix_centimes)}</p>
+        ${p.description ? `<p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;margin:0 0 20px;">${p.description}</p>` : ''}
 
         ${designs.length ? `
           <p class="btq-modal-label">Design</p>
