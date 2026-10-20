@@ -10340,7 +10340,12 @@ async function btqaCreatePhysOrder() {
   ];
   await sb.from('boutique_items').insert(itemsToInsert);
 
-  // L'e-mail sera envoyé quand l'admin marque "Payée"
+  // Envoyer l'e-mail de confirmation (avec lien de paiement HelloAsso si applicable)
+  fetch('/api/boutique-commande', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ commande_id: cmd.id, nom_acheteur: nom, email_acheteur: email }),
+  }).catch(() => {});
 
   showToast(`Commande ${cmd.numero} créée !`);
   _btqaPhysItems = [];
