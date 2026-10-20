@@ -1549,12 +1549,16 @@ function btqOpenModal(id) {
   if (designs.length) {
     _modalDesign = { idx: 0, nom: designs[0].nom };
   }
-  // Auto-sélection couleur : Blanc en priorité, sinon première couleur
-  if (couleurs.length) {
-    const defaultCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
-    _modalCouleur = defaultCouleur;
-    const idx = couleurs.indexOf(defaultCouleur);
-    document.querySelectorAll('#btq-color-row button')[idx]?.classList.add('selected');
+  // Auto-sélection couleur
+  if (couleurs.length === 1) {
+    // Une seule couleur : sélection explicite d'office
+    _modalCouleur = couleurs[0];
+    _modalCouleurExplicite = true;
+    document.querySelector('#btq-color-row button')?.classList.add('selected');
+  } else if (couleurs.length > 1) {
+    // Plusieurs couleurs : Blanc comme preview silencieux (pas de chip surligné)
+    _modalCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
+    _modalCouleurExplicite = false;
   }
   // Afficher les visuels
   if (_modalDesign && _modalCouleur) btqUpdateThumbs();
