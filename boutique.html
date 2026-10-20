@@ -281,6 +281,31 @@ async function btqInit() {
   } else if (params.get('annule') || params.get('erreur')) {
     btqToast('Paiement annulé. Ta commande est sauvegardée - tu peux la retrouver ci-dessous.');
     history.replaceState(null, '', location.pathname);
+  } else if (params.get('commande')) {
+    const paramCmdId = params.get('commande');
+    history.replaceState(null, '', location.pathname);
+    if (_cmdId === paramCmdId) {
+      btqOpenCart();
+    } else {
+      const [{ data: cmd }, { data: items }] = await Promise.all([
+        _sb.from('boutique_commandes').select('*').eq('id', paramCmdId).maybeSingle(),
+        _sb.from('boutique_items').select('*').eq('commande_id', paramCmdId),
+      ]);
+      if (cmd && (cmd.statut === 'en_attente' || cmd.statut === 'panier') && items?.length) {
+        _cmdId = paramCmdId;
+        _cmdStatut = cmd.statut;
+        _cart = items.map(i => ({
+          _key: i.id, produit_id: i.produit_id, produit_nom: i.produit_nom,
+          design_id: i.design_id, design_nom: i.design_nom,
+          couleur: i.couleur, taille: i.taille,
+          quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
+        }));
+        btqUpdateCartUI();
+        btqOpenCart();
+      } else if (cmd) {
+        btqToast('Cette commande ne peut plus être modifiée.');
+      }
+    }
   }
 
   // Commandes en attente de paiement
