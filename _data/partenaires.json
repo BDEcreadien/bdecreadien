@@ -53,9 +53,9 @@
     "nom": "Student Pop",
     "description": "",
     "description_longue": "Plateforme dédiée aux étudiants, qui leur permet d’accéder à des opportunités professionnelles et à des missions adaptées à leur profil et à leur emploi du temps. Elle constitue un véritable atout pour développer son expérience, gagner en autonomie et faciliter son entrée dans le monde du travail.",
-    "code_promo": "",
-    "lien": "CREADIEN",
-    "lien_promo": "https://www.studentpop.fr",
+    "code_promo": "CREADIEN",
+    "lien": "https://www.studentpop.fr",
+    "lien_promo": "",
     "logo": "/assets/uploads/1792601066761_m8sl_images-3.jpeg",
     "actif": true
   },
