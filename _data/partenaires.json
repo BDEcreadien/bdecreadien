@@ -50,5 +50,15 @@
     "lien_promo": "https://www.studentpop.fr",
     "logo": "/assets/uploads/1792601066761_m8sl_images-3.jpeg",
     "actif": true
+  },
+  {
+    "nom": "Revolut",
+    "description": "20 € offerts",
+    "description_longue": "Grâce à notre partenariat avec Revolut, les étudiants peuvent profiter d’un avantage financier dès l’ouverture de leur compte : 20 € offerts, selon les conditions de l’offre. Revolut permet également de gérer facilement son budget au quotidien grâce à une application simple et des services bancaires accessibles depuis son téléphone. Une belle opportunité pour mieux gérer ses dépenses étudiantes et profiter d’un bonus de bienvenue !",
+    "code_promo": "",
+    "lien": "https://www.revolut.com",
+    "lien_promo": "",
+    "logo": "/assets/uploads/1792601130867_vl8e_images.png",
+    "actif": true
   }
 ]
