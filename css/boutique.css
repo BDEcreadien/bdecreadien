@@ -522,7 +522,7 @@
       /* Image agrandie */
       .btq-modal-main-img {
         order:1;flex-shrink:0;
-        height:260px;aspect-ratio:auto;background:#fff;
+        height:320px;aspect-ratio:auto;background:#fff;
       }
       .btq-modal-main-img img { object-fit:contain; }
 
