@@ -1485,7 +1485,7 @@ function _partenairesActifs(list) {
   return (Array.isArray(list) ? list : []).filter(p => p.actif !== false);
 }
 if (document.getElementById('partenaires-grid')) {
-  fetch('/_data/partenaires.json')
+  fetch('/_data/partenaires.json?t=' + Date.now())
     .then(r => r.json())
     .then(data => renderPartenaires(_partenairesActifs(data)))
     .catch(() => renderPartenaires([]));
