@@ -996,3 +996,18 @@
 .btq-cd-num{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:#fff;display:block}
 .btq-cd-lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);display:block;margin-top:5px}
 @media(max-width:480px){.btq-cd-box{padding:12px 14px;min-width:60px}.btq-cd-num{font-size:36px}}
+
+/* ─── OVERRIDES MOBILE (après règles de base pour bonne cascade) ── */
+@media (max-width:767px) {
+  .btq-designs { flex-wrap:wrap; }
+  .btq-design-chip {
+    background:rgba(255,255,255,.10);
+    border:1.5px solid rgba(255,255,255,.25);
+    color:rgba(255,255,255,.9);
+  }
+  .btq-design-chip.selected {
+    background:linear-gradient(135deg,#460186,#D2396D);
+    border-color:transparent;
+    color:white;
+  }
+}
