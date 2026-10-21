@@ -522,9 +522,9 @@
       /* Image agrandie */
       .btq-modal-main-img {
         order:1;flex-shrink:0;
-        height:320px;aspect-ratio:auto;background:#fff;
+        height:380px;aspect-ratio:auto;background:#fff;
       }
-      .btq-modal-main-img img { object-fit:contain; }
+      .btq-modal-main-img img { object-fit:contain;width:100%;height:100%;padding:8px; }
 
       /* Details: scrollable, padding-bottom pour laisser place au bouton fixe */
       .btq-modal-details {
