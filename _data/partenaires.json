@@ -30,5 +30,15 @@
     "lien_promo": "",
     "logo": "/assets/uploads/1789231463593_39n9_images.jpeg",
     "actif": true
+  },
+  {
+    "nom": "Compass",
+    "description": "L’abonnement est proposé à 3,99 € par mois ou 24,99 € par an",
+    "description_longue": "Grâce à notre partenariat avec Compass, l’application de réductions dédiée aux jeunes de moins de 27 ans, les étudiants peuvent profiter de nombreuses offres avantageuses dans les restaurants, commerces et loisirs. L’abonnement est proposé à 3,99 € par mois ou 24,99 € par an, donnant accès à des réductions permanentes et à des offres exclusives. Disponible notamment à Lyon, Saint-Étienne, Marseille et Aix-en-Provence, ainsi que dans plusieurs stations de ski, Compass représente un véritable plus dans la vie étudiante, permettant de réaliser des économies au quotidien et de profiter pleinement de bons plans tout au long de l’année !",
+    "code_promo": "CREAD25",
+    "lien": "https://carte-compass.fr",
+    "lien_promo": "",
+    "logo": "/assets/uploads/1792600895735_74ts_Logo-Compass-Groupe.png",
+    "actif": true
   }
 ]
