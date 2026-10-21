@@ -999,8 +999,10 @@
 
 /* ─── OVERRIDES MOBILE (après règles de base pour bonne cascade) ── */
 @media (max-width:767px) {
-  .btq-designs { flex-wrap:wrap; }
+  .btq-designs { flex-wrap:wrap; overflow-x:visible; overflow:visible; }
   .btq-design-chip {
+    display:inline-flex;align-items:center;
+    padding:8px 16px;min-height:36px;
     background:rgba(255,255,255,.10);
     border:1.5px solid rgba(255,255,255,.25);
     color:rgba(255,255,255,.9);
