@@ -2,8 +2,12 @@
   {
     "nom": "Burovision",
     "description": "-15% sur l'ensemble du magasin, en venant de CREAD",
+    "description_longue": "Grâce à notre partenariat avec Buro Vision, les étudiants peuvent bénéficier de réductions avantageuses sur leurs achats scolaires et universitaires. Sur présentation d’un justificatif de statut étudiant, profitez de -15 % sur les impressions et le matériel, ainsi que de -5 % sur les livres. Située à seulement 3 minutes à pied de notre école, la boutique est un véritable atout pour faciliter le quotidien des étudiants et leur permettre de réaliser des économies tout au long de l’année !",
+    "code_promo": "",
     "lien": "https://www.espaceburovision.com",
-    "logo": "/assets/uploads/1789072898969_w3a0_unnamed.jpg"
+    "lien_promo": "",
+    "logo": "/assets/uploads/1789072898969_w3a0_unnamed.jpg",
+    "actif": true
   },
   {
     "nom": "Airbnb",
