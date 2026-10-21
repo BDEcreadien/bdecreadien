@@ -524,8 +524,7 @@
         order:1;flex-shrink:0;
         height:380px;aspect-ratio:auto;background:#fff;
       }
-      .btq-modal-main-img { overflow:hidden; }
-      .btq-modal-main-img img { object-fit:contain;width:100%;height:100%;transform:scale(1.35); }
+      .btq-modal-main-img img { object-fit:cover;object-position:center;width:100%;height:100%; }
 
       /* Details: scrollable, padding-bottom pour laisser place au bouton fixe */
       .btq-modal-details {
