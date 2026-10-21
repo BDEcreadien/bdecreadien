@@ -22,8 +22,12 @@
   {
     "nom": "Architextures",
     "description": "",
+    "description_longue": "Partenariat permettant de diversifier les partenaires du BDE tout en apportant une dimension davantage orientée vers l’architecture. Architexture permettrait au BDE de faire gagner des comptes Premium tout au long de l’année, utilisables directement sur SketchUp ou en ligne, afin de réaliser des rendus 3D avec une meilleure gestion des textures.\nL’organisation de concours permettrait également de valoriser les travaux des étudiants de CREAD, avec à la clé des comptes Premium à gagner.",
+    "code_promo": "",
     "lien": "https://architextures.org",
-    "logo": "/assets/uploads/1789072968817_rq8a_artx-logo.svg"
+    "lien_promo": "",
+    "logo": "/assets/uploads/1789072968817_rq8a_artx-logo.svg",
+    "actif": true
   },
   {
     "nom": "Flam's",
