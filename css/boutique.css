@@ -484,7 +484,7 @@
       .btq-modal-overlay { align-items:flex-end;padding:0; }
       .btq-modal-card {
         border-radius:20px 20px 0 0;max-width:100%;
-        height:92svh;
+        height:92vh;height:92svh;
         display:flex;flex-direction:column;
         transform:translateY(60px);
         overflow:hidden;
