@@ -8453,10 +8453,7 @@ async function lnkSave() {
     lnkRender(); lnkRenderStatsCounts();
   }
 
-  // 4) Attente upload image en cours si nécessaire
-  if (_lnkUploadInFlight) { try { await _lnkUploadInFlight; } catch(_) {} }
-
-  // 5) Persistance DB
+  // 4) Persistance DB
   try {
     if (id) {
       const { error } = await Auth.sb.from('liens').update(payload).eq('id', id);
