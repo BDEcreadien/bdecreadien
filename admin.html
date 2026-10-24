@@ -8411,6 +8411,9 @@ function lnkClearImage() {
 }
 
 async function lnkSave() {
+  // 0) Attendre la fin de l'upload image si en cours
+  if (_lnkUploadInFlight) { try { await _lnkUploadInFlight; } catch(_) {} }
+
   // 1) Récupération + validation immédiate
   const id = document.getElementById('lnk-id').value;
   const type = document.getElementById('lnk-type').value || 'principal';
