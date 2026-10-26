@@ -127,12 +127,6 @@
 
     const profil = await getProfil();
 
-    // Affiche le lien Boutique pour les membres BDE et admins uniquement
-    const boutiqueEl = document.getElementById('nav-boutique-li');
-    if (boutiqueEl && profil && hasRole(profil.role, 'membre')) {
-      boutiqueEl.style.display = '';
-    }
-
     if (!profil) {
       li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
       return;
