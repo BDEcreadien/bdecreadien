@@ -247,6 +247,14 @@ async function btqInit() {
   const { data: profil } = await _sb.from('profils').select('*').eq('id', _user.id).single();
   _profil = profil;
 
+  // Accès réservé aux membres BDE et admins
+  const RANG = { etudiant: 1, membre: 2, admin: 3 };
+  if (!profil || (RANG[profil.role] ?? 0) < RANG['membre']) {
+    document.getElementById('btq-gate').innerHTML = '<p style="text-align:center;font-size:18px;color:rgba(255,255,255,.7);padding:40px 20px">La boutique est réservée aux membres du bureau BDE.<br>Si tu es membre, contacte un admin.</p>';
+    document.getElementById('btq-gate').style.display = 'flex';
+    return;
+  }
+
   // Préremplir checkout
   if (_profil) {
     const nom = [_profil.prenom, _profil.nom].filter(Boolean).join(' ');
