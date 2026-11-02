@@ -340,12 +340,35 @@
       const lastName = document.getElementById('bt-nom').value.trim();
       const email = document.getElementById('bt-email').value.trim();
       const tel = document.getElementById('bt-tel').value.trim();
+      const fc = _cfg.formulaire_champs || {};
+      const classe = fc.classe ? document.getElementById('bt-classe').value.trim() : null;
+      const suggestions = fc.suggestions ? document.getElementById('bt-suggestions').value.trim() : null;
 
       if (!firstName || !lastName || !email) return showError('Renseigne au moins prénom, nom et email.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Email invalide.');
 
       cta.disabled = true;
       cta.innerHTML = '<span class="bt-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Redirection…';
+
+      // Sauvegarde inscription dans Supabase (avant HelloAsso pour ne pas perdre les données en cas d'abandon)
+      try {
+        const inscRow = {
+          billetterie_id: _cfg.id || null,
+          billetterie_slug: slug,
+          prenom: firstName,
+          nom: lastName,
+          email,
+          tel: tel || null,
+          classe: classe || null,
+          suggestions: suggestions || null,
+          tarif_id: t.id,
+          tarif_nom: t.nom,
+          quantite: _qty,
+          statut: 'en_attente',
+        };
+        const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
+        if (inscError) console.warn('[inscription] save failed (non-bloquant):', inscError.message);
+      } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
 
       const totalAmountCents = t.prix_centimes * _qty;
       const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
