@@ -9378,6 +9378,7 @@ async function bilVoirParticipants(billetterieId, titre) {
               ${cols.map(c => {
                 let v = r[c] ?? '';
                 if (c === 'created_at' && v) v = new Date(v).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+                if (c === 'custom_answers' && v && typeof v === 'object') v = Object.entries(v).map(([k,val])=>`${k}: ${val}`).join(' | ');
                 if (c === 'statut') v = `<span style="padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;background:${v==='confirme'?'#dcfce7':v==='annule'?'#fee2e2':'#fef9c3'};color:${v==='confirme'?'#166534':v==='annule'?'#991b1b':'#854d0e'};">${v||'en attente'}</span>`;
                 return `<td style="padding:9px 12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c==='statut'?v:escapeHtml(String(v))}</td>`;
               }).join('')}
