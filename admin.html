@@ -9281,13 +9281,16 @@ function bilOnChange() {
   // Formulaire participants
   const fc = {};
   if (!document.getElementById('bil-fc-tel').checked) fc.tel = false;
+  else if (document.getElementById('bil-fc-tel-req').value === '1') fc.tel_required = true;
   if (document.getElementById('bil-fc-classe').checked) {
     fc.classe = true;
+    if (document.getElementById('bil-fc-classe-req').value === '1') fc.classe_required = true;
     const lbl = document.getElementById('bil-fc-classe-label').value.trim();
     if (lbl) fc.classe_label = lbl;
   }
   if (document.getElementById('bil-fc-suggestions').checked) {
     fc.suggestions = true;
+    if (document.getElementById('bil-fc-suggestions-req').value === '1') fc.suggestions_required = true;
     const lbl = document.getElementById('bil-fc-suggestions-label').value.trim();
     if (lbl) fc.suggestions_label = lbl;
   }
