@@ -370,6 +370,14 @@
 
       if (!firstName || !lastName || !email) return showError('Renseigne au moins prénom, nom et email.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Email invalide.');
+      if (fc.tel !== false && fc.tel_required && !tel) return showError('Le champ Téléphone est obligatoire.');
+      if (fc.classe && fc.classe_required && !classe) return showError(`Le champ "${fc.classe_label || 'Classe'}" est obligatoire.`);
+      if (fc.suggestions && fc.suggestions_required && !suggestions) return showError(`Le champ "${fc.suggestions_label || 'Suggestions'}" est obligatoire.`);
+      for (const [i, f] of (fc.custom_fields || []).filter(f => f.label && f.required).entries()) {
+        const realIdx = (fc.custom_fields || []).findIndex((x, xi) => x.label && x === f);
+        const v = document.getElementById(`bt-custom-${realIdx}`)?.value.trim();
+        if (!v) return showError(`Le champ "${f.label}" est obligatoire.`);
+      }
 
       cta.disabled = true;
       cta.innerHTML = '<span class="bt-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Redirection…';
