@@ -386,6 +386,7 @@
           tarif_nom: t.nom,
           quantite: _qty,
           statut: 'en_attente',
+          custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
         };
         const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
         if (inscError) console.warn('[inscription] save failed (non-bloquant):', inscError.message);
