@@ -9193,6 +9193,21 @@ function bilFcRemoveCustom(i) {
   bilOnChange();
 }
 
+function bilExtractSlug(raw) {
+  // Si c'est une URL (contient ://), on prend le dernier segment de chemin
+  if (raw.includes('://') || raw.startsWith('/')) {
+    try {
+      const url = raw.startsWith('/') ? new URL('http://x' + raw) : new URL(raw);
+      const parts = url.pathname.split('/').filter(Boolean);
+      raw = parts[parts.length - 1] || raw;
+    } catch (_) {
+      const m = raw.match(/\/([^/?#]+)\/?$/);
+      if (m) raw = m[1];
+    }
+  }
+  return bilSlugify(raw);
+}
+
 function bilSlugify(s) {
   return String(s || '')
     .toLowerCase()
