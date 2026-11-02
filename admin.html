@@ -9183,6 +9183,20 @@ function bilOnChange() {
   b.max_par_acheteur = parseInt(document.getElementById('bil-e-max').value, 10) || 4;
   b.cta_texte = document.getElementById('bil-e-cta').value;
   b.actif = document.getElementById('bil-e-actif').checked;
+  // Formulaire participants
+  const fc = {};
+  if (!document.getElementById('bil-fc-tel').checked) fc.tel = false;
+  if (document.getElementById('bil-fc-classe').checked) {
+    fc.classe = true;
+    const lbl = document.getElementById('bil-fc-classe-label').value.trim();
+    if (lbl) fc.classe_label = lbl;
+  }
+  if (document.getElementById('bil-fc-suggestions').checked) {
+    fc.suggestions = true;
+    const lbl = document.getElementById('bil-fc-suggestions-label').value.trim();
+    if (lbl) fc.suggestions_label = lbl;
+  }
+  b.formulaire_champs = fc;
   // Mise à jour du preview URL en direct
   const urlPrev = document.getElementById('bil-e-url-preview');
   if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '-';
