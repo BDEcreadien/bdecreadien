@@ -1397,6 +1397,28 @@
             <span>Page active (visible au public)</span>
           </label>
         </div>
+
+        <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">📋 Formulaire participants</h3>
+        <div style="background:rgba(0,0,0,.04);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="bil-fc-tel" style="width:15px;height:15px;" onchange="bilOnChange()">
+            <span>Téléphone (affiché par défaut, décocher pour masquer)</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="bil-fc-classe" style="width:15px;height:15px;" onchange="bilFcToggle('classe', this.checked)">
+            <span>Classe / formation</span>
+          </label>
+          <div id="bil-fc-classe-opts" style="display:none;padding-left:22px;">
+            <input id="bil-fc-classe-label" placeholder="Libellé du champ (ex: Ta classe)" style="width:100%;margin-top:4px;" oninput="bilOnChange()">
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="bil-fc-suggestions" style="width:15px;height:15px;" onchange="bilFcToggle('suggestions', this.checked)">
+            <span>Suggestions / activités souhaitées</span>
+          </label>
+          <div id="bil-fc-suggestions-opts" style="display:none;padding-left:22px;">
+            <input id="bil-fc-suggestions-label" placeholder="Libellé du champ (ex: Tes suggestions)" style="width:100%;margin-top:4px;" oninput="bilOnChange()">
+          </div>
+        </div>
       </div>
 
       <!-- Preview iframe -->
