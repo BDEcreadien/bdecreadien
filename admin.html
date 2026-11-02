@@ -9304,6 +9304,10 @@ function bilPreviewInNewTab() {
 async function bilEnregistrer() {
   const b = _bilCourante;
   if (!b) return;
+  // Nettoie le slug au cas où une URL complète a été collée
+  b.slug = bilExtractSlug(b.slug || '');
+  const slugEl2 = document.getElementById('bil-e-slug');
+  if (slugEl2) slugEl2.value = b.slug;
   if (!b.slug || !b.titre) { showToast('Slug et titre requis.', 'error'); return; }
   if (/[^a-z0-9-]/.test(b.slug)) { showToast('Le slug ne doit contenir que des lettres minuscules, chiffres et tirets (ex: course-soiree-flams).', 'error'); return; }
   if (!b.hello_asso_form_slug) { showToast('Slug HelloAsso requis pour vendre.', 'error'); return; }
