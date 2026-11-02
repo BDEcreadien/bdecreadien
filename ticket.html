@@ -359,6 +359,11 @@
       const fc = _cfg.formulaire_champs || {};
       const classe = fc.classe ? document.getElementById('bt-classe').value.trim() : null;
       const suggestions = fc.suggestions ? document.getElementById('bt-suggestions').value.trim() : null;
+      const customAnswers = (fc.custom_fields || []).filter(f => f.label).reduce((acc, f, i) => {
+        const v = document.getElementById(`bt-custom-${i}`)?.value.trim();
+        if (v) acc[f.label] = v;
+        return acc;
+      }, {});
 
       if (!firstName || !lastName || !email) return showError('Renseigne au moins prénom, nom et email.');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Email invalide.');
