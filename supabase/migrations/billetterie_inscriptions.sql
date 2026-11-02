@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS billetterie_inscriptions (
   tarif_nom     text,
   quantite      int DEFAULT 1,
   statut        text DEFAULT 'en_attente',
+  custom_answers jsonb DEFAULT '{}',
   created_at    timestamptz DEFAULT now()
 );
 
