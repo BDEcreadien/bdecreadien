@@ -291,6 +291,16 @@
       showField('bt-field-classe', !!fc.classe, 'bt-label-classe', fc.classe_label || 'Classe');
       showField('bt-field-suggestions', !!fc.suggestions, 'bt-label-suggestions', fc.suggestions_label || 'Suggestions / activités souhaitées');
 
+      // Champs personnalisés
+      const customWrap = document.getElementById('bt-custom-fields');
+      customWrap.innerHTML = '';
+      (fc.custom_fields || []).filter(f => f.label).forEach((f, i) => {
+        const div = document.createElement('div');
+        div.className = 'bt-field';
+        div.innerHTML = `<label for="bt-custom-${i}">${f.label}</label><input type="text" id="bt-custom-${i}" placeholder="${f.placeholder || ''}">`;
+        customWrap.appendChild(div);
+      });
+
       renderTarifs();
       renderTotal();
     }
