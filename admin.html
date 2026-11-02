@@ -9301,6 +9301,71 @@ async function bilSupprimerCourante() {
   bilBackToList();
 }
 
+let _bilParticipantsData = [];
+let _bilParticipantsBilletterieId = null;
+
+async function bilVoirParticipants(billetterieId, titre) {
+  _bilParticipantsBilletterieId = billetterieId;
+  document.getElementById('bil-p-titre').textContent = `Participants — ${titre}`;
+  document.getElementById('bil-view-list').style.display = 'none';
+  document.getElementById('bil-view-edit').style.display = 'none';
+  document.getElementById('bil-view-participants').style.display = '';
+  const wrap = document.getElementById('bil-p-content');
+  wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#999;font-size:13px;">Chargement…</div>';
+  const { data, error } = await Auth.sb
+    .from('billetterie_inscriptions')
+    .select('*')
+    .eq('billetterie_id', billetterieId)
+    .order('created_at', { ascending: false });
+  if (error) { wrap.innerHTML = `<div style="padding:20px;color:#dc2626;">Erreur : ${escapeHtml(error.message)}</div>`; return; }
+  _bilParticipantsData = data || [];
+  if (!_bilParticipantsData.length) {
+    wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#999;">Aucune inscription enregistrée pour l\'instant.</div>';
+    return;
+  }
+  const cols = ['prenom','nom','email','tel','classe','suggestions','tarif_nom','quantite','statut','created_at'];
+  const headers = { prenom:'Prénom', nom:'Nom', email:'Email', tel:'Tél', classe:'Classe', suggestions:'Suggestions', tarif_nom:'Tarif', quantite:'Qté', statut:'Statut', created_at:'Date' };
+  wrap.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f8f5ff;border-bottom:2px solid #e9d5ff;">
+            ${cols.map(c => `<th style="padding:10px 12px;text-align:left;font-weight:700;color:#460186;white-space:nowrap;">${headers[c]}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${_bilParticipantsData.map((r, i) => `
+            <tr style="border-bottom:1px solid #f0e8ff;${i % 2 === 0 ? '' : 'background:#faf5ff;'}">
+              ${cols.map(c => {
+                let v = r[c] ?? '';
+                if (c === 'created_at' && v) v = new Date(v).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+                if (c === 'statut') v = `<span style="padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;background:${v==='confirme'?'#dcfce7':v==='annule'?'#fee2e2':'#fef9c3'};color:${v==='confirme'?'#166534':v==='annule'?'#991b1b':'#854d0e'};">${v||'en attente'}</span>`;
+                return `<td style="padding:9px 12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c==='statut'?v:escapeHtml(String(v))}</td>`;
+              }).join('')}
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:#999;">${_bilParticipantsData.length} inscription${_bilParticipantsData.length > 1 ? 's' : ''}</div>`;
+}
+
+function bilExportCsv() {
+  if (!_bilParticipantsData.length) return;
+  const cols = ['prenom','nom','email','tel','classe','suggestions','tarif_nom','quantite','statut','created_at'];
+  const headers = ['Prénom','Nom','Email','Tél','Classe','Suggestions','Tarif','Qté','Statut','Date'];
+  const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [headers.map(escape).join(',')];
+  for (const r of _bilParticipantsData) {
+    let d = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
+    rows.push(cols.map(c => escape(c === 'created_at' ? d : (r[c] ?? ''))).join(','));
+  }
+  const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `participants-${_bilParticipantsBilletterieId}.csv`;
+  a.click();
+}
+
 function bilBackToList() {
   _bilCourante = null;
   document.getElementById('bil-view-list').style.display = '';
