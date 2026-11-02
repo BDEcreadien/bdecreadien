@@ -9093,6 +9093,15 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-max').value = b.max_par_acheteur || 4;
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
   document.getElementById('bil-e-actif').checked = !!b.actif;
+  // Formulaire participants
+  const fc = b.formulaire_champs || {};
+  document.getElementById('bil-fc-tel').checked = fc.tel !== false;
+  document.getElementById('bil-fc-classe').checked = !!fc.classe;
+  document.getElementById('bil-fc-classe-opts').style.display = fc.classe ? '' : 'none';
+  document.getElementById('bil-fc-classe-label').value = fc.classe_label || '';
+  document.getElementById('bil-fc-suggestions').checked = !!fc.suggestions;
+  document.getElementById('bil-fc-suggestions-opts').style.display = fc.suggestions ? '' : 'none';
+  document.getElementById('bil-fc-suggestions-label').value = fc.suggestions_label || '';
   const urlPrev = document.getElementById('bil-e-url-preview');
   if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '-';
   bilRenderTarifs();
