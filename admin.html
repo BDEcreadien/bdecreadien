@@ -9223,13 +9223,11 @@ function bilOnChange() {
       b.hello_asso_form_slug = auto;
     }
   } else {
-    // Si l'utilisateur a collé une URL complète dans le slug, on extrait juste le dernier segment
     const slugRaw = slugEl.value.trim();
-    const slugUrlMatch = slugRaw.match(/\/([^/?#]+)\/?$/);
-    b.slug = slugUrlMatch && slugRaw.includes('/') ? bilSlugify(slugUrlMatch[1]) : bilSlugify(slugRaw);
-    if (b.slug !== slugRaw) { slugEl.value = b.slug; }
+    b.slug = bilExtractSlug(slugRaw);
+    if (b.slug !== slugRaw) slugEl.value = b.slug;
     const haRaw = haSlugEl.value.trim();
-    const haMatch = haRaw.match(/\/(?:evenements|adhesions|billetteries)\/([^/?#]+)/);
+    const haMatch = haRaw.match(/\/(?:evenements|adhesions|billetteries|billetterie)\/([^/?#]+)/);
     b.hello_asso_form_slug = haMatch ? haMatch[1] : haRaw;
   }
 
