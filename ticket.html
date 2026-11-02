@@ -273,6 +273,18 @@
       document.getElementById('bt-lieu').textContent = _cfg.lieu_affiche || '📍 Lieu à confirmer';
       document.getElementById('bt-desc').textContent = _cfg.description || '';
       if (_cfg.cta_texte) document.getElementById('bt-cta').textContent = _cfg.cta_texte;
+
+      // Champs optionnels selon formulaire_champs
+      const fc = _cfg.formulaire_champs || {};
+      const showField = (id, show, labelId, labelTxt) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = show ? '' : 'none';
+        if (labelId && labelTxt) { const l = document.getElementById(labelId); if (l) l.textContent = labelTxt; }
+      };
+      showField('bt-field-tel', fc.tel !== false);
+      showField('bt-field-classe', !!fc.classe, 'bt-label-classe', fc.classe_label || 'Classe');
+      showField('bt-field-suggestions', !!fc.suggestions, 'bt-label-suggestions', fc.suggestions_label || 'Suggestions / activités souhaitées');
+
       renderTarifs();
       renderTotal();
     }
