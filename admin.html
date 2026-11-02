@@ -9362,8 +9362,8 @@ async function bilVoirParticipants(billetterieId, titre) {
     wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#999;">Aucune inscription enregistrée pour l\'instant.</div>';
     return;
   }
-  const cols = ['prenom','nom','email','tel','classe','suggestions','tarif_nom','quantite','statut','created_at'];
-  const headers = { prenom:'Prénom', nom:'Nom', email:'Email', tel:'Tél', classe:'Classe', suggestions:'Suggestions', tarif_nom:'Tarif', quantite:'Qté', statut:'Statut', created_at:'Date' };
+  const cols = ['prenom','nom','email','tel','classe','suggestions','custom_answers','tarif_nom','quantite','statut','created_at'];
+  const headers = { prenom:'Prénom', nom:'Nom', email:'Email', tel:'Tél', classe:'Classe', suggestions:'Suggestions', custom_answers:'Champs sup.', tarif_nom:'Tarif', quantite:'Qté', statut:'Statut', created_at:'Date' };
   wrap.innerHTML = `
     <div style="overflow-x:auto;">
       <table style="width:100%;border-collapse:collapse;font-size:13px;">
