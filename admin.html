@@ -9190,11 +9190,16 @@ function bilFcRenderCustom() {
   const wrap = document.getElementById('bil-fc-custom-list');
   if (!wrap) return;
   wrap.innerHTML = _bilFcCustomFields.map((f, i) => `
-    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
-      <input value="${escapeHtml(f.label)}" placeholder="Libellé du champ (ex: Quel sport ?)"
-        style="flex:1;" oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;">
+      <input value="${escapeHtml(f.label)}" placeholder="Libellé (ex: Quel sport ?)"
+        style="flex:2;min-width:120px;" oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
       <input value="${escapeHtml(f.placeholder||'')}" placeholder="Placeholder (facultatif)"
-        style="flex:1;" oninput="_bilFcCustomFields[${i}].placeholder=this.value;bilOnChange()">
+        style="flex:2;min-width:100px;" oninput="_bilFcCustomFields[${i}].placeholder=this.value;bilOnChange()">
+      <select onchange="_bilFcCustomFields[${i}].required=this.value==='1';bilOnChange()"
+        style="font-size:12px;padding:3px 6px;border-radius:6px;border:1px solid #d1d5db;flex:1;min-width:90px;">
+        <option value="0" ${f.required?'':'selected'}>Facultatif</option>
+        <option value="1" ${f.required?'selected':''}>Obligatoire</option>
+      </select>
       <button type="button" onclick="bilFcRemoveCustom(${i})"
         style="background:none;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 8px;cursor:pointer;">✕</button>
     </div>`).join('');
