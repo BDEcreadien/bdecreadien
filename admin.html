@@ -9141,6 +9141,11 @@ function bilSupprimerTarif(idx) {
   bilRenderTarifs(); bilOnChange();
 }
 
+function bilFcToggle(field, checked) {
+  document.getElementById(`bil-fc-${field}-opts`).style.display = checked ? '' : 'none';
+  bilOnChange();
+}
+
 function bilSlugify(s) {
   return String(s || '')
     .toLowerCase()
