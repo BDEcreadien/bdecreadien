@@ -9028,6 +9028,7 @@ async function bilChargerListe() {
           </div>
           <div class="bil-item-actions">
             <button class="primary" onclick="bilOuvrir('${b.id}')">✏️ Modifier</button>
+            <button onclick="bilVoirParticipants('${b.id}', '${escapeHtml(b.titre)}')">👥 Participants</button>
           </div>
         </div>
       </div>`;
