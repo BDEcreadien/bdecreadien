@@ -9166,6 +9166,33 @@ function bilFcToggle(field, checked) {
   bilOnChange();
 }
 
+let _bilFcCustomFields = [];
+
+function bilFcRenderCustom() {
+  const wrap = document.getElementById('bil-fc-custom-list');
+  if (!wrap) return;
+  wrap.innerHTML = _bilFcCustomFields.map((f, i) => `
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+      <input value="${escapeHtml(f.label)}" placeholder="Libellé du champ (ex: Quel sport ?)"
+        style="flex:1;" oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
+      <input value="${escapeHtml(f.placeholder||'')}" placeholder="Placeholder (facultatif)"
+        style="flex:1;" oninput="_bilFcCustomFields[${i}].placeholder=this.value;bilOnChange()">
+      <button type="button" onclick="bilFcRemoveCustom(${i})"
+        style="background:none;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 8px;cursor:pointer;">✕</button>
+    </div>`).join('');
+}
+
+function bilFcAddCustom() {
+  _bilFcCustomFields.push({ label: '', placeholder: '' });
+  bilFcRenderCustom();
+}
+
+function bilFcRemoveCustom(i) {
+  _bilFcCustomFields.splice(i, 1);
+  bilFcRenderCustom();
+  bilOnChange();
+}
+
 function bilSlugify(s) {
   return String(s || '')
     .toLowerCase()
