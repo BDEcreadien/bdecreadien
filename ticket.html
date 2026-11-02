@@ -269,8 +269,12 @@
         return;
       }
       document.getElementById('bt-title').textContent = _cfg.titre;
-      document.getElementById('bt-date').textContent = _cfg.date_affiche || '🗓️ Date à confirmer';
-      document.getElementById('bt-lieu').textContent = _cfg.lieu_affiche || '📍 Lieu à confirmer';
+      const dateEl = document.getElementById('bt-date');
+      const lieuEl = document.getElementById('bt-lieu');
+      if (_cfg.date_affiche) { dateEl.textContent = '🗓️ ' + _cfg.date_affiche; dateEl.style.display = ''; }
+      else dateEl.style.display = 'none';
+      if (_cfg.lieu_affiche) { lieuEl.textContent = '📍 ' + _cfg.lieu_affiche; lieuEl.style.display = ''; }
+      else lieuEl.style.display = 'none';
       document.getElementById('bt-desc').textContent = _cfg.description || '';
       if (_cfg.cta_texte) document.getElementById('bt-cta').textContent = _cfg.cta_texte;
 
