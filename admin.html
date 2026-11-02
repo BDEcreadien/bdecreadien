@@ -9225,6 +9225,7 @@ function bilOnChange() {
     const lbl = document.getElementById('bil-fc-suggestions-label').value.trim();
     if (lbl) fc.suggestions_label = lbl;
   }
+  if (_bilFcCustomFields.length) fc.custom_fields = _bilFcCustomFields.filter(f => f.label.trim());
   b.formulaire_champs = fc;
   // Mise à jour du preview URL en direct
   const urlPrev = document.getElementById('bil-e-url-preview');
