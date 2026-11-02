@@ -9132,10 +9132,13 @@ function bilRemplirEditor() {
   // Formulaire participants
   const fc = b.formulaire_champs || {};
   document.getElementById('bil-fc-tel').checked = fc.tel !== false;
+  document.getElementById('bil-fc-tel-req').value = fc.tel_required ? '1' : '0';
   document.getElementById('bil-fc-classe').checked = !!fc.classe;
+  document.getElementById('bil-fc-classe-req').value = fc.classe_required ? '1' : '0';
   document.getElementById('bil-fc-classe-opts').style.display = fc.classe ? '' : 'none';
   document.getElementById('bil-fc-classe-label').value = fc.classe_label || '';
   document.getElementById('bil-fc-suggestions').checked = !!fc.suggestions;
+  document.getElementById('bil-fc-suggestions-req').value = fc.suggestions_required ? '1' : '0';
   document.getElementById('bil-fc-suggestions-opts').style.display = fc.suggestions ? '' : 'none';
   document.getElementById('bil-fc-suggestions-label').value = fc.suggestions_label || '';
   _bilFcCustomFields = (fc.custom_fields || []).map(f => ({...f}));
