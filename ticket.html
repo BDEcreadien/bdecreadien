@@ -288,8 +288,10 @@
         if (labelId && labelTxt) { const l = document.getElementById(labelId); if (l) l.textContent = labelTxt; }
       };
       showField('bt-field-tel', fc.tel !== false);
-      showField('bt-field-classe', !!fc.classe, 'bt-label-classe', fc.classe_label || 'Classe');
-      showField('bt-field-suggestions', !!fc.suggestions, 'bt-label-suggestions', fc.suggestions_label || 'Suggestions / activités souhaitées');
+      const telLbl = document.getElementById('bt-label-tel');
+      if (telLbl) telLbl.textContent = 'Téléphone' + (fc.tel_required ? ' *' : ' (facultatif)');
+      showField('bt-field-classe', !!fc.classe, 'bt-label-classe', (fc.classe_label || 'Classe') + (fc.classe_required ? ' *' : ' (facultatif)'));
+      showField('bt-field-suggestions', !!fc.suggestions, 'bt-label-suggestions', (fc.suggestions_label || 'Suggestions / activités souhaitées') + (fc.suggestions_required ? ' *' : ' (facultatif)'));
 
       // Champs personnalisés
       const customWrap = document.getElementById('bt-custom-fields');
