@@ -1117,6 +1117,11 @@ async function btqApplyPacks() {
   await btqSaveCart();
 }
 
+async function btqApplyAllDiscounts() {
+  await btqApplyPacks();
+  await btqApplyAdhesionRemise();
+}
+
 async function btqApplyAdhesionRemise() {
   // Supprimer une éventuelle remise adhésion déjà dans le panier
   const existing = _cart.filter(i => i._adhesionRemise);
