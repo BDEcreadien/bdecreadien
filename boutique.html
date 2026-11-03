@@ -300,10 +300,7 @@ async function btqInit() {
   btqRenderGrid();
   btqUpdateCartUI();
   // N'appliquer les packs qu'en mode panier actif (pas sur une commande en_attente)
-  if (_cmdStatut === 'panier') {
-    await btqApplyAllDiscounts();
-    await btqApplyAdhesionRemise();
-  }
+  if (_cmdStatut === 'panier') await btqApplyAllDiscounts();
   btqFillMarquee();
 
 
