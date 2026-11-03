@@ -68,10 +68,82 @@
       <p>Ton billet est aussi disponible à tout moment dans ton espace membre (si tu as un compte BDE avec le même email).</p>
     </div>
 
+    <div id="cf-adhesion-badge" style="display:none;margin:16px 0 0;padding:14px 18px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1.5px solid #10b981;border-radius:14px;text-align:left;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#059669;margin-bottom:4px;">🎉 Avantage adhérent activé</div>
+      <p id="cf-adhesion-txt" style="margin:0;font-size:13px;color:#065f46;line-height:1.5;"></p>
+    </div>
+
     <div class="cf-actions">
       <a href="/mon-espace.html#me-billets" class="cf-btn cf-btn-prim">Voir mes billets</a>
       <a href="/agenda.html" class="cf-btn cf-btn-sec">Retour à l'agenda</a>
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="/js/supabase-config.js?v=4"></script>
+  <script>
+  (async () => {
+    const SUPABASE_URL_VAL = 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+    let sb;
+    try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, { auth: { persistSession: true, storageKey: 'bde-cread-auth' } }); }
+    catch (_) { return; }
+
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+    if (!slug) return;
+
+    // Récupérer les infos sauvées avant le redirect HelloAsso
+    let insc = null;
+    try { insc = JSON.parse(sessionStorage.getItem('_btInsc') || 'null'); } catch (_) {}
+    const email = insc?.email;
+    let profilId = insc?.profilId;
+
+    // Si pas de profil_id mémorisé, vérifier la session courante
+    if (!profilId) {
+      try {
+        const { data: { user } } = await sb.auth.getUser();
+        profilId = user?.id || null;
+      } catch (_) {}
+    }
+
+    if (!email && !profilId) return;
+
+    // Trouver l'inscription en_attente correspondante
+    let query = sb.from('billetterie_inscriptions')
+      .select('id, statut, billetterie_id')
+      .eq('billetterie_slug', slug)
+      .eq('statut', 'en_attente')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (profilId) query = query.eq('profil_id', profilId);
+    else if (email) query = query.eq('email', email);
+
+    const { data: rows } = await query;
+    const row = rows?.[0];
+    if (!row) return;
+
+    // Confirmer l'inscription
+    const update = { statut: 'confirme' };
+    if (profilId && !row.profil_id) update.profil_id = profilId;
+    await sb.from('billetterie_inscriptions').update(update).eq('id', row.id);
+
+    // Vérifier si cette billetterie offre une remise boutique
+    if (row.billetterie_id) {
+      const { data: bil } = await sb.from('billetteries')
+        .select('titre, remise_boutique_centimes')
+        .eq('id', row.billetterie_id)
+        .single();
+      if (bil?.remise_boutique_centimes > 0) {
+        const remiseEur = (bil.remise_boutique_centimes / 100).toFixed(0);
+        document.getElementById('cf-adhesion-txt').textContent =
+          `Ta réduction de ${remiseEur}€ sur la boutique BDE est maintenant active sur ton compte. Elle s\'applique automatiquement à ta prochaine commande !`;
+        document.getElementById('cf-adhesion-badge').style.display = '';
+      }
+    }
+
+    // Nettoyer sessionStorage
+    try { sessionStorage.removeItem('_btInsc'); } catch (_) {}
+  })();
+  </script>
 </body>
 </html>
