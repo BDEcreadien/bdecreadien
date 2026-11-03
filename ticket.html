@@ -386,6 +386,11 @@
 
       // Sauvegarde inscription dans Supabase (avant HelloAsso pour ne pas perdre les données en cas d'abandon)
       try {
+        let profilId = null;
+        try {
+          const { data: { user } } = await _sb.auth.getUser();
+          profilId = user?.id || null;
+        } catch (_) {}
         const inscRow = {
           billetterie_id: _cfg.id || null,
           billetterie_slug: slug,
@@ -400,9 +405,12 @@
           quantite: _qty,
           statut: 'en_attente',
           custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
+          profil_id: profilId,
         };
         const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
         if (inscError) console.warn('[inscription] save failed (non-bloquant):', inscError.message);
+        // Mémoriser pour la page de confirmation
+        try { sessionStorage.setItem('_btInsc', JSON.stringify({ slug, email, profilId })); } catch (_) {}
       } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
 
       const totalAmountCents = t.prix_centimes * _qty;
