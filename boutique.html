@@ -255,6 +255,31 @@ async function btqInit() {
     return;
   }
 
+  // Adhésions confirmées → remise boutique
+  window._adhesionRemiseCentimes = 0;
+  window._adhesionRemiseLabel = '';
+  try {
+    const { data: adhesions } = await _sb
+      .from('billetterie_inscriptions')
+      .select('billetterie_id, billetterie_slug')
+      .eq('profil_id', _user.id)
+      .eq('statut', 'confirme');
+    if (adhesions?.length) {
+      const bilIds = [...new Set(adhesions.map(a => a.billetterie_id).filter(Boolean))];
+      if (bilIds.length) {
+        const { data: bils } = await _sb
+          .from('billetteries')
+          .select('id, titre, remise_boutique_centimes')
+          .in('id', bilIds)
+          .gt('remise_boutique_centimes', 0);
+        if (bils?.length) {
+          window._adhesionRemiseCentimes = bils.reduce((s, b) => s + b.remise_boutique_centimes, 0);
+          window._adhesionRemiseLabel = bils.map(b => b.titre).join(', ');
+        }
+      }
+    }
+  } catch (_) {}
+
   // Préremplir checkout
   if (_profil) {
     const nom = [_profil.prenom, _profil.nom].filter(Boolean).join(' ');
