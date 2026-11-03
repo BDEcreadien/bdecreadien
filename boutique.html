@@ -301,7 +301,7 @@ async function btqInit() {
   btqUpdateCartUI();
   // N'appliquer les packs qu'en mode panier actif (pas sur une commande en_attente)
   if (_cmdStatut === 'panier') {
-    await btqApplyPacks();
+    await btqApplyAllDiscounts();
     await btqApplyAdhesionRemise();
   }
   btqFillMarquee();
@@ -378,7 +378,7 @@ async function btqResumeEdit(cmdId, btn) {
   _cmdStatut = 'panier';
   document.getElementById('btq-pb-' + cmdId)?.remove();
   btqUpdateCartUI();
-  await btqApplyPacks();
+  await btqApplyAllDiscounts();
   btqOpenCart();
 }
 
@@ -971,7 +971,7 @@ async function btqAddToCart() {
     }
 
     btqTrack('add_to_cart', p.id, p.nom, { design: designNom, couleur: _modalCouleur||null, taille: _modalTaille||null, qty: _modalQty });
-    await btqApplyPacks();
+    await btqApplyAllDiscounts();
     btqUpdateCartUI();
     btqToast(`${p.nom} ajouté !`);
     // Fermer modal
@@ -991,7 +991,7 @@ async function btqAddToCart() {
 async function btqRemoveItem(key) {
   await _sb.from('boutique_items').delete().eq('id', key);
   _cart = _cart.filter(i => i._key !== key);
-  await btqApplyPacks();
+  await btqApplyAllDiscounts();
   btqUpdateCartUI();
 }
 
@@ -1170,7 +1170,7 @@ async function btqInsertOffert(prod, qty) {
 
 async function btqSelectPackOffer(prodId) {
   _packChosenOffreProdId = prodId;
-  await btqApplyPacks();
+  await btqApplyAllDiscounts();
   btqUpdateCartUI();
 }
 
