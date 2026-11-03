@@ -275,12 +275,6 @@ async function btqInit() {
         if (bils?.length) {
           window._adhesionRemiseCentimes = bils.reduce((s, b) => s + b.remise_boutique_centimes, 0);
           window._adhesionRemiseLabel = bils.map(b => b.titre).join(', ');
-          const banner = document.getElementById('btq-adhesion-banner');
-          const bannerTxt = document.getElementById('btq-adhesion-banner-txt');
-          if (banner && bannerTxt && window._adhesionRemiseCentimes > 0) {
-            bannerTxt.textContent = `Ta réduction de ${(window._adhesionRemiseCentimes/100).toFixed(0)}€ (${window._adhesionRemiseLabel}) s'applique automatiquement à ta commande !`;
-            banner.style.display = 'flex';
-          }
         }
       }
     }
