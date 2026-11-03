@@ -9363,6 +9363,7 @@ async function bilEnregistrer() {
     actif: !!b.actif,
     tarifs: b.tarifs,
     formulaire_champs: b.formulaire_champs || {},
+    remise_boutique_centimes: b.remise_boutique_centimes || 0,
   };
   let error, saved;
   if (b.id) {
