@@ -104,5 +104,5 @@ export async function onRequest({ request, env }) {
     return json({ error: 'HelloAsso n\'a pas retourné d\'URL', details: haData }, 502);
   }
 
-  return json({ ok: true, redirectUrl: haData.redirectUrl, numero: cmd.numero, total: cmd.total_centimes });
+  return json({ ok: true, redirectUrl: haData.redirectUrl, numero: cmd.numero, total });
 }
