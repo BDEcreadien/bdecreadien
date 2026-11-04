@@ -258,6 +258,7 @@ async function btqInit() {
   // Adhésions confirmées → remise boutique
   window._adhesionRemiseCentimes = 0;
   window._adhesionRemiseLabel = '';
+  window._adhesionProduitIds = new Set();
   try {
     const { data: adhesions } = await _sb
       .from('billetterie_inscriptions')
