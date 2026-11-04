@@ -1308,12 +1308,29 @@ function btqOpenCheckout() {
   // Remplir le résumé
   const summary = document.getElementById('btq-checkout-summary');
   if (!summary) return;
-  summary.innerHTML = _cart.map(i => `
+  // Construire une map produit_id → remise pour rattacher la remise à son produit
+  const remiseMap = {};
+  _cart.filter(i => i.est_offert && i.prix < 0 && i.produit_id).forEach(i => {
+    remiseMap[i.produit_id] = i.prix * i.quantite;
+  });
+  summary.innerHTML = _cart.filter(i => !(i.est_offert && i.prix < 0)).map(i => {
+    const remise = remiseMap[i.produit_id];
+    let prixHtml;
+    if (i.est_offert) {
+      prixHtml = 'OFFERT';
+    } else if (remise) {
+      const original = btqFmt(i.prix * i.quantite);
+      const remisee  = btqFmt(i.prix * i.quantite + remise);
+      prixHtml = `<s style="opacity:.5;font-size:12px">${original}</s> <span style="color:#4ade80">${remisee}</span>`;
+    } else {
+      prixHtml = btqFmt(i.prix * i.quantite);
+    }
+    return `
     <div class="btq-checkout-row">
       <span>${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
-      <span>${i.est_offert && i.prix < 0 ? `<span style="color:#4ade80">${btqFmt(i.prix * i.quantite)}</span>` : i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}</span>
-    </div>
-  `).join('') + `
+      <span>${prixHtml}</span>
+    </div>`;
+  }).join('') + `
     <div class="btq-checkout-row">
       <span>Total</span>
       <span>${btqFmt(btqCalcTotal())}</span>
