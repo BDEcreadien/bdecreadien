@@ -874,6 +874,9 @@ function btqRecalcOptions() {
   document.querySelectorAll('#btq-options-list input[type="checkbox"]:checked').forEach(c => {
     remiseTotal += parseInt(c.dataset.remise || '0');
   });
+  if (window._adhesionRemiseCentimes > 0 && window._adhesionProduitIds?.has(p.id)) {
+    remiseTotal += window._adhesionRemiseCentimes;
+  }
   const prixAffiche = Math.max(0, p.prix_centimes - remiseTotal);
   const priceEl = document.querySelector('.btq-modal-price');
   if (priceEl) {
