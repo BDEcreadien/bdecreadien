@@ -1134,10 +1134,15 @@ async function btqApplyAdhesionRemise() {
   const label = window._adhesionRemiseLabel || 'Adhésion';
   if (!remise || !_cart.filter(i => !i.est_offert && !i._adhesionRemise).length) return;
 
+  // Associer la remise au produit lié si présent dans le panier
+  const produitIds = window._adhesionProduitIds || new Set();
+  const itemLie = _cart.find(i => !i.est_offert && produitIds.has(i.produit_id));
+  const remiseProduitId = itemLie?.produit_id || null;
+
   await btqEnsurePanier();
   const { data: ri } = await _sb.from('boutique_items').insert({
     commande_id: _cmdId,
-    produit_id: null,
+    produit_id: remiseProduitId,
     produit_nom: `Remise adhésion — ${label}`,
     quantite: 1,
     prix_unitaire_centimes: -remise,
@@ -1145,7 +1150,7 @@ async function btqApplyAdhesionRemise() {
   }).select('id').single();
   if (ri) {
     _cart.push({
-      _key: ri.id, produit_id: null,
+      _key: ri.id, produit_id: remiseProduitId,
       produit_nom: `Remise adhésion — ${label}`,
       quantite: 1, prix: -remise, est_offert: true, _adhesionRemise: true,
     });
