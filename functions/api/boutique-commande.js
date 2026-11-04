@@ -129,7 +129,9 @@ export async function onRequest({ request, env }) {
   if (env.RESEND_API_KEY) {
     const lignes = items.map(i => {
       const detail = [i.design_nom, i.taille].filter(Boolean).map(escHtml).join(' · ');
-      const prixStr = i.est_offert ? 'OFFERT' : formatEur(i.prix_unitaire_centimes * i.quantite);
+      const prixStr = i.est_offert && i.prix_unitaire_centimes < 0
+        ? `<span style="color:#10b981">${formatEur(i.prix_unitaire_centimes * i.quantite)}</span>`
+        : i.est_offert ? 'OFFERT' : formatEur(i.prix_unitaire_centimes * i.quantite);
       return `<tr>
         <td style="padding:8px 0;border-bottom:1px solid #f0e8ff">
           ${escHtml(i.produit_nom)}${detail ? ` <span style="color:#999;font-size:12px">(${detail})</span>` : ''} ×${i.quantite}
