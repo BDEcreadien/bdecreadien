@@ -42,14 +42,36 @@ export async function onRequest({ request, env }) {
   if (cmd.membre_id !== user_id) return json({ error: 'Accès refusé' }, 403);
   if (cmd.statut !== 'en_attente') return json({ error: 'Commande déjà payée ou annulée' }, 409);
 
+  // Recalculer le total depuis les items (inclut les remises négatives est_offert)
+  const itemsRes = await fetch(
+    `${SB}/rest/v1/boutique_items?commande_id=eq.${commande_id}&select=*`,
+    { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } }
+  );
+  const items = await itemsRes.json();
+  const total = (items || [])
+    .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+    .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
+
+  // Mettre à jour le total en DB si différent
+  if (total !== cmd.total_centimes && total >= 100) {
+    await fetch(
+      `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`,
+      {
+        method: 'PATCH',
+        headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total_centimes: total }),
+      }
+    );
+  }
+
   // Créer un nouveau checkout HelloAsso pour le même montant
   const SITE = 'https://bdecreadien.fr';
   const parts = (cmd.nom_acheteur || '').trim().split(/\s+/);
   const firstName = parts[0] || 'Client';
   const lastName  = parts.slice(1).join(' ') || parts[0] || 'BDE';
 
-  if (!cmd.total_centimes || cmd.total_centimes < 100) {
-    return json({ error: `Montant invalide : ${cmd.total_centimes} centimes` }, 400);
+  if (!total || total < 100) {
+    return json({ error: `Montant invalide : ${total} centimes` }, 400);
   }
 
   let haData;
