@@ -85,7 +85,7 @@ export async function onRequest({ request, env }) {
           Authorization: `Bearer ${KEY}`,
         },
         body: JSON.stringify({
-          totalAmountCents: cmd.total_centimes,
+          totalAmountCents: total,
           itemName: `Commande ${cmd.numero} — BDE CREAD Boutique`,
           backUrl:   `${SITE}/boutique.html?annule=1`,
           errorUrl:  `${SITE}/boutique.html?erreur=1`,
