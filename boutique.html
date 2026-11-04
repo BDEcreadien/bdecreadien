@@ -1311,7 +1311,7 @@ function btqOpenCheckout() {
   summary.innerHTML = _cart.map(i => `
     <div class="btq-checkout-row">
       <span>${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
-      <span>${i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}</span>
+      <span>${i.est_offert && i.prix < 0 ? `<span style="color:#4ade80">${btqFmt(i.prix * i.quantite)}</span>` : i.est_offert ? 'OFFERT' : btqFmt(i.prix * i.quantite)}</span>
     </div>
   `).join('') + `
     <div class="btq-checkout-row">
