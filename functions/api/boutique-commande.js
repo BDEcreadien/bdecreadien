@@ -127,16 +127,30 @@ export async function onRequest({ request, env }) {
 
   // ── 5. E-mail de confirmation ────────────────────────────
   if (env.RESEND_API_KEY) {
-    const lignes = items.map(i => {
+    // Map produit_id → remise centimes pour rattacher la remise à son produit
+    const remiseEmailMap = {};
+    items.filter(i => i.est_offert && i.prix_unitaire_centimes < 0 && i.produit_id).forEach(i => {
+      remiseEmailMap[i.produit_id] = i.prix_unitaire_centimes * i.quantite;
+    });
+    const lignes = items.filter(i => !(i.est_offert && i.prix_unitaire_centimes < 0)).map(i => {
       const detail = [i.design_nom, i.taille].filter(Boolean).map(escHtml).join(' · ');
-      const prixStr = i.est_offert && i.prix_unitaire_centimes < 0
-        ? `<span style="color:#10b981">${formatEur(i.prix_unitaire_centimes * i.quantite)}</span>`
-        : i.est_offert ? 'OFFERT' : formatEur(i.prix_unitaire_centimes * i.quantite);
+      const remise = remiseEmailMap[i.produit_id];
+      let prixStr, couleur;
+      if (i.est_offert) {
+        prixStr = 'OFFERT'; couleur = '#FF741F';
+      } else if (remise) {
+        const original = formatEur(i.prix_unitaire_centimes * i.quantite);
+        const remisee  = formatEur(i.prix_unitaire_centimes * i.quantite + remise);
+        prixStr = `<s style="opacity:.5;font-size:12px">${original}</s> <span style="color:#10b981">${remisee}</span>`;
+        couleur = '#460186';
+      } else {
+        prixStr = formatEur(i.prix_unitaire_centimes * i.quantite); couleur = '#460186';
+      }
       return `<tr>
         <td style="padding:8px 0;border-bottom:1px solid #f0e8ff">
           ${escHtml(i.produit_nom)}${detail ? ` <span style="color:#999;font-size:12px">(${detail})</span>` : ''} ×${i.quantite}
         </td>
-        <td style="padding:8px 0;border-bottom:1px solid #f0e8ff;text-align:right;font-weight:700;color:${i.est_offert && i.prix_unitaire_centimes >= 0 ? '#FF741F' : '#460186'}">
+        <td style="padding:8px 0;border-bottom:1px solid #f0e8ff;text-align:right;font-weight:700;color:${couleur}">
           ${prixStr}
         </td>
       </tr>`;
