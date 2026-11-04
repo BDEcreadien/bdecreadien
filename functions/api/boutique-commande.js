@@ -53,7 +53,7 @@ export async function onRequest({ request, env }) {
   if (!items?.length) return json({ error: 'Panier vide' }, 400);
 
   const total = items
-    .filter(i => !i.est_offert)
+    .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
     .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
 
   // ── 3. Passer en en_attente si encore en panier (trigger génère le numéro) ───
