@@ -570,7 +570,7 @@ function btqRenderGrid(cat = 'tous') {
         <div class="btq-card-img-bg"></div>
         ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
         <div class="btq-card-price-badge">${btqFmt(p.prix_centimes)}</div>
-        ${window._adhesionRemiseCentimes > 0 ? `<div class="btq-card-remise-badge">−${(window._adhesionRemiseCentimes/100).toFixed(0)}€ adhérent</div>` : ''}
+        ${window._adhesionRemiseCentimes > 0 && window._adhesionProduitIds?.has(p.id) ? `<div class="btq-card-remise-badge">−${(window._adhesionRemiseCentimes/100).toFixed(0)}€ adhérent</div>` : ''}
         ${designDots}
       </div>
       <div class="btq-card-body">
