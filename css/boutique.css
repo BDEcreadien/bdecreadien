@@ -137,13 +137,13 @@
     }
     .btq-hero-title {
       font-family:'Slovia','Bebas Neue',sans-serif;
-      font-size:clamp(80px,18vw,180px);
+      font-size:clamp(70px,15vw,160px);
       line-height:.9;
       color:transparent;
       background: linear-gradient(135deg,#fff 0%,#e8c0ff 30%,#ffaad0 60%,#ff9060 100%);
       -webkit-background-clip:text;
       background-clip:text;
-      letter-spacing:-2px;
+      letter-spacing:6px;
       margin:0;
       animation: fadeUp .8s .35s both;
     }
