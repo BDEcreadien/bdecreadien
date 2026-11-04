@@ -35,11 +35,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow: visible;
       background: var(--btq-dark);
     }
     .btq-hero-canvas {
-      position: absolute;inset:0;
+      position: absolute;inset:0;overflow:hidden;
     }
     /* Animated blobs */
     .btq-blob {
