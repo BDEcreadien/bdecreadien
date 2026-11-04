@@ -269,12 +269,13 @@ async function btqInit() {
       if (bilIds.length) {
         const { data: bils } = await _sb
           .from('billetteries')
-          .select('id, titre, remise_boutique_centimes')
+          .select('id, titre, remise_boutique_centimes, remise_produit_id')
           .in('id', bilIds)
           .gt('remise_boutique_centimes', 0);
         if (bils?.length) {
           window._adhesionRemiseCentimes = bils.reduce((s, b) => s + b.remise_boutique_centimes, 0);
           window._adhesionRemiseLabel = bils.map(b => b.titre).join(', ');
+          window._adhesionProduitIds = new Set(bils.map(b => b.remise_produit_id).filter(Boolean));
         }
       }
     }
