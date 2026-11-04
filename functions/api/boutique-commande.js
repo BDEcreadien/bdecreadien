@@ -137,7 +137,7 @@ export async function onRequest({ request, env }) {
           ${escHtml(i.produit_nom)}${detail ? ` <span style="color:#999;font-size:12px">(${detail})</span>` : ''} ×${i.quantite}
         </td>
         <td style="padding:8px 0;border-bottom:1px solid #f0e8ff;text-align:right;font-weight:700;color:${i.est_offert ? '#FF741F' : '#460186'}">
-          ${prixStr}
+          ${i.est_offert && i.prix_unitaire_centimes >= 0 ? prixStr : prixStr}
         </td>
       </tr>`;
     }).join('');
