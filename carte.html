@@ -405,12 +405,17 @@
     }
 
     async function fetchFromSupabase(uid) {
-      if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON) return null;
+      if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON) {
+        console.error('[carte] Supabase non initialisé', { supabase: !!window.supabase, url: !!window.SUPABASE_URL, anon: !!window.SUPABASE_ANON });
+        return null;
+      }
       const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-      const { data: carte } = await sb.from('cartes_fidelite').select('*').eq('user_id', uid).maybeSingle();
+      const { data: carte, error: carteErr } = await sb.from('cartes_fidelite').select('*').eq('user_id', uid).maybeSingle();
+      if (carteErr) console.error('[carte] cartes_fidelite SELECT error:', carteErr.message, carteErr.code, carteErr.hint);
       if (!carte) return null;
       // Utilise la fonction sécurisée qui n'expose que prenom/nom (pas email/tel/role)
-      const { data: profilArr } = await sb.rpc('get_carte_profil', { uid });
+      const { data: profilArr, error: profilErr } = await sb.rpc('get_carte_profil', { uid });
+      if (profilErr) console.error('[carte] get_carte_profil RPC error:', profilErr.message, profilErr.code);
       const profil = Array.isArray(profilArr) && profilArr.length ? profilArr[0] : null;
       return {
         id: uid,
