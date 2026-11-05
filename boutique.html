@@ -1491,30 +1491,82 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
 <script defer src="js/notif.js"></script>
 <script>
 (function(){
-  const END = new Date('2026-11-27T23:59:00+01:00');
-  const wrap = document.getElementById('btq-countdown');
-  const closed = document.getElementById('btq-countdown-closed');
+  const OPEN  = new Date('2026-11-07T12:00:00+01:00');
+  const CLOSE = new Date('2026-11-23T14:00:00+01:00');
   function pad(n){return String(n).padStart(2,'0')}
-  function tick(){
-    const diff = END - Date.now();
-    if(diff <= 0){
-      if(wrap) wrap.style.display='none';
-      if(closed) closed.style.display='';
-      return;
-    }
+  function cdHtml(diff){
     const j = Math.floor(diff/86400000);
     const h = Math.floor((diff%86400000)/3600000);
     const m = Math.floor((diff%3600000)/60000);
     const s = Math.floor((diff%60000)/1000);
-    if(wrap) wrap.innerHTML = [
-      [j, j>1?'Jours':'Jour'],
-      [pad(h),'Heures'],
-      [pad(m),'Minutes'],
-      [pad(s),'Secondes']
-    ].map(([v,l])=>`<div class="btq-cd-box"><span class="btq-cd-num">${v}</span><span class="btq-cd-lbl">${l}</span></div>`).join('');
+    return [[j,j>1?'Jours':'Jour'],[pad(h),'Heures'],[pad(m),'Minutes'],[pad(s),'Secondes']]
+      .map(([v,l])=>`<div class="btq-cd-box"><span class="btq-cd-num">${v}</span><span class="btq-cd-lbl">${l}</span></div>`).join('');
   }
-  tick();
-  setInterval(tick,1000);
+
+  // ── Chrono ouverture ─────────────────────────────────────
+  const openWrap = document.getElementById('btq-opening-wrap');
+  const openCd   = document.getElementById('btq-opening-cd');
+  function tickOpen(){
+    const diff = OPEN - Date.now();
+    if(!openWrap) return;
+    if(diff <= 0){ openWrap.style.display='none'; return; }
+    if(openCd) openCd.innerHTML = cdHtml(diff);
+  }
+  tickOpen();
+  setInterval(tickOpen, 1000);
+
+  // ── Chrono clôture ───────────────────────────────────────
+  const wrap   = document.getElementById('btq-countdown');
+  const closed = document.getElementById('btq-countdown-closed');
+  function tickClose(){
+    const diff = CLOSE - Date.now();
+    if(diff <= 0){
+      if(wrap) wrap.style.display='none';
+      if(closed) closed.style.display='';
+      showMerci();
+      return;
+    }
+    if(wrap) wrap.innerHTML = cdHtml(diff);
+  }
+  tickClose();
+  setInterval(tickClose, 1000);
+
+  // ── Page de remerciement ─────────────────────────────────
+  function showMerci(){
+    const shop = document.getElementById('btq-shop');
+    if(!shop || shop.dataset.merci) return;
+    shop.dataset.merci = '1';
+    shop.innerHTML = `
+      <div style="max-width:600px;margin:0 auto;padding:60px 24px;text-align:center">
+        <p style="font-size:56px;margin:0 0 20px">🎉</p>
+        <h2 style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;
+          background:linear-gradient(135deg,#fff 0%,#e8c0ff 40%,#ff9060 100%);
+          -webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 16px">
+          Merci à tous !
+        </h2>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:20px;color:rgba(255,255,255,.8);line-height:1.5;margin:0 0 12px">
+          La boutique est maintenant clôturée.<br>
+          Les commandes ont bien été enregistrées.
+        </p>
+        <p style="font-family:'Barlow Condensed',sans-serif;font-size:18px;color:rgba(255,255,255,.55);line-height:1.6;margin:0 0 32px">
+          Vos articles arriveront lors de la <strong style="color:rgba(255,255,255,.8)">deuxième semaine de décembre</strong>.<br>
+          Vous serez prévenus dès réception pour venir récupérer votre commande sur place.
+        </p>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;margin-bottom:32px">
+          <p style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;margin:0 0 8px">Vous n'avez pas pu commander ?</p>
+          <p style="font-family:'Barlow Condensed',sans-serif;font-size:17px;color:rgba(255,255,255,.75);line-height:1.6;margin:0">
+            Envoyez-nous un mail, on refera sûrement une commande prochainement.<br>
+            <a href="mailto:bdecreadien@gmail.com" style="color:#c084fc;text-decoration:none;font-weight:700">bdecreadien@gmail.com</a>
+          </p>
+        </div>
+        <a href="/" style="display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;border:1px solid rgba(255,255,255,.15);padding:12px 28px;border-radius:12px">
+          ← Retour au site
+        </a>
+      </div>`;
+  }
+
+  // Afficher directement si déjà clôturée
+  if(CLOSE <= Date.now()) showMerci();
 })();
 </script>
 
