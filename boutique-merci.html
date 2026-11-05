@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merci — Boutique BDE CREAD Lyon</title>
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Bebas+Neue&display=swap">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100vh;background:#0a0015;font-family:'Barlow Condensed',sans-serif;color:white}
+    .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+    .emoji{font-size:64px;margin-bottom:24px}
+    .title{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(48px,10vw,96px);
+      letter-spacing:3px;
+      background:linear-gradient(135deg,#fff 0%,#e8c0ff 40%,#ff9060 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      line-height:1;margin-bottom:20px;
+    }
+    .sub{font-size:clamp(16px,3vw,22px);color:rgba(255,255,255,.75);line-height:1.6;max-width:520px;margin:0 auto 12px}
+    .detail{font-size:clamp(14px,2.5vw,18px);color:rgba(255,255,255,.45);line-height:1.6;max-width:520px;margin:0 auto 36px}
+    .card{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;padding:24px 32px;
+      max-width:480px;width:100%;margin:0 auto 36px;
+    }
+    .card-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px}
+    .card-text{font-size:17px;color:rgba(255,255,255,.75);line-height:1.6}
+    .card-text a{color:#c084fc;text-decoration:none;font-weight:700}
+    .card-text a:hover{text-decoration:underline}
+    .back{
+      display:inline-block;font-size:14px;letter-spacing:2px;text-transform:uppercase;
+      color:rgba(255,255,255,.45);text-decoration:none;
+      border:1px solid rgba(255,255,255,.12);padding:12px 28px;border-radius:12px;
+      transition:color .2s,border-color .2s;
+    }
+    .back:hover{color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.3)}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="emoji">🎉</div>
+    <h1 class="title">Merci à tous !</h1>
+    <p class="sub">La boutique est maintenant clôturée.<br>Toutes les commandes ont bien été enregistrées.</p>
+    <p class="detail">Vos articles arriveront lors de la <strong style="color:rgba(255,255,255,.75)">deuxième semaine de décembre</strong>.<br>Vous serez prévenus dès réception pour venir récupérer votre commande sur place.</p>
+    <div class="card">
+      <p class="card-label">Vous n'avez pas pu commander ?</p>
+      <p class="card-text">
+        Envoyez-nous un mail, on refera sûrement une commande prochainement.<br>
+        <a href="mailto:bdecreadien@gmail.com">bdecreadien@gmail.com</a>
+      </p>
+    </div>
+    <a href="/" class="back">← Retour au site</a>
+  </div>
+</body>
+</html>
