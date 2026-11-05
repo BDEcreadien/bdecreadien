@@ -408,7 +408,7 @@
           profil_id: profilId,
         };
         const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
-        if (inscError) console.warn('[inscription] save failed (non-bloquant):', inscError.message);
+        if (inscError) console.error('[billetterie] inscription INSERT error:', inscError.message, inscError.code, inscError.hint);
         // Mémoriser pour la page de confirmation
         try { sessionStorage.setItem('_btInsc', JSON.stringify({ slug, email, profilId })); } catch (_) {}
       } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
