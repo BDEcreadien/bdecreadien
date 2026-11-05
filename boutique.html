@@ -244,7 +244,8 @@ async function btqInit() {
   }
 
   // Profil
-  const { data: profil } = await _sb.from('profils').select('*').eq('id', _user.id).single();
+  const { data: profil, error: profilErr } = await _sb.from('profils').select('*').eq('id', _user.id).single();
+  if (profilErr) console.error('[boutique] profils SELECT error:', profilErr.message, profilErr.code, profilErr.hint);
   _profil = profil;
 
   // Accès réservé aux membres BDE et admins
