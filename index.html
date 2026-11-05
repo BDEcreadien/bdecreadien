@@ -115,8 +115,12 @@
     <script>
     (function(){
       var OPEN = new Date('2026-11-07T12:00:00+01:00');
-      var card = document.getElementById('hero-card-boutique');
-      if(card && Date.now() >= OPEN) card.href = 'boutique.html';
+      if(Date.now() >= OPEN){
+        var card = document.getElementById('hero-card-boutique');
+        if(card) card.href = 'boutique.html';
+        var nav = document.getElementById('nav-boutique-link');
+        if(nav) nav.href = 'boutique.html';
+      }
     })();
     </script>
     <div class="hero-scroll" aria-hidden="true">
