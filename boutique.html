@@ -1497,37 +1497,10 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
       .map(([v,l])=>`<div class="btq-cd-box"><span class="btq-cd-num">${v}</span><span class="btq-cd-lbl">${l}</span></div>`).join('');
   }
 
-  const isPreview = new URLSearchParams(location.search).get('preview') === 'bde2026';
-
   // ── Redirection si clôturée ──────────────────────────────
-  if(CLOSE <= Date.now() && !isPreview){
+  if(CLOSE <= Date.now()){
     location.replace('/boutique-merci.html');
   }
-
-  // ── Masquer la boutique avant ouverture ──────────────────
-  const shop = document.getElementById('btq-shop');
-  const countdownSection = document.getElementById('btq-countdown-wrap');
-  if(OPEN > Date.now() && !isPreview){
-    // Cacher la section produits jusqu'à l'ouverture
-    if(shop) shop.style.display = 'none';
-  }
-
-  // ── Chrono ouverture ─────────────────────────────────────
-  const openWrap = document.getElementById('btq-opening-wrap');
-  const openCd   = document.getElementById('btq-opening-cd');
-  function tickOpen(){
-    const diff = OPEN - Date.now();
-    if(!openWrap) return;
-    if(diff <= 0){
-      openWrap.style.display = 'none';
-      // Révéler la boutique à l'ouverture
-      if(shop && !isPreview) shop.style.display = '';
-      return;
-    }
-    if(openCd) openCd.innerHTML = cdHtml(diff);
-  }
-  if(!isPreview){ tickOpen(); setInterval(tickOpen, 1000); }
-  else if(openWrap){ openWrap.style.display = 'none'; }
 
   // ── Chrono clôture ───────────────────────────────────────
   const wrap   = document.getElementById('btq-countdown');
@@ -1537,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
     if(diff <= 0){
       if(wrap) wrap.style.display='none';
       if(closed) closed.style.display='';
-      if(!isPreview) location.replace('/boutique-merci.html');
+      location.replace('/boutique-merci.html');
       return;
     }
     if(wrap) wrap.innerHTML = cdHtml(diff);
