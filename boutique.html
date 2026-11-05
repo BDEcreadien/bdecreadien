@@ -261,19 +261,21 @@ async function btqInit() {
   window._adhesionRemiseLabel = '';
   window._adhesionProduitIds = new Set();
   try {
-    const { data: adhesions } = await _sb
+    const { data: adhesions, error: adhesionErr } = await _sb
       .from('billetterie_inscriptions')
       .select('billetterie_id, billetterie_slug')
       .eq('profil_id', _user.id)
       .eq('statut', 'confirme');
+    if (adhesionErr) console.error('[boutique] billetterie_inscriptions SELECT error:', adhesionErr.message, adhesionErr.code, adhesionErr.hint);
     if (adhesions?.length) {
       const bilIds = [...new Set(adhesions.map(a => a.billetterie_id).filter(Boolean))];
       if (bilIds.length) {
-        const { data: bils } = await _sb
+        const { data: bils, error: bilsErr } = await _sb
           .from('billetteries')
           .select('id, titre, remise_boutique_centimes, remise_produit_id')
           .in('id', bilIds)
           .gt('remise_boutique_centimes', 0);
+        if (bilsErr) console.error('[boutique] billetteries SELECT error:', bilsErr.message, bilsErr.code);
         if (bils?.length) {
           window._adhesionRemiseCentimes = bils.reduce((s, b) => s + b.remise_boutique_centimes, 0);
           window._adhesionRemiseLabel = bils.map(b => b.titre).join(', ');
@@ -281,7 +283,7 @@ async function btqInit() {
         }
       }
     }
-  } catch (_) {}
+  } catch (e) { console.error('[boutique] adhesion init error:', e); }
 
   // Préremplir checkout
   if (_profil) {
