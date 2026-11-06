@@ -626,7 +626,7 @@ function btqCouleurHex(c) { return _COULEUR_HEX[c] || '#888'; }
 function btqOpenModal(id) {
   const p = _produits.find(x => x.id === id);
   if (!p) return;
-  _modalProd    = p;
+  _modalProd    = { ...p, guide_taille_url: (p.images||[]).find(i=>i.type==='guide_taille')?.url || null };
   _modalDesign  = null;
   _modalCouleur = null;
   _modalCouleurExplicite = false;
