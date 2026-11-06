@@ -778,7 +778,7 @@ function btqSelectDesign(idx, nom, el) {
   document.querySelectorAll('.btq-color-chip').forEach(btn => {
     const c = btn.querySelector('.btq-color-dot')?.nextSibling?.textContent?.trim() || btn.textContent.trim();
     const hasPhoto = design?.images?.[c]?.front || design?.images?.[c]?.dos;
-    btn.style.visibility = hasPhoto ? '' : 'hidden';
+    btn.style.display = hasPhoto ? '' : 'none';
   });
   btqUpdateThumbs();
 }
