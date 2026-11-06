@@ -552,7 +552,7 @@
       /* Bouton fixe en bas */
       .btq-modal-add-wrap {
         position:fixed;bottom:0;left:0;right:0;z-index:1001;
-        padding:6px 16px 40px;
+        padding:6px 16px env(safe-area-inset-bottom, 8px);
         background:#12001f;
         border-top:1px solid rgba(255,255,255,.1);
       }
