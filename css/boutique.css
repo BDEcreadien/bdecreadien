@@ -512,11 +512,12 @@
       /* Pas de drag handle */
       .btq-modal-drag { display:none; }
 
-      /* Layout colonne scrollable */
+      /* Layout colonne : image+config scrollables, bouton reste en bas */
       .btq-modal-layout {
         display:flex;flex-direction:column;
-        flex:1;overflow-y:auto;min-height:0;
+        flex:1;min-height:0;
         height:100%;
+        overflow:hidden;
       }
 
       /* Image */
