@@ -474,30 +474,10 @@
       renderPage();
       btChangeQty(0);
 
-      // Bannière connexion / statut compte
+      // Bannière compte : vérifier si déjà connecté au chargement
       try {
         const { data: { user } } = await _sbAuth.auth.getUser();
-        if (!user) {
-          const banner = document.getElementById('bt-login-banner');
-          const loginLink = document.getElementById('bt-login-link');
-          if (banner) banner.style.display = '';
-          if (loginLink) loginLink.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
-        } else {
-          // Connecté : afficher bandeau vert + pré-remplir formulaire
-          const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', user.id).maybeSingle();
-          if (profil) {
-            const loggedBanner = document.getElementById('bt-logged-banner');
-            const loggedName = document.getElementById('bt-logged-name');
-            if (loggedBanner) loggedBanner.style.display = '';
-            if (loggedName) loggedName.textContent = (profil.prenom || '') + ' ' + (profil.nom || '');
-            const fPrenom = document.getElementById('bt-prenom');
-            const fNom = document.getElementById('bt-nom');
-            const fEmail = document.getElementById('bt-email');
-            if (fPrenom && profil.prenom) fPrenom.value = profil.prenom;
-            if (fNom && profil.nom) fNom.value = profil.nom;
-            if (fEmail && profil.email) fEmail.value = profil.email;
-          }
-        }
+        if (user) await btFillFromProfil(user.id);
       } catch (_) {}
 
       // Message si retour "annulé"
