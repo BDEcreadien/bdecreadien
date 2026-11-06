@@ -537,7 +537,7 @@
 
       /* Détails */
       .btq-modal-details {
-        order:3;padding:16px 16px 70px;
+        order:3;padding:16px 16px 72px;
         overflow-y:auto;flex:1;min-height:0;
       }
       .btq-modal-name { font-size:20px;padding-right:50px;margin-bottom:2px; }
@@ -552,11 +552,11 @@
       /* Bouton fixe en bas */
       .btq-modal-add-wrap {
         position:fixed;bottom:0;left:0;right:0;z-index:1001;
-        padding:6px 16px env(safe-area-inset-bottom, 8px);
+        padding:8px 16px 16px;
         background:#12001f;
         border-top:1px solid rgba(255,255,255,.1);
       }
-      .btq-add-btn { font-size:14px;padding:9px; }
+      .btq-add-btn { font-size:15px;padding:11px; }
     }
     /* Design picker */
     .btq-designs { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px; }
