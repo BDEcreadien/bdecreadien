@@ -870,6 +870,7 @@ function btqSetMainImg(img, nom) {
 
 function btqSelectCouleur(c, el) {
   _modalCouleur = c;
+  _modalSide = 'front';
   _modalCouleurExplicite = true;
   document.querySelectorAll('.btq-color-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
