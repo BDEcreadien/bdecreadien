@@ -11413,6 +11413,7 @@ async function btqaSaveProduit(id) {
     a_designs: designs.length > 0, a_tailles: tailles.length > 0,
     actif, image_url: imageUrl,
     images, designs, options_payantes, quantite_max,
+    guide_taille_url: document.getElementById('bp-gt-v')?.value.trim() || null,
   };
 
   let prodId = id;
