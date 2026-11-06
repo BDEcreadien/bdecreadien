@@ -1350,12 +1350,14 @@ function btqOpenCheckout() {
   const summary = document.getElementById('btq-checkout-summary');
   if (!summary) return;
   // Construire une map produit_id → remise pour rattacher la remise à son produit
-  const remiseMap = {};
-  _cart.filter(i => i.est_offert && i.prix < 0 && i.produit_id).forEach(i => {
-    remiseMap[i.produit_id] = i.prix * i.quantite;
+  const remiseMapCo = {};
+  const remisesStandaloneCo = [];
+  _cart.filter(i => i.est_offert && i.prix < 0).forEach(i => {
+    if (i.produit_id) remiseMapCo[i.produit_id] = i.prix * i.quantite;
+    else remisesStandaloneCo.push(i);
   });
-  summary.innerHTML = _cart.filter(i => !(i.est_offert && i.prix < 0)).map(i => {
-    const remise = remiseMap[i.produit_id];
+  const normalRowsCo = _cart.filter(i => !(i.est_offert && i.prix < 0)).map(i => {
+    const remise = remiseMapCo[i.produit_id];
     let prixHtml;
     if (i.est_offert) {
       prixHtml = 'OFFERT';
@@ -1371,7 +1373,13 @@ function btqOpenCheckout() {
       <span>${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` · ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}</span>
       <span>${prixHtml}</span>
     </div>`;
-  }).join('') + `
+  });
+  const remiseRowsCo = remisesStandaloneCo.map(r => `
+    <div class="btq-checkout-row" style="color:#4ade80;">
+      <span>🏷️ ${r.produit_nom}</span>
+      <span>${btqFmt(r.prix * r.quantite)}</span>
+    </div>`);
+  summary.innerHTML = [...normalRowsCo, ...remiseRowsCo].join('') + `
     <div class="btq-checkout-row">
       <span>Total</span>
       <span>${btqFmt(btqCalcTotal())}</span>
