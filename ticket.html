@@ -482,7 +482,7 @@
       renderPage();
       btChangeQty(0);
 
-      // Bannière connexion : afficher seulement si l'utilisateur n'est pas connecté
+      // Bannière connexion / statut compte
       try {
         const { data: { user } } = await _sb.auth.getUser();
         if (!user) {
@@ -490,6 +490,21 @@
           const loginLink = document.getElementById('bt-login-link');
           if (banner) banner.style.display = '';
           if (loginLink) loginLink.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
+        } else {
+          // Connecté : afficher bandeau vert + pré-remplir formulaire
+          const { data: profil } = await _sb.from('profils').select('prenom,nom,email').eq('id', user.id).maybeSingle();
+          if (profil) {
+            const loggedBanner = document.getElementById('bt-logged-banner');
+            const loggedName = document.getElementById('bt-logged-name');
+            if (loggedBanner) loggedBanner.style.display = '';
+            if (loggedName) loggedName.textContent = (profil.prenom || '') + ' ' + (profil.nom || '');
+            const fPrenom = document.getElementById('bt-prenom');
+            const fNom = document.getElementById('bt-nom');
+            const fEmail = document.getElementById('bt-email');
+            if (fPrenom && profil.prenom) fPrenom.value = profil.prenom;
+            if (fNom && profil.nom) fNom.value = profil.nom;
+            if (fEmail && profil.email) fEmail.value = profil.email;
+          }
         }
       } catch (_) {}
 
