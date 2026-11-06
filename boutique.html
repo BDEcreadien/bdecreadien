@@ -771,6 +771,13 @@ function btqSelectDesign(idx, nom, el) {
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   btqTrack('design_select', _modalProd?.id, _modalProd?.nom, { design: nom });
+  // Masquer les couleurs sans photo pour ce design
+  const design = _modalProd?.designs?.find(d => d.nom === nom);
+  document.querySelectorAll('.btq-color-chip').forEach(btn => {
+    const c = btn.querySelector('.btq-color-dot')?.nextSibling?.textContent?.trim() || btn.textContent.trim();
+    const hasPhoto = design?.images?.[c]?.front || design?.images?.[c]?.dos;
+    btn.style.display = hasPhoto ? '' : 'none';
+  });
   btqUpdateThumbs();
 }
 
