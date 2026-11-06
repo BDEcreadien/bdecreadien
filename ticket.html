@@ -229,7 +229,7 @@
   </div>
 
   <!-- Modal connexion -->
-  <div id="bt-auth-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px;">
+  <div id="bt-auth-modal" onclick="if(event.target===this)btCloseModal()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px;">
     <div style="background:white;border-radius:20px;padding:32px 28px;width:100%;max-width:400px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       <button onclick="btCloseModal()" style="position:absolute;top:16px;right:16px;border:none;background:none;cursor:pointer;font-size:20px;color:#999;line-height:1;">✕</button>
       <div style="text-align:center;margin-bottom:24px;">
