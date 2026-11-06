@@ -21,8 +21,8 @@
       backdrop-filter: blur(16px) !important;
       box-shadow: 0 1px 0 rgba(255,255,255,.06) !important;
     }
-#main-nav .nav-logo-text .nav-bde,
-    #main-nav .nav-logo-text .nav-cread,
+    #main-nav .nav-logo-text .bde,
+    #main-nav .nav-logo-text .cread,
     #main-nav .nav-link { color: rgba(255,255,255,.85) !important; }
     #main-nav .nav-link:hover { color: white !important; }
     #main-nav .nav-link.active { color: #c084fc !important; }
