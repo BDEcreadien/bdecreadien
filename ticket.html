@@ -473,6 +473,17 @@
       renderPage();
       btChangeQty(0);
 
+      // Bannière connexion : afficher seulement si l'utilisateur n'est pas connecté
+      try {
+        const { data: { user } } = await _sb.auth.getUser();
+        if (!user) {
+          const banner = document.getElementById('bt-login-banner');
+          const loginLink = document.getElementById('bt-login-link');
+          if (banner) banner.style.display = '';
+          if (loginLink) loginLink.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
+        }
+      } catch (_) {}
+
       // Message si retour "annulé"
       const p = new URLSearchParams(location.search);
       if (p.get('annule') === '1') {
