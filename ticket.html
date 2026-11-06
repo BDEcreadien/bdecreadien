@@ -466,8 +466,14 @@
     }
 
     // ============================================================================
-    async function btFillFromProfil(uid) {
-      const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', uid).maybeSingle();
+    function btGetCachedProfil() {
+      try {
+        const s = sessionStorage.getItem('_bde_profil') || localStorage.getItem('_bde_profil');
+        return s ? JSON.parse(s) : null;
+      } catch (_) { return null; }
+    }
+
+    function btFillWithProfil(profil) {
       if (!profil) return;
       const fPrenom = document.getElementById('bt-prenom');
       const fNom = document.getElementById('bt-nom');
@@ -479,25 +485,20 @@
       if (banner) {
         banner.style.borderColor = '#16a34a';
         document.getElementById('bt-account-icon').textContent = '✅';
-        document.getElementById('bt-account-title').style.color = '#16a34a';
-        document.getElementById('bt-account-title').textContent = 'Connecté en tant que ' + (profil.prenom || '') + ' ' + (profil.nom || '');
+        const title = document.getElementById('bt-account-title');
+        title.style.color = '#16a34a';
+        title.textContent = 'Connecté en tant que ' + (profil.prenom || '') + ' ' + (profil.nom || '');
         document.getElementById('bt-account-sub').textContent = 'Tes coordonnées ont été pré-remplies.';
         const btn = document.getElementById('bt-account-btn');
         if (btn) btn.style.display = 'none';
       }
     }
 
-    async function btAccountAction() {
-      const btn = document.getElementById('bt-account-btn');
-      if (btn) { btn.disabled = true; btn.textContent = '…'; }
-      try {
-        const { data: { user } } = await _sbAuth.auth.getUser();
-        if (user) {
-          await btFillFromProfil(user.id);
-        } else {
-          location.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
-        }
-      } catch (_) {
+    function btAccountAction() {
+      const profil = btGetCachedProfil();
+      if (profil) {
+        btFillWithProfil(profil);
+      } else {
         location.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
       }
     }
