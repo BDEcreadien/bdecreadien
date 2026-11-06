@@ -1001,7 +1001,6 @@
       /* Masquer les images flottantes du hero sur mobile — elles débordent en dehors */
       .btq-float-icon { display:none; }
       .btq-hero { overflow:hidden; }
-      .btq-hero-title { font-size: clamp(120px, 28vw, 160px); }
     }
 
 /* ─── COUNTDOWN ─────────────────────────────────────────── */
