@@ -637,7 +637,11 @@ function btqOpenModal(id) {
   _modalImgDos   = '';
   const couleurs = p.couleurs_disponibles || [];
 
-  const designs = p.designs || [];
+  // Ne garder que les designs qui ont au moins une photo sur au moins une couleur
+  const designs = (p.designs || []).filter(d => {
+    if (!d.images) return false;
+    return Object.values(d.images).some(ci => ci?.front || ci?.dos);
+  });
 
   // Thumbnails initiaux : galerie produit uniquement (les thumbs de design se mettent à jour à la sélection)
   const thumbItems = [];
