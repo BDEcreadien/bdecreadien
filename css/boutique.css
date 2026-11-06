@@ -581,6 +581,7 @@
     .btq-design-chip img { width:28px;height:28px;object-fit:cover;border-radius:50%;margin-right:6px;vertical-align:middle; }
     /* Color picker */
     .btq-colors { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;min-height:44px; }
+    .btq-colors + .btq-modal-label { margin-top:16px; }
     .btq-color-chip {
       display:flex;align-items:center;gap:7px;
       padding:6px 14px 6px 8px;border-radius:100px;
