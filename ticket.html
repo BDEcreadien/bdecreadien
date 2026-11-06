@@ -549,8 +549,7 @@
       try {
         let profilId = null;
         try {
-          const { data: { user } } = await _sbAuth.auth.getUser();
-          profilId = user?.id || null;
+          profilId = btGetCachedProfil()?._uid || null;
         } catch (_) {}
         const inscRow = {
           billetterie_id: _cfg.id || null,
