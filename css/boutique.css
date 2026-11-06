@@ -21,6 +21,7 @@
       backdrop-filter: blur(16px) !important;
       box-shadow: 0 1px 0 rgba(255,255,255,.06) !important;
     }
+    #main-nav .nav-logo-img { width:44px !important; height:44px !important; object-fit:cover !important; border-radius:50% !important; flex-shrink:0 !important; }
     #main-nav .nav-logo-text .nav-bde,
     #main-nav .nav-logo-text .nav-cread,
     #main-nav .nav-link { color: rgba(255,255,255,.85) !important; }
