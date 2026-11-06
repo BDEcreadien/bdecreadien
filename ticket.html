@@ -512,10 +512,8 @@
       btChangeQty(0);
 
       // Bannière compte : vérifier si déjà connecté au chargement
-      try {
-        const { data: { user } } = await _sbAuth.auth.getUser();
-        if (user) await btFillFromProfil(user.id);
-      } catch (_) {}
+      const cachedProfil = btGetCachedProfil();
+      if (cachedProfil) btFillWithProfil(cachedProfil);
 
       // Message si retour "annulé"
       const p = new URLSearchParams(location.search);
