@@ -524,8 +524,36 @@
       if (profil) {
         btFillWithProfil(profil);
       } else {
-        location.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
+        const modal = document.getElementById('bt-auth-modal');
+        if (modal) { modal.style.display = 'flex'; setTimeout(() => document.getElementById('bt-auth-email')?.focus(), 50); }
       }
+    }
+
+    function btCloseModal() {
+      const modal = document.getElementById('bt-auth-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function btModalSignIn() {
+      const email = document.getElementById('bt-auth-email')?.value.trim();
+      const pwd = document.getElementById('bt-auth-pwd')?.value;
+      const errEl = document.getElementById('bt-auth-error');
+      const btn = document.getElementById('bt-auth-submit');
+      if (!email || !pwd) { if (errEl) { errEl.textContent = 'Remplis email et mot de passe.'; errEl.style.display = ''; } return; }
+      btn.disabled = true; btn.textContent = 'Connexion…';
+      const { data, error } = await _sbAuth.auth.signInWithPassword({ email, password: pwd });
+      btn.disabled = false; btn.textContent = 'Se connecter';
+      if (error || !data?.user) {
+        if (errEl) { errEl.textContent = 'Email ou mot de passe incorrect.'; errEl.style.display = ''; }
+        return;
+      }
+      btCloseModal();
+      const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', data.user.id).maybeSingle();
+      if (profil) btFillWithProfil(profil);
+    }
+
+    async function btModalGoogle() {
+      await _sbAuth.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
     }
 
     // INIT
