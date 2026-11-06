@@ -540,6 +540,7 @@
       .btq-modal-details {
         order:3;padding:16px 16px 16px;
         overflow-y:auto;flex:1;min-height:0;
+        -webkit-overflow-scrolling:touch;
       }
       .btq-modal-name { font-size:20px;padding-right:50px;margin-bottom:2px; }
       .btq-modal-price { font-size:20px;margin-bottom:14px; }
