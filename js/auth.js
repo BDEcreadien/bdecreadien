@@ -128,7 +128,7 @@
     const profil = await getProfil();
 
     if (!profil) {
-      li.innerHTML = '<a href="/connexion.html" class="nav-auth-link">Connexion</a>';
+      li.innerHTML = '<button type="button" class="nav-auth-link" onclick="openAuthModal({next:window.location.pathname+window.location.search})" style="background:none;border:none;cursor:pointer;font:inherit;padding:0;">Connexion</button>';
       return;
     }
 
