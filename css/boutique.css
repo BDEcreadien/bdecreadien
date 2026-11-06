@@ -552,11 +552,11 @@
       /* Bouton fixe en bas */
       .btq-modal-add-wrap {
         position:fixed;bottom:0;left:0;right:0;z-index:1001;
-        padding:12px 16px 28px;
+        padding:8px 16px 16px;
         background:#12001f;
         border-top:1px solid rgba(255,255,255,.1);
       }
-      .btq-add-btn { font-size:16px;padding:14px; }
+      .btq-add-btn { font-size:15px;padding:11px; }
     }
     /* Design picker */
     .btq-designs { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px; }
