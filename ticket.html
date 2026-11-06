@@ -648,7 +648,7 @@
         btFillWithProfil(profil);
       } else {
         const modal = document.getElementById('bt-auth-modal');
-        if (modal) { modal.style.display = 'flex'; setTimeout(() => document.getElementById('bt-auth-email')?.focus(), 50); }
+        if (modal) { modal.style.display = 'flex'; setTimeout(() => document.getElementById('btm-login-email')?.focus(), 50); }
       }
     }
 
@@ -657,32 +657,103 @@
       if (modal) modal.style.display = 'none';
     }
 
-    async function btModalSignIn() {
-      const email = document.getElementById('bt-auth-email')?.value.trim();
-      const pwd = document.getElementById('bt-auth-pwd')?.value;
-      const errEl = document.getElementById('bt-auth-error');
-      const btn = document.getElementById('bt-auth-submit');
-      if (!email || !pwd) { if (errEl) { errEl.textContent = 'Remplis email et mot de passe.'; errEl.style.display = ''; } return; }
+    // === Fonctions modal auth ===
+    function btmShowTab(name) {
+      ['connexion','inscription','reset','success'].forEach(t => {
+        const p = document.getElementById('btm-panel-' + t);
+        if (p) p.classList.remove('active');
+      });
+      document.querySelectorAll('#bt-auth-modal .auth-tab').forEach((tab, i) => {
+        tab.classList.remove('active');
+        if (['connexion','inscription'][i] === name) tab.classList.add('active');
+      });
+      const target = document.getElementById('btm-panel-' + name);
+      if (target) target.classList.add('active');
+    }
+
+    function btmShowMsg(id, text, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'auth-msg ' + type + ' visible';
+    }
+    function btmHideMsg(id) {
+      const el = document.getElementById(id);
+      if (el) el.className = 'auth-msg';
+    }
+
+    const _btmSvgEye = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const _btmSvgEyeOff = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    function btmTogglePwd(inputId, btn) {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      const isPwd = el.type === 'password';
+      el.type = isPwd ? 'text' : 'password';
+      btn.innerHTML = isPwd ? _btmSvgEyeOff : _btmSvgEye;
+      btn.setAttribute('aria-label', isPwd ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    }
+
+    async function btmDoLogin() {
+      btmHideMsg('btm-login-msg');
+      const email = document.getElementById('btm-login-email').value.trim();
+      const pwd = document.getElementById('btm-login-pwd').value;
+      if (!email || !pwd) { btmShowMsg('btm-login-msg', 'Remplis email et mot de passe.', 'error'); return; }
+      const btn = document.querySelector('#btm-panel-connexion .auth-btn');
       btn.disabled = true; btn.textContent = 'Connexion…';
-      // _sb a persistSession:false → aucun stockage localStorage, n'interfère pas avec la session du site
       const { data, error } = await _sb.auth.signInWithPassword({ email, password: pwd });
       btn.disabled = false; btn.textContent = 'Se connecter';
       if (error || !data?.user) {
-        if (errEl) { errEl.textContent = 'Email ou mot de passe incorrect.'; errEl.style.display = ''; }
+        const msg = error?.message === 'Invalid login credentials' ? 'Email ou mot de passe incorrect.'
+          : error?.message === 'Email not confirmed' ? 'Confirme ton email avant de te connecter.'
+          : (error?.message || 'Erreur de connexion.');
+        btmShowMsg('btm-login-msg', msg, 'error');
         return;
       }
       const { data: profil } = await _sb.from('profils').select('prenom,nom,email').eq('id', data.user.id).maybeSingle();
-      if (profil) {
-        // Stocker en sessionStorage pour que btGetCachedProfil le trouve (onglet courant uniquement)
-        try { sessionStorage.setItem('_bde_profil', JSON.stringify(profil)); } catch (_) {}
-        btCloseModal();
-        btFillWithProfil(profil);
-      }
+      const toStore = { prenom: profil?.prenom || '', nom: profil?.nom || '', email: profil?.email || email, _uid: data.user.id };
+      try { sessionStorage.setItem('_bde_profil', JSON.stringify(toStore)); } catch (_) {}
+      btCloseModal();
+      btFillWithProfil(toStore);
     }
 
-    async function btModalGoogle() {
-      // Google OAuth redirige vers cette page, le fallback getSession prend le relais
+    async function btmDoGoogle() {
       await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
+    }
+
+    async function btmDoSignup() {
+      btmHideMsg('btm-reg-msg');
+      const prenom = document.getElementById('btm-reg-prenom').value.trim();
+      const nom    = document.getElementById('btm-reg-nom').value.trim();
+      const email  = document.getElementById('btm-reg-email').value.trim();
+      const pwd    = document.getElementById('btm-reg-pwd').value;
+      const annee  = document.getElementById('btm-reg-annee').value;
+      const tel    = document.getElementById('btm-reg-tel').value.trim();
+      if (!prenom || !nom || !email || !pwd || !annee || !tel) {
+        btmShowMsg('btm-reg-msg', 'Remplis tous les champs obligatoires (*).', 'error');
+        return;
+      }
+      const btn = document.querySelector('#btm-panel-inscription .auth-btn');
+      btn.disabled = true; btn.textContent = 'Création…';
+      const { error } = await _sb.auth.signUp({
+        email, password: pwd,
+        options: { data: { prenom, nom, annee, telephone: tel || null } }
+      });
+      btn.disabled = false; btn.textContent = 'Créer mon compte';
+      if (error) { btmShowMsg('btm-reg-msg', error.message, 'error'); return; }
+      document.getElementById('btm-reg-email-confirm').textContent = email;
+      btmShowTab('success');
+    }
+
+    async function btmDoReset() {
+      btmHideMsg('btm-reset-msg');
+      const email = document.getElementById('btm-reset-email').value.trim();
+      if (!email) { btmShowMsg('btm-reset-msg', 'Saisis ton email.', 'error'); return; }
+      const btn = document.querySelector('#btm-panel-reset .auth-btn');
+      btn.disabled = true; btn.textContent = 'Envoi…';
+      const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://bdecreadien.fr/connexion' });
+      btn.disabled = false; btn.textContent = 'Envoyer le lien de réinitialisation';
+      if (error) { btmShowMsg('btm-reset-msg', error.message, 'error'); return; }
+      btmShowMsg('btm-reset-msg', 'Email envoyé ! Vérifie ta boîte de réception.', 'success');
     }
 
     // INIT
