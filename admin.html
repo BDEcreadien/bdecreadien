@@ -11369,9 +11369,11 @@ async function btqaSaveProduit(id) {
     const url = row.querySelector('input[type="hidden"]')?.value.trim();
     if (url) images.push({ url });
   });
-  // Ajouter le guide des tailles dans images (type: 'guide_taille')
+  // Ajouter le guide des tailles dans images (type: 'guide_taille'), après avoir dédupliqué
   const gtUrl = document.getElementById('bp-gt-v')?.value.trim();
   if (gtUrl) images.push({ url: gtUrl, type: 'guide_taille' });
+  // imageUrl = première photo galerie (pas le guide)
+
 
   // Lire les designs inline
   const designs = [];
