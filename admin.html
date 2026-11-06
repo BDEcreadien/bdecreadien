@@ -11394,8 +11394,8 @@ async function btqaSaveProduit(id) {
     designs.push({ nom: n, images });
   });
 
-  // image_url = première photo de la galerie (pour les cards et fallbacks)
-  const imageUrl = images[0]?.url || null;
+  // image_url = première photo de la galerie hors guide_taille
+  const imageUrl = images.find(i => i.type !== 'guide_taille')?.url || null;
 
   // Lire les options payantes
   const options_payantes = [];
