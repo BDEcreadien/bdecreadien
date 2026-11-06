@@ -430,7 +430,7 @@
     .btq-modal-layout {
       display:grid;
       grid-template-columns:72px 1fr 1fr;
-      height:580px;max-height:88vh;
+      height:660px;max-height:88vh;
     }
     /* Colonne 1 - thumbnails */
     .btq-modal-thumbs {
