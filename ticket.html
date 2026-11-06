@@ -513,7 +513,18 @@
 
       // Bannière compte : vérifier si déjà connecté au chargement
       const cachedProfil = btGetCachedProfil();
-      if (cachedProfil) btFillWithProfil(cachedProfil);
+      if (cachedProfil) {
+        btFillWithProfil(cachedProfil);
+      } else {
+        // Fallback : lire la session Supabase (cas retour depuis /connexion.html)
+        try {
+          const { data: { session } } = await _sbAuth.auth.getSession();
+          if (session?.user) {
+            const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', session.user.id).maybeSingle();
+            if (profil) btFillWithProfil(profil);
+          }
+        } catch (_) {}
+      }
 
       // Message si retour "annulé"
       const p = new URLSearchParams(location.search);
