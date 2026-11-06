@@ -485,7 +485,7 @@
 
       // Bannière connexion / statut compte
       try {
-        const { data: { user } } = await _sb.auth.getUser();
+        const { data: { user } } = await _sbAuth.auth.getUser();
         if (!user) {
           const banner = document.getElementById('bt-login-banner');
           const loginLink = document.getElementById('bt-login-link');
@@ -493,7 +493,7 @@
           if (loginLink) loginLink.href = '/connexion.html?next=' + encodeURIComponent(location.pathname + location.search);
         } else {
           // Connecté : afficher bandeau vert + pré-remplir formulaire
-          const { data: profil } = await _sb.from('profils').select('prenom,nom,email').eq('id', user.id).maybeSingle();
+          const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', user.id).maybeSingle();
           if (profil) {
             const loggedBanner = document.getElementById('bt-logged-banner');
             const loggedName = document.getElementById('bt-logged-name');
