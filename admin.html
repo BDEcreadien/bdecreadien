@@ -11281,6 +11281,18 @@ async function btqaOpenProduit(id) {
     <div class="btqa-form-row"><label>Tailles (séparées par des virgules)</label>
       <input id="bp-tailles" value="${(prod?.tailles_disponibles || []).join(', ')}" placeholder="S, M, L, XL">
     </div>
+    <div class="btqa-form-row"><label>Guide des tailles (optionnel)</label>
+      <div class="btqa-img-picker">
+        <div class="btqa-img-preview-wrap" id="bp-gt-w" style="${prod?.guide_taille_url ? '' : 'display:none'}">
+          <img src="${prod?.guide_taille_url || ''}" id="bp-gt-img" class="btqa-img-preview-img">
+          <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-gt-v','bp-gt-w')">✕</button>
+        </div>
+        <input type="hidden" id="bp-gt-v" value="${prod?.guide_taille_url || ''}">
+        <label class="btqa-img-btn" for="bp-gt-file" id="bp-gt-lbl" style="padding:5px 8px;font-size:10px">${prod?.guide_taille_url ? '📷 Changer' : '📷 Photo'}</label>
+        <input type="file" id="bp-gt-file" accept="image/*" style="display:none"
+               onchange="btqaUploadImg(this,'bp-gt-v','bp-gt-img','bp-gt-w','bp-gt-lbl')">
+      </div>
+    </div>
     <div class="btqa-form-row"><label>Couleurs (séparées par des virgules)</label>
       <input id="bp-couleurs" value="${(prod?.couleurs_disponibles || []).join(', ')}" placeholder="Blanc, Noir, Bleu, Rose, Vert">
     </div>
