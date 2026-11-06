@@ -537,7 +537,7 @@
 
       /* Détails */
       .btq-modal-details {
-        order:3;padding:16px 16px 100px;
+        order:3;padding:16px 16px 72px;
         overflow-y:auto;flex:1;min-height:0;
       }
       .btq-modal-name { font-size:20px;padding-right:50px;margin-bottom:2px; }
