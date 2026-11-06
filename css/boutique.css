@@ -543,7 +543,8 @@
       .btq-modal-name { font-size:20px;padding-right:50px;margin-bottom:2px; }
       .btq-modal-price { font-size:20px;margin-bottom:14px; }
       .btq-modal-label { font-size:11px;margin-bottom:6px; }
-      .btq-designs,.btq-colors,.btq-sizes { margin-bottom:12px; }
+      .btq-designs,.btq-sizes { margin-bottom:12px; }
+      .btq-colors { margin-bottom:24px; }
       .btq-size-chip { width:44px;height:36px;font-size:13px; }
       .btq-qty-row { gap:10px;margin-bottom:10px; }
       .btq-qty-btn { width:30px;height:30px;font-size:16px; }
