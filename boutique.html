@@ -792,6 +792,7 @@ function btqThumbClick(designIdx, img, nom, el) {
 }
 
 function btqThumbSide(side, el) {
+  _modalSide = side;
   document.querySelectorAll('.btq-modal-thumb').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   const img = document.getElementById('btq-main-img');
