@@ -619,7 +619,7 @@ async function btqTrack(event, product_id, product_nom, data) {
   try { await _sb.from('btq_analytics').insert({ event, product_id: product_id||null, product_nom: product_nom||null, data: data||{} }); } catch(e) {}
 }
 
-const _COULEUR_HEX = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B' };
+const _COULEUR_HEX = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B', Marron:'#8B5E3C' };
 function btqCouleurHex(c) { return _COULEUR_HEX[c] || '#888'; }
 
 function btqOpenModal(id) {
