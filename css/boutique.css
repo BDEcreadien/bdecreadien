@@ -561,13 +561,14 @@
       .btq-add-btn { font-size:16px;padding:14px; }
     }
     /* Design picker */
-    .btq-designs { display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;padding-bottom:2px; }
+    .btq-designs { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px; }
     .btq-design-chip {
-      padding:7px 16px;border-radius:100px;
-      border:1.5px solid transparent;
-      font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;
+      padding:7px 10px;border-radius:100px;
+      border:1.5px solid rgba(255,255,255,.12);
+      font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;
       color:rgba(255,255,255,.65);cursor:pointer;
       background:transparent;outline:none;
+      text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
     .btq-design-chip.selected {
       background:linear-gradient(135deg,var(--btq-violet),var(--btq-pink));
