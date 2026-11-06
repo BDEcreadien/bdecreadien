@@ -228,6 +228,31 @@
 
   </div>
 
+  <!-- Modal connexion -->
+  <div id="bt-auth-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:white;border-radius:20px;padding:32px 28px;width:100%;max-width:400px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <button onclick="btCloseModal()" style="position:absolute;top:16px;right:16px;border:none;background:none;cursor:pointer;font-size:20px;color:#999;line-height:1;">✕</button>
+      <div style="text-align:center;margin-bottom:24px;">
+        <img src="/assets/logo-bde.svg" onerror="this.style.display='none'" style="height:40px;margin-bottom:12px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1px;text-transform:uppercase;color:#460186;">BDE CREAD Lyon</div>
+      </div>
+      <div id="bt-auth-error" style="display:none;background:#fee2e2;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;"></div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:6px;">Email</label>
+        <input id="bt-auth-email" type="email" autocomplete="email" placeholder="ton@email.com" style="width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:15px;outline:none;font-family:'Barlow',sans-serif;" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e5e7eb'">
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:6px;">Mot de passe</label>
+        <input id="bt-auth-pwd" type="password" autocomplete="current-password" placeholder="••••••••" style="width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:15px;outline:none;font-family:'Barlow',sans-serif;" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e5e7eb'" onkeydown="if(event.key==='Enter')btModalSignIn()">
+      </div>
+      <button onclick="btModalSignIn()" id="bt-auth-submit" style="width:100%;padding:14px;background:linear-gradient(135deg,#460186,#D2396D,#FF741F);color:white;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;">Se connecter</button>
+      <button onclick="btModalGoogle()" style="width:100%;padding:12px;background:white;color:#333;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Barlow',sans-serif;">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.8 2.5 30.2 0 24 0 14.7 0 6.7 5.5 2.7 13.6l7.9 6.1C12.5 13.3 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z"/><path fill="#FBBC05" d="M10.6 28.3A14.6 14.6 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L2.3 13.6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.1-6.3z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.3-7.7 2.3-6.2 0-11.5-4.2-13.4-9.9l-7.9 6.1C6.6 42.4 14.7 48 24 48z"/></svg>
+        Continuer avec Google
+      </button>
+    </div>
+  </div>
+
   <!-- Charge Supabase pour lire la config depuis la DB -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
