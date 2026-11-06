@@ -551,15 +551,15 @@
       .btq-qty-btn { width:30px;height:30px;font-size:16px; }
       .btq-qty-val { font-size:22px;min-width:22px; }
 
-      /* Bouton fixe en bas à droite, à côté du bouton ? */
+      /* Bouton fixe en bas, aligné avec le bouton ? */
       .btq-modal-add-wrap {
         position:fixed;
-        bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-        left:80px;right:16px;
+        bottom:20px;
+        left:76px;right:16px;
         z-index:1001;
         background:none;border:none;padding:0;
       }
-      .btq-add-btn { font-size:14px;padding:12px 16px;border-radius:50px; }
+      .btq-add-btn { font-size:14px;padding:12px 16px;border-radius:50px;height:44px; }
     }
     /* Design picker */
     .btq-designs { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px; }
