@@ -540,19 +540,25 @@
       const btn = document.getElementById('bt-auth-submit');
       if (!email || !pwd) { if (errEl) { errEl.textContent = 'Remplis email et mot de passe.'; errEl.style.display = ''; } return; }
       btn.disabled = true; btn.textContent = 'Connexion…';
-      const { data, error } = await _sbAuth.auth.signInWithPassword({ email, password: pwd });
+      // _sb a persistSession:false → aucun stockage localStorage, n'interfère pas avec la session du site
+      const { data, error } = await _sb.auth.signInWithPassword({ email, password: pwd });
       btn.disabled = false; btn.textContent = 'Se connecter';
       if (error || !data?.user) {
         if (errEl) { errEl.textContent = 'Email ou mot de passe incorrect.'; errEl.style.display = ''; }
         return;
       }
-      btCloseModal();
-      const { data: profil } = await _sbAuth.from('profils').select('prenom,nom,email').eq('id', data.user.id).maybeSingle();
-      if (profil) btFillWithProfil(profil);
+      const { data: profil } = await _sb.from('profils').select('prenom,nom,email').eq('id', data.user.id).maybeSingle();
+      if (profil) {
+        // Stocker en sessionStorage pour que btGetCachedProfil le trouve (onglet courant uniquement)
+        try { sessionStorage.setItem('_bde_profil', JSON.stringify(profil)); } catch (_) {}
+        btCloseModal();
+        btFillWithProfil(profil);
+      }
     }
 
     async function btModalGoogle() {
-      await _sbAuth.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
+      // Google OAuth redirige vers cette page, le fallback getSession prend le relais
+      await _sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.href } });
     }
 
     // INIT
