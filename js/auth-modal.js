@@ -95,7 +95,7 @@
         </div>
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Téléphone *</label>
-          <input type="tel" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{2})/g,'$1 ').trim().slice(0,14)" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="tel" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" oninput="let v=this.value.replace(/\D/g,'').slice(0,10);this.value=v.match(/.{1,2}/g)?.join(' ')??v" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
         </div>
       </div>
       <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 16px;cursor:pointer;font-size:13px;color:var(--gris-texte);line-height:1.4;">
