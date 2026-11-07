@@ -47,9 +47,18 @@ export async function onRequest({ request, env }) {
       <p style="margin:0 0 12px;font-size:14px;color:#444;line-height:1.5">
         Pour rejoindre le groupe et rester informé(e) des activités :
       </p>
-      <a href="${whatsappUrl}" style="display:inline-block;padding:14px 32px;background:#25D366;color:white;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;">
-        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.3);color:white;font-size:13px;font-weight:900;line-height:20px;text-align:center;vertical-align:middle;margin-right:8px;font-family:Arial,sans-serif">W</span>Rejoindre le groupe WhatsApp
-      </a>
+      <table cellpadding="0" cellspacing="0" style="display:inline-table">
+        <tr>
+          <td bgcolor="#25D366" style="border-radius:12px;padding:14px 32px;" align="center">
+            <table cellpadding="0" cellspacing="0" style="display:inline-table">
+              <tr>
+                <td width="22" height="22" bgcolor="#1ebe5d" style="border-radius:50%;text-align:center;vertical-align:middle;font-family:Arial,sans-serif;font-size:14px;font-weight:900;color:white;line-height:22px;" align="center">W</td>
+                <td style="padding-left:10px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:white;white-space:nowrap"><a href="${whatsappUrl}" style="color:white;text-decoration:none;font-family:Arial,sans-serif;font-size:15px;font-weight:700;">Rejoindre le groupe WhatsApp</a></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </div>` : '';
 
   const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
