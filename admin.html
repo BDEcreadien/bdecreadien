@@ -10677,9 +10677,11 @@ async function btqaCreatePhysOrder() {
 
   showToast(`Commande ${cmd.numero} créée !`);
   _btqaPhysItems = [];
+  _btqaPhysAdhesion = null;
   document.getElementById('btqa-p-nom').value   = '';
   document.getElementById('btqa-p-email').value  = '';
   document.getElementById('btqa-p-notes').value  = '';
+  btqaRenderAdhesionBadge();
   btqaRenderPhysItems();
   await initBoutiqueAdmin();
 }
