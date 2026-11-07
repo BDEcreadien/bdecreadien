@@ -10160,6 +10160,7 @@ function btqaPMOpenGuide() {
   if (!url) return;
   document.getElementById('btqa-guide-img').src = url;
   const overlay = document.getElementById('btqa-guide-overlay');
+  document.body.appendChild(overlay); // sortir du stacking context du modal
   overlay.style.display = 'flex';
 }
 function btqaPMCloseGuide() {
