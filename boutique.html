@@ -579,7 +579,7 @@ function btqRenderGrid(cat = 'tous') {
     <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
       <div class="btq-card-img">
         <div class="btq-card-img-bg"></div>
-        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" loading="lazy">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
         ${window._adhesionRemiseCentimes > 0 && window._adhesionProduitIds?.has(p.id)
           ? `<div class="btq-card-price-badge" style="display:flex;align-items:center;gap:6px;"><s style="opacity:.5;font-size:14px;">${btqFmt(p.prix_centimes)}</s><span style="color:#4ade80;">${btqFmt(p.prix_centimes - window._adhesionRemiseCentimes)}</span></div>`
           : `<div class="btq-card-price-badge">${btqFmt(p.prix_centimes)}</div>`
