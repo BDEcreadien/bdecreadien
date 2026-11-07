@@ -42,12 +42,12 @@
     <div id="am-panel-connexion" class="am-panel">
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Email</label>
-        <input type="email" id="am-login-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+        <input type="email" id="am-login-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Mot de passe</label>
         <div style="position:relative;">
-          <input type="password" id="am-login-pwd" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:10px 44px 10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="password" id="am-login-pwd" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:10px 44px 10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
           <button type="button" onclick="amTogglePwd('am-login-pwd',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;padding:6px 10px;cursor:pointer;font-size:16px;opacity:.55;" aria-label="Afficher le mot de passe"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
@@ -63,28 +63,28 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Prénom *</label>
-          <input type="text" id="am-reg-prenom" placeholder="Marie" autocomplete="given-name" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="text" id="am-reg-prenom" placeholder="Marie" autocomplete="given-name" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
         </div>
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Nom *</label>
-          <input type="text" id="am-reg-nom" placeholder="Dupont" autocomplete="family-name" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="text" id="am-reg-nom" placeholder="Dupont" autocomplete="family-name" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
         </div>
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Email *</label>
-        <input type="email" id="am-reg-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+        <input type="email" id="am-reg-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
       </div>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Mot de passe * (min. 8 caractères)</label>
         <div style="position:relative;">
-          <input type="password" id="am-reg-pwd" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:10px 44px 10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="password" id="am-reg-pwd" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:10px 44px 10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
           <button type="button" onclick="amTogglePwd('am-reg-pwd',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;padding:6px 10px;cursor:pointer;opacity:.55;" aria-label="Afficher"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Année *</label>
-          <select id="am-reg-annee" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <select id="am-reg-annee" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
             <option value="1ère">1ère année</option>
             <option value="2ème">2ème année</option>
             <option value="3ème">3ème année</option>
@@ -95,7 +95,7 @@
         </div>
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Téléphone *</label>
-          <input type="tel" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="tel" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
         </div>
       </div>
       <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 16px;cursor:pointer;font-size:13px;color:var(--gris-texte);line-height:1.4;">
@@ -109,7 +109,7 @@
     <div id="am-panel-reset" class="am-panel" style="display:none;">
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Ton email</label>
-        <input type="email" id="am-reset-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+        <input type="email" id="am-reset-email" placeholder="ton@email.com" autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
       </div>
       <button onclick="amDoReset()" style="width:100%;padding:12px;background:var(--gradient);border:none;border-radius:12px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;" id="am-reset-btn">Envoyer le lien</button>
       <div id="am-reset-msg" style="display:none;margin-top:14px;padding:12px 14px;border-radius:10px;font-size:13px;"></div>
