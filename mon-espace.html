@@ -635,7 +635,7 @@
           <div class="field"><label>Nom</label><input type="text" id="p-nom"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Téléphone</label><input type="tel" id="p-tel"></div>
+          <div class="field"><label>Téléphone</label><input type="text" inputmode="numeric" id="p-tel" maxlength="14" oninput="formatTel(this)"></div>
           <div class="field"><label>Année d'étude</label>
             <select id="p-annee">
               <option value="1ère">1ère année</option>
