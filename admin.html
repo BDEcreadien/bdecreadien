@@ -2064,6 +2064,14 @@
         </div>
 
         <!-- Modale de confirmation vente physique -->
+        <!-- Lightbox guide des tailles -->
+        <div id="btqa-guide-overlay" onclick="btqaPMCloseGuide()" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:20px">
+          <div style="max-width:600px;width:100%;position:relative">
+            <button onclick="btqaPMCloseGuide()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:white;font-size:28px;cursor:pointer;line-height:1">×</button>
+            <img id="btqa-guide-img" src="" alt="Guide des tailles" style="width:100%;border-radius:12px;display:block">
+          </div>
+        </div>
+
         <div id="btqa-phys-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px">
           <div style="background:white;border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(70,1,134,.25)">
             <h3 style="margin:0 0 6px;font-size:18px;color:#1a0030">Confirmer la commande</h3>
