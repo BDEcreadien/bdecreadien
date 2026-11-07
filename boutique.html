@@ -309,9 +309,15 @@ async function btqInit() {
     btqToast(`Paiement reçu ! Commande ${numero} confirmée.`);
     history.replaceState(null, '', location.pathname);
     btqResetCart();
-    // Email de confirmation de paiement (fire & forget)
-    _sb.from('boutique_commandes').select('id').eq('numero', numero).maybeSingle().then(({ data }) => {
-      if (data?.id) fetch('/api/boutique-email-etape', {
+    // Passer la commande en "payee" + envoyer l'email de confirmation
+    _sb.from('boutique_commandes').select('id,statut').eq('numero', numero).maybeSingle().then(({ data }) => {
+      if (!data?.id) return;
+      // Mettre à jour le statut si pas déjà payée
+      if (['en_attente','panier'].includes(data.statut)) {
+        _sb.from('boutique_commandes').update({ statut: 'payee', updated_at: new Date().toISOString() }).eq('id', data.id).then(() => {});
+      }
+      // Email de confirmation (fire & forget)
+      fetch('/api/boutique-email-etape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ commande_id: data.id, etape: 'payee' }),
