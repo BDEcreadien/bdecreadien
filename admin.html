@@ -10087,24 +10087,34 @@ function btqaOpenProdModal(prodId) {
     setTimeout(() => document.querySelectorAll('#btqa-pm-designs button')[0]?.classList.add('selected'), 0);
   } else if (designs.length > 1) {
     _btqaPM.design = designs[0].nom;
+    setTimeout(() => document.querySelectorAll('#btqa-pm-designs button')[0]?.classList.add('selected'), 0);
   }
 
+  // Couleurs filtrées selon le design sélectionné
+  const designActif = designs.find(d => d.nom === _btqaPM.design);
+  const couleursDesign = designActif?.images ? Object.keys(designActif.images).filter(c => designActif.images[c]?.front || designActif.images[c]?.dos) : [];
+  const couleursFiltrees = couleursDesign.length ? couleurs.filter(c => couleursDesign.includes(c)) : couleurs;
+
   const cw = document.getElementById('btqa-pm-couleur-wrap');
-  cw.style.display = couleurs.length ? '' : 'none';
-  document.getElementById('btqa-pm-couleurs').innerHTML = couleurs.map(c => {
+  cw.style.display = couleursFiltrees.length ? '' : 'none';
+  document.getElementById('btqa-pm-couleurs').innerHTML = couleursFiltrees.map(c => {
     const hex = _COULEUR_HEX_ADMIN[c] || '#888';
     const border = c === 'Blanc' ? 'border:1px solid #ccc;' : '';
     return `<button class="btqa-psel-color" onclick="btqaPMSelect('couleur','${c}',this)">
       <span class="btqa-psel-dot" style="background:${hex};${border}"></span>${c}
     </button>`;
   }).join('');
-  if (couleurs.length === 1) {
-    _btqaPM.couleur = couleurs[0];
+  if (couleursFiltrees.length === 1) {
+    _btqaPM.couleur = couleursFiltrees[0];
     _btqaPMCouleurExplicite = true;
     document.querySelectorAll('#btqa-pm-couleurs button')[0]?.classList.add('selected');
-  } else if (couleurs.length > 1) {
-    _btqaPM.couleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
+  } else if (couleursFiltrees.length > 1) {
+    _btqaPM.couleur = couleursFiltrees.includes('Blanc') ? 'Blanc' : couleursFiltrees[0];
     _btqaPMCouleurExplicite = false;
+    const pref = _btqaPM.couleur;
+    setTimeout(() => document.querySelectorAll('#btqa-pm-couleurs button').forEach(b => {
+      b.classList.toggle('selected', b.textContent.trim() === pref);
+    }), 0);
   }
 
   const tw = document.getElementById('btqa-pm-taille-wrap');
