@@ -9704,18 +9704,22 @@ async function btqaLoadAnalytics(days) {
 
 // ── Stats ────────────────────────────────────────────────────
 function btqaRenderStats() {
-  const all     = _btqaCommandes;
-  const attn    = all.filter(c => c.statut === 'en_attente').length;
-  const conf    = all.filter(c => c.statut === 'confirmee').length;
-  const remis   = all.filter(c => c.statut === 'remise').length;
-  const totalEur = all.filter(c => ['en_attente','confirmee','remise'].includes(c.statut))
-                      .reduce((s, c) => s + (c.total_centimes || 0), 0);
+  const all        = _btqaCommandes;
+  const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
+  const attn       = all.filter(c => c.statut === 'en_attente').length;
+  const conf       = all.filter(c => c.statut === 'confirmee').length;
+  const remis      = all.filter(c => c.statut === 'remise').length;
+  const totalAttn  = all.filter(c => c.statut === 'en_attente')
+                        .reduce((s, c) => s + (c.total_centimes || 0), 0);
+  const totalPaye  = all.filter(c => statutsPaies.includes(c.statut))
+                        .reduce((s, c) => s + (c.total_centimes || 0), 0);
   document.getElementById('btqa-stats').innerHTML = `
     <div class="btqa-stat"><div class="btqa-stat-val">${all.length}</div><div class="btqa-stat-lbl">Commandes</div></div>
     <div class="btqa-stat"><div class="btqa-stat-val">${attn}</div><div class="btqa-stat-lbl">En attente</div></div>
     <div class="btqa-stat"><div class="btqa-stat-val">${conf}</div><div class="btqa-stat-lbl">Confirmées</div></div>
     <div class="btqa-stat"><div class="btqa-stat-val">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalEur)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalAttn)}</div><div class="btqa-stat-lbl">Total en attente</div></div>
+    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalPaye)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
   `;
 }
 
