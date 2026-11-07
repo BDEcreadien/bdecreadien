@@ -1520,10 +1520,8 @@ function _startWhenReady() {
     _initDone = true;
     if (session) {
       _user = session.user;
-      btqInit();
-    } else {
-      document.getElementById('btq-gate').style.display = 'flex';
     }
+    btqInit();
   });
 }
 document.addEventListener('DOMContentLoaded', _startWhenReady);
