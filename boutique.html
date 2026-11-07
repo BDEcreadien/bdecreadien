@@ -686,21 +686,21 @@ function btqOpenModal(id) {
         <p class="btq-modal-price">${btqFmt(p.prix_centimes)}</p>
         ${p.description ? `<p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;margin:0 0 20px;">${p.description}</p>` : ''}
 
-        ${designs.length ? `
-          <p class="btq-modal-label">Design</p>
-          <div class="btq-designs" id="btq-design-row">
-            ${designs.map((d, idx) => `
-              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">
-                ${d.nom}
-              </button>`).join('')}
-          </div>` : ''}
-
         ${couleurs.length ? `
           <p class="btq-modal-label">Couleur</p>
           <div class="btq-colors" id="btq-color-row">
             ${couleurs.map(c => `
               <button class="btq-color-chip" onclick="btqSelectCouleur('${c}',this)">
                 <span class="btq-color-dot" style="background:${btqCouleurHex(c)};${c==='Blanc'?'border-color:rgba(0,0,0,.2);':''}"></span>${c}
+              </button>`).join('')}
+          </div>` : ''}
+
+        ${designs.length ? `
+          <p class="btq-modal-label">Design</p>
+          <div class="btq-designs" id="btq-design-row">
+            ${designs.map((d, idx) => `
+              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">
+                ${d.nom}
               </button>`).join('')}
           </div>` : ''}
 
