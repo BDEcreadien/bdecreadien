@@ -734,13 +734,15 @@ function btqOpenModal(id) {
     </div>
   `;
 
-  // Design 1 sélectionné silencieusement par défaut (pas de chip surligné)
-  if (designs.length) {
+  // Auto-sélection design
+  if (designs.length === 1) {
+    _modalDesign = { idx: 0, nom: designs[0].nom };
+    document.querySelector('#btq-design-row button')?.classList.add('selected');
+  } else if (designs.length > 1) {
     _modalDesign = { idx: 0, nom: designs[0].nom };
   }
   // Auto-sélection couleur
   if (couleurs.length === 1) {
-    // Une seule couleur : sélection explicite d'office
     _modalCouleur = couleurs[0];
     _modalCouleurExplicite = true;
     document.querySelector('#btq-color-row button')?.classList.add('selected');
@@ -748,6 +750,11 @@ function btqOpenModal(id) {
     // Plusieurs couleurs : Blanc comme preview silencieux (pas de chip surligné)
     _modalCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
     _modalCouleurExplicite = false;
+  }
+  // Auto-sélection taille unique
+  if (p.tailles_disponibles?.length === 1) {
+    _modalTaille = p.tailles_disponibles[0];
+    document.querySelector('#btq-size-row button')?.classList.add('selected');
   }
   // Afficher les visuels
   if (_modalDesign && _modalCouleur) btqUpdateThumbs();
