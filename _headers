@@ -27,7 +27,14 @@
 /service-worker.js
   Cache-Control: no-store, no-cache, must-revalidate
 
-/admin.html
+/OneSignalSDKWorker.js
+  Cache-Control: no-store, no-cache, must-revalidate
+
+# Tous les HTML toujours frais (évite le problème de version périmée)
+/*.html
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/
   Cache-Control: no-store, no-cache, must-revalidate
 
 /_data/*
