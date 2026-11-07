@@ -155,7 +155,7 @@
           <div class="rej-grid-2">
             <div class="rej-row">
               <label for="r-tel">Téléphone *</label>
-              <input type="tel" id="r-tel" placeholder="06 xx xx xx xx" required autocomplete="tel">
+              <input type="text" inputmode="numeric" id="r-tel" placeholder="06 xx xx xx xx" required autocomplete="tel" maxlength="14" oninput="formatTel(this)">
             </div>
             <div class="rej-row">
               <label for="r-annee">Année d'étude *</label>
