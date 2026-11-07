@@ -10217,7 +10217,9 @@ function btqaConfirmProdModal() {
   document.querySelectorAll('#btqa-pm-options input:checked').forEach(cb => {
     remise += parseInt(cb.dataset.remise || '0');
   });
-  const prixProd = Math.max(0, prod.prix_centimes - remise);
+  // Remise adhésion club de sport si ce produit est éligible
+  const adhesionRemise = (_btqaPhysAdhesion?.produit_id === prod.id) ? (_btqaPhysAdhesion.remise_centimes || 0) : 0;
+  const prixProd = Math.max(0, prod.prix_centimes - remise - adhesionRemise);
   _btqaPhysItems.push({ produit_id: prod.id, design_nom: design, couleur, taille, quantite: qty, prix_unitaire_centimes: prixProd });
 
   // Ajouter les options cochées comme articles séparés
