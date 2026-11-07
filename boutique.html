@@ -740,20 +740,11 @@ function btqOpenModal(id) {
     </div>
   `;
 
-  // Auto-sélection design
-  if (designs.length === 1) {
-    _modalDesign = { idx: 0, nom: designs[0].nom };
-    document.querySelector('#btq-design-row button')?.classList.add('selected');
-  } else if (designs.length > 1) {
-    _modalDesign = { idx: 0, nom: designs[0].nom };
-  }
-  // Auto-sélection couleur
+  // Couleur d'abord : auto-sélection si une seule, sinon pas de pré-sélection
   if (couleurs.length === 1) {
-    _modalCouleur = couleurs[0];
-    _modalCouleurExplicite = true;
-    document.querySelector('#btq-color-row button')?.classList.add('selected');
+    document.querySelector('#btq-color-row button')?.click();
   } else if (couleurs.length > 1) {
-    // Plusieurs couleurs : Blanc comme preview silencieux (pas de chip surligné)
+    // Preview silencieux sur Blanc pour l'image, sans sélectionner visuellement
     _modalCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
     _modalCouleurExplicite = false;
   }
