@@ -100,7 +100,7 @@ function buildEmail(title: string, body: string, btnLabel: string, btnUrl: strin
     <div style="text-align:center;margin-bottom:24px">
       <a href="${btnUrl}" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;font-family:Arial,sans-serif">${btnLabel}</a>
     </div>
-    <p style="margin:0;font-size:11px;color:#bbb;word-break:break-all">Si le bouton ne fonctionne pas, copie ce lien : <a href="${btnUrl}" style="color:#D2396D">${btnUrl}</a></p>
+    <p style="margin:0;font-size:11px;color:#bbb">Bouton qui ne fonctionne pas ? <a href="${btnUrl}" style="color:#D2396D;text-decoration:underline">Clique ici</a></p>
     <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">
       <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
       &nbsp;·&nbsp;
