@@ -89,7 +89,7 @@ export async function onRequest({ request, env }) {
     body: JSON.stringify({
       from:    RESEND_FROM,
       to:      [email],
-      subject: `Ton inscription à ${titre} est confirmée ! ✅`,
+      subject: `Ton inscription à ${titre} est confirmée !`,
       html,
     }),
   }).catch(() => {});
