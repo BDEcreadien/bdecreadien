@@ -899,7 +899,7 @@
       width:100%;padding:12px 16px;border-radius:12px;
       border:1.5px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
-      font-family:'Inter',sans-serif;font-size:15px;color:white;
+      font-family:'Inter',sans-serif;font-size:16px;color:white;
       outline:none;transition:border-color .2s;box-sizing:border-box;
     }
     .btq-form-input::placeholder { color:rgba(255,255,255,.3); }
