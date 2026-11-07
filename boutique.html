@@ -246,13 +246,6 @@ async function btqInit() {
   if (profilErr) console.error('[boutique] profils SELECT error:', profilErr.message, profilErr.code, profilErr.hint);
   _profil = profil;
 
-  // Accès à tous les utilisateurs connectés (etudiant, membre, admin)
-  const RANG = { etudiant: 1, membre: 2, admin: 3 };
-  if (!profil || (RANG[profil.role] ?? 0) < RANG['etudiant']) {
-    document.getElementById('btq-gate').innerHTML = '<p style="text-align:center;font-size:18px;color:rgba(255,255,255,.7);padding:40px 20px">La boutique est réservée aux membres du BDE CREAD.<br>Crée un compte pour accéder.</p>';
-    document.getElementById('btq-gate').style.display = 'flex';
-    return;
-  }
 
   // Adhésions confirmées → remise boutique
   window._adhesionRemiseCentimes = 0;
