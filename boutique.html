@@ -882,6 +882,18 @@ function btqSelectCouleur(c, el) {
   document.querySelectorAll('.btq-color-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   btqTrack('couleur_select', _modalProd?.id, _modalProd?.nom, { couleur: c });
+  // Filtrer les designs disponibles pour cette couleur
+  document.querySelectorAll('.btq-design-chip').forEach(btn => {
+    const nom = btn.textContent.trim();
+    const design = _modalProd?.designs?.find(d => d.nom === nom);
+    const hasPhoto = design?.images?.[c]?.front || design?.images?.[c]?.dos;
+    btn.style.display = hasPhoto ? '' : 'none';
+    btn.classList.remove('selected');
+  });
+  _modalDesign = null;
+  // Auto-sélectionner si un seul design disponible
+  const visibles = [...document.querySelectorAll('.btq-design-chip')].filter(b => b.style.display !== 'none');
+  if (visibles.length === 1) visibles[0].click();
   btqUpdateThumbs();
 }
 function btqSelectTaille(t, el) {
