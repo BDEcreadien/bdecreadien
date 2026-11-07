@@ -9536,8 +9536,9 @@ async function facTelechargerPdfExistant(id) {
    ============================================================ */
 
 let _btqaCommandes  = [];   // commandes chargées
-let _btqaProduits   = [];   // catalogue
-let _btqaPhysItems  = [];   // lignes vente physique
+let _btqaProduits      = [];   // catalogue
+let _btqaPhysItems     = [];   // lignes vente physique
+let _btqaPhysAdhesion  = null; // { remise_centimes, produit_id, label } si l'acheteur est adhérent
 
 // ── Init ────────────────────────────────────────────────────
 async function initBoutiqueAdmin() {
