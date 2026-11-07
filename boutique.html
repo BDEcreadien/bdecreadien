@@ -741,24 +741,10 @@ function btqOpenModal(id) {
   `;
 
   // Couleur d'abord : auto-sélection si une seule, sinon pas de pré-sélection
-  if (couleurs.length === 1) {
-    // Une seule couleur : on la sélectionne vraiment
-    document.querySelector('#btq-color-row button')?.click();
-  } else if (couleurs.length > 1) {
-    // Plusieurs couleurs : preview silencieux sur Blanc (image visible, bouton PAS sélectionné)
+  if (couleurs.length >= 1) {
     const defaultCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
-    _modalCouleur = defaultCouleur;
-    _modalCouleurExplicite = false;
-    // Filtrer + auto-sélectionner le premier design visible pour cette couleur
-    const designs = p.designs || [];
-    designs.forEach((d, idx) => {
-      const btn = [...document.querySelectorAll('.btq-design-chip')].find(b => b.getAttribute('onclick')?.includes(`'${btqEsc(d.nom)}'`));
-      if (!btn) return;
-      const hasPhoto = d.images?.[defaultCouleur]?.front || d.images?.[defaultCouleur]?.dos;
-      btn.style.display = (designs.length === 1 || hasPhoto) ? '' : 'none';
-    });
-    const firstDesignBtn = document.querySelector('.btq-design-chip:not([style*="display: none"]):not([style*="display:none"])');
-    if (firstDesignBtn) firstDesignBtn.click();
+    const btn = [...document.querySelectorAll('#btq-color-row button')].find(b => b.getAttribute('onclick')?.includes(`'${defaultCouleur}'`));
+    if (btn) btn.click();
   }
   // Auto-sélection taille unique
   if (p.tailles_disponibles?.length === 1) {
