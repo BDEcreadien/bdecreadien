@@ -912,6 +912,10 @@ function btqRecalcOptions() {
 async function btqAddToCart() {
   const p = _modalProd;
   if (!p) return;
+  if (!_user) {
+    document.getElementById('btq-gate').style.display = 'flex';
+    return;
+  }
   if (p.designs?.length && !_modalDesign) { _modalDesign = { idx: 0, nom: p.designs[0].nom }; }
   if ((p.couleurs_disponibles?.length ?? 0) > 1 && !_modalCouleurExplicite) { btqToast('Choisis une couleur !'); return; }
   if (p.a_tailles && !_modalTaille) { btqToast('Choisis une taille !'); return; }
