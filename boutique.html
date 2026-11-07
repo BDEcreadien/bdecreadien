@@ -457,6 +457,7 @@ async function btqLoadCatalogue() {
 
 // ── Panier Supabase ─────────────────────────────────────────
 async function btqLoadCart() {
+  if (!_user) return;
   // Charger la commande active unique (panier OU en_attente) - 1 seule par compte
   const { data: cmds } = await _sb.from('boutique_commandes')
     .select('id, statut')
