@@ -357,9 +357,9 @@ async function btqInit() {
   btqCheckPendingOrder();
 }
 
-async function btqDismissPending(cmdId) {
+function btqDismissPending(cmdId) {
   document.getElementById('btq-pb-' + cmdId)?.remove();
-  await _sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', cmdId);
+  // Ne pas annuler la commande : l'utilisateur peut vouloir payer plus tard
 }
 
 async function btqResumeEdit(cmdId, btn) {
