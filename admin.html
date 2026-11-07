@@ -10146,8 +10146,24 @@ function btqaOpenProdModal(prodId) {
       <span style="font-weight:700;color:#460186">+${btqaFmt(opt.prix_centimes)}${opt.remise_produit_centimes ? ` <span style="color:#10b981;font-size:11px">(−${btqaFmt(opt.remise_produit_centimes)})</span>` : ''}</span>
     </label>`).join('');
 
+  // Guide des tailles
+  const guideUrl = (p.images || []).find(i => i.type === 'guide_taille')?.url || null;
+  const guideBtn = document.getElementById('btqa-pm-guide-btn');
+  if (guideBtn) guideBtn.style.display = guideUrl ? '' : 'none';
+
   btqaPMUpdateImg();
   document.getElementById('btqa-prod-modal-overlay').classList.add('open');
+}
+function btqaPMOpenGuide() {
+  const p = _btqaPM?.prod;
+  const url = (p?.images || []).find(i => i.type === 'guide_taille')?.url;
+  if (!url) return;
+  document.getElementById('btqa-guide-img').src = url;
+  const overlay = document.getElementById('btqa-guide-overlay');
+  overlay.style.display = 'flex';
+}
+function btqaPMCloseGuide() {
+  document.getElementById('btqa-guide-overlay').style.display = 'none';
 }
 function btqaPMRecalc() {
   const p = _btqaPM.prod;
