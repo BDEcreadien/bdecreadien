@@ -882,9 +882,9 @@ function btqSelectCouleur(c, el) {
     btn.classList.remove('selected');
   });
   _modalDesign = null;
-  // Auto-sélectionner si un seul design disponible
+  // Auto-sélectionner le premier design disponible pour cette couleur
   const visibles = [...document.querySelectorAll('.btq-design-chip')].filter(b => b.style.display !== 'none');
-  if (visibles.length === 1) visibles[0].click();
+  if (visibles.length >= 1) visibles[0].click();
   btqUpdateThumbs();
 }
 function btqSelectTaille(t, el) {
