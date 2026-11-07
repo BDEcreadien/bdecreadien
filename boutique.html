@@ -1090,8 +1090,8 @@ async function btqApplyPacks() {
     if (remiseEntry.unite === 'pct') {
       // Applique le % sur le prix des produits ciblés (ou sur le total si aucun ciblé)
       const base = remiseProdIds.length
-        ? _cart.filter(i => remiseProdIds.includes(i.produit_id)).reduce((s, i) => s + (i.prix_unitaire_centimes ?? 0) * i.quantite, 0)
-        : _cart.filter(i => !i.est_offert).reduce((s, i) => s + (i.prix_unitaire_centimes ?? 0) * i.quantite, 0);
+        ? _cart.filter(i => remiseProdIds.includes(i.produit_id)).reduce((s, i) => s + (i.prix ?? 0) * i.quantite, 0)
+        : _cart.filter(i => !i.est_offert).reduce((s, i) => s + (i.prix ?? 0) * i.quantite, 0);
       remiseCentimes = Math.round(base * (remiseEntry.valeur / 100));
     } else {
       remiseCentimes = remiseEntry.montant_centimes;
