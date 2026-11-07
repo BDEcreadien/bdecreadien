@@ -794,7 +794,11 @@ function btqSelectDesign(idx, nom, el) {
     const c = btn.querySelector('.btq-color-dot')?.nextSibling?.textContent?.trim() || btn.textContent.trim();
     const hasPhoto = design?.images?.[c]?.front || design?.images?.[c]?.dos;
     btn.style.display = hasPhoto ? '' : 'none';
+    btn.classList.remove('selected');
   });
+  // Auto-sélectionner si une seule couleur disponible
+  const visibles = [...document.querySelectorAll('.btq-color-chip')].filter(b => b.style.display !== 'none');
+  if (visibles.length === 1) visibles[0].click();
   btqUpdateThumbs();
 }
 
