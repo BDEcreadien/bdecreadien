@@ -9707,7 +9707,7 @@ function btqaRenderStats() {
   const all        = _btqaCommandes;
   const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
   const attn       = all.filter(c => c.statut === 'en_attente').length;
-  const conf       = all.filter(c => c.statut === 'confirmee').length;
+  const conf       = all.filter(c => c.statut === 'payee').length;
   const remis      = all.filter(c => c.statut === 'remise').length;
   const totalAttn  = all.filter(c => c.statut === 'en_attente')
                         .reduce((s, c) => s + (c.total_centimes || 0), 0);
