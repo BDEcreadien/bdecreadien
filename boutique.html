@@ -744,7 +744,7 @@ function btqOpenModal(id) {
   if (couleurs.length >= 1) {
     const defaultCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
     const btn = [...document.querySelectorAll('#btq-color-row button')].find(b => b.getAttribute('onclick')?.includes(`'${defaultCouleur}'`));
-    if (btn) { btn.click(); _modalCouleurExplicite = false; }
+    if (btn) btn.click();
   }
   // Auto-sélection taille unique
   if (p.tailles_disponibles?.length === 1) {
