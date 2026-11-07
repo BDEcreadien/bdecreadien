@@ -234,11 +234,7 @@ async function btqInit() {
   // _user peut déjà être défini par onAuthStateChange
   if (!_user) {
     const { data: { session } } = await _sb.auth.getSession();
-    if (!session) {
-      document.getElementById('btq-gate').style.display = 'flex';
-      return;
-    }
-    _user = session.user;
+    if (session) _user = session.user;
   }
 
   // Profil
