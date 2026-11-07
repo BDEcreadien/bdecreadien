@@ -4,7 +4,7 @@ const ETAPES = {
   payee: {
     subject: c => `Paiement confirmé — Commande ${c.numero}`,
     titre:   'Paiement confirmé !',
-    message: c => `Ton paiement pour la commande <strong>${c.numero}</strong> a bien été reçu et validé. Nous allons maintenant lancer la production de tes articles.`,
+    message: c => `Ton paiement pour la commande <strong>${c.numero}</strong> a bien été reçu et validé. La production sera lancée dès la clôture de la boutique.<br><br>On te tient au courant des avancées — le retrait se fera le midi dans le hall de l'école une fois ta commande reçue.`,
     couleur: '#16a34a',
   },
   production: {
