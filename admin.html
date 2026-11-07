@@ -8621,6 +8621,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   // btn-logout removed
 
   // 1. Auth Supabase - role >= membre
+  const profil0 = await Auth.getProfil();
+  if (profil0 && profil0.role === 'etudiant') {
+    document.getElementById('screen-auth-check').innerHTML = '<p style="padding:60px 24px;text-align:center;font-size:16px;color:#666;">403 — Tu n\'es pas autorisé à accéder à cette page.</p>';
+    return;
+  }
   const ok = await Auth.requireRole('membre');
   if (!ok) return; // redirect vers /connexion.html?next=/admin.html
 
