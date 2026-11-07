@@ -242,6 +242,13 @@ async function btqInit() {
   if (profilErr) console.error('[boutique] profils SELECT error:', profilErr.message, profilErr.code, profilErr.hint);
   _profil = profil;
 
+  // Accès à tous les étudiants, membres et admins
+  const RANG = { etudiant: 1, membre: 2, admin: 3 };
+  if (!profil || (RANG[profil.role] ?? 0) < RANG['etudiant']) {
+    document.getElementById('btq-gate').innerHTML = '<div class="btq-gate-card"><span class="btq-gate-icon">🛍️</span><h2>Accès non autorisé</h2><p>Ton compte n\'a pas accès à la boutique. Contacte un admin.</p></div>';
+    document.getElementById('btq-gate').style.display = 'flex';
+    return;
+  }
 
   // Adhésions confirmées → remise boutique
   window._adhesionRemiseCentimes = 0;
