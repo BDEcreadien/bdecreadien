@@ -36,7 +36,10 @@ Deno.serve(async (req) => {
   let subject = ''
   let html    = ''
 
-  const confirmUrl = `${SITE}/connexion.html?token_hash=${tokenHash}&type=${actionType}&redirect_to=${encodeURIComponent(redirectTo)}`
+  // Supabase fournit confirmation_url directement, sinon on construit l'URL verify
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? `https://zgscyfpqwbmwemzqtvpx.supabase.co`
+  const confirmUrl = emailData?.confirmation_url
+    ?? `${supabaseUrl}/auth/v1/verify?token=${tokenHash}&type=${actionType}&redirect_to=${encodeURIComponent(redirectTo)}`
 
   if (actionType === 'signup' || actionType === 'email_change_new' || actionType === 'email_change_current') {
     subject = 'Confirme ton adresse email — BDE CREAD Lyon'
