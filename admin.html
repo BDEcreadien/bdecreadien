@@ -10098,6 +10098,10 @@ function btqaOpenProdModal(prodId) {
   document.getElementById('btqa-pm-tailles').innerHTML = tailles.map(t =>
     `<button class="btqa-psel-btn" onclick="btqaPMSelect('taille','${t}',this)">${t}</button>`
   ).join('');
+  if (tailles.length === 1) {
+    _btqaPM.taille = tailles[0];
+    setTimeout(() => document.querySelectorAll('#btqa-pm-tailles button')[0]?.classList.add('selected'), 0);
+  }
 
   const options = p.options_payantes || [];
   const ow = document.getElementById('btqa-pm-options-wrap');
