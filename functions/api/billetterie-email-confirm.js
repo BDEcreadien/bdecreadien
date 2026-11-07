@@ -61,7 +61,7 @@ export async function onRequest({ request, env }) {
   </div>
   <div style="background:white;padding:24px 28px">
     <p style="margin:0 0 8px;font-size:15px">Bonjour <strong>${prenom} ${nom}</strong>,</p>
-    <p style="margin:0 0 20px;font-size:17px;font-weight:700;color:#16a34a">✅ Ton inscription est confirmée !</p>
+    <p style="margin:0 0 20px;font-size:17px;font-weight:700;color:#16a34a">Ton inscription est confirmée !</p>
     <p style="margin:0 0 20px;font-size:14px;line-height:1.65;color:#444">
       Ton paiement pour <strong>${titre}</strong> a bien été reçu et validé.
       ${tarifNom ? `Tu es inscrit(e) en tant que <strong>${tarifNom}</strong>.` : ''}
