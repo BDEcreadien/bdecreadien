@@ -743,7 +743,7 @@ function btqOpenModal(id) {
   // Couleur d'abord : auto-sélection si une seule, sinon pas de pré-sélection
   if (couleurs.length >= 1) {
     const defaultCouleur = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
-    const btn = [...document.querySelectorAll('#btq-color-row button')].find(b => b.textContent.trim() === defaultCouleur || b.dataset.couleur === defaultCouleur);
+    const btn = [...document.querySelectorAll('#btq-color-row button')].find(b => b.getAttribute('onclick')?.includes(`'${defaultCouleur}'`));
     if (btn) btn.click();
     _modalCouleurExplicite = false;
   }
