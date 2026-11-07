@@ -10153,7 +10153,39 @@ function btqaPMSelect(type, val, el) {
   const container = el.parentElement;
   container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
+  if (type === 'design') btqaPMRefreshCouleurs();
   btqaPMUpdateImg();
+}
+
+function btqaPMRefreshCouleurs() {
+  const p = _btqaPM.prod;
+  if (!p) return;
+  const design = (p.designs || []).find(d => d.nom === _btqaPM.design);
+  // Couleurs dispo pour ce design = celles qui ont une image configurée, sinon toutes
+  const couleursDesign = design?.images ? Object.keys(design.images).filter(c => design.images[c]?.front || design.images[c]?.dos) : [];
+  const couleurs = couleursDesign.length ? (p.couleurs_disponibles || []).filter(c => couleursDesign.includes(c)) : (p.couleurs_disponibles || []);
+
+  const cw = document.getElementById('btqa-pm-couleur-wrap');
+  cw.style.display = couleurs.length ? '' : 'none';
+  document.getElementById('btqa-pm-couleurs').innerHTML = couleurs.map(c => {
+    const hex = _COULEUR_HEX_ADMIN[c] || '#888';
+    const border = c === 'Blanc' ? 'border:1px solid #ccc;' : '';
+    return `<button class="btqa-psel-color" onclick="btqaPMSelect('couleur','${c}',this)">
+      <span class="btqa-psel-dot" style="background:${hex};${border}"></span>${c}
+    </button>`;
+  }).join('');
+  if (couleurs.length === 1) {
+    _btqaPM.couleur = couleurs[0];
+    _btqaPMCouleurExplicite = true;
+    document.querySelectorAll('#btqa-pm-couleurs button')[0]?.classList.add('selected');
+  } else if (couleurs.length > 1) {
+    const pref = couleurs.includes('Blanc') ? 'Blanc' : couleurs[0];
+    _btqaPM.couleur = pref;
+    _btqaPMCouleurExplicite = false;
+    document.querySelectorAll('#btqa-pm-couleurs button').forEach(b => {
+      b.classList.toggle('selected', b.textContent.trim() === pref);
+    });
+  }
 }
 function btqaPMUpdateImg() {
   const p = _btqaPM?.prod;
