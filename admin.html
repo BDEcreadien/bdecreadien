@@ -10068,9 +10068,11 @@ function btqaOpenProdModal(prodId) {
   document.getElementById('btqa-pm-designs').innerHTML = designs.map(d =>
     `<button class="btqa-psel-btn" onclick="btqaPMSelect('design','${d.nom}',this)">${d.nom}</button>`
   ).join('');
-  if (designs.length) {
+  if (designs.length === 1) {
     _btqaPM.design = designs[0].nom;
-    // pas de chip surligné par défaut
+    setTimeout(() => document.querySelectorAll('#btqa-pm-designs button')[0]?.classList.add('selected'), 0);
+  } else if (designs.length > 1) {
+    _btqaPM.design = designs[0].nom;
   }
 
   const cw = document.getElementById('btqa-pm-couleur-wrap');
