@@ -172,7 +172,7 @@
         </div>
         <div class="auth-field">
           <label for="reg-tel">Téléphone *</label>
-          <input type="tel" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel">
+          <input type="text" inputmode="numeric" id="reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" maxlength="14" oninput="formatTel(this)">
         </div>
       </div>
       <label style="display:flex;align-items:flex-start;gap:10px;margin:16px 0 4px;cursor:pointer;font-size:13px;color:var(--gris-texte);line-height:1.4;">
