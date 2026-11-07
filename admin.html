@@ -9553,6 +9553,13 @@ async function initBoutiqueAdmin() {
   const sb = window.Auth?.sb;
   if (!sb) return;
 
+  const profil = await window.Auth.getProfil();
+  const autorise = profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true;
+  if (!autorise) {
+    document.getElementById('screen-boutique').innerHTML = '<p style="padding:40px;text-align:center;color:#991b1b;font-size:15px;">Accès réservé aux membres du bureau.</p>';
+    return;
+  }
+
   // Charger commandes (tout sauf paniers)
   const { data: cmds } = await sb
     .from('boutique_commandes')
