@@ -9731,8 +9731,66 @@ function btqaRenderStats() {
     <div class="btqa-stat"><div class="btqa-stat-val">${conf}</div><div class="btqa-stat-lbl">Payées</div></div>
     <div class="btqa-stat"><div class="btqa-stat-val">${remis}</div><div class="btqa-stat-lbl">Remises</div></div>
     <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalAttn)}</div><div class="btqa-stat-lbl">Total en attente</div></div>
-    <div class="btqa-stat"><div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalPaye)}</div><div class="btqa-stat-lbl">Total encaissé</div></div>
+    <div class="btqa-stat" onclick="btqaShowDetailStats()" style="cursor:pointer" title="Voir le détail">
+      <div class="btqa-stat-val" style="font-size:20px">${btqaFmt(totalPaye)}</div>
+      <div class="btqa-stat-lbl">Total encaissé ↗</div>
+    </div>
   `;
+}
+
+function btqaShowDetailStats() {
+  const all = _btqaCommandes;
+  const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
+  const payees = all.filter(c => statutsPaies.includes(c.statut));
+
+  // Total en ligne vs physique
+  const totalLigne    = payees.filter(c => c.type !== 'physique').reduce((s,c) => s + (c.total_centimes||0), 0);
+  const totalPhysique = payees.filter(c => c.type === 'physique').reduce((s,c) => s + (c.total_centimes||0), 0);
+
+  // Prix moyen du panier (commandes payées uniquement)
+  const prixMoyen = payees.length ? Math.round(payees.reduce((s,c) => s + (c.total_centimes||0), 0) / payees.length) : 0;
+
+  // Produit le plus vendu
+  const qteProduit = {};
+  all.forEach(c => (c.boutique_items||[]).filter(i => !i.est_offert || i.prix_unitaire_centimes >= 0).forEach(i => {
+    const k = i.produit_nom || 'Inconnu';
+    qteProduit[k] = (qteProduit[k] || 0) + (i.quantite || 1);
+  }));
+  const topProduit = Object.entries(qteProduit).sort((a,b) => b[1]-a[1])[0];
+
+  // Taux de conversion : payées / (toutes sauf panier sans nom)
+  const avecNom = all.filter(c => c.nom_acheteur);
+  const tauxConv = avecNom.length ? Math.round(payees.length / avecNom.length * 100) : 0;
+
+  const rows = [
+    ['Total en ligne',    btqaFmt(totalLigne)],
+    ['Total en physique', btqaFmt(totalPhysique)],
+    ['Prix moyen panier', btqaFmt(prixMoyen)],
+    ['Produit + vendu',   topProduit ? `${topProduit[0]} (×${topProduit[1]})` : '—'],
+    ['Taux de conversion',`${tauxConv}%`],
+  ];
+
+  const existing = document.getElementById('btqa-detail-stats-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'btqa-detail-stats-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45)';
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:28px;min-width:320px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h3 style="margin:0;color:#460186;font-size:18px">Détail encaissements</h3>
+        <button onclick="document.getElementById('btqa-detail-stats-modal').remove()"
+          style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
+      </div>
+      ${rows.map(([lbl,val]) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff">
+          <span style="font-size:14px;color:#666">${lbl}</span>
+          <span style="font-size:15px;font-weight:700;color:#1a0030">${val}</span>
+        </div>`).join('')}
+    </div>`;
+  document.body.appendChild(modal);
 }
 
 // ── Récap & stock ────────────────────────────────────────────
