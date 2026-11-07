@@ -95,7 +95,7 @@
         </div>
         <div>
           <label style="display:block;font-size:12px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-texte);margin-bottom:6px;">Téléphone *</label>
-          <input type="text" inputmode="numeric" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" onkeydown="if(!/[\d\b]/.test(event.key)&&!event.ctrlKey&&!event.metaKey&&event.key.length===1)event.preventDefault()" oninput="amFormatTel(this)" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
+          <input type="text" inputmode="numeric" id="am-reg-tel" placeholder="06 xx xx xx xx" autocomplete="tel" oninput="amFormatTel(this)" style="width:100%;padding:10px 14px;border:1.5px solid var(--gris-moyen);border-radius:10px;font-family:'Barlow',sans-serif;font-size:16px;color:var(--noir);background:#fff;outline:none;box-sizing:border-box;">
         </div>
       </div>
       <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 16px;cursor:pointer;font-size:13px;color:var(--gris-texte);line-height:1.4;">
