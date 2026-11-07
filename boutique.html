@@ -316,6 +316,14 @@ async function btqInit() {
     btqToast(`Paiement reçu ! Commande ${numero} confirmée.`);
     history.replaceState(null, '', location.pathname);
     btqResetCart();
+    // Email de confirmation de paiement (fire & forget)
+    _sb.from('boutique_commandes').select('id').eq('numero', numero).maybeSingle().then(({ data }) => {
+      if (data?.id) fetch('/api/boutique-email-etape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commande_id: data.id, etape: 'payee' }),
+      }).catch(() => {});
+    });
   } else if (params.get('annule') || params.get('erreur')) {
     btqToast('Paiement annulé. Ta commande est sauvegardée - tu peux la retrouver ci-dessous.');
     history.replaceState(null, '', location.pathname);
