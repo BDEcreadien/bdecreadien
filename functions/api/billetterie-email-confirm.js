@@ -48,7 +48,7 @@ export async function onRequest({ request, env }) {
         Pour rejoindre le groupe et rester informé(e) des activités :
       </p>
       <a href="${whatsappUrl}" style="display:inline-block;padding:14px 32px;background:#25D366;color:white;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;">
-        Rejoindre le groupe WhatsApp
+        <img src="https://bdecreadien.fr/assets/whatsapp.svg" width="18" height="18" alt="" style="vertical-align:middle;margin-right:8px;display:inline-block;">Rejoindre le groupe WhatsApp
       </a>
     </div>` : '';
 
