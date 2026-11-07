@@ -232,7 +232,7 @@
         </div>
         <div class="bt-field" id="bt-field-tel">
           <label for="bt-tel" id="bt-label-tel">Téléphone (facultatif)</label>
-          <input type="tel" id="bt-tel" autocomplete="tel" placeholder="06 12 34 56 78">
+          <input type="text" inputmode="numeric" id="bt-tel" autocomplete="tel" placeholder="06 12 34 56 78" maxlength="14" oninput="formatTel(this)">
         </div>
 
         <div class="bt-field" id="bt-field-classe" style="display:none">
