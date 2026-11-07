@@ -1162,12 +1162,15 @@ async function btqApplyAdhesionRemise() {
 
   const remise = window._adhesionRemiseCentimes || 0;
   const label = window._adhesionRemiseLabel || 'Adhésion';
-  if (!remise || !_cart.filter(i => !i.est_offert && !i._adhesionRemise).length) return;
+  if (!remise) return;
 
-  // Associer la remise au produit lié si présent dans le panier
+  // Si des produits sont ciblés, n'appliquer la remise que si l'un d'eux est dans le panier
   const produitIds = window._adhesionProduitIds || new Set();
-  const itemLie = _cart.find(i => !i.est_offert && produitIds.has(i.produit_id));
-  const remiseProduitId = itemLie?.produit_id || null;
+  const itemLie = produitIds.size > 0
+    ? _cart.find(i => !i.est_offert && produitIds.has(i.produit_id))
+    : _cart.find(i => !i.est_offert && !i._adhesionRemise);
+  if (!itemLie) return;
+  const remiseProduitId = itemLie.produit_id || null;
 
   await btqEnsurePanier();
   const { data: ri } = await _sb.from('boutique_items').insert({
