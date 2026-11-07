@@ -195,7 +195,14 @@ Deno.serve(async (req) => {
       } else {
         // ── Billetterie ───────────────────────────────────────
         const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
-        await upsertVenteFromOrder(data, formSlug)
+        const billetterieSlug = data?.metadata?.billetterie_slug ?? formSlug
+        const vente = await upsertVenteFromOrder(data, formSlug)
+        // Email de confirmation (fire-and-forget)
+        fetch('https://bdecreadien.fr/api/billetterie-email-confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vente_id: vente.id, billetterie_slug: billetterieSlug }),
+        }).catch(() => {})
       }
     } else if (eventType === 'Refund' || data?.state === 'Refunded') {
       await markRefunded(data)
