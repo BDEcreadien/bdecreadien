@@ -2064,8 +2064,8 @@
         </div>
 
         <!-- Modale de confirmation vente physique -->
-        <!-- Lightbox guide des tailles -->
-        <div id="btqa-guide-overlay" onclick="btqaPMCloseGuide()" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:20px">
+        <!-- Lightbox guide des tailles (z-index > modal produit 9000) -->
+        <div id="btqa-guide-overlay" onclick="btqaPMCloseGuide()" style="display:none;position:fixed;inset:0;z-index:19999;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:20px">
           <div style="max-width:600px;width:100%;position:relative">
             <button onclick="btqaPMCloseGuide()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:white;font-size:28px;cursor:pointer;line-height:1">×</button>
             <img id="btqa-guide-img" src="" alt="Guide des tailles" style="width:100%;border-radius:12px;display:block">
