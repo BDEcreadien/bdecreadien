@@ -10506,12 +10506,57 @@ function btqaNomAutocomplete(q) {
   drop.style.display = 'block';
 }
 
-function btqaSelectMembre(id) {
+async function btqaSelectMembre(id) {
   const m = _btqaMembres.find(x => x.id === id);
   if (!m) return;
   document.getElementById('btqa-p-nom').value   = m.prenom + ' ' + m.nom;
   document.getElementById('btqa-p-email').value  = m.email;
   document.getElementById('btqa-p-nom-drop').style.display = 'none';
+
+  // Vérifier l'adhésion club de sport pour remise boutique
+  _btqaPhysAdhesion = null;
+  btqaRenderAdhesionBadge();
+  try {
+    const sb = window.Auth.sb;
+    const { data: inscriptions } = await sb
+      .from('billetterie_inscriptions')
+      .select('billetterie_id')
+      .eq('profil_id', id)
+      .eq('statut', 'confirme');
+    if (inscriptions?.length) {
+      const bilIds = [...new Set(inscriptions.map(a => a.billetterie_id).filter(Boolean))];
+      if (bilIds.length) {
+        const { data: bils } = await sb
+          .from('billetteries')
+          .select('id, titre, remise_boutique_centimes, remise_produit_id')
+          .in('id', bilIds)
+          .gt('remise_boutique_centimes', 0);
+        if (bils?.length) {
+          _btqaPhysAdhesion = {
+            remise_centimes: bils.reduce((s, b) => s + b.remise_boutique_centimes, 0),
+            produit_id: bils[0].remise_produit_id || null,
+            label: bils.map(b => b.titre).join(', '),
+          };
+          btqaRenderAdhesionBadge();
+        }
+      }
+    }
+  } catch (e) { console.error('[admin] adhesion check error:', e); }
+}
+
+function btqaRenderAdhesionBadge() {
+  let badge = document.getElementById('btqa-adhesion-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'btqa-adhesion-badge';
+    const emailEl = document.getElementById('btqa-p-email');
+    emailEl?.parentNode?.insertBefore(badge, emailEl.nextSibling);
+  }
+  if (!_btqaPhysAdhesion) { badge.innerHTML = ''; return; }
+  const prodNom = _btqaProduits.find(p => p.id === _btqaPhysAdhesion.produit_id)?.nom || 'article éligible';
+  badge.innerHTML = `<div style="margin-top:8px;padding:8px 12px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;font-size:13px;color:#065f46">
+    Adhérent ${_btqaPhysAdhesion.label} — remise de ${btqaFmt(_btqaPhysAdhesion.remise_centimes)} sur ${prodNom}
+  </div>`;
 }
 
 let _btqaPhysOrderMode = 'en_attente';
