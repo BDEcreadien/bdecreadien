@@ -129,7 +129,7 @@
 
     if (!profil) {
       li.className = 'nav-auth-li';
-      li.innerHTML = '<button type="button" class="nav-auth-name" onclick="openAuthModal({next:window.location.pathname+window.location.search})" style="background:none;border:none;cursor:pointer;padding:0;">Connexion</button>';
+      li.innerHTML = '<button type="button" class="nav-auth-name" onclick="openAuthModal({next:window.location.pathname+window.location.search})" style="cursor:pointer;padding:4px 12px;border:1px solid rgba(255,255,255,0.4);border-radius:20px;background:rgba(255,255,255,0.08);font-size:12px;">Connexion</button>';
       return;
     }
 
