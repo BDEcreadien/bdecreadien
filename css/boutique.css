@@ -452,7 +452,7 @@
     /* Colonne 2 - grande image */
     .btq-modal-main-img {
       position:relative;
-      background:#fff;
+      background:#12001f;
       display:flex;align-items:center;justify-content:center;overflow:hidden;
     }
     .btq-modal-main-img img {
