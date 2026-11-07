@@ -9570,7 +9570,20 @@ function btqaSwitchTab(tab) {
   });
   document.querySelectorAll('.btqa-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('btqa-pane-' + tab).classList.add('active');
-  if (tab === 'physique') { btqaRenderPhysiqueCatalog(); btqaRenderPhysItems(); btqaLoadMembres(); }
+  if (tab === 'physique') {
+    // Recharger le catalogue depuis Supabase pour avoir les produits à jour
+    const sb = window.Auth?.sb;
+    if (sb) {
+      sb.from('boutique_produits').select('*').eq('actif', true).order('ordre').then(({ data }) => {
+        if (data) _btqaProduits = data;
+        btqaRenderPhysiqueCatalog();
+      });
+    } else {
+      btqaRenderPhysiqueCatalog();
+    }
+    btqaRenderPhysItems();
+    btqaLoadMembres();
+  }
   if (tab === 'recap') { btqaRenderRecap(); }
   if (tab === 'analytiques') { btqaLoadAnalytics(); }
 }
