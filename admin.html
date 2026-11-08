@@ -9824,27 +9824,137 @@ function btqaRenderRecap() {
   const statuts = btqaRecapStatuts();
   const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
 
-  // ── Récap agrégé (1 ligne par produit/design/couleur/taille)
-  const recap = {};
+  // ── Construction de l'arbre Collection > Modèle > Design > Couleur > Taille
+  // produit_nom = "Collection Be Art - Sweat à capuche" ou "Sweat à capuche" (sans collection)
+  const tree = {}; // { collection: { modele: { design: { couleur_taille: { qty, offert } } } } }
   cmds.forEach(c => {
     (c.boutique_items || []).forEach(it => {
-      const key = [it.produit_nom, it.design_nom || '', it.couleur || '', it.taille || ''].join('||');
-      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom || '-', couleur: it.couleur || '-', taille: it.taille || '-', qty: 0, offert: 0 };
-      recap[key].qty    += it.quantite || 1;
-      if (it.est_offert) recap[key].offert += it.quantite || 1;
+      const nom = it.produit_nom || '';
+      const sep = nom.indexOf(' - ');
+      const collection = sep > -1 ? nom.slice(0, sep) : 'Autre';
+      const modele     = sep > -1 ? nom.slice(sep + 3) : nom;
+      const design     = it.design_nom || 'Sans design';
+      const couleur    = it.couleur || '-';
+      const taille     = it.taille  || '-';
+      const qty        = it.quantite || 1;
+
+      if (!tree[collection]) tree[collection] = {};
+      if (!tree[collection][modele]) tree[collection][modele] = {};
+      if (!tree[collection][modele][design]) tree[collection][modele][design] = {};
+      const ck = couleur + '||' + taille;
+      if (!tree[collection][modele][design][ck]) tree[collection][modele][design][ck] = { couleur, taille, qty: 0, offert: 0 };
+      tree[collection][modele][design][ck].qty += qty;
+      if (it.est_offert) tree[collection][modele][design][ck].offert += qty;
     });
   });
-  const rows = Object.values(recap).sort((a,b) => a.produit.localeCompare(b.produit) || a.design.localeCompare(b.design) || a.taille.localeCompare(b.taille));
-  document.getElementById('btqr-recap-body').innerHTML = rows.length
-    ? rows.map(r => `<tr style="border-top:1px solid #f0e8ff">
-        <td style="padding:9px 14px;font-weight:600">${r.produit}</td>
-        <td style="padding:9px 14px;color:#555">${r.design}</td>
-        <td style="padding:9px 14px;color:#555">${r.couleur}</td>
-        <td style="padding:9px 14px;color:#555">${r.taille}</td>
-        <td style="padding:9px 14px;text-align:center;font-weight:800;color:#460186;font-size:16px">${r.qty}</td>
-        <td style="padding:9px 14px;text-align:center;color:#FF741F;font-weight:700">${r.offert || '-'}</td>
-      </tr>`).join('')
-    : '<tr><td colspan="6" style="padding:20px;text-align:center;color:#aaa">Aucun article</td></tr>';
+
+  // Ordre tailles
+  const tailleOrder = ['XS','S','M','L','XL','XXL','2XL','3XL'];
+  const sortTaille = (a, b) => {
+    const ia = tailleOrder.indexOf(a.taille.toUpperCase());
+    const ib = tailleOrder.indexOf(b.taille.toUpperCase());
+    if (ia === -1 && ib === -1) return a.taille.localeCompare(b.taille);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  };
+
+  if (!Object.keys(tree).length) {
+    document.getElementById('btqr-recap-body').innerHTML = '<p style="color:#aaa;text-align:center;padding:32px">Aucun article</p>';
+    return;
+  }
+
+  let html = '';
+  for (const collection of Object.keys(tree).sort()) {
+    const modeles = tree[collection];
+    // Total collection
+    let totalCol = 0;
+    for (const m of Object.values(modeles)) for (const d of Object.values(m)) for (const v of Object.values(d)) totalCol += v.qty;
+
+    html += `<div style="margin-bottom:28px">
+      <div style="background:linear-gradient(135deg,#460186,#D2396D);color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:16px;font-weight:900;letter-spacing:.5px">${collection}</span>
+        <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:700">${totalCol} pièces</span>
+      </div>`;
+
+    for (const modele of Object.keys(modeles).sort()) {
+      const designs = modeles[modele];
+      let totalMod = 0;
+      for (const d of Object.values(designs)) for (const v of Object.values(d)) totalMod += v.qty;
+
+      html += `<div style="border:1.5px solid #e0d8f0;border-top:none;overflow-x:auto">
+        <div style="background:#f8f5ff;padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e0d8f0">
+          <span style="font-weight:800;font-size:14px;color:#460186">${modele}</span>
+          <span style="color:#888;font-size:12px">${totalMod} pièces</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead>
+            <tr style="background:#f0ebfa">
+              <th style="padding:8px 16px;text-align:left;font-weight:700;color:#460186;white-space:nowrap">Design</th>
+              <th style="padding:8px 10px;text-align:left;font-weight:700;color:#460186;white-space:nowrap">Couleur</th>
+              <th style="padding:8px 8px;text-align:center;font-weight:700;color:#460186;white-space:nowrap">Total</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">XS</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">S</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">M</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">L</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">XL</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">2XL</th>
+              <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">-</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+      let prevDesign = null;
+      for (const design of Object.keys(designs).sort()) {
+        const variants = Object.values(designs[design]).sort(sortTaille);
+        // Grouper par couleur
+        const byCouleur = {};
+        variants.forEach(v => {
+          if (!byCouleur[v.couleur]) byCouleur[v.couleur] = [];
+          byCouleur[v.couleur].push(v);
+        });
+
+        let firstRow = true;
+        const designRowCount = Object.keys(byCouleur).length;
+
+        for (const couleur of Object.keys(byCouleur).sort()) {
+          const vList = byCouleur[couleur];
+          const totalRow = vList.reduce((s, v) => s + v.qty, 0);
+          const hasOffert = vList.some(v => v.offert > 0);
+
+          const qtyFor = (t) => {
+            const v = vList.find(x => x.taille.toUpperCase() === t.toUpperCase());
+            if (!v) return '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
+            const off = v.offert ? `<span style="font-size:10px;color:#FF741F;display:block">(+${v.offert})</span>` : '';
+            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186">${v.qty}${off}</td>`;
+          };
+          // Colonne "-" pour tailles hors liste standard
+          const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()));
+          const autresCell = autresTailles.length
+            ? `<td style="padding:6px 8px;text-align:center;font-size:11px;color:#555">${autresTailles.map(v => `${v.taille}×${v.qty}`).join(' ')}</td>`
+            : '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
+
+          const borderTop = (prevDesign !== null && firstRow) ? 'border-top:2px solid #e0d8f0' : 'border-top:1px solid #f0e8ff';
+
+          html += `<tr style="${borderTop}">
+            ${firstRow ? `<td rowspan="${designRowCount}" style="padding:8px 16px;font-weight:700;color:#333;vertical-align:top;border-right:1px solid #f0e8ff">${design}</td>` : ''}
+            <td style="padding:6px 10px;color:#555;white-space:nowrap">${couleur}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:800;font-size:15px;color:#1a0030">${totalRow}</td>
+            ${qtyFor('XS')}${qtyFor('S')}${qtyFor('M')}${qtyFor('L')}${qtyFor('XL')}${qtyFor('2XL')}
+            ${autresCell}
+          </tr>`;
+
+          firstRow = false;
+        }
+        prevDesign = design;
+      }
+
+      html += `</tbody></table></div>`;
+    }
+    html += `</div>`;
+  }
+
+  document.getElementById('btqr-recap-body').innerHTML = html;
 
   // ── Détail groupé par commande
   const el = document.getElementById('btqr-detail-body');
