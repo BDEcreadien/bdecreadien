@@ -206,6 +206,8 @@ Deno.serve(async (req) => {
         const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
         const billetterieSlug = data?.metadata?.billetterie_slug ?? formSlug
         const vente = await upsertVenteFromOrder(data, formSlug)
+        // Mettre à jour le statut des inscriptions
+        await confirmInscriptions(billetterieSlug, data?.payer?.email ?? '')
         // Email de confirmation (fire-and-forget)
         fetch('https://bdecreadien.fr/api/billetterie-email-confirm', {
           method: 'POST',
