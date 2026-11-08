@@ -10023,41 +10023,52 @@ function btqaRenderRecap() {
   }).join('');
 }
 function btqaExportRecapPDF() {
+  if (!window.html2pdf) {
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js';
+    s.onload = () => btqaExportRecapPDF();
+    s.onerror = () => alert('Impossible de charger la librairie PDF. Vérifiez votre connexion.');
+    document.head.appendChild(s);
+    return;
+  }
+
   const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-  const rawContent = document.getElementById('btqr-recap-body').innerHTML;
-
-  // Coupure de page après le 2e bloc (Be Art)
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = rawContent;
-  const blocs = wrapper.querySelectorAll(':scope > div');
-  if (blocs[1]) blocs[1].setAttribute('style', (blocs[1].getAttribute('style') || '') + ';page-break-after:always');
+  wrapper.innerHTML = document.getElementById('btqr-recap-body').innerHTML;
 
-  const win = window.open('', '_blank', 'width=900,height=700');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-  <title>Récap fournisseur BDE CREAD</title>
-  <style>
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:Arial,sans-serif; font-size:12px; color:#1a0030; background:white; padding:24px; }
-    #print-btn { position:fixed; top:12px; right:12px; padding:10px 22px; background:#460186; color:white; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; z-index:999; }
-    @media print { #print-btn { display:none; } }
-    h1 { font-size:20px; font-weight:900; color:#460186; margin-bottom:2px; }
-    .sub { font-size:11px; color:#888; margin-bottom:20px; }
-    /* Collection */
-    div[style*="linear-gradient"] { border-radius:10px 10px 0 0; }
-    table { width:100%; border-collapse:collapse; font-size:11px; }
-    th { padding:5px 8px; background:#f0ebfa; font-weight:700; color:#460186; white-space:nowrap; }
-    td { padding:4px 8px; border-top:1px solid #f0e8ff; }
-    .block { margin-bottom:18px; }
-    @page { size:A4 landscape; margin:12mm; }
-    @media print { body { padding:0; } }
-  </style>
-  </head><body>
-  <button id="print-btn" onclick="window.print()">⬇ Enregistrer en PDF</button>
-  <h1>BDE CREAD Lyon — Récap fournisseur</h1>
-  <p class="sub">Généré le ${date}</p>
-  ${wrapper.innerHTML}
-  </body></html>`);
-  win.document.close();
+  // Insérer un saut de page avant le 3e bloc (Fitness), pour avoir Red+BeArt p.1 / Fitness+Ecocup p.2
+  const blocs = wrapper.querySelectorAll(':scope > div');
+  if (blocs[2]) {
+    const pb = document.createElement('div');
+    pb.style.cssText = 'page-break-before:always;height:1px';
+    blocs[2].parentNode.insertBefore(pb, blocs[2]);
+  }
+
+  const el = document.createElement('div');
+  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:270mm;background:white;padding:0;font-family:Arial,sans-serif;font-size:11px;color:#1a0030';
+  el.innerHTML = `
+    <div style="margin-bottom:14px">
+      <div style="font-size:17px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
+      <div style="font-size:10px;color:#888">Généré le ${date}</div>
+    </div>
+    ${wrapper.innerHTML}`;
+  document.body.appendChild(el);
+
+  const btn = document.getElementById('btqr-export-btn');
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+
+  html2pdf().set({
+    margin: [8, 8, 8, 8],
+    filename: `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`,
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+    pagebreak: { mode: ['css'] },
+  }).from(el).save().then(() => {
+    document.body.removeChild(el);
+    btn.textContent = '⬇ Export PDF récap';
+    btn.disabled = false;
+  });
 }
 
 function btqaExportRecapCSV() {
