@@ -1020,13 +1020,41 @@ function setActivePeriodOpt(label) {
 
 function fmtPeriodLabel() {
   if (!_dateStart || !_dateEnd) return '';
+  // If exactly one calendar month, show "Mois YYYY"
+  const isOneMonth = _dateStart.getDate() === 1 &&
+    _dateEnd.getDate() === new Date(_dateEnd.getFullYear(), _dateEnd.getMonth() + 1, 0).getDate() &&
+    _dateStart.getMonth() === _dateEnd.getMonth() &&
+    _dateStart.getFullYear() === _dateEnd.getFullYear();
+  if (isOneMonth) {
+    const label = _dateStart.toLocaleDateString('fr-FR', { month:'long', year:'numeric' });
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
   const opts = { month:'short', year:'numeric' };
   const s = _dateStart.toLocaleDateString('fr-FR', opts);
   const e = _dateEnd.toLocaleDateString('fr-FR', opts);
-  if (s === e) return s;
-  if (_dateStart.getMonth() === 0 && _dateStart.getDate() === 1 && _dateEnd.getMonth() === 11 && _dateEnd.getDate() === 31)
-    return String(_dateStart.getFullYear());
+  if (_dateStart.getMonth() === 8 && _dateStart.getDate() === 1 && _dateEnd.getMonth() === 7)
+    return `Année ${_dateStart.getFullYear()}–${_dateEnd.getFullYear()}`;
   return `${s} – ${e}`;
+}
+
+function shiftMonth(delta) {
+  // Always navigate month by month
+  const base = _dateStart || new Date();
+  const y = base.getFullYear();
+  const m = base.getMonth() + delta;
+  _dateStart = new Date(y, m, 1);
+  _dateEnd   = new Date(y, m + 1, 0);
+  _periodDef.type = 'month_nav';
+  // Deselect all dropdown opts
+  document.querySelectorAll('.period-opt').forEach(el => el.classList.remove('active'));
+  const label = fmtPeriodLabel();
+  document.getElementById('period-label').textContent = label;
+  document.getElementById('header-sub').innerHTML = `<span class="period-badge">${label}</span>`;
+  document.getElementById('journal-period-badge').textContent = label;
+  document.getElementById('chart-period-label').textContent = label;
+  document.getElementById('export-period-label').textContent = label;
+  applyPeriodFilter();
+  renderAll();
 }
 
 function applyPeriodFilter() {
