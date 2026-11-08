@@ -165,6 +165,15 @@ async function handleBoutiquePayment(order: any, meta: any) {
   })
 }
 
+async function confirmInscriptions(billetterieSlug: string, email: string) {
+  if (!billetterieSlug || !email) return
+  await supa.from('billetterie_inscriptions')
+    .update({ statut: 'confirme', updated_at: new Date().toISOString() })
+    .eq('billetterie_slug', billetterieSlug)
+    .eq('email', email.trim().toLowerCase())
+    .eq('statut', 'en_attente')
+}
+
 async function markRefunded(order: any) {
   await supa.from('billetterie_ventes')
     .update({ statut: 'remboursee', raw_payload: order, updated_at: new Date().toISOString() })
