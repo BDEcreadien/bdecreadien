@@ -10034,26 +10034,47 @@ function btqaExportRecapPDF() {
     if (blocs[1]) blocs[1].style.pageBreakAfter = 'always';
 
     const el = document.createElement('div');
-    el.style.cssText = 'width:190mm;background:white;padding:6mm;font-family:Arial,sans-serif;font-size:10px;color:#1a0030';
-    el.innerHTML = `
-      <div style="margin-bottom:10px">
-        <div style="font-size:15px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
-        <div style="font-size:9px;color:#888">Généré le ${date}</div>
-      </div>
-      ${wrapper.innerHTML}`;
+    // margin-top:14mm laisse de la place pour le header ajouté par jsPDF
+    el.style.cssText = 'width:190mm;background:white;padding:2mm 6mm 6mm;font-family:Arial,sans-serif;font-size:10px;color:#1a0030';
+    el.innerHTML = wrapper.innerHTML;
     document.body.appendChild(el);
 
     const btn = document.getElementById('btqr-export-btn');
     btn.textContent = '⏳ Génération…';
     btn.disabled = true;
 
+    const filename = `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`;
     html2pdf().set({
-      margin: [6, 6, 6, 6],
-      filename: `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`,
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+      margin: [14, 5, 8, 5],
+      filename,
+      html2canvas: { scale: 4, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'], avoid: ['table', 'tr'] },
-    }).from(el).save().then(() => {
+    }).from(el).toPdf().get('pdf').then(pdf => {
+      const totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        // Titre gauche
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(70, 1, 134);
+        pdf.text('BDE CREAD Lyon — Récap fournisseur', 5, 8);
+        // Date centre-gauche
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(150, 150, 150);
+        pdf.text(`Généré le ${date}`, 5, 12.5);
+        // Numéro de page droite
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`${i} / ${totalPages}`, 205, 8, { align: 'right' });
+        // Ligne séparatrice
+        pdf.setDrawColor(200, 190, 230);
+        pdf.setLineWidth(0.3);
+        pdf.line(5, 13.5, 205, 13.5);
+      }
+    }).save().then(() => {
       document.body.removeChild(el);
       btn.textContent = '⬇ Export PDF récap';
       btn.disabled = false;
