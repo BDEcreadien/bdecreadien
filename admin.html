@@ -8574,6 +8574,13 @@ async function lnkDelete(id) {
     lnkRender();
     return showToast('Erreur : ' + error.message, 'error');
   }
+  // Supprimer l'image Storage associée si elle existe
+  if (removed?.image_url) {
+    try {
+      const m = new URL(removed.image_url).pathname.match(/\/object\/public\/annonces\/(.+)/);
+      if (m?.[1]) Auth.sb.storage.from('annonces').remove([m[1]]).catch(() => {});
+    } catch (_) {}
+  }
   showToast('Supprimé', 'success');
 }
 
