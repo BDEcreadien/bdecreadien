@@ -9769,7 +9769,7 @@ function btqaRenderStats() {
 }
 
 function btqaShowDetailStats() {
-  const all = _btqaCommandes;
+  const all = btqaDateFilteredCommandes();
   const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
   const payees = all.filter(c => statutsPaies.includes(c.statut));
 
