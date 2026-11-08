@@ -10028,20 +10028,17 @@ function btqaExportRecapPDF() {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = document.getElementById('btqr-recap-body').innerHTML;
 
-    // Saut de page avant le 3e bloc (Fitness) → Red+BeArt p.1 / Fitness+Ecocup p.2
+    // Saut de page après le 2e bloc (Be Art) → Red+BeArt p.1 / Fitness+Ecocup p.2
+    // On applique directement sur le bloc pour éviter la page blanche qu'un div séparé génère
     const blocs = wrapper.querySelectorAll(':scope > div');
-    if (blocs[2]) {
-      const pb = document.createElement('div');
-      pb.style.cssText = 'page-break-before:always';
-      blocs[2].parentNode.insertBefore(pb, blocs[2]);
-    }
+    if (blocs[1]) blocs[1].style.pageBreakAfter = 'always';
 
     const el = document.createElement('div');
-    el.style.cssText = 'width:194mm;background:white;padding:8mm;font-family:Arial,sans-serif;font-size:11px;color:#1a0030';
+    el.style.cssText = 'width:190mm;background:white;padding:6mm;font-family:Arial,sans-serif;font-size:10px;color:#1a0030';
     el.innerHTML = `
-      <div style="margin-bottom:14px">
-        <div style="font-size:17px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
-        <div style="font-size:10px;color:#888">Généré le ${date}</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:15px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
+        <div style="font-size:9px;color:#888">Généré le ${date}</div>
       </div>
       ${wrapper.innerHTML}`;
     document.body.appendChild(el);
@@ -10051,11 +10048,11 @@ function btqaExportRecapPDF() {
     btn.disabled = true;
 
     html2pdf().set({
-      margin: [8, 8, 8, 8],
+      margin: [6, 6, 6, 6],
       filename: `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`,
       html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css'] },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['table', 'tr'] },
     }).from(el).save().then(() => {
       document.body.removeChild(el);
       btn.textContent = '⬇ Export PDF récap';
