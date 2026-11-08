@@ -915,15 +915,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function checkAuth() {
-  const { data: { user } } = await _sb.auth.getUser();
-  if (!user) { location.href = '/connexion.html?next=/finances-v2.html'; return; }
-  const { data: profil } = await _sb.from('profils').select('*').eq('id', user.id).maybeSingle();
-  if (!profil || !(profil.role === 'membre' || profil.role === 'admin') || !profil.bureau) {
+  const profil = await window.Auth.getProfil();
+  if (!profil) { location.href = '/connexion.html?next=/finances-v2.html'; return; }
+  if (!(profil.role === 'membre' || profil.role === 'admin') || !profil.bureau) {
     document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px;font-family:Inter,sans-serif"><p style="font-size:16px;color:#64748b">403 — Accès réservé aux membres du bureau.</p><a href="/admin.html" style="color:#4f46e5">← Retour</a></div>';
     return;
   }
   _profil = profil;
-  document.getElementById('sb-name').textContent = profil.prenom + ' ' + (profil.nom || '');
+  document.getElementById('sb-name').textContent = (profil.prenom || '') + ' ' + (profil.nom || '');
   document.getElementById('sb-avatar').textContent = (profil.prenom || '?')[0].toUpperCase();
 }
 
