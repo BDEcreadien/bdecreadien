@@ -855,15 +855,13 @@ a{text-decoration:none;color:inherit}
 <!-- Toast container -->
 <div id="toast-wrap"></div>
 
-<!-- Scripts -->
-<script src="js/supabase-config.js?v=2"></script>
+<!-- Scripts (même ordre qu'admin.html) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js?v=2"></script>
+<script src="js/auth.js?v=12"></script>
 <script>
-// ── Wait for auth.js to be available ──────────────────────────────
-// Since this page loads standalone, we init Supabase ourselves.
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'bde-cread-auth' }
-});
+// Utilise window.Auth.sb — même instance que admin.html
+const _sb = window.Auth.sb;
 
 // ── Constants ─────────────────────────────────────────────────────
 const CATEGORIES = {
