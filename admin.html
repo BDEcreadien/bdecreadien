@@ -9824,10 +9824,11 @@ function btqaShowDetailStats() {
         <button onclick="document.getElementById('btqa-detail-stats-modal').remove()"
           style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
       </div>
-      ${rows.map(([lbl,val]) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff;gap:16px">
-          <span style="font-size:14px;color:#666;white-space:nowrap">${lbl}</span>
-          <span style="font-size:15px;font-weight:700;color:#1a0030;text-align:right">${val}</span>
+      ${rows.map(r => r === null
+        ? `<div style="border-top:2px solid #e0d8f0;margin:8px 0"></div>`
+        : `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff;gap:16px">
+          <span style="font-size:14px;color:#666;white-space:nowrap">${r[0]}</span>
+          <span style="font-size:15px;font-weight:700;color:#1a0030;text-align:right">${r[1]}</span>
         </div>`).join('')}
     </div>`;
   document.body.appendChild(modal);
