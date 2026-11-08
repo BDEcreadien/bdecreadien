@@ -511,13 +511,15 @@ a{text-decoration:none;color:inherit}
       <button class="mob-menu" onclick="toggleMobSidebar()">☰</button>
       <div class="header-title" id="header-title">Vue d'ensemble <span id="header-sub"></span></div>
       <!-- Period selector -->
-      <div style="position:relative">
+      <div style="display:flex;align-items:center;gap:4px;position:relative">
+        <button class="btn-nav" id="btn-prev" onclick="shiftMonth(-1)" title="Mois précédent">‹</button>
         <div class="period-select" onclick="togglePeriodDropdown()">
           <span>📅</span>
-          <span id="period-label">Année scolaire</span>
+          <span id="period-label">Mois courant</span>
           <span style="font-size:10px;color:var(--text3)">▾</span>
         </div>
-        <div id="period-dropdown">
+        <button class="btn-nav" id="btn-next" onclick="shiftMonth(1)" title="Mois suivant">›</button>
+        <div id="period-dropdown" style="left:38px">
           <div class="period-opt active" onclick="setPeriod('month')">Mois courant</div>
           <div class="period-opt" onclick="setPeriod('lastmonth')">Mois précédent</div>
           <div class="period-opt" onclick="setPeriod('quarter')">Trimestre</div>
