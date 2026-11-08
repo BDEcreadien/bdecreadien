@@ -10023,40 +10023,48 @@ function btqaRenderRecap() {
   }).join('');
 }
 function btqaExportRecapPDF() {
-  const content = document.getElementById('btqr-recap-body').innerHTML;
-  const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-  <title>Récap commandes BDE CREAD — ${date}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; font-size: 12px; color: #1a0030; background: white; padding: 24px; }
-    h1 { font-size: 20px; font-weight: 900; color: #460186; margin-bottom: 4px; }
-    .sub { font-size: 12px; color: #888; margin-bottom: 24px; }
-    /* Collection header */
-    .col-header { background: linear-gradient(135deg,#460186,#D2396D); color: white; border-radius: 10px 10px 0 0; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
-    .col-header span:first-child { font-size: 14px; font-weight: 900; }
-    .col-header span:last-child { background: rgba(255,255,255,.2); border-radius: 20px; padding: 2px 12px; font-size: 11px; font-weight: 700; }
-    /* Modèle header */
-    div[style*="background:#f8f5ff"] { background: #f8f5ff !important; }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    th { padding: 6px 10px; text-align: left; font-weight: 700; color: #460186; background: #f0ebfa; white-space: nowrap; }
-    th[style*="center"] { text-align: center; }
-    td { padding: 5px 10px; border-top: 1px solid #f0e8ff; }
-    td[style*="center"], td[style*="text-align:center"] { text-align: center; }
-    .block { margin-bottom: 20px; break-inside: avoid; }
-    @media print {
-      body { padding: 12px; }
-      .block { break-inside: avoid; }
-    }
-  </style>
-  </head><body>
-  <h1>BDE CREAD Lyon — Récap commandes fournisseur</h1>
-  <p class="sub">Généré le ${date}</p>
-  ${content}
-  <script>window.onload = function(){ window.print(); }<\/script>
-  </body></html>`);
-  win.document.close();
+  // Charger html2pdf si pas encore chargé
+  function doExport() {
+    const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+    const rawContent = document.getElementById('btqr-recap-body').innerHTML;
+
+    // Ajouter page-break-after sur le bloc "Be Art" (2e bloc = index 1)
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = rawContent;
+    const blocs = wrapper.querySelectorAll(':scope > div');
+    // Page break après Be Art (index 1 dans l'ordre Red, Be Art, Fitness, Ecocup)
+    if (blocs[1]) blocs[1].style.pageBreakAfter = 'always';
+
+    const container = document.createElement('div');
+    container.style.cssText = 'font-family:Arial,sans-serif;font-size:12px;color:#1a0030;background:white;padding:20px;width:800px';
+    container.innerHTML = `
+      <div style="margin-bottom:20px">
+        <div style="font-size:22px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
+        <div style="font-size:11px;color:#888;margin-top:2px">Généré le ${date}</div>
+      </div>
+      ${wrapper.innerHTML}`;
+
+    // Styles inline pour l'export (html2pdf ne lit pas les feuilles de style externes)
+    container.querySelectorAll('table').forEach(t => { t.style.width = '100%'; t.style.borderCollapse = 'collapse'; t.style.fontSize = '11px'; });
+    container.querySelectorAll('th').forEach(th => { th.style.padding = '5px 8px'; th.style.background = '#f0ebfa'; th.style.fontWeight = '700'; th.style.color = '#460186'; });
+    container.querySelectorAll('td').forEach(td => { td.style.padding = '4px 8px'; td.style.borderTop = '1px solid #f0e8ff'; });
+
+    document.body.appendChild(container);
+    html2pdf().set({
+      margin: [10, 10, 10, 10],
+      filename: `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+      pagebreak: { mode: ['css', 'legacy'] },
+    }).from(container).save().then(() => document.body.removeChild(container));
+  }
+
+  if (window.html2pdf) { doExport(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+  s.onload = doExport;
+  document.head.appendChild(s);
 }
 
 function btqaExportRecapCSV() {
