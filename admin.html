@@ -9925,7 +9925,8 @@ function btqaRenderRecap() {
           const qtyFor = (t) => {
             const v = vList.find(x => x.taille.toUpperCase() === t.toUpperCase());
             if (!v) return '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
-            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186">${v.qty}</td>`;
+            const off = v.offert ? `<span style="font-size:10px;color:#FF741F;display:block">(+${v.offert})</span>` : '';
+            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186">${v.qty}${off}</td>`;
           };
           // Colonne "-" pour tailles hors liste standard
           const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()));
