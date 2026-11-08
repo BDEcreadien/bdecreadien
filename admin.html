@@ -9990,6 +9990,7 @@ function btqaSetDateFilter(period) {
     const btn = document.getElementById(`btqa-df-${p}`);
     if (btn) btn.classList.toggle('btqa-df-active', p === period);
   });
+  btqaRenderStats();
   btqaFilterTable();
 }
 
