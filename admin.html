@@ -1886,8 +1886,14 @@
     <div class="btqa-table-wrap" id="btqa-table-wrap">
       <table class="btqa-table">
         <thead><tr>
-          <th>N°</th><th>Nom</th><th>Email</th><th>Date</th>
-          <th>Total</th><th>Type</th><th>Statut</th><th>Actions</th>
+          <th onclick="btqaSortBy('numero')"  style="cursor:pointer" id="btqa-th-numero">N° <span id="btqa-sort-numero"></span></th>
+          <th onclick="btqaSortBy('nom')"     style="cursor:pointer" id="btqa-th-nom">Nom <span id="btqa-sort-nom"></span></th>
+          <th>Email</th>
+          <th onclick="btqaSortBy('date')"    style="cursor:pointer" id="btqa-th-date">Date <span id="btqa-sort-date">↓</span></th>
+          <th onclick="btqaSortBy('total')"   style="cursor:pointer" id="btqa-th-total">Total <span id="btqa-sort-total"></span></th>
+          <th>Type</th>
+          <th onclick="btqaSortBy('statut')"  style="cursor:pointer" id="btqa-th-statut">Statut <span id="btqa-sort-statut"></span></th>
+          <th>Actions</th>
         </tr></thead>
         <tbody id="btqa-tbody"></tbody>
       </table>
