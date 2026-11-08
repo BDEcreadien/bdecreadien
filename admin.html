@@ -10236,6 +10236,19 @@ function btqaSetDateFilter(period) {
   btqaFilterTable();
 }
 
+let _btqaSort = { col: 'date', dir: 'desc' };
+function btqaSortBy(col) {
+  if (_btqaSort.col === col) {
+    _btqaSort.dir = _btqaSort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    _btqaSort = { col, dir: col === 'total' ? 'desc' : 'asc' };
+  }
+  ['numero','nom','date','total','statut'].forEach(c => {
+    const el = document.getElementById(`btqa-sort-${c}`);
+    if (el) el.textContent = _btqaSort.col === c ? (_btqaSort.dir === 'asc' ? '↑' : '↓') : '';
+  });
+  btqaFilterTable();
+}
 function btqaFilterTable() {
   const q  = document.getElementById('btqa-search').value.toLowerCase();
   const st = document.getElementById('btqa-filter-statut').value;
@@ -10245,7 +10258,7 @@ function btqaFilterTable() {
   startOfWeek.setDate(startOfDay.getDate() - ((startOfDay.getDay() + 6) % 7)); // lundi
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  const filtered = _btqaCommandes.filter(c => {
+  let filtered = _btqaCommandes.filter(c => {
     const matchQ  = !q || (c.numero||'').toLowerCase().includes(q) || (c.nom_acheteur||'').toLowerCase().includes(q) || (c.email_acheteur||'').toLowerCase().includes(q);
     const matchSt = !st || c.statut === st;
     let matchDate = true;
@@ -10257,6 +10270,18 @@ function btqaFilterTable() {
     }
     return matchQ && matchSt && matchDate;
   });
+
+  const { col, dir } = _btqaSort;
+  const asc = dir === 'asc' ? 1 : -1;
+  filtered = [...filtered].sort((a, b) => {
+    if (col === 'date')   return asc * (new Date(a.created_at||0) - new Date(b.created_at||0));
+    if (col === 'total')  return asc * ((a.total_centimes||0) - (b.total_centimes||0));
+    if (col === 'numero') return asc * (a.numero||'').localeCompare(b.numero||'');
+    if (col === 'nom')    return asc * (a.nom_acheteur||'').localeCompare(b.nom_acheteur||'');
+    if (col === 'statut') return asc * (a.statut||'').localeCompare(b.statut||'');
+    return 0;
+  });
+
   btqaRenderTable(filtered);
 }
 
