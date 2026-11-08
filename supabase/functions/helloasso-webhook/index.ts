@@ -246,12 +246,15 @@ Deno.serve(async (req) => {
         const vente = await upsertVenteFromOrder(data, formSlug)
         // Mettre à jour le statut des inscriptions
         await confirmInscriptions(billetterieSlug, data?.payer?.email ?? '')
-        // Email de confirmation (fire-and-forget)
-        fetch('https://bdecreadien.fr/api/billetterie-email-confirm', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ vente_id: vente.id, billetterie_slug: billetterieSlug }),
-        }).catch(() => {})
+        // Email de confirmation via Resend (fire-and-forget)
+        const eventTitre = data?.metadata?.event_titre ?? (await findEventBySlug(formSlug))?.titre ?? billetterieSlug
+        sendConfirmationEmail(
+          data?.payer?.email ?? '',
+          data?.payer?.firstName ?? '',
+          eventTitre,
+          data?.metadata?.tarif_nom ?? 'Billet',
+          data?.metadata?.quantite ?? 1,
+        )
       }
     } else if (eventType === 'Refund' || data?.state === 'Refunded') {
       await markRefunded(data)
