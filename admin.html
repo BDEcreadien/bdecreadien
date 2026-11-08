@@ -11505,6 +11505,11 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     const { error } = await Auth.sb.storage.from('annonces').upload(path, webp, { contentType: webp.type });
     if (error) throw error;
     const url = Auth.sb.storage.from('annonces').getPublicUrl(path).data.publicUrl;
+    // Supprimer l'ancienne image Storage si elle existait
+    const oldUrl = document.getElementById(hiddenId).value;
+    if (oldUrl && oldUrl.includes('annonces')) {
+      try { const m = new URL(oldUrl).pathname.match(/\/object\/public\/annonces\/(.+)/); if (m?.[1]) Auth.sb.storage.from('annonces').remove([m[1]]).catch(() => {}); } catch (_) {}
+    }
     document.getElementById(hiddenId).value = url;
     const img = document.getElementById(previewImgId);
     img.src = url;
