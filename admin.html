@@ -10023,52 +10023,45 @@ function btqaRenderRecap() {
   }).join('');
 }
 function btqaExportRecapPDF() {
-  if (!window.html2pdf) {
-    const s = document.createElement('script');
-    s.src = 'https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js';
-    s.onload = () => btqaExportRecapPDF();
-    s.onerror = () => alert('Impossible de charger la librairie PDF. Vérifiez votre connexion.');
-    document.head.appendChild(s);
-    return;
-  }
-
   const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
   const wrapper = document.createElement('div');
   wrapper.innerHTML = document.getElementById('btqr-recap-body').innerHTML;
 
-  // Insérer un saut de page avant le 3e bloc (Fitness), pour avoir Red+BeArt p.1 / Fitness+Ecocup p.2
+  // Saut de page avant le 3e bloc (Fitness) → Red+BeArt p.1 / Fitness+Ecocup p.2
   const blocs = wrapper.querySelectorAll(':scope > div');
   if (blocs[2]) {
     const pb = document.createElement('div');
-    pb.style.cssText = 'page-break-before:always;height:1px';
+    pb.style.cssText = 'page-break-before:always';
     blocs[2].parentNode.insertBefore(pb, blocs[2]);
   }
 
-  const el = document.createElement('div');
-  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:270mm;background:white;padding:0;font-family:Arial,sans-serif;font-size:11px;color:#1a0030';
-  el.innerHTML = `
-    <div style="margin-bottom:14px">
-      <div style="font-size:17px;font-weight:900;color:#460186">BDE CREAD Lyon — Récap fournisseur</div>
-      <div style="font-size:10px;color:#888">Généré le ${date}</div>
-    </div>
-    ${wrapper.innerHTML}`;
-  document.body.appendChild(el);
+  const win = window.open('', '_blank');
+  if (!win) { alert('Autorisez les popups pour ce site pour exporter en PDF.'); return; }
 
-  const btn = document.getElementById('btqr-export-btn');
-  btn.textContent = '⏳ Génération…';
-  btn.disabled = true;
-
-  html2pdf().set({
-    margin: [8, 8, 8, 8],
-    filename: `recap-fournisseur-BDE-${new Date().toISOString().slice(0,10)}.pdf`,
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-    pagebreak: { mode: ['css'] },
-  }).from(el).save().then(() => {
-    document.body.removeChild(el);
-    btn.textContent = '⬇ Export PDF récap';
-    btn.disabled = false;
-  });
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>Récap fournisseur BDE CREAD — ${date}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#1a0030;background:white;padding:10mm}
+    h1{font-size:16px;font-weight:900;color:#460186;margin-bottom:2px}
+    .sub{font-size:10px;color:#888;margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;font-size:10px}
+    th{padding:4px 7px;background:#f0ebfa;font-weight:700;color:#460186;white-space:nowrap}
+    td{padding:3px 7px;border-top:1px solid #f0e8ff}
+    @page{size:A4 landscape;margin:10mm}
+    @media print{body{padding:0}}
+  </style>
+  </head><body>
+  <h1>BDE CREAD Lyon — Récap fournisseur</h1>
+  <p class="sub">Généré le ${date}</p>
+  ${wrapper.innerHTML}
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 300);
+    };
+  <\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 function btqaExportRecapCSV() {
