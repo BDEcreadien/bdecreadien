@@ -266,9 +266,12 @@ Deno.serve(async (req) => {
         sendConfirmationEmail(
           data?.payer?.email ?? '',
           data?.payer?.firstName ?? '',
+          data?.payer?.lastName ?? '',
           eventTitre,
           data?.metadata?.tarif_nom ?? 'Billet',
-          data?.metadata?.quantite ?? 1,
+          Number(data?.metadata?.quantite) || 1,
+          vente.montant_total_centimes ?? 0,
+          billetterieSlug,
         )
       }
     } else if (eventType === 'Refund' || data?.state === 'Refunded') {
