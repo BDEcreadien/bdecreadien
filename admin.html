@@ -9887,7 +9887,9 @@ function btqaRenderRecap() {
         <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:700">${totalCol} pièces</span>
       </div>`;
 
-    for (const modele of Object.keys(modeles).sort()) {
+    const modeleKeys = Object.keys(modeles).sort();
+    for (let mi = 0; mi < modeleKeys.length; mi++) {
+      const modele = modeleKeys[mi];
       const designs = modeles[modele];
       let totalMod = 0;
       for (const d of Object.values(designs)) for (const v of Object.values(d)) totalMod += v.qty;
@@ -9895,7 +9897,8 @@ function btqaRenderRecap() {
       // Détecter si ce modèle a des tailles (au moins une taille != '-')
       const hasTailles = Object.values(designs).some(d => Object.values(d).some(v => v.taille && v.taille !== '-'));
 
-      html += `<div style="border:1.5px solid #e0d8f0;border-top:none;overflow-x:auto">
+      const sepStyle = mi > 0 ? 'margin-top:12px;border-top:1.5px solid #e0d8f0' : 'border-top:none';
+      html += `<div style="border:1.5px solid #e0d8f0;${sepStyle};overflow-x:auto">
         <div style="background:#f8f5ff;padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e0d8f0">
           <span style="font-weight:800;font-size:14px;color:#460186">${modele}</span>
           <span style="color:#888;font-size:12px">${totalMod} pièces</span>
