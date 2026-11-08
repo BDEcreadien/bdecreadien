@@ -11544,6 +11544,62 @@ async function btqaDeleteProduit(id) {
   showToast('Produit supprimé');
 }
 
+async function btqaCleanOrphanImages() {
+  const sb = window.Auth.sb;
+  showToast('Analyse en cours…', 'info');
+  try {
+    // 1. Récupérer toutes les URLs référencées en base
+    const [{ data: prods }, { data: designs }, { data: liens }] = await Promise.all([
+      sb.from('boutique_produits').select('image_url,images,designs'),
+      sb.from('boutique_designs').select('image_url'),
+      sb.from('liens').select('image_url'),
+    ]);
+    const usedUrls = new Set();
+    const addUrl = u => { if (u && typeof u === 'string' && u.includes('annonces')) usedUrls.add(u); };
+    (prods || []).forEach(p => {
+      addUrl(p.image_url);
+      (p.images || []).forEach(i => addUrl(i.url));
+      (p.designs || []).forEach(d => Object.values(d.images || {}).forEach(side => Object.values(side || {}).forEach(addUrl)));
+    });
+    (designs || []).forEach(d => addUrl(d.image_url));
+    (liens || []).forEach(l => addUrl(l.image_url));
+
+    // 2. Lister tous les fichiers du bucket annonces (récursif sur dossiers utilisateurs)
+    const { data: { user } } = await sb.auth.getUser();
+    const allPaths = [];
+    const listFolder = async (prefix) => {
+      const { data: files } = await sb.storage.from('annonces').list(prefix, { limit: 1000 });
+      for (const f of (files || [])) {
+        if (f.id === null) { await listFolder(prefix ? prefix + '/' + f.name : f.name); }
+        else { allPaths.push(prefix ? prefix + '/' + f.name : f.name); }
+      }
+    };
+    await listFolder('');
+
+    // 3. Identifier les orphelins : fichiers Storage dont l'URL complète n'est dans aucune table
+    const baseUrl = sb.storageUrl || sb.supabaseUrl + '/storage/v1';
+    const orphans = allPaths.filter(path => {
+      const fullUrl = `${baseUrl}/object/public/annonces/${path}`;
+      return !usedUrls.has(fullUrl);
+    });
+
+    if (!orphans.length) { showToast('Aucun fichier orphelin — tout est propre ✓', 'success'); return; }
+    if (!confirm(`${orphans.length} fichier(s) orphelin(s) trouvé(s) (non utilisés en base).\n\nSupprimer définitivement ?`)) return;
+
+    // 4. Supprimer par lots de 100
+    let deleted = 0;
+    for (let i = 0; i < orphans.length; i += 100) {
+      const batch = orphans.slice(i, i + 100);
+      const { error } = await sb.storage.from('annonces').remove(batch);
+      if (!error) deleted += batch.length;
+    }
+    showToast(`${deleted} fichier(s) orphelin(s) supprimé(s) ✓`, 'success');
+  } catch(e) {
+    showToast('Erreur : ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
 async function btqaTogglePack(id, actif) {
   await window.Auth.sb.from('boutique_packs').update({ actif }).eq('id', id);
   btqaRenderConfigProduits();
