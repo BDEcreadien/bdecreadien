@@ -9786,9 +9786,9 @@ function btqaShowDetailStats() {
           style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
       </div>
       ${rows.map(([lbl,val]) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff">
-          <span style="font-size:14px;color:#666">${lbl}</span>
-          <span style="font-size:15px;font-weight:700;color:#1a0030">${val}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0e8ff;gap:16px">
+          <span style="font-size:14px;color:#666;white-space:nowrap">${lbl}</span>
+          <span style="font-size:15px;font-weight:700;color:#1a0030;text-align:right">${val}</span>
         </div>`).join('')}
     </div>`;
   document.body.appendChild(modal);
