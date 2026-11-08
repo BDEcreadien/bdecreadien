@@ -9777,12 +9777,37 @@ function btqaShowDetailStats() {
   const avecNom = all.filter(c => c.nom_acheteur);
   const tauxConv = avecNom.length ? Math.round(payees.length / avecNom.length * 100) : 0;
 
+  // Coût d'achat (uniquement commandes payées, articles non-offerts)
+  const prixAchatMap = [
+    { keys: ['fitness'],                           prix: 9.756  },
+    { keys: ['sweat à capuche','sweat a capuche'],  prix: 19.992 },
+    { keys: ['sweat col rond','col rond'],          prix: 16.416 },
+    { keys: ['tshirt','t-shirt','t shirt'],         prix: 9.24   },
+  ];
+  function getPrixAchat(nomProduit) {
+    const n = (nomProduit || '').toLowerCase();
+    for (const r of prixAchatMap) if (r.keys.some(k => n.includes(k))) return r.prix;
+    return null;
+  }
+  let coutAchatCentimes = 0;
+  payees.forEach(c => (c.boutique_items||[]).forEach(it => {
+    if (it.est_offert) return;
+    const pa = getPrixAchat(it.produit_nom);
+    if (pa !== null) coutAchatCentimes += Math.round(pa * 100) * (it.quantite || 1);
+  }));
+  const totalEncaisse = totalLigne + totalPhysique;
+  const margeBrute = totalEncaisse - coutAchatCentimes;
+  const tauxMarge = totalEncaisse > 0 ? Math.round(margeBrute / totalEncaisse * 100) : 0;
+
   const rows = [
     ['Total en ligne',    btqaFmt(totalLigne)],
     ['Total en physique', btqaFmt(totalPhysique)],
     ['Prix moyen panier', btqaFmt(prixMoyen)],
     ['Produit + vendu',   topProduit ? `${topProduit[0]} (×${topProduit[1]})` : '—'],
     ['Taux de conversion',`${tauxConv}%`],
+    null, // séparateur
+    ['Coût d\'achat',     btqaFmt(coutAchatCentimes)],
+    ['Marge brute',       `<span style="color:${margeBrute>=0?'#166534':'#dc2626'};font-weight:800">${btqaFmt(margeBrute)} (${tauxMarge}%)</span>`],
   ];
 
   const existing = document.getElementById('btqa-detail-stats-modal');
