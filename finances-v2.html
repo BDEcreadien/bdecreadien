@@ -448,6 +448,15 @@ a{text-decoration:none;color:inherit}
   border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700;
 }
 
+/* Nav month arrows */
+.btn-nav{
+  width:30px;height:30px;border:1px solid var(--border2);border-radius:8px;
+  background:var(--surface);color:var(--text2);font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all var(--transition);
+}
+.btn-nav:hover{background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+
 /* Spinner */
 .spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite}
 .spinner.dark{border-color:rgba(0,0,0,.12);border-top-color:var(--accent)}
