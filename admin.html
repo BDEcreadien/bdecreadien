@@ -10038,7 +10038,7 @@ function btqaExportRecapPDF() {
 
     const el = document.createElement('div');
     // margin-top:14mm laisse de la place pour le header ajouté par jsPDF
-    el.style.cssText = 'width:190mm;background:white;padding:2mm 6mm 6mm;font-family:Arial,sans-serif;font-size:10px;color:#1a0030';
+    el.style.cssText = 'width:190mm;margin:0 auto;background:white;padding:2mm 6mm 6mm;font-family:Arial,sans-serif;font-size:10px;color:#1a0030';
     el.innerHTML = wrapper.innerHTML;
     document.body.appendChild(el);
 
