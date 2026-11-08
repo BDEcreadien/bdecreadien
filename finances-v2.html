@@ -937,12 +937,9 @@ async function loadAll() {
     document.getElementById('solde-initial-val').textContent = formatEur(_soldeInitial);
   } catch(_) {}
 
-  // Load all transactions (full school year)
-  const schoolYear = getSchoolYearBounds();
+  // Load all transactions (all history, for arrow navigation)
   const { data: txs } = await _sb.from('transactions')
     .select('*')
-    .gte('date', schoolYear.start)
-    .lte('date', schoolYear.end)
     .order('date', { ascending: false });
   _all = txs || [];
 
