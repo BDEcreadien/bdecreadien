@@ -11567,6 +11567,21 @@ async function btqaDeleteProduit(id) {
   showToast('Produit supprimé');
 }
 
+// Supprime une image GitHub depuis son URL bdecreadien.fr
+async function btqaDeleteGhImage(url) {
+  if (!url || !url.includes('bdecreadien.fr/images/')) return;
+  try {
+    const path = new URL(url).pathname.slice(1); // ex: images/boutique/xxx.webp
+    const fileRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { headers: { Authorization: `token ${token}` } });
+    if (!fileRes.ok) return;
+    const { sha } = await fileRes.json();
+    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+      method: 'DELETE', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `suppression image : ${path.split('/').pop()}`, sha, branch: BRANCH })
+    });
+  } catch (_) {}
+}
+
 async function btqaCleanOrphanImages() {
   const sb = window.Auth.sb;
   showToast('Analyse en cours…', 'info');
