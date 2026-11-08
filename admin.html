@@ -10005,6 +10005,7 @@ function btqaRenderRecap() {
           <span style="font-weight:600;font-size:13px">${c.nom_acheteur || '-'}</span>
           <span style="font-size:12px;color:#888">${c.email_acheteur || ''}</span>
           <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
+          <span style="font-size:11px;color:#aaa">${new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'})} ${new Date(c.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>
           <span style="margin-left:auto;font-weight:800;color:#460186">${btqaFmt(c.total_centimes)}</span>
         </div>
         <div style="padding:4px 16px 10px">${itemsHtml || '<p style="color:#aaa;font-size:13px;margin:8px 0">Aucun article</p>'}</div>
