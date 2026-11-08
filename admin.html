@@ -9882,12 +9882,41 @@ function btqaRenderRecap() {
       let totalMod = 0;
       for (const d of Object.values(designs)) for (const v of Object.values(d)) totalMod += v.qty;
 
+      // Détecter si ce modèle a des tailles (au moins une taille != '-')
+      const hasTailles = Object.values(designs).some(d => Object.values(d).some(v => v.taille && v.taille !== '-'));
+
       html += `<div style="border:1.5px solid #e0d8f0;border-top:none;overflow-x:auto">
         <div style="background:#f8f5ff;padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e0d8f0">
           <span style="font-weight:800;font-size:14px;color:#460186">${modele}</span>
           <span style="color:#888;font-size:12px">${totalMod} pièces</span>
-        </div>
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
+        </div>`;
+
+      if (!hasTailles) {
+        // Tableau simplifié sans tailles : Design | Total | Achetés | Offerts
+        html += `<table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="background:#f0ebfa">
+            <th style="padding:8px 16px;text-align:left;font-weight:700;color:#460186">Produit</th>
+            <th style="padding:8px 16px;text-align:center;font-weight:700;color:#460186">Total</th>
+            <th style="padding:8px 16px;text-align:center;font-weight:700;color:#460186">Achetés</th>
+            <th style="padding:8px 16px;text-align:center;font-weight:700;color:#FF741F">Offerts</th>
+          </tr></thead><tbody>`;
+        for (const design of Object.keys(designs).sort()) {
+          for (const v of Object.values(designs[design])) {
+            const achetes = v.qty - v.offert;
+            html += `<tr style="border-top:1px solid #f0e8ff">
+              <td style="padding:9px 16px;font-weight:600;color:#333">${design === 'Sans design' ? modele : design}</td>
+              <td style="padding:9px 16px;text-align:center;font-weight:800;font-size:16px;color:#1a0030">${v.qty}</td>
+              <td style="padding:9px 16px;text-align:center;font-weight:700;color:#460186">${achetes}</td>
+              <td style="padding:9px 16px;text-align:center;font-weight:700;color:#FF741F">${v.offert || '—'}</td>
+            </tr>`;
+          }
+        }
+        html += `</tbody></table></div>`;
+        continue;
+      }
+
+      // Tableau avec tailles
+      html += `<table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
             <tr style="background:#f0ebfa">
               <th style="padding:8px 16px;text-align:left;font-weight:700;color:#460186;white-space:nowrap">Design</th>
@@ -9907,7 +9936,6 @@ function btqaRenderRecap() {
       let prevDesign = null;
       for (const design of Object.keys(designs).sort()) {
         const variants = Object.values(designs[design]).sort(sortTaille);
-        // Grouper par couleur
         const byCouleur = {};
         variants.forEach(v => {
           if (!byCouleur[v.couleur]) byCouleur[v.couleur] = [];
@@ -9920,7 +9948,6 @@ function btqaRenderRecap() {
         for (const couleur of Object.keys(byCouleur).sort()) {
           const vList = byCouleur[couleur];
           const totalRow = vList.reduce((s, v) => s + v.qty, 0);
-          const hasOffert = vList.some(v => v.offert > 0);
 
           const qtyFor = (t) => {
             const v = vList.find(x => x.taille.toUpperCase() === t.toUpperCase());
@@ -9928,8 +9955,7 @@ function btqaRenderRecap() {
             const off = v.offert ? `<span style="font-size:10px;color:#FF741F;display:block">(+${v.offert})</span>` : '';
             return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186">${v.qty}${off}</td>`;
           };
-          // Colonne "-" pour tailles hors liste standard
-          const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()));
+          const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()) && v.taille !== '-');
           const autresCell = autresTailles.length
             ? `<td style="padding:6px 8px;text-align:center;font-size:11px;color:#555">${autresTailles.map(v => `${v.taille}×${v.qty}`).join(' ')}</td>`
             : '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
