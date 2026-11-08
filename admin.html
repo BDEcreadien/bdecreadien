@@ -9966,13 +9966,37 @@ function btqaRenderTable(list) {
   }).join('');
 }
 
+let _btqaDateFilter = 'all';
+
+function btqaSetDateFilter(period) {
+  _btqaDateFilter = period;
+  ['all','today','week','month'].forEach(p => {
+    const btn = document.getElementById(`btqa-df-${p}`);
+    if (btn) btn.classList.toggle('btqa-df-active', p === period);
+  });
+  btqaFilterTable();
+}
+
 function btqaFilterTable() {
   const q  = document.getElementById('btqa-search').value.toLowerCase();
   const st = document.getElementById('btqa-filter-statut').value;
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(startOfDay);
+  startOfWeek.setDate(startOfDay.getDate() - ((startOfDay.getDay() + 6) % 7)); // lundi
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
   const filtered = _btqaCommandes.filter(c => {
     const matchQ  = !q || (c.numero||'').toLowerCase().includes(q) || (c.nom_acheteur||'').toLowerCase().includes(q) || (c.email_acheteur||'').toLowerCase().includes(q);
     const matchSt = !st || c.statut === st;
-    return matchQ && matchSt;
+    let matchDate = true;
+    if (_btqaDateFilter !== 'all' && c.created_at) {
+      const d = new Date(c.created_at);
+      if (_btqaDateFilter === 'today') matchDate = d >= startOfDay;
+      else if (_btqaDateFilter === 'week') matchDate = d >= startOfWeek;
+      else if (_btqaDateFilter === 'month') matchDate = d >= startOfMonth;
+    }
+    return matchQ && matchSt && matchDate;
   });
   btqaRenderTable(filtered);
 }
