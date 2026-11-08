@@ -12,6 +12,44 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+const FROM    = 'BDE CREAD Lyon <noreply@bdecreadien.fr>'
+const SITE    = 'https://bdecreadien.fr'
+const RESEND  = Deno.env.get('RESEND_API_KEY') || ''
+
+async function sendConfirmationEmail(to: string, prenom: string, eventTitre: string, tarifNom: string, qty: number) {
+  if (!RESEND || !to) return
+  const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"></head>
+<body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
+<div style="max-width:520px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
+  <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:14px 24px;text-align:center">
+    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:9px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
+    <p style="margin:0;color:white;font-size:26px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">TA PLACE EST CONFIRMÉE</p>
+  </div>
+  <div style="background:white;padding:28px 28px 24px">
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#444">Bonjour <b>${prenom}</b>,<br>ton paiement a bien été reçu. Ta place est réservée !</p>
+    <div style="background:#f8f5ff;border-radius:12px;padding:16px 20px;margin-bottom:24px">
+      <p style="margin:0 0 6px;font-size:13px;color:#666;text-transform:uppercase;letter-spacing:.5px">Événement</p>
+      <p style="margin:0;font-size:17px;font-weight:700;color:#460186">${eventTitre}</p>
+      <p style="margin:6px 0 0;font-size:13px;color:#555">${qty} × ${tarifNom}</p>
+    </div>
+    <div style="text-align:center;margin-bottom:24px">
+      <a href="${SITE}/mon-espace.html#me-billets" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;font-family:Arial,sans-serif">Voir mon billet</a>
+    </div>
+    <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">
+      <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
+      &nbsp;·&nbsp;
+      <a href="${SITE}" style="color:#D2396D;text-decoration:none">bdecreadien.fr</a>
+    </p>
+  </div>
+</div>
+</body></html>`
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND}` },
+    body: JSON.stringify({ from: FROM, to: [to], subject: `Ta place est confirmée — ${eventTitre}`, html }),
+  }).catch(() => {})
+}
+
 const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
