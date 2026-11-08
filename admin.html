@@ -9729,8 +9729,24 @@ async function btqaLoadAnalytics(days) {
 }
 
 // ── Stats ────────────────────────────────────────────────────
+function btqaDateFilteredCommandes() {
+  const now = new Date();
+  const startOfDay  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfWeek = new Date(startOfDay);
+  startOfWeek.setDate(startOfDay.getDate() - ((startOfDay.getDay() + 6) % 7));
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  return _btqaCommandes.filter(c => {
+    if (_btqaDateFilter === 'all' || !c.created_at) return true;
+    const d = new Date(c.created_at);
+    if (_btqaDateFilter === 'today') return d >= startOfDay;
+    if (_btqaDateFilter === 'week')  return d >= startOfWeek;
+    if (_btqaDateFilter === 'month') return d >= startOfMonth;
+    return true;
+  });
+}
+
 function btqaRenderStats() {
-  const all        = _btqaCommandes;
+  const all        = btqaDateFilteredCommandes();
   const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
   const attn       = all.filter(c => c.statut === 'en_attente').length;
   const conf       = all.filter(c => c.statut === 'payee').length;
