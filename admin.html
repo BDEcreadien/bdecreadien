@@ -9988,18 +9988,22 @@ function btqaRenderRecap() {
 function btqaExportRecapCSV() {
   const statuts = btqaRecapStatuts();
   const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
-  const rows = [['Produit','Design','Couleur','Taille','Quantité totale','dont offerts']];
+  const rows = [['Collection','Modèle','Design','Couleur','Taille','Quantité totale','dont offerts']];
   const recap = {};
   cmds.forEach(c => {
     (c.boutique_items || []).forEach(it => {
-      const key = [it.produit_nom, it.design_nom||'', it.couleur||'', it.taille||''].join('||');
-      if (!recap[key]) recap[key] = { produit: it.produit_nom, design: it.design_nom||'', couleur: it.couleur||'', taille: it.taille||'', qty: 0, offert: 0 };
+      const nom = it.produit_nom || '';
+      const sep = nom.indexOf(' - ');
+      const collection = sep > -1 ? nom.slice(0, sep) : 'Autre';
+      const modele     = sep > -1 ? nom.slice(sep + 3) : nom;
+      const key = [collection, modele, it.design_nom||'', it.couleur||'', it.taille||''].join('||');
+      if (!recap[key]) recap[key] = { collection, modele, design: it.design_nom||'', couleur: it.couleur||'', taille: it.taille||'', qty: 0, offert: 0 };
       recap[key].qty += it.quantite || 1;
       if (it.est_offert) recap[key].offert += it.quantite || 1;
     });
   });
-  Object.values(recap).sort((a,b) => a.produit.localeCompare(b.produit)).forEach(r => {
-    rows.push([r.produit, r.design, r.couleur, r.taille, r.qty, r.offert || 0]);
+  Object.values(recap).sort((a,b) => a.collection.localeCompare(b.collection) || a.modele.localeCompare(b.modele) || a.design.localeCompare(b.design)).forEach(r => {
+    rows.push([r.collection, r.modele, r.design, r.couleur, r.taille, r.qty, r.offert || 0]);
   });
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
