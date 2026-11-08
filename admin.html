@@ -9955,7 +9955,9 @@ function btqaRenderTable(list) {
   }
   if (mList) mList.style.display = 'none';
   tbody.innerHTML = list.map(c => {
-    const _dt = new Date(c.created_at);
+    const _statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
+    const _dtSrc = (_statutsPaies.includes(c.statut) && c.updated_at) ? c.updated_at : c.created_at;
+    const _dt = new Date(_dtSrc);
     const d = _dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'2-digit' });
     const h = _dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
     const typeLabel = c.type === 'physique'
