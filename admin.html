@@ -9974,10 +9974,13 @@ function btqaRecapStatuts() {
 function btqaSubTab(sub) {
   document.getElementById('btqr-view-recap').style.display  = sub === 'recap'  ? '' : 'none';
   document.getElementById('btqr-view-detail').style.display = sub === 'detail' ? '' : 'none';
+  document.getElementById('btqr-view-design').style.display = sub === 'design' ? '' : 'none';
   const active   = 'font-weight:800;font-size:13px;color:#460186;border-bottom:3px solid #460186;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
   const inactive = 'font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
   document.getElementById('btqr-sub-recap').style.cssText   = sub === 'recap'  ? active : inactive;
   document.getElementById('btqr-sub-detail').style.cssText  = sub === 'detail' ? active : inactive;
+  document.getElementById('btqr-sub-design').style.cssText  = sub === 'design' ? active : inactive;
+  if (sub === 'design') btqaRenderDesignFournisseur();
 }
 function btqaRenderRecap() {
   const statuts = btqaRecapStatuts();
