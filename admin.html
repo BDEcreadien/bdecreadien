@@ -10035,8 +10035,8 @@ function btqaRenderDesignFournisseur() {
   // En-tête couleur design → couleur en badge coloré
   const couleurBadge = (c) => {
     const lc = c.toLowerCase();
-    const bg = lc.includes('noir') ? '#1a1a1a' : lc.includes('blanc') ? '#e8e8e8' : lc.includes('rose') ? '#f472b6' : lc.includes('rouge') ? '#ef4444' : lc.includes('bleu') ? '#3b82f6' : lc.includes('vert') ? '#22c55e' : lc.includes('gris') ? '#9ca3af' : lc.includes('orange') ? '#f97316' : lc.includes('violet') ? '#7c3aed' : '#d1d5db';
-    const fg = (lc.includes('blanc') || lc.includes('gris')) ? '#333' : 'white';
+    const bg = lc.includes('noir') ? '#1a1a1a' : lc.includes('blanc') ? '#e8e8e8' : lc.includes('rose') ? '#f472b6' : lc.includes('rouge') ? '#ef4444' : lc.includes('bleu') ? '#3b82f6' : lc.includes('vert') ? '#22c55e' : lc.includes('gris') ? '#9ca3af' : lc.includes('orange') ? '#f97316' : lc.includes('violet') ? '#7c3aed' : lc.includes('marron') || lc.includes('brun') ? '#92400e' : lc.includes('jaune') ? '#eab308' : lc.includes('beige') || lc.includes('crème') || lc.includes('creme') ? '#d4b896' : '#d1d5db';
+    const fg = (lc.includes('blanc') || lc.includes('gris') || lc.includes('beige') || lc.includes('crème') || lc.includes('creme') || lc.includes('jaune')) ? '#333' : 'white';
     return `<span style="display:inline-block;background:${bg};color:${fg};border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;vertical-align:middle">${c}</span>`;
   };
 
