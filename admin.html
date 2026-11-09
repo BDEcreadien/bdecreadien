@@ -11502,7 +11502,8 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
     const ghPath = `images/boutique/${filename}`;
     // Encoder en base64
-    const base64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(webp); });
+    const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = rej; r.readAsDataURL(webp); });
+    const base64 = dataUrl.split(',')[1];
     // Créer le blob GitHub
     const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
       method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
