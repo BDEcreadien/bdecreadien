@@ -11702,16 +11702,26 @@ let _btqaListMemberNames = {};
 let _btqaEditItems = {};
 let _btqaEditCurrent = { itemId: null, cmdId: null };
 
+function btqaSelectTaille(val) {
+  document.getElementById('btqa-edit-item-taille').value = val;
+  document.querySelectorAll('#btqa-edit-taille-btns button').forEach(b => {
+    const active = b.dataset.taille === val;
+    b.style.background = active ? 'linear-gradient(135deg,#460186,#D2396D)' : 'white';
+    b.style.color = active ? 'white' : (b.dataset.taille === '' ? '#888' : '#333');
+    b.style.borderColor = active ? 'transparent' : '#e0d8f0';
+  });
+}
 function btqaOpenEditModal(itemId) {
   const item = _btqaEditItems[itemId];
   if (!item) return;
   _btqaEditCurrent = { itemId, cmdId: item._cmdId };
   document.getElementById('btqa-edit-item-nom').textContent = item.produit_nom + (item.design_nom ? ' - ' + item.design_nom : '');
-  document.getElementById('btqa-edit-item-taille').value = item.taille || '';
+  btqaSelectTaille(item.taille || '');
   document.getElementById('btqa-edit-item-couleur').value = item.couleur || '';
   document.getElementById('btqa-edit-item-qty').value = item.quantite || 1;
   document.getElementById('btqa-edit-confirm-step').hidden = true;
   document.getElementById('btqa-edit-action-step').hidden = false;
+  document.getElementById('btqa-edit-confirm-btns').hidden = true;
   document.getElementById('btqa-edit-item-modal').classList.add('open');
 }
 function btqaCloseEditModal() {
@@ -11724,14 +11734,16 @@ function btqaAskConfirmEdit() {
   const parts = [];
   parts.push(taille ? `Taille : ${taille}` : 'Taille : —');
   if (couleur) parts.push(`Couleur : ${couleur}`);
-  parts.push(`Quantité : ${qty}`);
+  parts.push(`Qte : ${qty}`);
   document.getElementById('btqa-edit-confirm-text').textContent = parts.join(' · ');
   document.getElementById('btqa-edit-confirm-step').hidden = false;
   document.getElementById('btqa-edit-action-step').hidden = true;
+  document.getElementById('btqa-edit-confirm-btns').hidden = false;
 }
 function btqaBackToEdit() {
   document.getElementById('btqa-edit-confirm-step').hidden = true;
   document.getElementById('btqa-edit-action-step').hidden = false;
+  document.getElementById('btqa-edit-confirm-btns').hidden = true;
 }
 async function btqaDoSaveEdit() {
   const { itemId, cmdId } = _btqaEditCurrent;
