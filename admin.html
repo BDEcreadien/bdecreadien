@@ -10349,9 +10349,8 @@ function btqaExportDesignPDF() {
       return `<span style="display:inline-block;background:${bg};color:${fg};border-radius:20px;padding:2px 9px;font-size:8px;font-weight:700">${c}</span>`;
     };
 
-    const thGrad = 'background:linear-gradient(135deg,#460186,#D2396D)';
-    const thStyle = `padding:6px 8px;text-align:center;${thGrad};color:white;font-size:9px;font-weight:700;white-space:nowrap`;
-    const thLeftStyle = `padding:6px 10px;text-align:left;${thGrad};color:white;font-size:9px;font-weight:700`;
+    const thStyle = 'padding:6px 8px;text-align:center;background:#f0ebfa;color:#460186;font-size:9px;font-weight:700;white-space:nowrap';
+    const thLeftStyle = 'padding:6px 10px;text-align:left;background:#f0ebfa;color:#460186;font-size:9px;font-weight:700';
     let tbody = '';
     let prevDesign = null;
     rows.forEach((r, i) => {
