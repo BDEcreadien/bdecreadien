@@ -11497,7 +11497,7 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
   const lbl = document.getElementById(lblId);
   if (lbl) { lbl.textContent = '⏳ Upload…'; lbl.classList.add('btqa-img-uploading'); }
   try {
-    // Convertir en webp si possible
+    // Upload via GitHub API — disponible immédiatement sur raw.github
     const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
     const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
