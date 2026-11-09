@@ -497,8 +497,10 @@
       const t = _cfg.tarifs.find(x => x.id === _tarifSelId);
       if (!t) return;
       const total = t.prix_centimes * _qty;
-      document.getElementById('bt-total-val').textContent = fmt(total);
-      document.getElementById('bt-total-detail').textContent = `${_qty} × ${fmt(t.prix_centimes)} · ${esc(t.nom)}`;
+      document.getElementById('bt-total-val').textContent = total === 0 ? 'Gratuit' : fmt(total);
+      document.getElementById('bt-total-detail').textContent = `${_qty} × ${total === 0 ? 'Gratuit' : fmt(t.prix_centimes)} · ${esc(t.nom)}`;
+      const cta = document.getElementById('bt-cta');
+      if (cta) cta.textContent = total === 0 ? 'S\'inscrire gratuitement' : 'Réserver ma place';
     }
 
     function showError(msg) {
