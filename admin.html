@@ -10781,24 +10781,6 @@ function btqaShowDetail(id) {
           <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f3f0ff;border-radius:7px;padding:3px 9px;font-size:11px;font-weight:700;color:#460186;cursor:pointer">Modifier</button>
         </div>
       </div>`).join('')}
-    <div style="margin-bottom:12px">
-      <button onclick="document.getElementById('btqa-add-item-${c.id}').hidden=!document.getElementById('btqa-add-item-${c.id}').hidden"
-        style="border:1.5px dashed #c4b0f0;background:#faf7ff;border-radius:9px;padding:5px 14px;font-size:12px;font-weight:700;color:#460186;cursor:pointer;width:100%">
-        + Ajouter un article offert
-      </button>
-      <div id="btqa-add-item-${c.id}" hidden style="margin-top:10px;padding:14px;background:#f8f5ff;border-radius:14px;border:1.5px solid #ede5ff">
-        <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Nouvel article offert</p>
-        <input id="btqa-add-nom-${c.id}" type="text" placeholder="Nom de l'article (ex: Ecocup)" style="width:100%;padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none;margin-bottom:8px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-          <input id="btqa-add-qty-${c.id}" type="number" value="1" min="1" placeholder="Qte" style="width:100%;padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none">
-          <input id="btqa-add-taille-${c.id}" type="text" placeholder="Taille (optionnel)" style="width:100%;padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none">
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="btqaAddFreeItem('${c.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer">Ajouter</button>
-          <button onclick="document.getElementById('btqa-add-item-${c.id}').hidden=true" style="padding:10px 16px;background:white;color:#666;border:1.5px solid #e0d8f0;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer">Annuler</button>
-        </div>
-      </div>
-    </div>
     <hr style="border:none;border-top:1px solid #f0e8ff;margin:12px 0">
     <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px">
       <span>Total</span><span style="color:var(--violet)">${btqaFmt(c.total_centimes || 0)}</span>
