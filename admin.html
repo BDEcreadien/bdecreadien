@@ -9571,11 +9571,22 @@ async function bilToggleRejoint(inscriptionId, currentStatut) {
     .update({ statut: newStatut })
     .eq('id', inscriptionId);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
-  // Mettre à jour localement
   const idx = _bilParticipantsData.findIndex(r => r.id === inscriptionId);
   if (idx !== -1) _bilParticipantsData[idx].statut = newStatut;
   bilRendreParticipants(_bilParticipantsData);
   showToast(isRejoint ? 'Statut repassé à confirmé' : 'Marqué comme rejoint !', 'success');
+}
+
+async function bilSupprimerInscription(inscriptionId) {
+  if (!confirm('Supprimer cette inscription ? Action irréversible.')) return;
+  const { error } = await Auth.sb
+    .from('billetterie_inscriptions')
+    .delete()
+    .eq('id', inscriptionId);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  _bilParticipantsData = _bilParticipantsData.filter(r => r.id !== inscriptionId);
+  bilRendreParticipants(_bilParticipantsData);
+  showToast('Inscription supprimée.', 'success');
 }
 
 function bilExportCsv() {
