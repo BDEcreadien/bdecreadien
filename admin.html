@@ -11529,11 +11529,12 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`GitHub blob : ${b.message}`); }
     const { sha: blobSha } = await blobRes.json();
     await commitEntries([{ path, blobSha }], `image boutique : ${filename}`);
-    // URL raw.github — disponible immédiatement après commit, zero délai CDN
+    // Sauver l'URL raw.github (dispo immédiatement après commit)
     const finalUrl = `https://raw.githubusercontent.com/${REPO}/main/${path}`;
     document.getElementById(hiddenId).value = finalUrl;
+    // Preview : data URL base64 → instantané, sans attendre la propagation GitHub
     const imgEl = document.getElementById(previewImgId);
-    imgEl.src = finalUrl;
+    imgEl.src = `data:${webp.type};base64,${base64}`;
     document.getElementById(previewWrapId).style.display = '';
     showToast('Photo uploadée !', 'success');
   } catch(e) {
