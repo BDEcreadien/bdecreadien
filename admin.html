@@ -9313,24 +9313,40 @@ let _bilFcCustomFields = [];
 function bilFcRenderCustom() {
   const wrap = document.getElementById('bil-fc-custom-list');
   if (!wrap) return;
-  wrap.innerHTML = _bilFcCustomFields.map((f, i) => `
-    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap;">
-      <input value="${escapeHtml(f.label)}" placeholder="Libellé (ex: Quel sport ?)"
-        style="flex:2;min-width:120px;" oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
-      <input value="${escapeHtml(f.placeholder||'')}" placeholder="Placeholder (facultatif)"
-        style="flex:2;min-width:100px;" oninput="_bilFcCustomFields[${i}].placeholder=this.value;bilOnChange()">
-      <select onchange="_bilFcCustomFields[${i}].required=this.value==='1';bilOnChange()"
-        style="font-size:12px;padding:3px 6px;border-radius:6px;border:1px solid #d1d5db;flex:1;min-width:90px;">
-        <option value="0" ${f.required?'':'selected'}>Facultatif</option>
-        <option value="1" ${f.required?'selected':''}>Obligatoire</option>
-      </select>
-      <button type="button" onclick="bilFcRemoveCustom(${i})"
-        style="background:none;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 8px;cursor:pointer;">✕</button>
-    </div>`).join('');
+  wrap.innerHTML = _bilFcCustomFields.map((f, i) => {
+    const isChoice = f.type === 'choice';
+    return `
+    <div style="background:#f9f7ff;border:1.5px solid #ede5ff;border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:${isChoice ? '8px' : '0'}">
+        <input value="${escapeHtml(f.label)}" placeholder="Libellé (ex: Choix de pizza)"
+          style="flex:2;min-width:140px;padding:6px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;outline:none;"
+          oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
+        <select onchange="_bilFcCustomFields[${i}].type=this.value;bilFcRenderCustom();bilOnChange()"
+          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e0d8f0;background:white;cursor:pointer;font-weight:600;color:#460186;">
+          <option value="text" ${!isChoice?'selected':''}>Texte libre</option>
+          <option value="choice" ${isChoice?'selected':''}>Choix (liste)</option>
+        </select>
+        <select onchange="_bilFcCustomFields[${i}].required=this.value==='1';bilOnChange()"
+          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e0d8f0;background:white;">
+          <option value="0" ${f.required?'':'selected'}>Facultatif</option>
+          <option value="1" ${f.required?'selected':''}>Obligatoire</option>
+        </select>
+        <button type="button" onclick="bilFcRemoveCustom(${i})"
+          style="background:none;border:1.5px solid #fca5a5;color:#dc2626;border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:700;">✕</button>
+      </div>
+      ${isChoice ? `
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:11px;font-weight:700;color:#888;white-space:nowrap;">Options :</span>
+        <input value="${escapeHtml((f.options||[]).join(', '))}" placeholder="ex: Margherita, 4 fromages, Végétarienne"
+          style="flex:1;padding:6px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;outline:none;"
+          oninput="_bilFcCustomFields[${i}].options=this.value.split(',').map(s=>s.trim()).filter(Boolean);bilOnChange()">
+      </div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 function bilFcAddCustom() {
-  _bilFcCustomFields.push({ label: '', placeholder: '' });
+  _bilFcCustomFields.push({ label: '', type: 'text', placeholder: '' });
   bilFcRenderCustom();
 }
 
