@@ -10299,6 +10299,138 @@ function btqaRenderRecap() {
       </div>`;
   }).join('');
 }
+function btqaExportPDFAuto() {
+  const isDesign = document.getElementById('btqr-view-design').style.display !== 'none';
+  if (isDesign) btqaExportDesignPDF();
+  else btqaExportRecapPDF();
+}
+
+function btqaExportDesignPDF() {
+  function doExport() {
+    const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+    const btn = document.getElementById('btqr-export-btn');
+    btn.textContent = '⏳ Génération…';
+    btn.disabled = true;
+
+    // Reconstruire un tableau HTML propre pour le PDF (sans badges CSS complexes)
+    const statuts = btqaRecapStatuts();
+    const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
+    const tailleOrder = ['XS','S','M','L','XL','XXL','2XL','3XL'];
+    const map = {};
+    cmds.forEach(c => {
+      (c.boutique_items || []).forEach(it => {
+        const nom = it.produit_nom || '';
+        const sep = nom.indexOf(' - ');
+        const collection = sep > -1 ? nom.slice(0, sep) : 'Autre';
+        if (!collection.toLowerCase().includes('be art')) return;
+        const design = it.design_nom || 'Sans design';
+        const couleur = it.couleur || '-';
+        const taille  = it.taille  || '-';
+        const qty     = it.quantite || 1;
+        const key = design + '||' + couleur;
+        if (!map[key]) map[key] = { design, couleur, tailles: {}, total: 0 };
+        map[key].tailles[taille] = (map[key].tailles[taille] || 0) + qty;
+        map[key].total += qty;
+      });
+    });
+    const rows = Object.values(map).sort((a, b) => a.design !== b.design ? a.design.localeCompare(b.design,'fr') : a.couleur.localeCompare(b.couleur,'fr'));
+    const taillesPresentes = [...new Set(rows.flatMap(r => Object.keys(r.tailles)))].sort((a,b) => {
+      const ia = tailleOrder.indexOf(a.toUpperCase()), ib = tailleOrder.indexOf(b.toUpperCase());
+      if (ia === -1 && ib === -1) return a.localeCompare(b);
+      return ia === -1 ? 1 : ib === -1 ? -1 : ia - ib;
+    });
+    const totalGeneral = rows.reduce((s,r) => s + r.total, 0);
+
+    const thStyle = 'padding:5px 8px;text-align:center;background:#460186;color:white;font-size:9px;font-weight:700;white-space:nowrap';
+    const thLeftStyle = 'padding:5px 8px;text-align:left;background:#460186;color:white;font-size:9px;font-weight:700';
+    let tbody = '';
+    let prevDesign = null;
+    rows.forEach((r, i) => {
+      const isNew = r.design !== prevDesign;
+      const bg = i % 2 === 0 ? '#f9f7ff' : 'white';
+      const borderTop = isNew && i > 0 ? 'border-top:2px solid #460186' : 'border-top:1px solid #e8e0f8';
+      tbody += `<tr style="background:${bg};${borderTop}">
+        <td style="padding:5px 8px;font-weight:${isNew?'700':'400'};color:#1a0030;font-size:9px">${isNew ? r.design : ''}</td>
+        <td style="padding:5px 8px;font-size:9px;color:#333">${r.couleur}</td>
+        <td style="padding:5px 8px;text-align:center;font-weight:800;font-size:11px;color:#460186">${r.total}</td>
+        ${taillesPresentes.map(t => {
+          const q = r.tailles[t] || 0;
+          return q ? `<td style="padding:5px 8px;text-align:center;font-weight:700;font-size:9px;color:#460186">${q}</td>`
+                   : `<td style="padding:5px 8px;text-align:center;font-size:9px;color:#ccc">—</td>`;
+        }).join('')}
+      </tr>`;
+      prevDesign = r.design;
+    });
+    const totalRow = `<tr style="border-top:2px solid #460186;background:#ede8ff">
+      <td style="padding:6px 8px;font-weight:800;font-size:9px;color:#460186">TOTAL</td>
+      <td></td>
+      <td style="padding:6px 8px;text-align:center;font-weight:900;font-size:12px;color:#460186">${totalGeneral}</td>
+      ${taillesPresentes.map(t => {
+        const s = rows.reduce((acc,r) => acc + (r.tailles[t]||0), 0);
+        return s ? `<td style="padding:6px 8px;text-align:center;font-weight:800;font-size:9px;color:#460186">${s}</td>`
+                 : `<td style="padding:6px 8px;text-align:center;font-size:9px;color:#ccc">—</td>`;
+      }).join('')}
+    </tr>`;
+
+    const tableHtml = `<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif">
+      <thead><tr>
+        <th style="${thLeftStyle}">Design</th>
+        <th style="${thLeftStyle}">Couleur</th>
+        <th style="${thStyle}">Total</th>
+        ${taillesPresentes.map(t => `<th style="${thStyle}">${t}</th>`).join('')}
+      </tr></thead>
+      <tbody>${tbody}${totalRow}</tbody>
+    </table>`;
+
+    const el = document.createElement('div');
+    el.style.cssText = 'width:277mm;margin:0 auto;background:white;padding:2mm 4mm 4mm;font-family:Arial,sans-serif';
+    el.innerHTML = `<div style="margin-bottom:8px">
+      <span style="font-size:13px;font-weight:900;color:#460186">Collection Be Art — Bon de commande fournisseur</span>
+      <span style="font-size:9px;color:#888;margin-left:12px">${totalGeneral} pièces · Généré le ${date}</span>
+    </div>${tableHtml}`;
+    document.body.appendChild(el);
+
+    const filename = `commande-fournisseur-be-art-${new Date().toISOString().slice(0,10)}.pdf`;
+    html2pdf().set({
+      margin: [14, 5, 8, 5],
+      filename,
+      html2canvas: { scale: 4, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+      pagebreak: { mode: ['css','legacy'], avoid: ['table','tr'] },
+    }).from(el).toPdf().get('pdf').then(pdf => {
+      const totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(70, 1, 134);
+        pdf.text('BDE CREAD Lyon — Commande fournisseur Be Art', 5, 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(150, 150, 150);
+        pdf.text(`Généré le ${date}`, 5, 12.5);
+        pdf.setFontSize(9);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`${i} / ${totalPages}`, 292, 8, { align: 'right' });
+        pdf.setDrawColor(200, 190, 230);
+        pdf.setLineWidth(0.3);
+        pdf.line(5, 13.5, 292, 13.5);
+      }
+    }).save().then(() => {
+      document.body.removeChild(el);
+      btn.textContent = '⬇ Export PDF récap';
+      btn.disabled = false;
+    });
+  }
+
+  if (window.html2pdf) { doExport(); return; }
+  const s = document.createElement('script');
+  s.src = '/html2pdf.bundle.min.js';
+  s.onload = doExport;
+  s.onerror = () => alert('Erreur chargement librairie PDF.');
+  document.head.appendChild(s);
+}
+
 function btqaExportRecapPDF() {
   function doExport() {
     const date = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
