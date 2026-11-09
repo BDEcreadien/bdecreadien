@@ -8673,9 +8673,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   window._monProfilId = profil ? profil.id : null;
 
-  // 2. Charger le token GitHub depuis Supabase (partagé entre membres BDE)
-  const { data: cfg } = await Auth.sb.from('bde_config')
-    .select('value').eq('id', 'github_token').maybeSingle();
+  // 2. Charger le token GitHub et l'upload secret depuis Supabase
+  const [{ data: cfg }, { data: cfgSecret }] = await Promise.all([
+    Auth.sb.from('bde_config').select('value').eq('id', 'github_token').maybeSingle(),
+    Auth.sb.from('bde_config').select('value').eq('id', 'upload_secret').maybeSingle(),
+  ]);
+
+  if (cfgSecret && cfgSecret.value) uploadSecret = cfgSecret.value;
 
   if (cfg && cfg.value) {
     token = cfg.value;
