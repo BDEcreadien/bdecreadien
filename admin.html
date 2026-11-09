@@ -11526,6 +11526,11 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     if (oldUrl && (oldUrl.includes('bdecreadien.fr/images/boutique/') || oldUrl.includes('raw.githubusercontent.com'))) {
       btqaDeleteGhImage(oldUrl).catch(() => {});
     }
+    // Supprimer l'ancienne image si elle était dans images/boutique (orpheline)
+    const oldUrl = document.getElementById(hiddenId).value;
+    if (oldUrl && (oldUrl.includes('bdecreadien.fr/images/boutique/') || oldUrl.includes('raw.githubusercontent.com'))) {
+      btqaDeleteGhImage(oldUrl).catch(() => {});
+    }
     document.getElementById(hiddenId).value = finalUrl;
     const imgEl = document.getElementById(previewImgId);
     imgEl.src = previewUrl;
