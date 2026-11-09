@@ -10765,13 +10765,41 @@ function btqaShowDetail(id) {
     <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px">
       <span>Total</span><span style="color:var(--violet)">${btqaFmt(c.total_centimes || 0)}</span>
     </div>
-    ${c.moyen_paiement ? `<p style="margin:12px 0 0;font-size:12px;color:#888">Paiement : ${c.moyen_paiement}</p>` : ''}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;min-height:24px">
+      <p style="margin:0;font-size:12px;color:#888">Paiement : <strong style="color:#555">${c.moyen_paiement || '—'}</strong>${c.notes ? ` · ${c.notes}` : ''}</p>
+      <button onclick="btqaToggleDetailEdit('${c.id}')" style="border:none;background:#f3f0ff;border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;color:#460186;cursor:pointer;flex-shrink:0;margin-left:8px">Modifier</button>
+    </div>
+    <div id="btqa-detail-edit-${c.id}" hidden style="margin-top:12px;padding:14px;background:#f8f5ff;border-radius:14px;border:1.5px solid #ede5ff">
+      <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Modifier la commande</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:#460186">Moyen de paiement</p>
+          <select id="btqa-detail-paiement-${c.id}" style="width:100%;padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;background:white;outline:none">
+            <option value="">— Non renseigné —</option>
+            <option value="especes" ${c.moyen_paiement==='especes'?'selected':''}>Especes</option>
+            <option value="sumup" ${c.moyen_paiement==='sumup'?'selected':''}>SumUp</option>
+            <option value="virement" ${c.moyen_paiement==='virement'?'selected':''}>Virement</option>
+            <option value="en_ligne" ${c.moyen_paiement==='en_ligne'?'selected':''}>En ligne</option>
+            <option value="cheque" ${c.moyen_paiement==='cheque'?'selected':''}>Cheque</option>
+            <option value="autre" ${c.moyen_paiement==='autre'?'selected':''}>Autre</option>
+          </select>
+        </div>
+        <div>
+          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:#460186">Notes</p>
+          <input id="btqa-detail-notes-${c.id}" type="text" value="${(c.notes||'').replace(/"/g,'&quot;')}" placeholder="Note libre…" style="width:100%;padding:9px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="btqaSaveDetailEdit('${c.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer">Enregistrer</button>
+        <button onclick="document.getElementById('btqa-detail-edit-${c.id}').hidden=true" style="padding:10px 16px;background:white;color:#666;border:1.5px solid #e0d8f0;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer">Annuler</button>
+      </div>
+    </div>
     <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
-      ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee');document.getElementById('btqa-detail-modal').style.display='none'">Paiement confirmé</button>` : ''}
+      ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee');document.getElementById('btqa-detail-modal').style.display='none'">Paiement confirme</button>` : ''}
       ${c.statut === 'payee'      ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production');document.getElementById('btqa-detail-modal').style.display='none'">Lancer production</button>` : ''}
       ${c.statut === 'production' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison');document.getElementById('btqa-detail-modal').style.display='none'">En livraison</button>` : ''}
-      ${c.statut === 'livraison'  ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee');document.getElementById('btqa-detail-modal').style.display='none'">Récupérable à l'école</button>` : ''}
-      ${c.statut === 'confirmee'  ? `<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">📦 Marquer remis</button>` : ''}
+      ${c.statut === 'livraison'  ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee');document.getElementById('btqa-detail-modal').style.display='none'">Recuperable a l'ecole</button>` : ''}
+      ${c.statut === 'confirmee'  ? `<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}');document.getElementById('btqa-detail-modal').style.display='none'">Marquer remis</button>` : ''}
     </div>`;
   document.getElementById('btqa-detail-modal').style.display = 'flex';
 }
