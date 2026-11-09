@@ -4141,11 +4141,11 @@ async function commitEntries(entries, message) {
     const { sha: newCommitSha } = await newCommitRes.json();
     const patchRes = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, {
       method: 'PATCH', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sha: newCommitSha })
+      body: JSON.stringify({ sha: newCommitSha, force: true })
     });
     if (patchRes.ok) return;
     const patchBody = await patchRes.json();
-    if (patchRes.status === 422 && attempt < 2) { await new Promise(r => setTimeout(r, 800)); continue; }
+    if (attempt < 2) { await new Promise(r => setTimeout(r, 800)); continue; }
     throw new Error(`Échec mise à jour branche : ${patchBody.message}`);
   }
 }
