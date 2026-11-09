@@ -803,6 +803,7 @@ function btqThumbSide(side, el) {
   const img = document.getElementById('btq-main-img');
   if (!img) return;
   img.src = side === 'front' ? _modalImgFront : _modalImgDos;
+  img.onerror = () => btqImgOnerror(img);
 }
 
 function btqDesignFirstImg(design) {
