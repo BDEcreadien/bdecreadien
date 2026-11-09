@@ -11951,9 +11951,9 @@ async function btqaOpenProduit(id) {
     </div>
     <div class="btqa-form-row"><label>Guide des tailles (optionnel)</label>
       <div class="btqa-img-picker">
-        ${ (function(){ const gt = (prod?.images||[]).find(i=>i.type==='guide_taille')?.url||''; return `
+        ${ (function(){ const gt = (prod?.images||[]).find(i=>i.type==='guide_taille')?.url||''; const gtPrev = btqaToRawGhUrl(gt); return `
         <div class="btqa-img-preview-wrap" id="bp-gt-w" style="${gt ? '' : 'display:none'}">
-          <img src="${gt}" id="bp-gt-img" class="btqa-img-preview-img">
+          <img src="${gtPrev}" id="bp-gt-img" class="btqa-img-preview-img" onerror="if(this.src.includes('raw.githubusercontent'))this.src='${gt}'">`
           <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-gt-v','bp-gt-w')">✕</button>
         </div>
         <input type="hidden" id="bp-gt-v" value="${gt}">
