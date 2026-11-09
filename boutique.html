@@ -1330,8 +1330,8 @@ function btqCartItemImg(item) {
   const design = (p.designs || []).find(d => d.nom === item.design_nom);
   let url = '';
   if (design) {
-    if (item.couleur && design.images?.[item.couleur]?.front) url = design.images[item.couleur].front;
-    else if (item.couleur && design.images?.[item.couleur]?.dos) url = design.images[item.couleur].dos;
+    if (item.couleur && design.images?.[item.couleur]?.dos) url = design.images[item.couleur].dos;
+    else if (item.couleur && design.images?.[item.couleur]?.front) url = design.images[item.couleur].front;
     if (!url) url = btqDesignFirstImg(design);
   }
   if (!url) url = p.image_url || '';
