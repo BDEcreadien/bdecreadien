@@ -618,7 +618,8 @@ let _modalSide     = 'front'; // côté actuellement affiché
 let _modalOpenTime = 0;
 
 async function btqTrack(event, product_id, product_nom, data) {
-  try { await _sb.from('btq_analytics').insert({ event, product_id: product_id||null, product_nom: product_nom||null, data: data||{} }); } catch(e) {}
+  const { error } = await _sb.from('btq_analytics').insert({ event, product_id: product_id||null, product_nom: product_nom||null, data: data||{} });
+  if (error) console.error('[btqTrack] insert failed:', error.message, error.code, error.hint);
 }
 
 const _COULEUR_HEX = { Blanc:'#FFFFFF', Noir:'#1a1a1a', Bleu:'#3B82F6', Rose:'#EC4899', Vert:'#10B981', Bordeaux:'#9B1C1C', Gris:'#6B7280', Jaune:'#F59E0B', Marron:'#8B5E3C' };
