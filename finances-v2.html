@@ -935,10 +935,12 @@ async function loadAll() {
   } catch(_) {}
 
   // Load all transactions (all history, for arrow navigation)
-  const { data: txs } = await _sb.from('transactions')
+  const { data: txs, error: txErr } = await _sb.from('transactions')
     .select('*')
     .order('date', { ascending: false });
+  if (txErr) toast('Erreur chargement transactions : ' + txErr.message, 'error');
   _all = txs || [];
+  document.getElementById('solde-initial-val').textContent = formatEur(_soldeInitial) + ' · ' + _all.length + ' tx chargées';
 
   // Load recurring
   const { data: rec } = await _sb.from('transactions_recurrentes').select('*').order('created_at');
