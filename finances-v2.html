@@ -906,7 +906,7 @@ let _modalCb   = null;
 document.addEventListener('DOMContentLoaded', async () => {
   await checkAuth();
   buildCategoryOptions();
-  setPeriod('month');
+  setPeriod('month', true);  // true = skip renderAll, charts pas encore init
   await loadAll();
   initCharts();
   renderAll();
