@@ -12088,9 +12088,11 @@ async function btqaSaveProduit(id) {
 
   let prodId = id;
   if (id) {
-    await sb.from('boutique_produits').update(payload).eq('id', id);
+    const { error } = await sb.from('boutique_produits').update(payload).eq('id', id);
+    if (error) { showToast('Erreur sauvegarde : ' + error.message, 'error'); console.error('[btqaSaveProduit]', error); return; }
   } else {
-    const { data: ins } = await sb.from('boutique_produits').insert(payload).select().single();
+    const { data: ins, error } = await sb.from('boutique_produits').insert(payload).select().single();
+    if (error) { showToast('Erreur création : ' + error.message, 'error'); console.error('[btqaSaveProduit]', error); return; }
     prodId = ins?.id;
   }
 
