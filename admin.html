@@ -11510,7 +11510,7 @@ function btqaAddGalleryRow() {
   list.appendChild(div.firstElementChild);
 }
 
-// ── Upload mockup design vers Supabase Storage (disponible immédiatement) ──
+// ── Upload image vers Cloudflare R2 via Pages Function ──
 async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lblId) {
   const file = inputEl.files?.[0];
   if (!file) return;
@@ -11520,27 +11520,30 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
     const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-    const path = `images/boutique/${filename}`;
-    const base64 = await new Promise((res, rej) => {
+
+    // Preview instantanée via data URL
+    const dataUrl = await new Promise((res, rej) => {
       const r = new FileReader();
-      r.onload = e => res(e.target.result.split(',')[1]);
+      r.onload = e => res(e.target.result);
       r.onerror = rej;
       r.readAsDataURL(webp);
     });
-    const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
-      method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: base64, encoding: 'base64' })
-    });
-    if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`GitHub blob : ${b.message}`); }
-    const { sha: blobSha } = await blobRes.json();
-    await commitEntries([{ path, blobSha }], `image boutique : ${filename}`);
-    // Sauver l'URL raw.github (dispo immédiatement après commit)
-    const finalUrl = `https://raw.githubusercontent.com/${REPO}/main/${path}`;
-    document.getElementById(hiddenId).value = finalUrl;
-    // Preview : data URL base64 → instantané, sans attendre la propagation GitHub
     const imgEl = document.getElementById(previewImgId);
-    imgEl.src = `data:${webp.type};base64,${base64}`;
+    imgEl.src = dataUrl;
     document.getElementById(previewWrapId).style.display = '';
+
+    // Upload vers R2
+    const form = new FormData();
+    form.append('file', webp, filename);
+    form.append('filename', filename);
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'x-upload-secret': uploadSecret },
+      body: form,
+    });
+    if (!res.ok) { const b = await res.json().catch(() => ({})); throw new Error(b.error || `HTTP ${res.status}`); }
+    const { url } = await res.json();
+    document.getElementById(hiddenId).value = url;
     showToast('Photo uploadée !', 'success');
   } catch(e) {
     showToast('Erreur upload : ' + e.message, 'error');
