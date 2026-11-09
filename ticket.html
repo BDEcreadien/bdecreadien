@@ -578,6 +578,41 @@
       const totalAmountCents = t.prix_centimes * _qty;
       const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
 
+      // ── Tarif gratuit : inscription directe sans HelloAsso ──
+      if (totalAmountCents === 0) {
+        try {
+          const res = await fetch('/api/billetterie-gratuit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slug,
+              billetterie_id: _cfg.id || null,
+              prenom: firstName,
+              nom: lastName,
+              email,
+              tel: tel || null,
+              classe: classe || null,
+              suggestions: suggestions || null,
+              custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
+              tarif_id: t.id,
+              tarif_nom: t.nom,
+              quantite: _qty,
+              profil_id: profilId,
+              event_titre: _cfg.titre,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+          location.href = `${SITE}/billet-confirme.html?slug=${encodeURIComponent(slug)}`;
+        } catch (e) {
+          console.error(e);
+          showError('Erreur lors de l\'inscription : ' + e.message);
+          cta.disabled = false;
+          cta.textContent = 'S\'inscrire gratuitement';
+        }
+        return;
+      }
+
       try {
         const res = await fetch(`${SUPABASE_URL_VAL}/functions/v1/helloasso-checkout`, {
           method: 'POST',
@@ -610,7 +645,7 @@
         console.error(e);
         showError('Erreur lors de la création du paiement : ' + e.message);
         cta.disabled = false;
-        cta.textContent = 'Payer ma place';
+        cta.textContent = 'Réserver ma place';
       }
     }
 
