@@ -1979,34 +1979,67 @@
 
   <!-- Modal modifier article commande -->
   <div class="btqa-prod-modal-overlay" id="btqa-edit-item-modal" onclick="if(event.target===this)btqaCloseEditModal()">
-    <div class="btqa-prod-modal" style="width:420px;max-width:95vw">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h4 style="margin:0;font-size:17px">Modifier l'article</h4>
-        <button onclick="btqaCloseEditModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
-      </div>
-      <p id="btqa-edit-item-nom" style="font-weight:700;font-size:14px;margin:0 0 16px;padding:10px;background:#f8f5ff;border-radius:8px"></p>
-      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Taille</label>
-      <select id="btqa-edit-item-taille" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;margin-bottom:14px;outline:none;background:white">
-        <option value="">— Sans taille —</option>
-        <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
-        <option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL</option>
-        <option value="2XL">2XL</option><option value="3XL">3XL</option>
-      </select>
-      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Couleur</label>
-      <input id="btqa-edit-item-couleur" type="text" placeholder="ex: Blanc" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
-      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Quantité</label>
-      <input id="btqa-edit-item-qty" type="number" min="1" max="99" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:20px;outline:none">
-      <div id="btqa-edit-confirm-step" hidden>
-        <div style="background:#fef3c7;border:1.5px solid #fbbf24;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#92400e">
-          <strong>Confirmer la modification ?</strong><br><span id="btqa-edit-confirm-text"></span>
+    <div style="background:white;border-radius:20px;width:440px;max-width:95vw;overflow:hidden;box-shadow:0 24px 60px rgba(70,1,134,0.18)">
+      <!-- Header dégradé -->
+      <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <p style="margin:0 0 2px;color:rgba(255,255,255,.65);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">Boutique</p>
+          <h4 style="margin:0;color:white;font-size:18px;font-weight:800">Modifier l'article</h4>
         </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="btqaDoSaveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Confirmer</button>
-          <button onclick="btqaBackToEdit()" style="flex:1;padding:12px;background:white;color:#460186;border:1.5px solid #e0d8f0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer">Modifier encore</button>
+        <button onclick="btqaCloseEditModal()" style="border:none;background:rgba(255,255,255,.18);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:16px;color:white;display:flex;align-items:center;justify-content:center;font-weight:700">✕</button>
+      </div>
+      <!-- Nom article -->
+      <div style="padding:0 24px">
+        <div style="margin-top:-1px;padding:14px 16px;background:#f8f5ff;border-radius:0 0 14px 14px;border:1.5px solid #ede5ff;border-top:none">
+          <p id="btqa-edit-item-nom" style="margin:0;font-weight:700;font-size:13px;color:#460186;line-height:1.4"></p>
         </div>
       </div>
-      <div id="btqa-edit-action-step">
-        <button onclick="btqaAskConfirmEdit()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Modifier</button>
+      <!-- Champs -->
+      <div style="padding:20px 24px 0">
+        <!-- Taille : boutons visuels -->
+        <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Taille</p>
+        <div id="btqa-edit-taille-btns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+          <button onclick="btqaSelectTaille('')"  data-taille=""    style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#888;transition:all .15s">—</button>
+          <button onclick="btqaSelectTaille('XS')"  data-taille="XS"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XS</button>
+          <button onclick="btqaSelectTaille('S')"   data-taille="S"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">S</button>
+          <button onclick="btqaSelectTaille('M')"   data-taille="M"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">M</button>
+          <button onclick="btqaSelectTaille('L')"   data-taille="L"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">L</button>
+          <button onclick="btqaSelectTaille('XL')"  data-taille="XL"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XL</button>
+          <button onclick="btqaSelectTaille('XXL')" data-taille="XXL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XXL</button>
+          <button onclick="btqaSelectTaille('2XL')" data-taille="2XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">2XL</button>
+          <button onclick="btqaSelectTaille('3XL')" data-taille="3XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">3XL</button>
+        </div>
+        <input id="btqa-edit-item-taille" type="hidden" value="">
+        <!-- Couleur + Quantité côte à côte -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+          <div>
+            <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Couleur</p>
+            <input id="btqa-edit-item-couleur" type="text" placeholder="ex: Noir" style="width:100%;padding:11px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:14px;box-sizing:border-box;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
+          </div>
+          <div>
+            <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Quantite</p>
+            <div style="display:flex;align-items:center;border:1.5px solid #e0d8f0;border-radius:12px;overflow:hidden;transition:border-color .15s" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
+              <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;if(v>1)document.getElementById('btqa-edit-item-qty').value=v-1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#460186;font-weight:700;flex-shrink:0">−</button>
+              <input id="btqa-edit-item-qty" type="number" min="1" max="99" style="flex:1;border:none;text-align:center;font-size:15px;font-weight:700;color:#460186;padding:0;outline:none;font-family:inherit;width:0">
+              <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;document.getElementById('btqa-edit-item-qty').value=v+1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#460186;font-weight:700;flex-shrink:0">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Bloc confirmation -->
+      <div id="btqa-edit-confirm-step" hidden style="margin:0 24px 0;padding:14px 16px;background:linear-gradient(135deg,#fffbeb,#fef9f0);border:1.5px solid #fcd34d;border-radius:14px">
+        <p style="margin:0 0 4px;font-size:12px;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:1px">Confirmer la modification ?</p>
+        <p id="btqa-edit-confirm-text" style="margin:0;font-size:13px;color:#78350f;font-weight:600"></p>
+      </div>
+      <!-- Boutons action -->
+      <div style="padding:16px 24px 24px;display:flex;gap:10px">
+        <div id="btqa-edit-action-step" style="flex:1">
+          <button onclick="btqaAskConfirmEdit()" style="width:100%;padding:13px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px">Enregistrer</button>
+        </div>
+        <div id="btqa-edit-confirm-btns" hidden style="display:flex;gap:8px;flex:1">
+          <button onclick="btqaDoSaveEdit()" style="flex:1;padding:13px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer">Confirmer</button>
+          <button onclick="btqaBackToEdit()" style="flex:1;padding:13px;background:#f3f0ff;color:#460186;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer">Retour</button>
+        </div>
       </div>
     </div>
   </div>
