@@ -4117,8 +4117,16 @@ async function createBlob(file) {
   return { path, blobSha, type, url: `/${path}` };
 }
 
+// File d'attente globale : un seul commit GitHub à la fois pour éviter les force-push concurrents
+let _commitQueue = Promise.resolve();
+
 // Commit une liste d'entrées { path, blobSha } en un seul commit avec retry
 async function commitEntries(entries, message) {
+  const result = _commitQueue.then(() => _doCommitEntries(entries, message));
+  _commitQueue = result.catch(() => {});
+  return result;
+}
+async function _doCommitEntries(entries, message) {
   for (let attempt = 0; attempt < 3; attempt++) {
     const refRes = await fetch(`https://api.github.com/repos/${REPO}/git/ref/heads/${BRANCH}`, { headers: { Authorization: `token ${token}` } });
     if (!refRes.ok) throw new Error('Impossible de lire la branche');
