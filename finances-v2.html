@@ -909,9 +909,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   setPeriod('month', true);  // true = skip renderAll, charts pas encore init
   await loadAll();
   initCharts();
+  // Si le mois courant est vide, aller au dernier mois avec données
+  if (_all.length > 0 && _period.length === 0) {
+    const lastDate = _all[0]?.date;  // _all sorted desc, so first = most recent
+    if (lastDate) {
+      const y = parseInt(lastDate.slice(0, 4));
+      const m = parseInt(lastDate.slice(5, 7)) - 1;
+      _dateStart = new Date(y, m, 1);
+      _dateEnd   = new Date(y, m + 1, 0);
+      _periodDef.type = 'month_nav';
+      const label = fmtPeriodLabel();
+      document.getElementById('period-label').textContent = label;
+      document.getElementById('header-sub').innerHTML = `<span class="period-badge">${label}</span>`;
+      document.getElementById('journal-period-badge').textContent = label;
+      document.getElementById('chart-period-label').textContent = label;
+      document.getElementById('export-period-label').textContent = label;
+      applyPeriodFilter();
+    }
+  }
   renderAll();
   loadDettes();
   renderExportPreview();
+  if (_all.length > 0) toast(_all.length + ' transaction' + (_all.length > 1 ? 's' : '') + ' chargée' + (_all.length > 1 ? 's' : ''), 'success');
 });
 
 async function checkAuth() {
