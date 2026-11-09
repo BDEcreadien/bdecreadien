@@ -11490,7 +11490,7 @@ function btqaAddGalleryRow() {
   list.appendChild(div.firstElementChild);
 }
 
-// ── Upload image vers GitHub (Cloudflare Pages, zéro egress) ──
+// ── Upload mockup design vers Supabase Storage (disponible immédiatement) ──
 async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lblId) {
   const file = inputEl.files?.[0];
   if (!file) return;
@@ -11499,32 +11499,22 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
   try {
     const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
     const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-    const ghPath = `images/boutique/${filename}`;
-    // Encoder en base64
-    const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = rej; r.readAsDataURL(webp); });
-    const base64 = dataUrl.split(',')[1];
-    // Créer le blob GitHub
-    const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
-      method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: base64, encoding: 'base64' })
-    });
-    if (!blobRes.ok) throw new Error('Erreur GitHub blob');
-    const { sha: blobSha } = await blobRes.json();
-    await commitEntries([{ path: ghPath, blobSha }], `image boutique : ${filename}`);
-    const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${ghPath}`;
+    const filename = `mockups/${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+    const { error: upErr } = await Auth.sb.storage.from('annonces').upload(filename, webp, { contentType: webp.type, upsert: false });
+    if (upErr) throw new Error(upErr.message);
+    const { data: { publicUrl } } = Auth.sb.storage.from('annonces').getPublicUrl(filename);
     // Supprimer l'ancienne image si elle était dans Supabase Storage
     const oldUrl = document.getElementById(hiddenId).value;
     if (oldUrl && oldUrl.includes('supabase')) {
-      try { const m = new URL(oldUrl).pathname.match(/\/object\/public\/annonces\/(.+)/); if (m?.[1]) Auth.sb.storage.from('annonces').remove([m[1]]).catch(() => {}); } catch (_) {}
+      try { const m = new URL(oldUrl).pathname.match(/\/object\/public\/annonces\/(.+)/); if (m?.[1]) Auth.sb.storage.from('annonces').remove([decodeURIComponent(m[1])]).catch(() => {}); } catch (_) {}
     }
     // Supprimer l'ancienne image GitHub si elle était dans images/boutique
     if (oldUrl && (oldUrl.includes('bdecreadien.fr/images/boutique/') || oldUrl.includes('raw.githubusercontent.com'))) {
       btqaDeleteGhImage(oldUrl).catch(() => {});
     }
-    document.getElementById(hiddenId).value = url;
-    const img = document.getElementById(previewImgId);
-    img.src = dataUrl;
+    document.getElementById(hiddenId).value = publicUrl;
+    const imgEl = document.getElementById(previewImgId);
+    imgEl.src = publicUrl;
     document.getElementById(previewWrapId).style.display = '';
     showToast('Photo uploadée !', 'success');
   } catch(e) {
