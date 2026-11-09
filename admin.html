@@ -11795,16 +11795,26 @@ function btqaBackToEdit() {
   document.getElementById('btqa-edit-confirm-btns').hidden = true;
 }
 async function btqaDoSaveEdit() {
-  const { itemId, cmdId } = _btqaEditCurrent;
+  const { itemId, cmdId, origin } = _btqaEditCurrent;
   const taille = document.getElementById('btqa-edit-item-taille').value || null;
   const couleur = document.getElementById('btqa-edit-item-couleur').value.trim() || null;
   const quantite = parseInt(document.getElementById('btqa-edit-item-qty').value) || 1;
   const sb = window.Auth.sb;
   const { error } = await sb.from('boutique_items').update({ taille, couleur, quantite }).eq('id', itemId);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  // Mettre à jour le cache local
+  const c = _btqaCommandes?.find(x => x.id === cmdId);
+  if (c?.boutique_items) {
+    const it = c.boutique_items.find(x => x.id === itemId);
+    if (it) { it.taille = taille; it.couleur = couleur; it.quantite = quantite; }
+  }
   btqaCloseEditModal();
-  showToast('Article modifié avec succès', 'success');
-  await btqaLookupById(cmdId);
+  showToast('Article modifie avec succes', 'success');
+  if (origin === 'detail') {
+    btqaShowDetail(cmdId);
+  } else {
+    await btqaLookupById(cmdId);
+  }
 }
 async function btqaLookupById(id) {
   const memberName = _btqaListMemberNames?.[id] || null;
