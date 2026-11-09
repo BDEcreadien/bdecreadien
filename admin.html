@@ -10341,18 +10341,27 @@ function btqaExportDesignPDF() {
     });
     const totalGeneral = rows.reduce((s,r) => s + r.total, 0);
 
-    const thStyle = 'padding:5px 8px;text-align:center;background:#460186;color:white;font-size:9px;font-weight:700;white-space:nowrap';
-    const thLeftStyle = 'padding:5px 8px;text-align:left;background:#460186;color:white;font-size:9px;font-weight:700';
+    // Couleur badge texte (même mapping que sur le site, sans CSS externe)
+    const couleurBadgePdf = (c) => {
+      const lc = c.toLowerCase();
+      const bg = lc.includes('noir') ? '#1a1a1a' : lc.includes('blanc') ? '#e8e8e8' : lc.includes('rose') ? '#f472b6' : lc.includes('rouge') ? '#ef4444' : lc.includes('bleu') ? '#3b82f6' : lc.includes('vert') ? '#22c55e' : lc.includes('gris') ? '#9ca3af' : lc.includes('orange') ? '#f97316' : lc.includes('violet') ? '#7c3aed' : lc.includes('marron') || lc.includes('brun') ? '#92400e' : lc.includes('jaune') ? '#eab308' : lc.includes('beige') || lc.includes('creme') ? '#d4b896' : '#d1d5db';
+      const fg = (lc.includes('blanc') || lc.includes('gris') || lc.includes('beige') || lc.includes('jaune')) ? '#333' : 'white';
+      return `<span style="display:inline-block;background:${bg};color:${fg};border-radius:20px;padding:2px 9px;font-size:8px;font-weight:700">${c}</span>`;
+    };
+
+    const thGrad = 'background:linear-gradient(135deg,#460186,#D2396D)';
+    const thStyle = `padding:6px 8px;text-align:center;${thGrad};color:white;font-size:9px;font-weight:700;white-space:nowrap`;
+    const thLeftStyle = `padding:6px 10px;text-align:left;${thGrad};color:white;font-size:9px;font-weight:700`;
     let tbody = '';
     let prevDesign = null;
     rows.forEach((r, i) => {
       const isNew = r.design !== prevDesign;
       const bg = i % 2 === 0 ? '#f9f7ff' : 'white';
-      const borderTop = isNew && i > 0 ? 'border-top:2px solid #460186' : 'border-top:1px solid #e8e0f8';
+      const borderTop = isNew && i > 0 ? 'border-top:2px solid #c4b5e8' : 'border-top:1px solid #ede8f8';
       tbody += `<tr style="background:${bg};${borderTop}">
-        <td style="padding:5px 8px;font-weight:${isNew?'700':'400'};color:#1a0030;font-size:9px">${isNew ? r.design : ''}</td>
-        <td style="padding:5px 8px;font-size:9px;color:#333">${r.couleur}</td>
-        <td style="padding:5px 8px;text-align:center;font-weight:800;font-size:11px;color:#460186">${r.total}</td>
+        <td style="padding:6px 10px;font-weight:${isNew?'700':'400'};color:#1a0030;font-size:9px;border-right:1px solid #ede8f8">${isNew ? r.design : ''}</td>
+        <td style="padding:5px 8px;font-size:9px">${couleurBadgePdf(r.couleur)}</td>
+        <td style="padding:5px 8px;text-align:center;font-weight:800;font-size:12px;color:#1a0030">${r.total}</td>
         ${taillesPresentes.map(t => {
           const q = r.tailles[t] || 0;
           return q ? `<td style="padding:5px 8px;text-align:center;font-weight:700;font-size:9px;color:#460186">${q}</td>`
@@ -10362,32 +10371,35 @@ function btqaExportDesignPDF() {
       prevDesign = r.design;
     });
     const totalRow = `<tr style="border-top:2px solid #460186;background:#ede8ff">
-      <td style="padding:6px 8px;font-weight:800;font-size:9px;color:#460186">TOTAL</td>
+      <td style="padding:7px 10px;font-weight:800;font-size:9px;color:#460186">TOTAL</td>
       <td></td>
-      <td style="padding:6px 8px;text-align:center;font-weight:900;font-size:12px;color:#460186">${totalGeneral}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:900;font-size:13px;color:#460186">${totalGeneral}</td>
       ${taillesPresentes.map(t => {
         const s = rows.reduce((acc,r) => acc + (r.tailles[t]||0), 0);
-        return s ? `<td style="padding:6px 8px;text-align:center;font-weight:800;font-size:9px;color:#460186">${s}</td>`
-                 : `<td style="padding:6px 8px;text-align:center;font-size:9px;color:#ccc">—</td>`;
+        return s ? `<td style="padding:7px 8px;text-align:center;font-weight:800;font-size:9px;color:#460186">${s}</td>`
+                 : `<td style="padding:7px 8px;text-align:center;font-size:9px;color:#ccc">—</td>`;
       }).join('')}
     </tr>`;
 
-    const tableHtml = `<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif">
-      <thead><tr>
-        <th style="${thLeftStyle}">Design</th>
-        <th style="${thLeftStyle}">Couleur</th>
-        <th style="${thStyle}">Total</th>
-        ${taillesPresentes.map(t => `<th style="${thStyle}">${t}</th>`).join('')}
-      </tr></thead>
-      <tbody>${tbody}${totalRow}</tbody>
-    </table>`;
+    const tableHtml = `<div style="border-radius:12px;overflow:hidden;border:1.5px solid #e0d8f0">
+      <div style="background:linear-gradient(135deg,#460186,#D2396D,#FF741F);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:13px;font-weight:900;color:white;letter-spacing:.3px">Collection Be Art — Par design &amp; couleur</span>
+        <span style="background:rgba(255,255,255,.25);border-radius:20px;padding:2px 12px;font-size:11px;font-weight:700;color:white">${totalGeneral} pièces</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif">
+        <thead><tr>
+          <th style="${thLeftStyle}">Design</th>
+          <th style="${thLeftStyle}">Couleur</th>
+          <th style="${thStyle}">Total</th>
+          ${taillesPresentes.map(t => `<th style="${thStyle}">${t}</th>`).join('')}
+        </tr></thead>
+        <tbody>${tbody}${totalRow}</tbody>
+      </table>
+    </div>`;
 
     const el = document.createElement('div');
     el.style.cssText = 'width:277mm;margin:0 auto;background:white;padding:2mm 4mm 4mm;font-family:Arial,sans-serif';
-    el.innerHTML = `<div style="margin-bottom:8px">
-      <span style="font-size:13px;font-weight:900;color:#460186">Collection Be Art — Bon de commande fournisseur</span>
-      <span style="font-size:9px;color:#888;margin-left:12px">${totalGeneral} pièces · Généré le ${date}</span>
-    </div>${tableHtml}`;
+    el.innerHTML = tableHtml;
     document.body.appendChild(el);
 
     const filename = `commande-fournisseur-be-art-${new Date().toISOString().slice(0,10)}.pdf`;
