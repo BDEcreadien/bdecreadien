@@ -11380,13 +11380,19 @@ async function btqaRenderConfigProduits() {
 }
 
 // ── Helpers designs inline ───────────────────────────────────
+function btqaToRawGhUrl(url) {
+  if (!url) return url;
+  if (url.includes('bdecreadien.fr/images/')) return url.replace('https://bdecreadien.fr/', `https://raw.githubusercontent.com/${REPO}/main/`);
+  return url;
+}
 function btqaImgPickerHtml(idx, cKey, colorName, side, url, label) {
   const id = `dp-${idx}-${cKey}-${side}`;
+  const previewUrl = btqaToRawGhUrl(url);
   return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
     <div style="font-size:10px;color:#666;font-weight:600">${label}</div>
     <div class="btqa-img-picker">
       <div class="btqa-img-preview-wrap" id="${id}-w" style="${url ? '' : 'display:none'}">
-        <img src="${url}" id="${id}-img" class="btqa-img-preview-img">
+        <img src="${previewUrl}" id="${id}-img" class="btqa-img-preview-img">
         <button type="button" class="btqa-img-clear" onclick="btqaClearImg('${id}-v','${id}-w')">✕</button>
       </div>
       <input type="hidden" id="${id}-v" value="${url}" data-color-name="${colorName.replace(/"/g,'&quot;')}" data-side="${side}">
