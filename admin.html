@@ -11519,7 +11519,7 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
       try { const m = new URL(oldUrl).pathname.match(/\/object\/public\/annonces\/(.+)/); if (m?.[1]) Auth.sb.storage.from('annonces').remove([m[1]]).catch(() => {}); } catch (_) {}
     }
     // Supprimer l'ancienne image GitHub si elle était dans images/boutique
-    if (oldUrl && oldUrl.includes('bdecreadien.fr/images/boutique/')) {
+    if (oldUrl && (oldUrl.includes('bdecreadien.fr/images/boutique/') || oldUrl.includes('raw.githubusercontent.com'))) {
       btqaDeleteGhImage(oldUrl).catch(() => {});
     }
     document.getElementById(hiddenId).value = url;
