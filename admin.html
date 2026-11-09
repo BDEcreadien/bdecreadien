@@ -2114,6 +2114,7 @@
     <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #e0d8f0">
       <button id="btqr-sub-recap" onclick="btqaSubTab('recap')" style="padding:8px 20px;border:none;background:none;font-weight:800;font-size:13px;color:#460186;border-bottom:3px solid #460186;margin-bottom:-2px;cursor:pointer">Récap stock</button>
       <button id="btqr-sub-detail" onclick="btqaSubTab('detail')" style="padding:8px 20px;border:none;background:none;font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer">Détail commandes</button>
+      <button id="btqr-sub-design" onclick="btqaSubTab('design')" style="padding:8px 20px;border:none;background:none;font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer">Par design — fournisseur</button>
       <button id="btqr-export-btn" onclick="btqaExportRecapPDF()" style="margin-left:auto;padding:7px 16px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">⬇ Export PDF récap</button>
     </div>
 
@@ -2125,6 +2126,11 @@
     <!-- Sous-vue Détail par commande -->
     <div id="btqr-view-detail" style="display:none">
       <div id="btqr-detail-body"></div>
+    </div>
+
+    <!-- Sous-vue Par design (fournisseur) -->
+    <div id="btqr-view-design" style="display:none">
+      <div id="btqr-design-body"></div>
     </div>
 
   </div>
