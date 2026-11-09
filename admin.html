@@ -11440,10 +11440,11 @@ function btqaAddDesignRow() {
 }
 
 function btqaGalleryRowHtml(idx, imageUrl) {
+  const previewUrl = btqaToRawGhUrl(imageUrl);
   return `<div class="bp-gallery-row" data-idx="${idx}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
     <div class="btqa-img-picker" style="flex-shrink:0">
       <div class="btqa-img-preview-wrap" id="gp-w-${idx}" style="${imageUrl ? '' : 'display:none'}">
-        <img src="${imageUrl}" id="gp-img-${idx}" class="btqa-img-preview-img">
+        <img src="${previewUrl}" id="gp-img-${idx}" class="btqa-img-preview-img">
         <button type="button" class="btqa-img-clear" onclick="btqaClearImg('bp-gimg-${idx}','gp-w-${idx}')">✕</button>
       </div>
       <input type="hidden" id="bp-gimg-${idx}" value="${imageUrl}">
