@@ -11512,7 +11512,7 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     if (!blobRes.ok) throw new Error('Erreur GitHub blob');
     const { sha: blobSha } = await blobRes.json();
     await commitEntries([{ path: ghPath, blobSha }], `image boutique : ${filename}`);
-    const url = `https://bdecreadien.fr/${ghPath}`;
+    const url = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${ghPath}`;
     // Supprimer l'ancienne image si elle était dans Supabase Storage
     const oldUrl = document.getElementById(hiddenId).value;
     if (oldUrl && oldUrl.includes('supabase')) {
