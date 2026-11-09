@@ -461,7 +461,16 @@
         const div = document.createElement('div');
         div.className = 'bt-field';
         const lbl = f.label + (f.required ? ' *' : ' (facultatif)');
-        div.innerHTML = `<label for="bt-custom-${i}">${lbl}</label><input type="text" id="bt-custom-${i}" placeholder="${f.placeholder || ''}">`;
+        let input;
+        if (f.type === 'choice' && f.options?.length) {
+          input = `<select id="bt-custom-${i}" style="width:100%;padding:12px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:15px;background:white;outline:none;font-family:inherit;">
+            <option value="">— Choisir une option —</option>
+            ${f.options.map(o => `<option value="${o.replace(/"/g,'&quot;')}">${o}</option>`).join('')}
+          </select>`;
+        } else {
+          input = `<input type="text" id="bt-custom-${i}" placeholder="${f.placeholder || ''}">`;
+        }
+        div.innerHTML = `<label for="bt-custom-${i}">${lbl}</label>${input}`;
         customWrap.appendChild(div);
       });
 
