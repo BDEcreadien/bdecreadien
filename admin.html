@@ -12058,8 +12058,9 @@ async function btqaSaveProduit(id) {
     designs.push({ nom: n, images });
   });
 
-  // image_url = première photo de la galerie hors guide_taille
-  const imageUrl = images.find(i => i.type !== 'guide_taille')?.url || null;
+  // image_url = première photo de la galerie hors guide_taille (préserver l'existante si galerie vide)
+  const existingProd = id ? (_btqaProduits || []).find(p => p.id === id) : null;
+  const imageUrl = images.find(i => i.type !== 'guide_taille')?.url || existingProd?.image_url || null;
 
   // Lire les options payantes
   const options_payantes = [];
