@@ -78,11 +78,18 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } })
   }
 
-  await fetch('https://api.resend.com/emails', {
+  const resendRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
     body: JSON.stringify({ from: FROM, to: [to], subject, html }),
   })
+
+  if (!resendRes.ok) {
+    const errBody = await resendRes.text().catch(() => '(no body)')
+    console.error(`[auth-email-hook] Resend error ${resendRes.status} for ${actionType} → ${to}: ${errBody}`)
+  } else {
+    console.log(`[auth-email-hook] Email sent OK: ${actionType} → ${to}`)
+  }
 
   return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } })
 })
