@@ -11666,6 +11666,52 @@ async function btqaLookup() {
 
 let _btqaListBackHTML = null;
 let _btqaListMemberNames = {};
+let _btqaEditItems = {};
+let _btqaEditCurrent = { itemId: null, cmdId: null };
+
+function btqaOpenEditModal(itemId) {
+  const item = _btqaEditItems[itemId];
+  if (!item) return;
+  _btqaEditCurrent = { itemId, cmdId: item._cmdId };
+  document.getElementById('btqa-edit-item-nom').textContent = item.produit_nom + (item.design_nom ? ' - ' + item.design_nom : '');
+  document.getElementById('btqa-edit-item-taille').value = item.taille || '';
+  document.getElementById('btqa-edit-item-couleur').value = item.couleur || '';
+  document.getElementById('btqa-edit-item-qty').value = item.quantite || 1;
+  document.getElementById('btqa-edit-confirm-step').hidden = true;
+  document.getElementById('btqa-edit-action-step').hidden = false;
+  document.getElementById('btqa-edit-item-modal').classList.add('open');
+}
+function btqaCloseEditModal() {
+  document.getElementById('btqa-edit-item-modal').classList.remove('open');
+}
+function btqaAskConfirmEdit() {
+  const taille = document.getElementById('btqa-edit-item-taille').value;
+  const couleur = document.getElementById('btqa-edit-item-couleur').value.trim();
+  const qty = parseInt(document.getElementById('btqa-edit-item-qty').value) || 1;
+  const parts = [];
+  parts.push(taille ? `Taille : ${taille}` : 'Taille : —');
+  if (couleur) parts.push(`Couleur : ${couleur}`);
+  parts.push(`Quantité : ${qty}`);
+  document.getElementById('btqa-edit-confirm-text').textContent = parts.join(' · ');
+  document.getElementById('btqa-edit-confirm-step').hidden = false;
+  document.getElementById('btqa-edit-action-step').hidden = true;
+}
+function btqaBackToEdit() {
+  document.getElementById('btqa-edit-confirm-step').hidden = true;
+  document.getElementById('btqa-edit-action-step').hidden = false;
+}
+async function btqaDoSaveEdit() {
+  const { itemId, cmdId } = _btqaEditCurrent;
+  const taille = document.getElementById('btqa-edit-item-taille').value || null;
+  const couleur = document.getElementById('btqa-edit-item-couleur').value.trim() || null;
+  const quantite = parseInt(document.getElementById('btqa-edit-item-qty').value) || 1;
+  const sb = window.Auth.sb;
+  const { error } = await sb.from('boutique_items').update({ taille, couleur, quantite }).eq('id', itemId);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  btqaCloseEditModal();
+  showToast('Article modifié avec succès', 'success');
+  await btqaLookupById(cmdId);
+}
 async function btqaLookupById(id) {
   const memberName = _btqaListMemberNames?.[id] || null;
   const sb = window.Auth.sb;
