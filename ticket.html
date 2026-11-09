@@ -547,36 +547,37 @@
       cta.disabled = true;
       cta.innerHTML = '<span class="bt-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Redirection…';
 
-      // Sauvegarde inscription dans Supabase (avant HelloAsso pour ne pas perdre les données en cas d'abandon)
-      try {
-        let profilId = null;
-        try {
-          profilId = btGetCachedProfil()?._uid || null;
-        } catch (_) {}
-        const inscRow = {
-          billetterie_id: _cfg.id || null,
-          billetterie_slug: slug,
-          prenom: firstName,
-          nom: lastName,
-          email,
-          tel: tel || null,
-          classe: classe || null,
-          suggestions: suggestions || null,
-          tarif_id: t.id,
-          tarif_nom: t.nom,
-          quantite: _qty,
-          statut: 'en_attente',
-          custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
-          profil_id: profilId,
-        };
-        const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
-        if (inscError) console.error('[billetterie] inscription INSERT error:', inscError.message, inscError.code, inscError.hint);
-        // Mémoriser pour la page de confirmation
-        try { sessionStorage.setItem('_btInsc', JSON.stringify({ slug, email, profilId })); } catch (_) {}
-      } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
+      let profilId = null;
+      try { profilId = btGetCachedProfil()?._uid || null; } catch (_) {}
 
       const totalAmountCents = t.prix_centimes * _qty;
       const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
+
+      // Sauvegarde inscription dans Supabase (avant HelloAsso pour ne pas perdre les données en cas d'abandon)
+      // Pour les tarifs gratuits c'est la Pages Function qui insère directement avec statut 'confirmee'
+      if (totalAmountCents > 0) {
+        try {
+          const inscRow = {
+            billetterie_id: _cfg.id || null,
+            billetterie_slug: slug,
+            prenom: firstName,
+            nom: lastName,
+            email,
+            tel: tel || null,
+            classe: classe || null,
+            suggestions: suggestions || null,
+            tarif_id: t.id,
+            tarif_nom: t.nom,
+            quantite: _qty,
+            statut: 'en_attente',
+            custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
+            profil_id: profilId,
+          };
+          const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
+          if (inscError) console.error('[billetterie] inscription INSERT error:', inscError.message, inscError.code, inscError.hint);
+          try { sessionStorage.setItem('_btInsc', JSON.stringify({ slug, email, profilId })); } catch (_) {}
+        } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
+      }
 
       // ── Tarif gratuit : inscription directe sans HelloAsso ──
       if (totalAmountCents === 0) {
