@@ -10804,6 +10804,23 @@ function btqaShowDetail(id) {
   document.getElementById('btqa-detail-modal').style.display = 'flex';
 }
 
+function btqaToggleDetailEdit(id) {
+  const el = document.getElementById('btqa-detail-edit-' + id);
+  if (el) el.hidden = !el.hidden;
+}
+async function btqaSaveDetailEdit(id) {
+  const paiement = document.getElementById('btqa-detail-paiement-' + id)?.value || null;
+  const notes = document.getElementById('btqa-detail-notes-' + id)?.value.trim() || null;
+  const sb = window.Auth.sb;
+  const { error } = await sb.from('boutique_commandes').update({ moyen_paiement: paiement || null, notes: notes || null }).eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (c) { c.moyen_paiement = paiement; c.notes = notes; }
+  document.getElementById('btqa-detail-modal').style.display = 'none';
+  showToast('Commande mise a jour', 'success');
+  btqaFilterTable();
+}
+
 // ── Actions statut ───────────────────────────────────────────
 const _btqaEtapeLabels = { payee:'Paiement confirmé', production:'Production lancée', livraison:'En livraison', confirmee:'Récupérable à l\'école' };
 
