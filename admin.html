@@ -9980,7 +9980,7 @@ function btqaSubTab(sub) {
   document.getElementById('btqr-sub-recap').style.cssText   = sub === 'recap'  ? active : inactive;
   document.getElementById('btqr-sub-detail').style.cssText  = sub === 'detail' ? active : inactive;
   document.getElementById('btqr-sub-design').style.cssText  = sub === 'design' ? active : inactive;
-  if (sub === 'design') btqaRenderDesignFournisseur();
+  if (sub === 'design') { try { btqaRenderDesignFournisseur(); } catch(e) { document.getElementById('btqr-design-body').innerHTML = '<p style="color:red;padding:20px">Erreur JS : ' + e.message + '</p>'; } }
 }
 function btqaRenderDesignFournisseur() {
   const statuts = btqaRecapStatuts();
