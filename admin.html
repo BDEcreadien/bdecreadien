@@ -11525,12 +11525,12 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     const { sha: blobSha } = await blobRes.json();
     // Commit
     await commitEntries([{ path, blobSha }], `image boutique : ${filename}`);
-    // URL finale (bdecreadien.fr) sauvée en DB, raw.github pour preview immédiat
+    // URL finale (bdecreadien.fr) sauvée en DB
     const finalUrl = `https://bdecreadien.fr/${path}`;
-    const previewUrl = `https://raw.githubusercontent.com/${REPO}/main/${path}`;
     document.getElementById(hiddenId).value = finalUrl;
+    // Preview : data URL base64 directe → instantané, pas de dépendance CDN
     const imgEl = document.getElementById(previewImgId);
-    imgEl.src = previewUrl;
+    imgEl.src = `data:${webp.type};base64,${base64}`;
     document.getElementById(previewWrapId).style.display = '';
     showToast('Photo uploadée !', 'success');
   } catch(e) {
