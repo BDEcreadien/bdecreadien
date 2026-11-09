@@ -11524,7 +11524,7 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
     }
     document.getElementById(hiddenId).value = url;
     const img = document.getElementById(previewImgId);
-    img.src = url;
+    img.src = dataUrl;
     document.getElementById(previewWrapId).style.display = '';
     showToast('Photo uploadée !', 'success');
   } catch(e) {
