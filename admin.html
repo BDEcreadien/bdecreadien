@@ -9551,6 +9551,10 @@ async function bilRendreParticipants(existingData, billetterieId) {
                   ${isRejoint ? '✓ Rejoint' : 'Marquer rejoint'}
                 </button>
               </td>
+              <td style="padding:12px 16px;text-align:center;">
+                <button onclick="bilSupprimerInscription('${r.id}')" title="Supprimer"
+                  style="padding:4px 8px;border-radius:8px;border:1px solid #fca5a5;background:transparent;color:#dc2626;cursor:pointer;font-size:13px;line-height:1;">✕</button>
+              </td>
             </tr>`;
           }).join('')}
         </tbody>
