@@ -11571,11 +11571,19 @@ async function btqaDeleteProduit(id) {
   showToast('Produit supprimé');
 }
 
-// Supprime une image GitHub depuis son URL bdecreadien.fr
+// Supprime une image GitHub depuis son URL bdecreadien.fr ou raw.githubusercontent.com
 async function btqaDeleteGhImage(url) {
-  if (!url || !url.includes('bdecreadien.fr/images/')) return;
+  if (!url || (!url.includes('bdecreadien.fr/images/') && !url.includes('raw.githubusercontent.com'))) return;
   try {
-    const path = new URL(url).pathname.slice(1); // ex: images/boutique/xxx.webp
+    let path;
+    if (url.includes('raw.githubusercontent.com')) {
+      // https://raw.githubusercontent.com/BDEcreadien/bdecreadien/main/images/boutique/xxx.webp
+      const m = url.match(/raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[^/]+\/(.+)/);
+      if (!m) return;
+      path = m[1];
+    } else {
+      path = new URL(url).pathname.slice(1); // ex: images/boutique/xxx.webp
+    }
     const fileRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { headers: { Authorization: `token ${token}` } });
     if (!fileRes.ok) return;
     const { sha } = await fileRes.json();
