@@ -11763,7 +11763,7 @@ function btqaSelectTaille(val) {
 function btqaOpenEditModal(itemId) {
   const item = _btqaEditItems[itemId];
   if (!item) return;
-  _btqaEditCurrent = { itemId, cmdId: item._cmdId };
+  _btqaEditCurrent = { itemId, cmdId: item._cmdId, origin: item._origin || 'remise' };
   document.getElementById('btqa-edit-item-nom').textContent = item.produit_nom + (item.design_nom ? ' - ' + item.design_nom : '');
   btqaSelectTaille(item.taille || '');
   document.getElementById('btqa-edit-item-couleur').value = item.couleur || '';
