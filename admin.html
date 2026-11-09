@@ -9913,18 +9913,28 @@ function btqaShowDetailStats() {
     if (pa !== null) coutAchatCentimes += Math.round(pa * 100) * (it.quantite || 1);
   }));
   const totalEncaisse = totalLigne + totalPhysique;
+
+  // Frais SumUp 1,75% sur les ventes physiques payées en SumUp
+  const totalSumUp = payees.filter(c => c.type === 'physique' && c.moyen_paiement === 'sumup').reduce((s,c) => s + (c.total_centimes||0), 0);
+  const fraisSumUp = Math.round(totalSumUp * 0.0175);
+
   const margeBrute = totalEncaisse - coutAchatCentimes;
+  const margeNette = margeBrute - fraisSumUp;
   const tauxMarge = totalEncaisse > 0 ? Math.round(margeBrute / totalEncaisse * 100) : 0;
+  const tauxMargeNette = totalEncaisse > 0 ? Math.round(margeNette / totalEncaisse * 100) : 0;
 
   const rows = [
     ['Total en ligne',    btqaFmt(totalLigne)],
     ['Total en physique', btqaFmt(totalPhysique)],
+    ...(totalSumUp > 0 ? [['↳ dont SumUp', btqaFmt(totalSumUp)]] : []),
     ['Prix moyen panier', btqaFmt(prixMoyen)],
     ['Produit + vendu',   topProduit ? `${topProduit[0]} (×${topProduit[1]})` : '—'],
     ['Taux de conversion',`${tauxConv}%`],
-    null, // séparateur
+    null,
     ['Coût d\'achat',     btqaFmt(coutAchatCentimes)],
+    ...(fraisSumUp > 0 ? [['Frais SumUp (1,75%)', `<span style="color:#dc2626">−${btqaFmt(fraisSumUp)}</span>`]] : []),
     ['Marge brute',       `<span style="color:${margeBrute>=0?'#166534':'#dc2626'};font-weight:800">${btqaFmt(margeBrute)} (${tauxMarge}%)</span>`],
+    ...(fraisSumUp > 0 ? [['Marge nette', `<span style="color:${margeNette>=0?'#166534':'#dc2626'};font-weight:800">${btqaFmt(margeNette)} (${tauxMargeNette}%)</span>`]] : []),
   ];
 
   const existing = document.getElementById('btqa-detail-stats-modal');
