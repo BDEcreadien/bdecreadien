@@ -10824,30 +10824,6 @@ function btqaShowDetail(id) {
   document.getElementById('btqa-detail-modal').style.display = 'flex';
 }
 
-async function btqaAddFreeItem(cmdId) {
-  const nom = document.getElementById('btqa-add-nom-' + cmdId)?.value.trim();
-  if (!nom) { showToast('Renseigne le nom de l\'article', 'error'); return; }
-  const qty = parseInt(document.getElementById('btqa-add-qty-' + cmdId)?.value) || 1;
-  const taille = document.getElementById('btqa-add-taille-' + cmdId)?.value.trim() || null;
-  const sb = window.Auth.sb;
-  const { error } = await sb.from('boutique_items').insert({
-    commande_id: cmdId,
-    produit_nom: nom,
-    quantite: qty,
-    taille: taille || null,
-    prix_unitaire_centimes: 0,
-    est_offert: true
-  });
-  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
-  const { data } = await sb.from('boutique_commandes').select('*,boutique_items(*)').eq('id', cmdId).single();
-  if (data) {
-    const idx = _btqaCommandes.findIndex(x => x.id === cmdId);
-    if (idx >= 0) _btqaCommandes[idx] = data;
-    btqaShowDetail(cmdId);
-  }
-  showToast('Article ajoute', 'success');
-}
-
 function btqaToggleDetailEdit(id) {
   const el = document.getElementById('btqa-detail-edit-' + id);
   if (el) el.hidden = !el.hidden;
