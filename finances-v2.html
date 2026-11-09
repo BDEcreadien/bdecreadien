@@ -1171,6 +1171,7 @@ function initCharts() {
 }
 
 function updateCharts() {
+  if (!_chartSolde || !_chartCat) return;
   // Solde line chart: monthly running balance
   const groups = {};
   _all.sort((a,b) => a.date.localeCompare(b.date));
