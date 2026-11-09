@@ -676,7 +676,7 @@ function btqOpenModal(id) {
 
   const firstImg = thumbItems[0]?.img || '';
   const mainImgHtml = firstImg
-    ? `<img src="${firstImg}" alt="${p.nom}" id="btq-main-img">`
+    ? `<img src="${firstImg}" alt="${p.nom}" id="btq-main-img" onerror="btqImgOnerror(this)" data-fallback="${p.image_url||''}">`
     : `<span class="btq-modal-main-icon">${btqProdIcon(p)}</span>`;
 
   document.getElementById('btq-modal-inner').innerHTML = `
