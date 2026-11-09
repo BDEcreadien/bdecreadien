@@ -117,7 +117,7 @@ async function sendRewardEmail(carte, env) {
         </tr>
         <tr>
           <td style="background:#fff;padding:40px;">
-            <p style="margin:0 0 20px;font-size:17px;color:#1A1A2E;">Salut ${escapeHtml(carte.prenom)},</p>
+            <p style="margin:0 0 20px;font-size:17px;color:#1A1A2E;">Hello ${escapeHtml(carte.prenom)},</p>
             <p style="margin:0 0 20px;font-size:15px;color:#333;line-height:1.7;">Bravo, tu as rempli ta carte fidélité BDE CREAD ! 🎊<br>Ta récompense t'attend :</p>
             <div style="background:linear-gradient(135deg,#460186,#FF741F);border-radius:14px;padding:24px;text-align:center;color:#fff;margin:20px 0;">
               <p style="margin:0 0 6px;font-size:22px;font-weight:700;">-10% sur une soirée BDE</p>
