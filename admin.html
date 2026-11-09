@@ -11512,33 +11512,16 @@ async function btqaUploadImg(inputEl, hiddenId, previewImgId, previewWrapId, lbl
   const lbl = document.getElementById(lblId);
   if (lbl) { lbl.textContent = '⏳ Upload…'; lbl.classList.add('btqa-img-uploading'); }
   try {
-    // Upload via GitHub API — disponible immédiatement sur raw.github
     const webp = window.imageToWebp ? await window.imageToWebp(file, { maxWidth: 1200, quality: 0.85 }) : file;
-    const ext  = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const ext = webp.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2,7)}.${ext}`;
-    const path = `images/boutique/${filename}`;
-    // Lire en base64
-    const base64 = await new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = e => res(e.target.result.split(',')[1]);
-      r.onerror = rej;
-      r.readAsDataURL(webp);
-    });
-    // Créer le blob GitHub
-    const blobRes = await fetch(`https://api.github.com/repos/${REPO}/git/blobs`, {
-      method: 'POST', headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: base64, encoding: 'base64' })
-    });
-    if (!blobRes.ok) { const b = await blobRes.json(); throw new Error(`GitHub blob : ${b.message}`); }
-    const { sha: blobSha } = await blobRes.json();
-    // Commit
-    await commitEntries([{ path, blobSha }], `image boutique : ${filename}`);
-    // URL finale (bdecreadien.fr) sauvée en DB
-    const finalUrl = `https://bdecreadien.fr/${path}`;
-    document.getElementById(hiddenId).value = finalUrl;
-    // Preview : data URL base64 directe → instantané, pas de dépendance CDN
+    const sb = window.Auth.sb;
+    const { error } = await sb.storage.from('boutique').upload(filename, webp, { contentType: webp.type });
+    if (error) throw new Error(`Upload : ${error.message}`);
+    const { data: { publicUrl } } = sb.storage.from('boutique').getPublicUrl(filename);
+    document.getElementById(hiddenId).value = publicUrl;
     const imgEl = document.getElementById(previewImgId);
-    imgEl.src = `data:${webp.type};base64,${base64}`;
+    imgEl.src = publicUrl;
     document.getElementById(previewWrapId).style.display = '';
     showToast('Photo uploadée !', 'success');
   } catch(e) {
