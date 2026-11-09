@@ -9982,6 +9982,118 @@ function btqaSubTab(sub) {
   document.getElementById('btqr-sub-design').style.cssText  = sub === 'design' ? active : inactive;
   if (sub === 'design') btqaRenderDesignFournisseur();
 }
+function btqaRenderDesignFournisseur() {
+  const statuts = btqaRecapStatuts();
+  const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
+  const tailleOrder = ['XS','S','M','L','XL','XXL','2XL','3XL'];
+
+  // Agrège par design+couleur sur TOUS les modèles de "Be Art"
+  // Clé : design||couleur  → { design, couleur, tailles: { XS:0, S:0, ... }, total: 0 }
+  const map = {};
+  cmds.forEach(c => {
+    (c.boutique_items || []).forEach(it => {
+      const nom = it.produit_nom || '';
+      const sep = nom.indexOf(' - ');
+      const collection = sep > -1 ? nom.slice(0, sep) : 'Autre';
+      if (!collection.toLowerCase().includes('be art')) return;
+
+      const design  = it.design_nom || 'Sans design';
+      const couleur = it.couleur || '-';
+      const taille  = it.taille  || '-';
+      const qty     = it.quantite || 1;
+      const key     = design + '||' + couleur;
+
+      if (!map[key]) map[key] = { design, couleur, tailles: {}, total: 0 };
+      map[key].tailles[taille] = (map[key].tailles[taille] || 0) + qty;
+      map[key].total += qty;
+    });
+  });
+
+  const rows = Object.values(map).sort((a, b) => {
+    if (a.design !== b.design) return a.design.localeCompare(b.design, 'fr');
+    return a.couleur.localeCompare(b.couleur, 'fr');
+  });
+
+  if (!rows.length) {
+    document.getElementById('btqr-design-body').innerHTML = '<p style="color:#aaa;text-align:center;padding:32px">Aucun article Be Art</p>';
+    return;
+  }
+
+  // Trouver toutes les tailles présentes
+  const taillesPresentes = [...new Set(rows.flatMap(r => Object.keys(r.tailles)))]
+    .sort((a, b) => {
+      const ia = tailleOrder.indexOf(a.toUpperCase());
+      const ib = tailleOrder.indexOf(b.toUpperCase());
+      if (ia === -1 && ib === -1) return a.localeCompare(b);
+      if (ia === -1) return 1;
+      if (ib === -1) return -1;
+      return ia - ib;
+    });
+
+  const totalGeneral = rows.reduce((s, r) => s + r.total, 0);
+
+  // En-tête couleur design → couleur en badge coloré
+  const couleurBadge = (c) => {
+    const lc = c.toLowerCase();
+    const bg = lc.includes('noir') ? '#1a1a1a' : lc.includes('blanc') ? '#e8e8e8' : lc.includes('rose') ? '#f472b6' : lc.includes('rouge') ? '#ef4444' : lc.includes('bleu') ? '#3b82f6' : lc.includes('vert') ? '#22c55e' : lc.includes('gris') ? '#9ca3af' : lc.includes('orange') ? '#f97316' : lc.includes('violet') ? '#7c3aed' : '#d1d5db';
+    const fg = (lc.includes('blanc') || lc.includes('gris')) ? '#333' : 'white';
+    return `<span style="display:inline-block;background:${bg};color:${fg};border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;vertical-align:middle">${c}</span>`;
+  };
+
+  let html = `<div style="margin-bottom:28px">
+    <div style="background:linear-gradient(135deg,#460186,#D2396D);color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:16px;font-weight:900;letter-spacing:.5px">Collection Be Art — Par design &amp; couleur</span>
+      <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:700">${totalGeneral} pièces</span>
+    </div>
+    <div style="border:1.5px solid #e0d8f0;border-top:none;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#f0ebfa">
+            <th style="padding:9px 16px;text-align:left;font-weight:700;color:#460186;white-space:nowrap">Design</th>
+            <th style="padding:9px 12px;text-align:left;font-weight:700;color:#460186;white-space:nowrap">Couleur</th>
+            <th style="padding:9px 10px;text-align:center;font-weight:700;color:#460186;white-space:nowrap">Total</th>
+            ${taillesPresentes.map(t => `<th style="padding:9px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">${t}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>`;
+
+  let prevDesign = null;
+  rows.forEach((r, i) => {
+    const isNewDesign = r.design !== prevDesign;
+    const borderStyle = isNewDesign && i > 0 ? 'border-top:2px solid #e0d8f0' : 'border-top:1px solid #f0e8ff';
+    html += `<tr style="${borderStyle}">
+      <td style="padding:8px 16px;font-weight:700;color:#333;white-space:nowrap">${isNewDesign ? r.design : ''}</td>
+      <td style="padding:7px 12px;white-space:nowrap">${couleurBadge(r.couleur)}</td>
+      <td style="padding:7px 10px;text-align:center;font-weight:800;font-size:15px;color:#1a0030">${r.total}</td>
+      ${taillesPresentes.map(t => {
+        const q = r.tailles[t] || 0;
+        return q ? `<td style="padding:7px 8px;text-align:center;font-weight:700;color:#460186">${q}</td>`
+                 : `<td style="padding:7px 8px;text-align:center;color:#ddd">—</td>`;
+      }).join('')}
+    </tr>`;
+    prevDesign = r.design;
+  });
+
+  html += `</tbody>
+      <tfoot>
+        <tr style="border-top:2px solid #460186;background:#f8f5ff">
+          <td style="padding:9px 16px;font-weight:800;color:#460186">TOTAL</td>
+          <td></td>
+          <td style="padding:9px 10px;text-align:center;font-weight:900;font-size:16px;color:#460186">${totalGeneral}</td>
+          ${taillesPresentes.map(t => {
+            const s = rows.reduce((acc, r) => acc + (r.tailles[t] || 0), 0);
+            return s ? `<td style="padding:9px 8px;text-align:center;font-weight:800;color:#460186">${s}</td>`
+                     : `<td style="padding:9px 8px;text-align:center;color:#ddd">—</td>`;
+          }).join('')}
+        </tr>
+      </tfoot>
+    </table>
+    </div>
+  </div>`;
+
+  document.getElementById('btqr-design-body').innerHTML = html;
+}
+
 function btqaRenderRecap() {
   const statuts = btqaRecapStatuts();
   const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
