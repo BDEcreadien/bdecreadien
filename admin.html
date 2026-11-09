@@ -11326,7 +11326,7 @@ async function btqaRenderConfigProduits() {
       return `<div class="btqa-prod-card" draggable="true" data-id="${p.id}">
         <div class="btqa-prod-card-img">
           <span class="btqa-prod-drag-handle">⠿</span>
-          ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}">` : `<span class="btqa-prod-card-icon">${icon}</span>`}
+          ${p.image_url ? `<img src="${btqaToRawGhUrl(p.image_url)}" alt="${p.nom}">` : `<span class="btqa-prod-card-icon">${icon}</span>`}
           <div class="btqa-prod-card-status" style="background:${p.actif?'#10b981':'#ef4444'}"></div>
           <div class="btqa-prod-card-price-badge">${btqaFmt(p.prix_centimes)}</div>
         </div>
