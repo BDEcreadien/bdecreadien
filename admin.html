@@ -1977,6 +1977,40 @@
     </div>
   </div>
 
+  <!-- Modal modifier article commande -->
+  <div class="btqa-prod-modal-overlay" id="btqa-edit-item-modal" onclick="if(event.target===this)btqaCloseEditModal()">
+    <div class="btqa-prod-modal" style="width:420px;max-width:95vw">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h4 style="margin:0;font-size:17px">✏️ Modifier l'article</h4>
+        <button onclick="btqaCloseEditModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+      </div>
+      <p id="btqa-edit-item-nom" style="font-weight:700;font-size:14px;margin:0 0 16px;padding:10px;background:#f8f5ff;border-radius:8px"></p>
+      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Taille</label>
+      <select id="btqa-edit-item-taille" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;margin-bottom:14px;outline:none;background:white">
+        <option value="">— Sans taille —</option>
+        <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
+        <option value="L">L</option><option value="XL">XL</option><option value="XXL">XXL</option>
+        <option value="2XL">2XL</option><option value="3XL">3XL</option>
+      </select>
+      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Couleur</label>
+      <input id="btqa-edit-item-couleur" type="text" placeholder="ex: Blanc" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
+      <label style="font-size:12px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Quantité</label>
+      <input id="btqa-edit-item-qty" type="number" min="1" max="99" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:20px;outline:none">
+      <div id="btqa-edit-confirm-step" hidden>
+        <div style="background:#fef3c7;border:1.5px solid #fbbf24;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#92400e">
+          <strong>Confirmer la modification ?</strong><br><span id="btqa-edit-confirm-text"></span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="btqaDoSaveEdit()" style="flex:1;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Confirmer</button>
+          <button onclick="btqaBackToEdit()" style="flex:1;padding:12px;background:white;color:#460186;border:1.5px solid #e0d8f0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer">Modifier encore</button>
+        </div>
+      </div>
+      <div id="btqa-edit-action-step">
+        <button onclick="btqaAskConfirmEdit()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Modifier</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal sélection produit physique -->
   <div class="btqa-prod-modal-overlay" id="btqa-prod-modal-overlay" onclick="if(event.target===this)btqaCloseProdModal()">
     <div class="btqa-prod-modal">
