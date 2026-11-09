@@ -10742,7 +10742,7 @@ function btqaShowDetail(id) {
   const c = _btqaCommandes.find(x => x.id === id);
   if (!c) return;
   const items = c.boutique_items || [];
-  items.forEach(i => { _btqaEditItems[i.id] = { ...i, _cmdId: c.id }; });
+  items.forEach(i => { _btqaEditItems[i.id] = { ...i, _cmdId: c.id, _origin: 'detail' }; });
   const card = document.getElementById('btqa-detail-card');
   card.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
