@@ -9366,7 +9366,7 @@ async function bilPromoCharger(slug) {
   document.getElementById('bil-promo-msg').textContent = '';
   if (!slug) return;
   const { data } = await Auth.sb.from('billetterie_codes_promo').select('*').eq('billetterie_slug', slug).order('created_at');
-  _bilPromos = (data || []).map(r => ({ ...r, valeur: r.type === 'fixed' ? r.valeur / 100 : r.valeur }));
+  _bilPromos = (data || []).map(r => ({...r}));
   bilPromoRender();
 }
 
