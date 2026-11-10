@@ -160,9 +160,40 @@
       .auth-card { padding:32px 20px; }
       .auth-row { grid-template-columns:1fr; }
     }
+  /* ── Popup succès inscription ── */
+  #insc-success-overlay {
+    display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;
+    background:rgba(10,0,20,.6);backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;padding:20px;
+  }
+  #insc-success-overlay.open { display:flex; }
+  #insc-success-card {
+    background:white;border-radius:24px;max-width:400px;width:100%;
+    padding:40px 32px;text-align:center;
+    box-shadow:0 20px 60px rgba(70,1,134,.25);
+    animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+  #insc-success-card .check-circle {
+    width:72px;height:72px;border-radius:50%;
+    background:linear-gradient(135deg,#460186,#D2396D);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  }
   </style>
 </head>
 <body>
+
+<!-- ── Popup succès inscription ── -->
+<div id="insc-success-overlay">
+  <div id="insc-success-card">
+    <div class="check-circle">
+      <svg width="34" height="34" fill="none" viewBox="0 0 24 24"><path d="M5 12l5 5L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 style="margin:0 0 10px;font-size:22px;font-weight:800;color:#1a0030;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px">Inscription validée !</h2>
+    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#666">Un email de confirmation avec ton billet te sera envoyé dans quelques minutes.<br>Pense à vérifier tes spams.</p>
+    <button onclick="document.getElementById('insc-success-overlay').classList.remove('open')" style="width:100%;padding:14px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">Super !</button>
+  </div>
+</div>
 
   <div class="bt-hero">
     <img src="/assets/Logo-nav.png" alt="BDE CREAD Lyon" class="bt-hero-logo">
