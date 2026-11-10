@@ -34,15 +34,13 @@ export async function onRequestPost({ request, env }) {
     return json({ valid: false, message: 'Ce code a atteint son nombre maximum d\'utilisations.' });
   }
 
-  // Pour fixed : DB stocke des euros, ticket.html calcule en centimes → on retourne centimes
-  const valeurPourClient = promo.type === 'fixed' ? Math.round(promo.valeur * 100) : promo.valeur;
   return json({
     valid: true,
     id:    promo.id,
     type:  promo.type,
-    valeur: valeurPourClient,
+    valeur: promo.valeur,
     message: promo.type === 'percent'
       ? `-${promo.valeur}%`
-      : `-${Number(promo.valeur).toFixed(2).replace('.', ',')} €`,
+      : `-${(promo.valeur / 100).toFixed(2).replace('.', ',')} €`,
   });
 }
