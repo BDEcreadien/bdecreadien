@@ -9491,7 +9491,6 @@ function bilOnChange() {
   b.max_par_acheteur = parseInt(document.getElementById('bil-e-max').value, 10) || 4;
   b.cta_texte = document.getElementById('bil-e-cta').value;
   b.actif = document.getElementById('bil-e-actif').checked;
-  b.remise_boutique_centimes = Math.round((parseFloat(document.getElementById('bil-e-remise').value) || 0) * 100);
   // Formulaire participants
   const fc = {};
   if (!document.getElementById('bil-fc-tel').checked) fc.tel = false;
