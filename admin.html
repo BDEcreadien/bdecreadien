@@ -9249,7 +9249,6 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-max').value = b.max_par_acheteur || 4;
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
   document.getElementById('bil-e-actif').checked = !!b.actif;
-  document.getElementById('bil-e-remise').value = b.remise_boutique_centimes ? b.remise_boutique_centimes / 100 : '';
   // Formulaire participants
   const fc = b.formulaire_champs || {};
   document.getElementById('bil-fc-tel').checked = fc.tel !== false;
