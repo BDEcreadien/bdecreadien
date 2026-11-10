@@ -9276,6 +9276,7 @@ function bilRemplirEditor() {
   const urlPrev = document.getElementById('bil-e-url-preview');
   if (urlPrev) urlPrev.textContent = b.slug ? `${location.origin}/billetterie/${b.slug}` : '-';
   bilRenderTarifs();
+  bilPromoCharger(b.slug);
   bilRefreshPreview();
 }
 
