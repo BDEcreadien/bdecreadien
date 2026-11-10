@@ -9420,19 +9420,19 @@ async function bilPromoSauvegarder() {
   const btn = document.getElementById('bil-promo-save-btn');
   const msg = document.getElementById('bil-promo-msg');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const SB = window._SB_URL || 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
-  const KEY = window._SB_ROLE || SUPABASE_ANON;
-  const h = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
   let ok = true;
   for (const p of _bilPromos) {
     if (!p.code) continue;
     try {
       if (p._deleted && p.id) {
-        await fetch(`${SB}/rest/v1/billetterie_codes_promo?id=eq.${p.id}`, { method: 'DELETE', headers: h });
+        const { error } = await Auth.sb.from('billetterie_codes_promo').delete().eq('id', p.id);
+        if (error) ok = false;
       } else if (p._new) {
-        await fetch(`${SB}/rest/v1/billetterie_codes_promo`, { method: 'POST', headers: h, body: JSON.stringify({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null, actif: true }) });
+        const { error } = await Auth.sb.from('billetterie_codes_promo').insert({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null, actif: true });
+        if (error) ok = false;
       } else if (p.id) {
-        await fetch(`${SB}/rest/v1/billetterie_codes_promo?id=eq.${p.id}`, { method: 'PATCH', headers: h, body: JSON.stringify({ code: p.code.toUpperCase(), type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null }) });
+        const { error } = await Auth.sb.from('billetterie_codes_promo').update({ code: p.code.toUpperCase(), type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null }).eq('id', p.id);
+        if (error) ok = false;
       }
     } catch (e) { ok = false; }
   }
