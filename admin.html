@@ -9418,7 +9418,8 @@ async function bilPromoSauvegarder() {
         const { error } = await Auth.sb.from('billetterie_codes_promo').delete().eq('id', p.id);
         if (error) ok = false;
       } else if (p._new) {
-        const { error } = await Auth.sb.from('billetterie_codes_promo').insert({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null, actif: true });
+        const valeurDb = p.type === 'fixed' ? Math.round(p.valeur * 100) : Math.round(p.valeur);
+        const { error } = await Auth.sb.from('billetterie_codes_promo').insert({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: valeurDb, max_utilisations: p.max_utilisations || null, actif: true });
         if (error) ok = false;
       } else if (p.id) {
         const { error } = await Auth.sb.from('billetterie_codes_promo').update({ code: p.code.toUpperCase(), type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null }).eq('id', p.id);
