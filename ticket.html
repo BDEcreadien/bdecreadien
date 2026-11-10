@@ -550,11 +550,54 @@
     function renderTotal() {
       const t = _cfg.tarifs.find(x => x.id === _tarifSelId);
       if (!t) return;
-      const total = t.prix_centimes * _qty;
-      document.getElementById('bt-total-val').textContent = total === 0 ? 'Gratuit' : fmt(total);
-      document.getElementById('bt-total-detail').textContent = `${_qty} × ${total === 0 ? 'Gratuit' : fmt(t.prix_centimes)} · ${esc(t.nom)}`;
+      const baseTotal = t.prix_centimes * _qty;
+      let finalTotal = baseTotal;
+      if (_promo && baseTotal > 0) {
+        if (_promo.type === 'percent') finalTotal = Math.round(baseTotal * (1 - _promo.valeur / 100));
+        else finalTotal = Math.max(0, baseTotal - _promo.valeur);
+      }
+      const isGratuit = finalTotal === 0;
+      document.getElementById('bt-total-val').textContent = isGratuit ? 'Gratuit' : fmt(finalTotal);
+      let detail = `${_qty} × ${baseTotal === 0 ? 'Gratuit' : fmt(t.prix_centimes)} · ${esc(t.nom)}`;
+      if (_promo && baseTotal > 0) detail += ` (code promo : ${document.getElementById('bt-promo-input').value.trim().toUpperCase()})`;
+      document.getElementById('bt-total-detail').textContent = detail;
       const cta = document.getElementById('bt-cta');
-      if (cta) cta.textContent = total === 0 ? 'S\'inscrire gratuitement' : 'Réserver ma place';
+      if (cta) cta.textContent = isGratuit ? 'S\'inscrire gratuitement' : 'Réserver ma place';
+      // Afficher le bloc promo seulement pour les events payants
+      const hasPayant = _cfg.tarifs.some(x => x.prix_centimes > 0);
+      document.getElementById('bt-promo-wrap').style.display = hasPayant ? '' : 'none';
+    }
+
+    async function btCheckPromo() {
+      const code = document.getElementById('bt-promo-input').value.trim();
+      const btn = document.getElementById('bt-promo-btn');
+      const msg = document.getElementById('bt-promo-msg');
+      if (!code) return;
+      btn.disabled = true; btn.textContent = '…';
+      const res = await fetch('/api/billetterie-check-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, slug }),
+      }).catch(() => null);
+      btn.disabled = false; btn.textContent = 'Appliquer';
+      if (!res || !res.ok) { msg.style.color = '#f87171'; msg.textContent = 'Erreur réseau.'; return; }
+      const data = await res.json();
+      if (!data.valid) {
+        msg.style.color = '#f87171';
+        msg.textContent = data.message || 'Code invalide.';
+        _promo = null;
+      } else {
+        msg.style.color = '#4ade80';
+        msg.textContent = `✓ Code appliqué : ${data.message}`;
+        _promo = { id: data.id, type: data.type, valeur: data.valeur };
+      }
+      renderTotal();
+    }
+
+    function btPromoReset() {
+      _promo = null;
+      document.getElementById('bt-promo-msg').textContent = '';
+      renderTotal();
     }
 
     function showError(msg) {
