@@ -647,7 +647,12 @@
       let profilId = null;
       try { profilId = btGetCachedProfil()?._uid || null; } catch (_) {}
 
-      const totalAmountCents = t.prix_centimes * _qty;
+      const baseAmountCents = t.prix_centimes * _qty;
+      let totalAmountCents = baseAmountCents;
+      if (_promo && baseAmountCents > 0) {
+        if (_promo.type === 'percent') totalAmountCents = Math.round(baseAmountCents * (1 - _promo.valeur / 100));
+        else totalAmountCents = Math.max(0, baseAmountCents - _promo.valeur);
+      }
       const itemName = `${_qty} × ${t.nom} — ${_cfg.titre}`;
 
       // Sauvegarde inscription dans Supabase (avant HelloAsso pour ne pas perdre les données en cas d'abandon)
