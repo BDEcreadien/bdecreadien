@@ -60,15 +60,17 @@ export async function onRequest({ request, env }) {
     : null;
 
   const eventInfoBlock = (dateAffiche || lieuAffiche) ? `
-    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:16px;flex-wrap:wrap;">
-      ${dateAffiche ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Date</span><span style="font-size:14px;font-weight:700;color:#460186">${dateAffiche}</span></div>` : ''}
-      ${lieuAffiche ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Lieu</span><span style="font-size:14px;font-weight:700;color:#460186">${lieuAffiche}</span></div>` : ''}
-      ${tarifNom ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
-      <div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Montant</span><span style="font-size:14px;font-weight:700;color:#460186">${montant}</span></div>
+    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+      ${dateAffiche ? `<div style="flex:1;min-width:130px;padding-right:18px;${lieuAffiche ? 'border-right:2px solid #e9d5ff;margin-right:18px;' : ''}"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Date</span><span style="font-size:14px;font-weight:700;color:#460186">${dateAffiche}</span></div>` : ''}
+      ${lieuAffiche ? `<div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Lieu</span><span style="font-size:14px;font-weight:700;color:#460186">${lieuAffiche}</span></div>` : ''}
+    </div>
+    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+      ${tarifNom ? `<div style="flex:1;min-width:130px;padding-right:18px;border-right:2px solid #e9d5ff;margin-right:18px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
+      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Montant payé</span><span style="font-size:14px;font-weight:700;color:#460186">${montant}</span></div>
     </div>` : `
-    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;">
-      ${tarifNom ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
-      <div style="margin-top:${tarifNom ? '10px' : '0'}"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Montant payé</span><span style="font-size:22px;font-weight:800;color:#460186">${montant}</span></div>
+    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+      ${tarifNom ? `<div style="flex:1;min-width:130px;padding-right:18px;border-right:2px solid #e9d5ff;margin-right:18px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
+      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Montant payé</span><span style="font-size:22px;font-weight:800;color:#460186">${montant}</span></div>
     </div>`;
 
   const qrBlock = qrUrl ? `
@@ -86,7 +88,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:30px;font-weight:900;letter-spacing:1px;font-family:Impact,'Arial Narrow',Arial,sans-serif">${titre.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px">
-    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Bonjour ${prenom} !</p>
+    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Hello ${prenom} !</p>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#444">
       Merci pour ton inscription à <strong>${titre}</strong> —
       on a hâte que l'événement arrive, ce sera une première à ne pas manquer !
