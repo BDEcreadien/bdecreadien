@@ -706,6 +706,7 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+          if (_promo) fetch('/api/billetterie-use-promo', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ promo_id: _promo.id }) }).catch(()=>{});
           document.getElementById('insc-success-overlay').classList.add('open');
         } catch (e) {
           console.error(e);
