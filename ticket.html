@@ -280,20 +280,14 @@
 
         <!-- Code promo -->
         <div id="bt-promo-wrap" style="display:none;margin-bottom:16px;">
-          <div style="background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.18);border-radius:14px;padding:14px 16px;">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
-              <span style="font-size:16px;">🏷️</span>
-              <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;">Code promo</span>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <input id="bt-promo-input" type="text" placeholder="Entre ton code ici..." autocomplete="off" autocapitalize="characters"
-                style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-family:inherit;font-size:14px;outline:none;letter-spacing:1px;font-weight:600;"
-                oninput="btPromoReset()" onkeydown="if(event.key==='Enter'){event.preventDefault();btCheckPromo();}">
-              <button type="button" onclick="btCheckPromo()" id="bt-promo-btn"
-                style="padding:11px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,#460186,#D2396D);color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;letter-spacing:.3px;">Appliquer</button>
-            </div>
-            <div id="bt-promo-msg" style="font-size:12px;margin-top:8px;min-height:16px;"></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="bt-promo-input" type="text" placeholder="🏷️  Code promo" autocomplete="off" autocapitalize="characters"
+              style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid #e2d9f3;background:#f8f5ff;color:#1a0030;font-family:inherit;font-size:14px;outline:none;letter-spacing:.5px;"
+              oninput="btPromoReset()" onkeydown="if(event.key==='Enter'){event.preventDefault();btCheckPromo();}">
+            <button type="button" onclick="btCheckPromo()" id="bt-promo-btn"
+              style="padding:11px 18px;border-radius:10px;border:none;background:#460186;color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">Appliquer</button>
           </div>
+          <div id="bt-promo-msg" style="font-size:12px;margin-top:7px;min-height:16px;"></div>
         </div>
 
         <div class="bt-total-box">
