@@ -9375,12 +9375,8 @@ async function bilPromoCharger(slug) {
   document.getElementById('bil-promo-list').innerHTML = '';
   document.getElementById('bil-promo-msg').textContent = '';
   if (!slug) return;
-  const SB = window._SB_URL || 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
-  const KEY = window._SB_KEY || SUPABASE_ANON;
-  const rows = await fetch(`${SB}/rest/v1/billetterie_codes_promo?billetterie_slug=eq.${encodeURIComponent(slug)}&order=created_at.asc`, {
-    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }
-  }).then(r => r.json()).catch(() => []);
-  _bilPromos = Array.isArray(rows) ? rows.map(r => ({...r})) : [];
+  const { data } = await Auth.sb.from('billetterie_codes_promo').select('*').eq('billetterie_slug', slug).order('created_at');
+  _bilPromos = (data || []).map(r => ({...r}));
   bilPromoRender();
 }
 
