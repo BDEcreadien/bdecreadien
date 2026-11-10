@@ -2,425 +2,305 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scan fidélité — BDE CREAD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Scanner Billetterie — BDE</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0a0812;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .card {
-      background: #0f0d1a;
-      border-radius: 20px;
-      padding: 32px 28px;
-      max-width: 360px;
-      width: 100%;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-    .logo { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 14px; display: block; }
-    h1 { font-size: 20px; font-weight: 600; color: white; margin-bottom: 6px; }
-    .sub { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 24px; line-height: 1.5; }
-    .nom { font-size: 26px; font-weight: 600; color: white; margin-bottom: 4px; }
-    .tampons { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
-    .progress { display: flex; gap: 5px; margin-bottom: 24px; }
-    .bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); }
-    .bar.active { background: linear-gradient(90deg, #460186, #FF741F); }
-    .btn {
-      width: 100%;
-      padding: 15px;
-      border-radius: 14px;
-      border: none;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, #460186, #D2396D, #FF741F);
-      color: white;
-      margin-bottom: 10px;
-      transition: opacity 0.2s;
-    }
-    .btn:active { opacity: 0.82; }
-    .btn:disabled { opacity: 0.35; cursor: default; }
-    .btn-secondary {
-      background: rgba(255,255,255,0.07);
-      color: rgba(255,255,255,0.45);
-      font-size: 14px;
-      padding: 12px;
-    }
-    .btn-ghost {
-      background: none;
-      color: rgba(255,255,255,0.25);
-      font-size: 12px;
-      padding: 8px;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 4px;
-    }
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1.5px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      font-size: 16px;
-      margin-bottom: 12px;
-      outline: none;
-      font-family: inherit;
-      text-align: center;
-      letter-spacing: 3px;
-    }
-    input:focus { border-color: #460186; }
-    input.field-normal { text-align: left; letter-spacing: normal; }
-    /* Pavé numérique */
-    .pin-display {
-      display: flex; justify-content: center; gap: 14px;
-      margin: 8px 0 20px;
-    }
-    .pin-dot {
-      width: 14px; height: 14px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.25);
-      background: transparent;
-      transition: all .15s;
-    }
-    .pin-dot.filled {
-      background: linear-gradient(135deg, #460186, #FF741F);
-      border-color: transparent;
-    }
-    .keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .key {
-      padding: 18px 0;
-      border-radius: 14px;
-      border: none;
-      background: rgba(255,255,255,0.06);
-      color: white;
-      font-size: 22px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .12s, transform .06s;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    .key:active { background: rgba(255,255,255,0.14); transform: scale(0.96); }
-    .key.action { background: rgba(255,255,255,0.03); font-size: 18px; color: rgba(255,255,255,0.55); }
-    .key.invisible { visibility: hidden; }
-    .badge { display: inline-block; padding: 4px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
-    .badge-offert { background: linear-gradient(135deg, #460186, #FF741F); color: white; }
-    .icon { font-size: 44px; margin-bottom: 10px; }
-    #screen-login, #screen-carte, #screen-success, #screen-error, #screen-loading { display: none; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0a0010; color:white; overflow:hidden; height:100dvh; }
+
+    /* ── Auth ── */
+    #auth-screen { position:fixed;inset:0;background:#f5f0ff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;z-index:200; }
+    .auth-input { width:100%;padding:14px 16px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:15px;outline:none;background:white;color:#1a0030;margin-bottom:10px; }
+    .auth-input:focus { border-color:#460186; }
+    .auth-btn { width:100%;padding:16px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer; }
+
+    /* ── Scanner ── */
+    #scanner-screen { display:none;position:relative;height:100dvh;overflow:hidden; }
+    #video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+    #canvas { display:none; }
+
+    /* header */
+    .scan-header { position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);padding:env(safe-area-inset-top,0px) 20px 32px;padding-top:max(env(safe-area-inset-top,0px),16px); }
+
+    /* scan zone */
+    .scan-frame { position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:260px;height:260px;pointer-events:none; }
+    .scan-frame svg { width:100%;height:100%; }
+    .scan-label { position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 155px));font-size:13px;opacity:.75;white-space:nowrap;pointer-events:none; }
+
+    /* bottom bar */
+    .scan-bottom { position:absolute;bottom:0;left:0;right:0;z-index:10;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);padding:16px 24px max(env(safe-area-inset-bottom,0px),16px); }
+
+    /* ── Popup ── */
+    #scan-popup { position:fixed;inset:0;z-index:100;display:flex;align-items:flex-end;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s; }
+    #scan-popup.open { opacity:1;pointer-events:auto; }
+    .popup-card { background:white;border-radius:24px 24px 0 0;width:100%;padding:28px 24px max(env(safe-area-inset-bottom,0px),24px);color:#1a0030;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1); }
+    #scan-popup.open .popup-card { transform:translateY(0); }
+
+    /* ── Flash ── */
+    #flash { position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;pointer-events:none;opacity:0;transition:opacity .15s; }
+    #flash.show { opacity:1; }
+    #flash.hide { opacity:0;transition:opacity .6s; }
+    .flash-name { font-size:22px;font-weight:800;color:white;text-shadow:0 2px 8px rgba(0,0,0,.4); }
   </style>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg?v=4">
-  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-v2-96x96.png?v=4">
-  <link rel="shortcut icon" href="/favicon-v2.ico?v=4">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png?v=4">
 </head>
 <body>
-<div class="card">
-  <img loading="lazy" decoding="async" src="/assets/Logo.png" class="logo" alt="BDE CREAD">
 
-  <!-- LOADING -->
-  <div id="screen-loading">
-    <div class="icon">⏳</div>
-    <h1>Chargement…</h1>
+<!-- ── Auth ── -->
+<div id="auth-screen">
+  <div style="text-align:center;margin-bottom:36px">
+    <div style="background:linear-gradient(135deg,#460186,#D2396D);border-radius:22px;width:72px;height:72px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(70,1,134,.35)">
+      <svg width="34" height="34" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="white" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="white" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="white" stroke-width="2"/><rect x="13" y="13" width="4" height="4" rx=".75" fill="white"/><rect x="19" y="13" width="2" height="2" rx=".5" fill="white"/><rect x="19" y="19" width="2" height="2" rx=".5" fill="white"/><rect x="13" y="19" width="2" height="2" rx=".5" fill="white"/></svg>
+    </div>
+    <h1 style="margin:0 0 4px;font-size:26px;font-weight:800;color:#1a0030">Scanner</h1>
+    <p style="margin:0;color:#888;font-size:14px">BDE CREAD Lyon</p>
   </div>
-
-  <!-- LOGIN — pavé numérique 4 chiffres -->
-  <div id="screen-login">
-    <h1>Code de scan</h1>
-    <p class="sub">Entre le code BDE à 4 chiffres. Mémorisé jusqu'à ce soir.</p>
-    <div class="pin-display" id="pin-display">
-      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-    </div>
-    <div class="keypad" id="keypad">
-      <button class="key" onclick="keypadPress('1')">1</button>
-      <button class="key" onclick="keypadPress('2')">2</button>
-      <button class="key" onclick="keypadPress('3')">3</button>
-      <button class="key" onclick="keypadPress('4')">4</button>
-      <button class="key" onclick="keypadPress('5')">5</button>
-      <button class="key" onclick="keypadPress('6')">6</button>
-      <button class="key" onclick="keypadPress('7')">7</button>
-      <button class="key" onclick="keypadPress('8')">8</button>
-      <button class="key" onclick="keypadPress('9')">9</button>
-      <button class="key action" onclick="keypadClear()">C</button>
-      <button class="key" onclick="keypadPress('0')">0</button>
-      <button class="key action" onclick="keypadDelete()">⌫</button>
-    </div>
-    <p id="login-error" style="color:#FF741F;font-size:13px;margin-top:6px;display:none;">Code incorrect, réessaie.</p>
-  </div>
-
-  <!-- CARTE -->
-  <div id="screen-carte">
-    <p class="nom" id="sc-nom">—</p>
-    <p class="tampons" id="sc-tampons">— / 10 tampons</p>
-    <div class="progress" id="sc-progress"></div>
-    <div id="sc-offert" style="display:none;margin-bottom:16px;">
-      <span class="badge badge-offert">Carte complète — 1 accès offert</span>
-    </div>
-    <div style="margin-bottom:12px; display:flex; gap:8px;">
-      <input type="text" id="sc-validateur" class="field-normal" placeholder="Ton prénom *" style="margin-bottom:0; flex:1;">
-      <input type="text" id="sc-event" class="field-normal" placeholder="Événement *" style="margin-bottom:0; flex:1;">
-    </div>
-    <button class="btn" id="btn-tampon" onclick="ajouterTampon()">+ Valider ce passage</button>
-    <button class="btn btn-secondary" onclick="history.back()">Annuler</button>
-    <button class="btn-ghost" onclick="deconnecter()">Changer de code</button>
-  </div>
-
-  <!-- SUCCESS -->
-  <div id="screen-success">
-    <div class="icon">✅</div>
-    <h1 id="sc-success-msg">Passage validé !</h1>
-    <p class="sub" id="sc-success-sub"></p>
-    <div class="progress" id="sc-progress-after" style="margin-bottom:20px;"></div>
-    <div id="sc-offert-after" style="display:none;margin-bottom:20px;">
-      <span class="badge badge-offert">Carte complète — 1 accès offert !</span>
-    </div>
-    <button class="btn" onclick="fermerScan()">Fermer</button>
-  </div>
-
-  <!-- ERROR -->
-  <div id="screen-error">
-    <div class="icon">❌</div>
-    <h1>Erreur</h1>
-    <p class="sub" id="sc-error-msg"></p>
-    <button class="btn" onclick="location.reload()">Réessayer</button>
+  <div id="auth-loading" style="color:#888;font-size:14px">Vérification…</div>
+  <div id="auth-form" style="display:none;width:100%;max-width:360px">
+    <input id="auth-email" class="auth-input" type="email" placeholder="Email" autocomplete="email">
+    <input id="auth-password" class="auth-input" type="password" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="auth-btn" onclick="doLogin()">Se connecter</button>
+    <div id="auth-error" style="color:#dc2626;font-size:13px;text-align:center;margin-top:10px;min-height:18px"></div>
   </div>
 </div>
 
+<!-- ── Scanner ── -->
+<div id="scanner-screen">
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+
+  <!-- Header -->
+  <div class="scan-header">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:17px;font-weight:800;line-height:1.2" id="scan-event-name">Billetterie</div>
+        <div style="font-size:13px;opacity:.75;margin-top:2px" id="scan-counter">Chargement…</div>
+      </div>
+      <a href="admin.html" style="color:white;font-size:13px;font-weight:600;text-decoration:none;background:rgba(255,255,255,.18);padding:7px 14px;border-radius:20px">Admin</a>
+    </div>
+  </div>
+
+  <!-- Scan zone -->
+  <div class="scan-frame" id="scan-frame">
+    <svg viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 60 L20 20 L60 20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+      <path d="M200 20 L240 20 L240 60" stroke="white" stroke-width="4" stroke-linecap="round"/>
+      <path d="M240 200 L240 240 L200 240" stroke="white" stroke-width="4" stroke-linecap="round"/>
+      <path d="M60 240 L20 240 L20 200" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="scan-label">Pointez vers un QR code</div>
+
+  <!-- Bottom -->
+  <div class="scan-bottom">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:13px;opacity:.8" id="scan-status">Scanner actif</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="refreshCounter()" style="background:rgba(255,255,255,.18);border:none;color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">Actualiser</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Popup confirmation ── -->
+<div id="scan-popup" onclick="if(event.target===this)closePopup()">
+  <div class="popup-card">
+    <div id="popup-content"></div>
+  </div>
+</div>
+
+<!-- ── Flash visuel ── -->
+<div id="flash">
+  <svg id="flash-icon" width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="40" fill="rgba(255,255,255,.25)"/><path d="M24 40l12 12 20-24" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+  <div class="flash-name" id="flash-name"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+<script src="js/supabase-config.js?v=2"></script>
+<script src="js/auth.js"></script>
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const carteId = params.get('id');
-  const uid = params.get('uid');
+let scanning = false;
+let stream = null;
+let currentInscription = null;
+let billetterieId = null;
+let billetterieNom = '';
+let totalPresents = 0;
+let totalInscrits = 0;
 
-  // PIN mémorisé jusqu'à ce soir 23h59 (fin de journée)
-  function endOfDay() {
-    const d = new Date(); d.setHours(23, 59, 59, 999);
-    return d;
-  }
-  function savePin(p) {
-    const eod = endOfDay();
-    try { localStorage.setItem('bde_scan_pin', JSON.stringify({ p, exp: eod.getTime() })); } catch(e) {}
-    document.cookie = `bde_scan_pin=${encodeURIComponent(p)};expires=${eod.toUTCString()};path=/;Secure;SameSite=Lax`;
-  }
-  function readPin() {
-    try {
-      const raw = localStorage.getItem('bde_scan_pin');
-      if (raw) {
-        const { p, exp } = JSON.parse(raw);
-        if (exp && Date.now() < exp) return p;
-        localStorage.removeItem('bde_scan_pin');
-      }
-    } catch(e) {}
-    const m = document.cookie.match(/(?:^|;\s*)bde_scan_pin=([^;]*)/);
-    return m ? decodeURIComponent(m[1]) : '';
-  }
-  function clearPin() {
-    try { localStorage.removeItem('bde_scan_pin'); } catch(e) {}
-    document.cookie = 'bde_scan_pin=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax';
-  }
+const params = new URLSearchParams(location.search);
+billetterieId = params.get('bil');
 
-  // Pavé numérique
-  let currentPin = '';
-  const PIN_LEN = 4;
-  function refreshPinDots() {
-    document.querySelectorAll('#pin-display .pin-dot').forEach((d, i) => {
-      d.classList.toggle('filled', i < currentPin.length);
-    });
+// ── Auth ──
+async function init() {
+  const user = await Auth.getUser().catch(() => null);
+  if (user) {
+    document.getElementById('auth-screen').style.display = 'none';
+    startScanner();
+  } else {
+    document.getElementById('auth-loading').style.display = 'none';
+    document.getElementById('auth-form').style.display = '';
   }
-  function keypadPress(digit) {
-    if (currentPin.length >= PIN_LEN) return;
-    currentPin += digit;
-    refreshPinDots();
-    document.getElementById('login-error').style.display = 'none';
-    if (currentPin.length === PIN_LEN) setTimeout(doLogin, 120);
-  }
-  function keypadDelete() {
-    currentPin = currentPin.slice(0, -1);
-    refreshPinDots();
-  }
-  function keypadClear() {
-    currentPin = '';
-    refreshPinDots();
-    document.getElementById('login-error').style.display = 'none';
-  }
-  // Support clavier physique en secours
-  document.addEventListener('keydown', (e) => {
-    if (document.getElementById('screen-login').style.display === 'none') return;
-    if (e.key >= '0' && e.key <= '9') keypadPress(e.key);
-    else if (e.key === 'Backspace') keypadDelete();
-    else if (e.key === 'Escape') keypadClear();
-    else if (e.key === 'Enter' && currentPin.length === PIN_LEN) doLogin();
-  });
+}
 
-  let pin = readPin();
-
-  function show(screen) {
-    ['login','carte','success','error','loading'].forEach(s => {
-      document.getElementById('screen-' + s).style.display = s === screen ? 'block' : 'none';
-    });
+async function doLogin() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pwd   = document.getElementById('auth-password').value;
+  const btn   = document.querySelector('.auth-btn');
+  document.getElementById('auth-error').textContent = '';
+  btn.disabled = true; btn.textContent = 'Connexion…';
+  const { error } = await Auth.sb.auth.signInWithPassword({ email, password: pwd });
+  if (error) {
+    document.getElementById('auth-error').textContent = 'Email ou mot de passe incorrect.';
+    btn.disabled = false; btn.textContent = 'Se connecter';
+    return;
   }
+  document.getElementById('auth-screen').style.display = 'none';
+  startScanner();
+}
 
-  function deconnecter() {
-    clearPin();
-    pin = '';
-    currentPin = '';
-    refreshPinDots();
-    show('login');
+// ── Scanner ──
+async function startScanner() {
+  document.getElementById('scanner-screen').style.display = '';
+  await loadBilletterie();
+  await startCamera();
+}
+
+async function loadBilletterie() {
+  if (!billetterieId) return;
+  const { data: bil } = await Auth.sb.from('billetteries').select('titre').eq('id', billetterieId).single();
+  if (bil) { billetterieNom = bil.titre; document.getElementById('scan-event-name').textContent = bil.titre; }
+  await refreshCounter();
+}
+
+async function refreshCounter() {
+  if (!billetterieId) return;
+  const { data } = await Auth.sb.from('billetterie_inscriptions').select('id,statut').eq('billetterie_id', billetterieId);
+  if (data) {
+    totalInscrits = data.length;
+    totalPresents = data.filter(r => r.statut?.toLowerCase() === 'rejoint').length;
+    document.getElementById('scan-counter').textContent = `${totalPresents} / ${totalInscrits} présents`;
   }
+}
 
-  async function doLogin() {
-    const p = currentPin;
-    if (!p || p.length !== PIN_LEN) return;
-    document.getElementById('login-error').style.display = 'none';
-    show('loading');
-    const res = await callApi(p);
-    if (res === null) {
-      show('login');
-      document.getElementById('login-error').textContent = 'Erreur réseau, réessaie.';
-      document.getElementById('login-error').style.display = 'block';
-      keypadClear();
-      return;
-    }
-    if (res.error === 'Code incorrect') {
-      show('login');
-      document.getElementById('login-error').style.display = 'block';
-      keypadClear();
-      return;
-    }
-    savePin(p);
-    pin = p;
-    handleApiResult(res);
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+    const video = document.getElementById('video');
+    video.srcObject = stream;
+    await video.play();
+    scanning = true;
+    requestAnimationFrame(tick);
+    document.getElementById('scan-status').textContent = 'Scanner actif';
+  } catch (e) {
+    document.getElementById('scan-status').textContent = 'Accès caméra refusé';
   }
+}
 
-  async function callApi(pinToUse, validateur, event) {
-    try {
-      const body = { pin: pinToUse };
-      if (uid) body.uid = uid;
-      else body.carteId = carteId;
-      if (validateur !== undefined) { body.validateur = validateur; body.event = event; }
-      const res = await fetch('/api/tampon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      return await res.json();
-    } catch(e) { return null; }
+function tick() {
+  if (!scanning) return;
+  const video  = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  if (video.readyState !== video.HAVE_ENOUGH_DATA) { requestAnimationFrame(tick); return; }
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const code = jsQR(imgData.data, canvas.width, canvas.height, { inversionAttempts: 'dontInvert' });
+  if (code?.data) {
+    scanning = false;
+    handleQR(code.data);
+    return;
+  }
+  requestAnimationFrame(tick);
+}
+
+async function handleQR(data) {
+  document.getElementById('scan-status').textContent = 'QR détecté, recherche…';
+  const uuid = data.trim();
+  const { data: insc, error } = await Auth.sb
+    .from('billetterie_inscriptions')
+    .select('id,prenom,nom,tarif_nom,statut,billetterie_id')
+    .eq('id', uuid)
+    .single();
+
+  if (error || !insc) {
+    showPopupError('QR code inconnu ou invalide.');
+    return;
   }
 
-  async function loadCarte() {
-    if (!carteId && !uid) { showError('ID de carte manquant.'); return; }
-    if (!pin) { show('login'); return; }
-    show('loading');
-    const res = await callApi(pin);
-    if (res === null) { showError('Erreur réseau.'); return; }
-    if (res.error === 'Code incorrect') { clearPin(); pin = ''; show('login'); return; }
-    handleApiResult(res);
-  }
+  currentInscription = insc;
+  const initials = ((insc.prenom||'').charAt(0) + (insc.nom||'').charAt(0)).toUpperCase();
+  const isPresent = insc.statut?.toLowerCase() === 'rejoint';
+  const name = `${insc.prenom || ''} ${insc.nom || ''}`.trim();
 
-  function handleApiResult(res) {
-    if (res.error && res.error !== 'Code incorrect') {
-      // Erreur autre (carte introuvable, GitHub down…)
-      showError(res.error);
-      return;
-    }
-    if (res.carte) renderCarte(res.carte);
-    else if (res.ok) showSuccess(res.carte);
-    else show('login');
-  }
+  document.getElementById('popup-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials}</div>
+      <div>
+        <div style="font-size:22px;font-weight:800;color:#1a0030;line-height:1.2">${esc(name)}</div>
+        <div style="font-size:13px;color:#888;margin-top:3px">${esc(insc.tarif_nom||'—')}</div>
+      </div>
+    </div>
+    ${isPresent ? `<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px;color:#92400e;font-weight:600">Déjà marqué(e) présent(e) !</div>` : ''}
+    <button onclick="confirmPresence()" style="width:100%;padding:16px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:10px">
+      ${isPresent ? 'Marquer à nouveau présent(e)' : 'Confirmer la présence'}
+    </button>
+    <button onclick="closePopup()" style="width:100%;padding:14px;background:#f3f4f6;color:#374151;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer">
+      Annuler
+    </button>`;
+  document.getElementById('scan-popup').classList.add('open');
+}
 
-  let carteData = null;
+function showPopupError(msg) {
+  document.getElementById('popup-content').innerHTML = `
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:40px;margin-bottom:12px">❌</div>
+      <div style="font-size:16px;font-weight:700;color:#dc2626;margin-bottom:4px">QR invalide</div>
+      <div style="font-size:14px;color:#888">${msg}</div>
+    </div>
+    <button onclick="closePopup()" style="width:100%;padding:14px;background:#f3f4f6;color:#374151;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer">
+      Fermer
+    </button>`;
+  document.getElementById('scan-popup').classList.add('open');
+}
 
-  function renderCarte(c) {
-    carteData = c;
-    const total = c.total || 10;
-    document.getElementById('sc-nom').textContent = c.prenom + ' ' + c.nom;
-    document.getElementById('sc-tampons').textContent = `${c.tampons} / ${total} tampons`;
-    renderProgress('sc-progress', c.tampons, total);
-    if (c.tampons >= total) {
-      document.getElementById('sc-offert').style.display = 'block';
-      document.getElementById('btn-tampon').disabled = true;
-      document.getElementById('btn-tampon').textContent = 'Carte déjà complète';
-    }
-    show('carte');
-    setTimeout(() => document.getElementById('sc-event').focus(), 100);
-  }
+async function confirmPresence() {
+  if (!currentInscription) return;
+  const { error } = await Auth.sb
+    .from('billetterie_inscriptions')
+    .update({ statut: 'rejoint' })
+    .eq('id', currentInscription.id);
+  if (error) { alert('Erreur : ' + error.message); return; }
+  const name = `${currentInscription.prenom||''} ${currentInscription.nom||''}`.trim();
+  document.getElementById('scan-popup').classList.remove('open');
+  showFlash(name);
+  totalPresents++;
+  document.getElementById('scan-counter').textContent = `${totalPresents} / ${totalInscrits} présents`;
+  currentInscription = null;
+  setTimeout(() => { scanning = true; requestAnimationFrame(tick); }, 1200);
+  document.getElementById('scan-status').textContent = 'Scanner actif';
+}
 
-  function renderProgress(id, tampons, total) {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    for (let i = 0; i < total; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'bar' + (i < tampons ? ' active' : '');
-      el.appendChild(bar);
-    }
-  }
+function closePopup() {
+  document.getElementById('scan-popup').classList.remove('open');
+  currentInscription = null;
+  setTimeout(() => { scanning = true; requestAnimationFrame(tick); document.getElementById('scan-status').textContent = 'Scanner actif'; }, 300);
+}
 
-  async function ajouterTampon() {
-    const validateur = document.getElementById('sc-validateur').value.trim();
-    const eventName = document.getElementById('sc-event').value.trim();
-    let ok = true;
-    if (!validateur) { document.getElementById('sc-validateur').style.borderColor = '#c0392b'; document.getElementById('sc-validateur').focus(); ok = false; }
-    else document.getElementById('sc-validateur').style.borderColor = '';
-    if (!eventName) { document.getElementById('sc-event').style.borderColor = '#c0392b'; if (ok) document.getElementById('sc-event').focus(); ok = false; }
-    else document.getElementById('sc-event').style.borderColor = '';
-    if (!ok) return;
+function showFlash(name) {
+  const el = document.getElementById('flash');
+  document.getElementById('flash-name').textContent = name;
+  el.style.background = 'rgba(22,163,74,.85)';
+  el.classList.add('show');
+  setTimeout(() => { el.classList.remove('show'); el.classList.add('hide'); setTimeout(() => { el.classList.remove('hide'); }, 700); }, 1000);
+}
 
-    document.getElementById('btn-tampon').disabled = true;
-    document.getElementById('btn-tampon').textContent = 'Validation…';
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
+}
 
-    const res = await callApi(pin, validateur, eventName);
-    if (res === null || (res.error && res.error !== 'Carte déjà complète')) {
-      document.getElementById('btn-tampon').disabled = false;
-      document.getElementById('btn-tampon').textContent = '+ Valider ce passage';
-      showError(res ? res.error : 'Erreur réseau.');
-      return;
-    }
-    showSuccess(res.carte, eventName);
-  }
-
-  function showSuccess(c, eventName) {
-    const carte = c || carteData;
-    const total = (carte && carte.total) || 10;
-    const tampons = (carte && carte.tampons) || 0;
-    const complete = tampons >= total;
-    document.getElementById('sc-success-msg').textContent = complete ? 'Carte complète !' : 'Passage validé !';
-    document.getElementById('sc-success-sub').textContent = carte
-      ? `${carte.prenom} ${carte.nom} — ${tampons}/${total} tampons${eventName ? ' · ' + eventName : ''}`
-      : '';
-    renderProgress('sc-progress-after', tampons, total);
-    if (complete) document.getElementById('sc-offert-after').style.display = 'block';
-    show('success');
-    fermerScan();
-  }
-
-  function showError(msg) {
-    document.getElementById('sc-error-msg').textContent = msg;
-    show('error');
-  }
-
-  function fermerScan() {
-    window.close();
-    // Si window.close() ne fonctionne pas (Safari/iPhone), redirige vers la carte du client
-    setTimeout(() => {
-      const dest = uid ? `/carte.html?uid=${uid}` : (carteId ? `/carte.html?id=${carteId}` : '/');
-      window.location.href = dest;
-    }, 500);
-  }
-
-  // L'API /api/tampon sans validateur/event = juste lire la carte (GET-like via POST)
-  // On modifie la fonction pour séparer lecture et écriture
-  loadCarte();
+init();
 </script>
 </body>
 </html>
