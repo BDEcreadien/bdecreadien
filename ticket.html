@@ -663,7 +663,7 @@
             itemName,
             backUrl: `${SITE}/billetterie/${slug}?annule=1`,
             errorUrl: `${SITE}/billetterie/${slug}?erreur=1`,
-            returnUrl: `${SITE}/billet-confirme.html?slug=${encodeURIComponent(slug)}`,
+            returnUrl: `${SITE}/billetterie/${encodeURIComponent(slug)}?confirme=1`,
             payer: { firstName, lastName, email },
             metadata: {
               billetterie_slug: slug,
