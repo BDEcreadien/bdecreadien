@@ -644,7 +644,7 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-          location.href = `${SITE}/billet-confirme.html?slug=${encodeURIComponent(slug)}`;
+          document.getElementById('insc-success-overlay').classList.add('open');
         } catch (e) {
           console.error(e);
           showError('Erreur lors de l\'inscription : ' + e.message);
