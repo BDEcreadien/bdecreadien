@@ -27,12 +27,20 @@ export async function onRequest({ request, env }) {
   const email = vente.acheteur_email;
   if (!email) return json({ ok: true });
 
-  // Config billetterie (titre + whatsapp_url)
+  // Config billetterie (titre + whatsapp_url + description + date + lieu)
   let titre = 'Évènement BDE';
   let whatsappUrl = null;
+  let description = null, dateAffiche = null, lieuAffiche = null;
   if (billetterie_slug) {
-    const [cfg] = await fetch(`${SB}/rest/v1/billetteries?slug=eq.${encodeURIComponent(billetterie_slug)}&select=titre,whatsapp_url`, { headers: h }).then(r => r.json());
-    if (cfg) { titre = cfg.titre || titre; whatsappUrl = cfg.whatsapp_url || null; }
+    const [cfg] = await fetch(`${SB}/rest/v1/billetteries?slug=eq.${encodeURIComponent(billetterie_slug)}&select=titre,whatsapp_url,description,date_affiche,lieu_affiche`, { headers: h }).then(r => r.json());
+    if (cfg) { titre = cfg.titre || titre; whatsappUrl = cfg.whatsapp_url || null; description = cfg.description || null; dateAffiche = cfg.date_affiche || null; lieuAffiche = cfg.lieu_affiche || null; }
+  }
+
+  // Chercher l'inscription pour le QR code
+  let inscriptionId = null;
+  if (billetterie_slug) {
+    const inscArr = await fetch(`${SB}/rest/v1/billetterie_inscriptions?email=eq.${encodeURIComponent(email)}&billetterie_slug=eq.${encodeURIComponent(billetterie_slug)}&select=id&order=created_at.desc&limit=1`, { headers: h }).then(r => r.json()).catch(() => []);
+    inscriptionId = inscArr?.[0]?.id || null;
   }
 
   const prenom    = vente.acheteur_prenom || '';
