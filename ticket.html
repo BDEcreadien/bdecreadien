@@ -278,6 +278,19 @@
 
         <div id="bt-custom-fields"></div>
 
+        <!-- Code promo -->
+        <div id="bt-promo-wrap" style="display:none;margin-bottom:12px;">
+          <div style="font-size:12px;color:#aaa;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Code promo</div>
+          <div style="display:flex;gap:8px;">
+            <input id="bt-promo-input" type="text" placeholder="Entre ton code" autocomplete="off" autocapitalize="characters"
+              style="flex:1;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fff;font-family:inherit;font-size:14px;outline:none;"
+              oninput="btPromoReset()" onkeydown="if(event.key==='Enter'){event.preventDefault();btCheckPromo();}">
+            <button type="button" onclick="btCheckPromo()" id="bt-promo-btn"
+              style="padding:11px 16px;border-radius:10px;border:none;background:rgba(255,255,255,.18);color:#fff;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">Appliquer</button>
+          </div>
+          <div id="bt-promo-msg" style="font-size:12px;margin-top:6px;min-height:16px;"></div>
+        </div>
+
         <div class="bt-total-box">
           <div>
             <div class="bt-total-label">Total à payer</div>
