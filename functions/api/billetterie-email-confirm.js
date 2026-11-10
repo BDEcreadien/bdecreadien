@@ -91,12 +91,12 @@ export async function onRequest({ request, env }) {
     <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Hello ${prenom} !</p>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#444">
       Merci pour ton inscription à <strong>${titre}</strong> —
-      on a hâte que l'événement arrive, ce sera une première à ne pas manquer !
+      on a hâte que l'événement arrive, c'est à ne pas rater !!
     </p>
     ${eventInfoBlock}
+    ${qrBlock}
     ${description ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.65;color:#555;border-left:3px solid #c4b0f0;padding-left:14px;">${description}</p>` : ''}
     ${whatsappBlock}
-    ${qrBlock}
     <p style="margin:28px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:16px">
       Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
       &nbsp;·&nbsp;
