@@ -9611,7 +9611,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Participant</th>
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Contact</th>
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Classe</th>
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Tarif</th>
+            ${customKeys.map(k => `<th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;" title="${escapeHtml(k)}">${escapeHtml(k.length > 18 ? k.slice(0,18)+'…' : k)}</th>`).join('')}
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Statut</th>
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Date</th>
             <th style="padding:12px 16px;text-align:center;font-weight:700;white-space:nowrap;">Groupe</th>
