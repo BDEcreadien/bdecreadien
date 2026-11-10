@@ -121,7 +121,7 @@ export async function onRequestPost({ request, env }) {
       body: JSON.stringify({
         from:    RESEND_FROM,
         to:      [email],
-        subject: `Ton inscription à ${titre} est confirmée !`,
+        subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`,
         html,
       }),
     }).catch(() => {});
