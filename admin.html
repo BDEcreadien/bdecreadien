@@ -9610,8 +9610,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
           <tr style="background:linear-gradient(135deg,#460186,#D2396D);color:white;">
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Participant</th>
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Contact</th>
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Classe</th>
-            ${customKeys.map(k => `<th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;" title="${escapeHtml(k)}">${escapeHtml(k.length > 18 ? k.slice(0,18)+'…' : k)}</th>`).join('')}
+            ${customKeys.map(k => { const label = k.replace(/^(Ton |Ta |Votre )/i,''); return `<th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;" title="${escapeHtml(k)}">${escapeHtml(label.length > 18 ? label.slice(0,18)+'…' : label)}</th>`; }).join('')}
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Statut</th>
             <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Date</th>
             <th style="padding:12px 16px;text-align:center;font-weight:700;white-space:nowrap;">Groupe</th>
