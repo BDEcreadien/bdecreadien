@@ -77,13 +77,13 @@ export async function onRequestPost({ request, env }) {
     </div>` : '';
 
     const eventInfoBlock = (dateAffiche || lieuAffiche) ? `
-      <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:16px;flex-wrap:wrap;">
-        ${dateAffiche ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Date</span><span style="font-size:14px;font-weight:700;color:#460186">${esc(dateAffiche)}</span></div>` : ''}
-        ${lieuAffiche ? `<div><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px">Lieu</span><span style="font-size:14px;font-weight:700;color:#460186">${esc(lieuAffiche)}</span></div>` : ''}
+      <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+        ${dateAffiche ? `<div style="flex:1;min-width:130px;padding-right:18px;${lieuAffiche ? 'border-right:2px solid #e9d5ff;margin-right:18px;' : ''}"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Date</span><span style="font-size:14px;font-weight:700;color:#460186">${esc(dateAffiche)}</span></div>` : ''}
+        ${lieuAffiche ? `<div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Lieu</span><span style="font-size:14px;font-weight:700;color:#460186">${esc(lieuAffiche)}</span></div>` : ''}
       </div>` : '';
 
     const qrBlock = qrUrl ? `
-      <div style="background:#faf5ff;border:1.5px solid #ede5ff;border-radius:16px;padding:24px;margin-top:24px;text-align:center;">
+      <div style="background:#faf5ff;border:1.5px solid #ede5ff;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
         <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1.5px">Ton billet numérique</p>
         <p style="margin:0 0 16px;font-size:13px;color:#666">Présente ce QR code à l'entrée le jour de l'événement</p>
         <img src="${qrUrl}" width="180" height="180" alt="QR code billet" style="display:block;margin:0 auto;border-radius:8px;">
@@ -97,15 +97,15 @@ export async function onRequestPost({ request, env }) {
     <p style="margin:0;color:white;font-size:30px;font-weight:900;letter-spacing:1px;font-family:Impact,'Arial Narrow',Arial,sans-serif">${esc(titre).toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px">
-    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Bonjour ${esc(prenom)} !</p>
+    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Hello ${esc(prenom)} !</p>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#444">
       Merci pour ton inscription à <strong>${esc(titre)}</strong> —
-      on a hâte que l'événement arrive, ce sera une première à ne pas manquer !
+      on a hâte que l'événement arrive, c'est à ne pas rater !!
     </p>
     ${eventInfoBlock}
+    ${qrBlock}
     ${description ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.65;color:#555;border-left:3px solid #c4b0f0;padding-left:14px;">${esc(description)}</p>` : ''}
     ${whatsappBlock}
-    ${qrBlock}
     <p style="margin:28px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:16px">
       Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
       &nbsp;·&nbsp;
