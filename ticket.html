@@ -585,7 +585,7 @@
         msg.innerHTML = `<span style="color:#dc2626;font-size:12px;font-weight:600;">✕ ${data.message || 'Code invalide.'}</span>`;
         _promo = null;
       } else {
-        msg.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:5px 10px;color:#4ade80;font-weight:700;">✅ Code appliqué&nbsp;— <strong>${data.message}</strong></span>`;
+        msg.innerHTML = `<span style="color:#16a34a;font-size:12px;font-weight:700;">✓ Code appliqué — ${data.message}</span>`;
         _promo = { id: data.id, type: data.type, valeur: data.valeur };
       }
       renderTotal();
