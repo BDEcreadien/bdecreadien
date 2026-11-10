@@ -9366,6 +9366,86 @@ function bilFcRemoveCustom(i) {
   bilOnChange();
 }
 
+// ── Codes promo ──────────────────────────────────
+let _bilPromos = []; // { id, code, type, valeur, max_utilisations, nb_utilisations, actif, _new, _deleted }
+let _bilPromoSlug = null;
+
+async function bilPromoCharger(slug) {
+  _bilPromoSlug = slug;
+  document.getElementById('bil-promo-list').innerHTML = '';
+  document.getElementById('bil-promo-msg').textContent = '';
+  if (!slug) return;
+  const SB = window._SB_URL || 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+  const KEY = window._SB_KEY || SUPABASE_ANON;
+  const rows = await fetch(`${SB}/rest/v1/billetterie_codes_promo?billetterie_slug=eq.${encodeURIComponent(slug)}&order=created_at.asc`, {
+    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }
+  }).then(r => r.json()).catch(() => []);
+  _bilPromos = Array.isArray(rows) ? rows.map(r => ({...r})) : [];
+  bilPromoRender();
+}
+
+function bilPromoRender() {
+  const list = document.getElementById('bil-promo-list');
+  const btn = document.getElementById('bil-promo-save-btn');
+  if (!_bilPromos.length) { list.innerHTML = '<div style="font-size:13px;color:#aaa;padding:4px 0;">Aucun code pour cet événement.</div>'; btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  list.innerHTML = _bilPromos.map((p, i) => p._deleted ? '' : `
+    <div style="display:flex;gap:8px;align-items:center;background:#f8f5ff;border-radius:10px;padding:10px 12px;flex-wrap:wrap;">
+      <input value="${escapeHtml(p.code)}" placeholder="CODE" oninput="_bilPromos[${i}].code=this.value.toUpperCase().replace(/\\s/g,'');this.value=_bilPromos[${i}].code;"
+        style="width:110px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;font-weight:700;text-transform:uppercase;">
+      <select onchange="_bilPromos[${i}].type=this.value;bilPromoRender()" style="padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+        <option value="percent" ${p.type==='percent'?'selected':''}>%</option>
+        <option value="fixed"   ${p.type==='fixed'?'selected':''}>€</option>
+      </select>
+      <input type="number" min="1" value="${p.valeur||''}" placeholder="${p.type==='percent'?'50':'200'}" oninput="_bilPromos[${i}].valeur=parseInt(this.value)||0"
+        style="width:70px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+      <span style="font-size:11px;color:#888;">max&nbsp;uses</span>
+      <input type="number" min="1" value="${p.max_utilisations||''}" placeholder="∞" oninput="_bilPromos[${i}].max_utilisations=parseInt(this.value)||null"
+        style="width:60px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+      ${p.nb_utilisations ? `<span style="font-size:11px;color:#888;">${p.nb_utilisations} utilisé${p.nb_utilisations>1?'s':''}</span>` : ''}
+      <button onclick="bilPromoSupprimer(${i})" style="margin-left:auto;background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-weight:700;">✕</button>
+    </div>`).join('');
+}
+
+function bilPromoAjouter() {
+  _bilPromos.push({ id: null, code: '', type: 'percent', valeur: 50, max_utilisations: null, nb_utilisations: 0, actif: true, _new: true });
+  bilPromoRender();
+  document.getElementById('bil-promo-save-btn').style.display = '';
+}
+
+function bilPromoSupprimer(i) {
+  if (_bilPromos[i]._new) _bilPromos.splice(i, 1);
+  else _bilPromos[i]._deleted = true;
+  bilPromoRender();
+}
+
+async function bilPromoSauvegarder() {
+  if (!_bilPromoSlug) return;
+  const btn = document.getElementById('bil-promo-save-btn');
+  const msg = document.getElementById('bil-promo-msg');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  const SB = window._SB_URL || 'https://zgscyfpqwbmwemzqtvpx.supabase.co';
+  const KEY = window._SB_ROLE || SUPABASE_ANON;
+  const h = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
+  let ok = true;
+  for (const p of _bilPromos) {
+    if (!p.code) continue;
+    try {
+      if (p._deleted && p.id) {
+        await fetch(`${SB}/rest/v1/billetterie_codes_promo?id=eq.${p.id}`, { method: 'DELETE', headers: h });
+      } else if (p._new) {
+        await fetch(`${SB}/rest/v1/billetterie_codes_promo`, { method: 'POST', headers: h, body: JSON.stringify({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null, actif: true }) });
+      } else if (p.id) {
+        await fetch(`${SB}/rest/v1/billetterie_codes_promo?id=eq.${p.id}`, { method: 'PATCH', headers: h, body: JSON.stringify({ code: p.code.toUpperCase(), type: p.type, valeur: p.valeur, max_utilisations: p.max_utilisations || null }) });
+      }
+    } catch (e) { ok = false; }
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer les codes promo';
+  msg.style.color = ok ? '#166534' : '#dc2626';
+  msg.textContent = ok ? 'Codes sauvegardés ✓' : 'Erreur lors de la sauvegarde.';
+  if (ok) bilPromoCharger(_bilPromoSlug);
+}
+
 function bilExtractSlug(raw) {
   // Si c'est une URL (contient ://), on prend le dernier segment de chemin
   if (raw.includes('://') || raw.startsWith('/')) {
