@@ -9383,7 +9383,7 @@ function bilPromoRender() {
         <option value="percent" ${p.type==='percent'?'selected':''}>%</option>
         <option value="fixed"   ${p.type==='fixed'?'selected':''}>€</option>
       </select>
-      <input type="number" min="1" value="${p.valeur||''}" placeholder="${p.type==='percent'?'50':'200'}" oninput="_bilPromos[${i}].valeur=parseInt(this.value)||0"
+      <input type="number" min="${p.type==='percent'?1:0.01}" step="${p.type==='percent'?1:0.01}" value="${p.valeur||''}" placeholder="${p.type==='percent'?'50':'2'}" oninput="_bilPromos[${i}].valeur=parseFloat(this.value)||0"
         style="width:70px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
       <span style="font-size:11px;color:#888;">max&nbsp;uses</span>
       <input type="number" min="1" value="${p.max_utilisations||''}" placeholder="∞" oninput="_bilPromos[${i}].max_utilisations=parseInt(this.value)||null"
