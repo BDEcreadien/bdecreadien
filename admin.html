@@ -9573,6 +9573,14 @@ async function bilRendreParticipants(existingData, billetterieId) {
     return;
   }
 
+  // Colonnes dynamiques depuis custom_answers
+  const customKeysSet = new Set();
+  _bilParticipantsData.forEach(r => {
+    if (r.custom_answers && typeof r.custom_answers === 'object')
+      Object.keys(r.custom_answers).forEach(k => customKeysSet.add(k));
+  });
+  const customKeys = [...customKeysSet];
+
   const total = _bilParticipantsData.length;
   const confirmes = _bilParticipantsData.filter(r => ['confirme','confirmee','rejoint'].includes((r.statut||'').toLowerCase())).length;
   const rejoints  = _bilParticipantsData.filter(r => r.statut?.toLowerCase() === 'rejoint').length;
