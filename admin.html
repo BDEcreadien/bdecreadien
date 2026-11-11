@@ -9410,25 +9410,13 @@ async function bilPromoSauvegarder() {
   const btn = document.getElementById('bil-promo-save-btn');
   const msg = document.getElementById('bil-promo-msg');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  let ok = true;
-  for (const p of _bilPromos) {
-    if (!p.code) continue;
-    try {
-      if (p._deleted && p.id) {
-        const { error } = await Auth.sb.from('billetterie_codes_promo').delete().eq('id', p.id);
-        if (error) { ok = false; }
-      } else if (p._new) {
-        const valeurDb = p.type === 'fixed' ? Math.round(p.valeur * 100) : Math.round(p.valeur);
-        const { error } = await Auth.sb.from('billetterie_codes_promo').insert({ code: p.code.toUpperCase(), billetterie_slug: _bilPromoSlug, type: p.type, valeur: valeurDb, max_utilisations: p.max_utilisations || null, actif: true });
-        if (error) { ok = false; }
-      } else if (p.id) {
-        const valeurDb = p.type === 'fixed' ? Math.round(p.valeur * 100) : Math.round(p.valeur);
-        const { error } = await Auth.sb.from('billetterie_codes_promo').update({ code: p.code.toUpperCase(), type: p.type, valeur: valeurDb, max_utilisations: p.max_utilisations || null }).eq('id', p.id);
-        if (error) { ok = false; }
-      }
-    } catch (e) { ok = false; }
-  }
+  const res = await fetch('/api/admin-promo-save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug: _bilPromoSlug, promos: _bilPromos }),
+  }).then(r => r.json()).catch(() => ({ error: true }));
   btn.disabled = false; btn.textContent = 'Enregistrer les codes promo';
+  const ok = !!res.ok;
   msg.style.color = ok ? '#166534' : '#dc2626';
   msg.textContent = ok ? 'Codes sauvegardés ✓' : 'Erreur lors de la sauvegarde.';
   if (ok) bilPromoCharger(_bilPromoSlug);
