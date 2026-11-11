@@ -10797,6 +10797,7 @@ function btqaSortBy(col) {
 function btqaFilterTable() {
   const q  = document.getElementById('btqa-search').value.toLowerCase();
   const st = document.getElementById('btqa-filter-statut').value;
+  const ty = document.getElementById('btqa-filter-type').value;
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const startOfWeek = new Date(startOfDay);
