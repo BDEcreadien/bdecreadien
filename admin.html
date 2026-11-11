@@ -10826,6 +10826,7 @@ function btqaFilterTable() {
     if (col === 'numero') return asc * (a.numero||'').localeCompare(b.numero||'');
     if (col === 'nom')    return asc * (a.nom_acheteur||'').localeCompare(b.nom_acheteur||'');
     if (col === 'statut') return asc * (a.statut||'').localeCompare(b.statut||'');
+    if (col === 'type')   return asc * (a.type||'').localeCompare(b.type||'');
     return 0;
   });
 
