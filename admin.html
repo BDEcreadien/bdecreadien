@@ -10807,6 +10807,7 @@ function btqaFilterTable() {
   let filtered = _btqaCommandes.filter(c => {
     const matchQ  = !q || (c.numero||'').toLowerCase().includes(q) || (c.nom_acheteur||'').toLowerCase().includes(q) || (c.email_acheteur||'').toLowerCase().includes(q);
     const matchSt = !st || c.statut === st;
+    const matchTy = !ty || (ty === 'physique' ? c.type === 'physique' : c.type !== 'physique');
     let matchDate = true;
     if (_btqaDateFilter !== 'all' && c.created_at) {
       const d = new Date(c.created_at);
