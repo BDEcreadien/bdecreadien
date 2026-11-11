@@ -10788,7 +10788,7 @@ function btqaSortBy(col) {
   } else {
     _btqaSort = { col, dir: col === 'total' ? 'desc' : 'asc' };
   }
-  ['numero','nom','date','total','statut'].forEach(c => {
+  ['numero','nom','date','total','type','statut'].forEach(c => {
     const el = document.getElementById(`btqa-sort-${c}`);
     if (el) el.textContent = _btqaSort.col === c ? (_btqaSort.dir === 'asc' ? '↑' : '↓') : '';
   });
