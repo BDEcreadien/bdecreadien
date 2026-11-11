@@ -9406,7 +9406,8 @@ function bilPromoSupprimer(i) {
 }
 
 async function bilPromoSauvegarder() {
-  if (!_bilPromoSlug) return;
+  console.log('bilPromoSauvegarder slug=', _bilPromoSlug, '_bilPromos=', _bilPromos);
+  if (!_bilPromoSlug) { alert('Erreur : slug manquant'); return; }
   const btn = document.getElementById('bil-promo-save-btn');
   const msg = document.getElementById('bil-promo-msg');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
