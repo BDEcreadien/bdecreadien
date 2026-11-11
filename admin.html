@@ -10815,7 +10815,7 @@ function btqaFilterTable() {
       else if (_btqaDateFilter === 'week') matchDate = d >= startOfWeek;
       else if (_btqaDateFilter === 'month') matchDate = d >= startOfMonth;
     }
-    return matchQ && matchSt && matchDate;
+    return matchQ && matchSt && matchTy && matchDate;
   });
 
   const { col, dir } = _btqaSort;
