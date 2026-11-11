@@ -9426,7 +9426,7 @@ async function bilPromoSauvegarder() {
         const { error } = await Auth.sb.from('billetterie_codes_promo').update({ code: p.code.toUpperCase(), type: p.type, valeur: valeurDb, max_utilisations: p.max_utilisations || null }).eq('id', p.id);
         if (error) { console.error('update error', error); ok = false; }
       }
-    } catch (e) { console.error('catch', e); ok = false; }
+    } catch (e) { ok = false; }
   }
   btn.disabled = false; btn.textContent = 'Enregistrer les codes promo';
   msg.style.color = ok ? '#166534' : '#dc2626';
