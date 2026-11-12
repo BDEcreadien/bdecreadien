@@ -50,6 +50,24 @@
 </head>
 <body>
 
+<!-- ── Fidélité PIN screen ── -->
+<div id="fidelite-pin-screen">
+  <div style="text-align:center;margin-bottom:36px">
+    <div style="background:linear-gradient(135deg,#460186,#D2396D);border-radius:22px;width:72px;height:72px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(70,1,134,.35)">
+      <svg width="34" height="34" fill="none" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="white"/></svg>
+    </div>
+    <h1 style="margin:0 0 4px;font-size:26px;font-weight:800;color:#1a0030">Cartes fidélité</h1>
+    <p style="margin:0;color:#888;font-size:14px">BDE CREAD Lyon</p>
+  </div>
+  <div style="width:100%;max-width:360px">
+    <input id="pin-code" class="pin-input" type="password" inputmode="numeric" placeholder="Code PIN" autocomplete="off">
+    <input id="pin-validateur" class="pin-input" type="text" placeholder="Ton prénom (validateur)" autocomplete="off">
+    <input id="pin-event" class="pin-input" type="text" placeholder="Nom de l'événement" autocomplete="off">
+    <button class="auth-btn" onclick="startFideliteScanner()">Démarrer le scanner</button>
+    <div id="pin-error" style="color:#dc2626;font-size:13px;text-align:center;margin-top:10px;min-height:18px"></div>
+  </div>
+</div>
+
 <!-- ── Auth ── -->
 <div id="auth-screen">
   <div style="text-align:center;margin-bottom:36px">
