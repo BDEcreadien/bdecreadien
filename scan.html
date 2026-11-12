@@ -205,10 +205,21 @@ async function startFideliteScanner() {
   fideliteEvent = event;
   document.getElementById('fidelite-pin-screen').style.display = 'none';
   document.getElementById('scan-event-name').textContent = event;
-  document.getElementById('scan-counter').textContent = 'Mode fidélité';
+  document.getElementById('scan-counter').textContent = `Validateur : ${validateur}`;
   document.getElementById('scan-status').textContent = 'Scanner actif';
+  document.getElementById('btn-actualiser').style.display = 'none';
+  document.getElementById('btn-changer').style.display = '';
   document.getElementById('scanner-screen').style.display = 'block';
   await startCamera();
+}
+
+function changerSession() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  scanning = false;
+  document.getElementById('scanner-screen').style.display = 'none';
+  document.getElementById('pin-code').value = '';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('fidelite-pin-screen').style.display = 'flex';
 }
 
 async function doLogin() {
