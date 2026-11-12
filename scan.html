@@ -368,10 +368,11 @@ async function handleQRFidelite(data) {
     uid = url.searchParams.get('uid') || url.searchParams.get('id') || uid;
   } catch (_) { /* pas une URL, on utilise tel quel */ }
 
+  const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const res = await fetch('/api/tampon', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ uid, validateur: fideliteValidateur, event: fideliteEvent, pin: fidelitePin })
+    body: JSON.stringify({ uid, validateur: 'BDE', event: today, pin: fidelitePin })
   }).catch(() => null);
 
   if (!res) { showPopupError('Erreur réseau.'); return; }
