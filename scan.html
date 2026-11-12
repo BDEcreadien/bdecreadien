@@ -176,15 +176,26 @@ async function init() {
   }
 }
 
+function savePinLocally(pin) {
+  try {
+    const expires = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    localStorage.setItem('bde_scan_pin', JSON.stringify({ pin, expires }));
+  } catch (_) {}
+}
+
+function loadPinLocally() {
+  try {
+    const raw = localStorage.getItem('bde_scan_pin');
+    if (!raw) return null;
+    const { pin, expires } = JSON.parse(raw);
+    if (Date.now() > expires) { localStorage.removeItem('bde_scan_pin'); return null; }
+    return pin;
+  } catch (_) { return null; }
+}
+
 async function startFideliteScanner() {
   const pin = document.getElementById('pin-code').value.trim();
-  const validateur = document.getElementById('pin-validateur').value.trim();
-  const event = document.getElementById('pin-event').value.trim();
-  if (!pin || !validateur || !event) {
-    document.getElementById('pin-error').textContent = 'Remplis tous les champs.';
-    return;
-  }
-  // Vérification PIN via un appel test sans carteId
+  if (!pin) { document.getElementById('pin-error').textContent = 'Entre le code PIN.'; return; }
   document.getElementById('pin-error').textContent = '';
   const btn = document.querySelector('#fidelite-pin-screen .auth-btn');
   btn.disabled = true; btn.textContent = 'Vérification…';
@@ -193,17 +204,15 @@ async function startFideliteScanner() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ pin, carteId: '__test__' })
   }).catch(() => null);
-  btn.disabled = false; btn.textContent = 'Démarrer le scanner';
+  btn.disabled = false; btn.textContent = 'Accéder au scanner';
   if (!res) { document.getElementById('pin-error').textContent = 'Erreur réseau.'; return; }
-  const json = await res.json().catch(() => ({}));
   // 404 = PIN ok mais carte inexistante (attendu), 401 = mauvais PIN
   if (res.status === 401) { document.getElementById('pin-error').textContent = 'Code PIN incorrect.'; return; }
+  savePinLocally(pin);
   fidelitePin = pin;
-  fideliteValidateur = validateur;
-  fideliteEvent = event;
   document.getElementById('fidelite-pin-screen').style.display = 'none';
-  document.getElementById('scan-event-name').textContent = event;
-  document.getElementById('scan-counter').textContent = `Validateur : ${validateur}`;
+  document.getElementById('scan-event-name').textContent = 'Cartes fidélité';
+  document.getElementById('scan-counter').textContent = 'Mode fidélité';
   document.getElementById('scan-status').textContent = 'Scanner actif';
   document.getElementById('btn-actualiser').style.display = 'none';
   document.getElementById('btn-changer').style.display = '';
@@ -214,6 +223,8 @@ async function startFideliteScanner() {
 function changerSession() {
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
   scanning = false;
+  try { localStorage.removeItem('bde_scan_pin'); } catch (_) {}
+  fidelitePin = '';
   document.getElementById('scanner-screen').style.display = 'none';
   document.getElementById('pin-code').value = '';
   document.getElementById('pin-error').textContent = '';
