@@ -149,12 +149,24 @@ let billetterieId = null;
 let billetterieNom = '';
 let totalPresents = 0;
 let totalInscrits = 0;
+let modeFidelite = false;
+let fidelitePin = '';
+let fideliteValidateur = '';
+let fideliteEvent = '';
 
 const params = new URLSearchParams(location.search);
 billetterieId = params.get('bil');
 
+// Mode fidélité : pas de ?bil= dans l'URL
+modeFidelite = !billetterieId;
+
 // ── Auth ──
 async function init() {
+  if (modeFidelite) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('fidelite-pin-screen').style.display = 'flex';
+    return;
+  }
   const user = await Auth.getUser().catch(() => null);
   if (user) {
     document.getElementById('auth-screen').style.display = 'none';
@@ -163,6 +175,39 @@ async function init() {
     document.getElementById('auth-loading').style.display = 'none';
     document.getElementById('auth-form').style.display = '';
   }
+}
+
+async function startFideliteScanner() {
+  const pin = document.getElementById('pin-code').value.trim();
+  const validateur = document.getElementById('pin-validateur').value.trim();
+  const event = document.getElementById('pin-event').value.trim();
+  if (!pin || !validateur || !event) {
+    document.getElementById('pin-error').textContent = 'Remplis tous les champs.';
+    return;
+  }
+  // Vérification PIN via un appel test sans carteId
+  document.getElementById('pin-error').textContent = '';
+  const btn = document.querySelector('#fidelite-pin-screen .auth-btn');
+  btn.disabled = true; btn.textContent = 'Vérification…';
+  const res = await fetch('/api/tampon', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin, carteId: '__test__' })
+  }).catch(() => null);
+  btn.disabled = false; btn.textContent = 'Démarrer le scanner';
+  if (!res) { document.getElementById('pin-error').textContent = 'Erreur réseau.'; return; }
+  const json = await res.json().catch(() => ({}));
+  // 404 = PIN ok mais carte inexistante (attendu), 401 = mauvais PIN
+  if (res.status === 401) { document.getElementById('pin-error').textContent = 'Code PIN incorrect.'; return; }
+  fidelitePin = pin;
+  fideliteValidateur = validateur;
+  fideliteEvent = event;
+  document.getElementById('fidelite-pin-screen').style.display = 'none';
+  document.getElementById('scan-event-name').textContent = event;
+  document.getElementById('scan-counter').textContent = 'Mode fidélité';
+  document.getElementById('scan-status').textContent = 'Scanner actif';
+  document.getElementById('scanner-screen').style.display = 'block';
+  await startCamera();
 }
 
 async function doLogin() {
