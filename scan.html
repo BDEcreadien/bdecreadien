@@ -118,7 +118,8 @@
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:13px;opacity:.8" id="scan-status">Scanner actif</div>
       <div style="display:flex;gap:8px">
-        <button onclick="refreshCounter()" style="background:rgba(255,255,255,.18);border:none;color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">Actualiser</button>
+        <button id="btn-actualiser" onclick="refreshCounter()" style="background:rgba(255,255,255,.18);border:none;color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">Actualiser</button>
+        <button id="btn-changer" onclick="changerSession()" style="display:none;background:rgba(255,255,255,.18);border:none;color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer">Changer</button>
       </div>
     </div>
   </div>
@@ -285,6 +286,12 @@ function tick() {
 
 async function handleQR(data) {
   document.getElementById('scan-status').textContent = 'QR détecté, recherche…';
+
+  if (modeFidelite) {
+    await handleQRFidelite(data);
+    return;
+  }
+
   const uuid = data.trim();
   const { data: insc, error } = await Auth.sb
     .from('billetterie_inscriptions')
@@ -318,6 +325,56 @@ async function handleQR(data) {
       Annuler
     </button>`;
   document.getElementById('scan-popup').classList.add('open');
+}
+
+async function handleQRFidelite(data) {
+  // Extraire uid depuis l'URL ou utiliser directement comme uid/carteId
+  let uid = data.trim();
+  try {
+    const url = new URL(uid);
+    uid = url.searchParams.get('uid') || url.searchParams.get('id') || uid;
+  } catch (_) { /* pas une URL, on utilise tel quel */ }
+
+  const res = await fetch('/api/tampon', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid, validateur: fideliteValidateur, event: fideliteEvent, pin: fidelitePin })
+  }).catch(() => null);
+
+  if (!res) { showPopupError('Erreur réseau.'); return; }
+  const json = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    showPopupError(json.error || 'Erreur inconnue.');
+    return;
+  }
+
+  const carte = json.carte;
+  const name = `${carte.prenom || ''} ${carte.nom || ''}`.trim() || 'Inconnu';
+  const initials = (name.split(' ').map(w => w[0]||'').join('').toUpperCase()).slice(0,2);
+  const tampons = carte.tampons ?? '?';
+  const total = carte.total ?? 10;
+  const isComplete = tampons >= total;
+
+  document.getElementById('popup-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials}</div>
+      <div>
+        <div style="font-size:22px;font-weight:800;color:#1a0030;line-height:1.2">${esc(name)}</div>
+        <div style="font-size:13px;color:#888;margin-top:3px">Carte fidélité</div>
+      </div>
+    </div>
+    <div style="background:#f0ebfa;border-radius:12px;padding:14px 16px;margin-bottom:16px;text-align:center">
+      <div style="font-size:28px;font-weight:800;color:#460186">${tampons} / ${total}</div>
+      <div style="font-size:13px;color:#888;margin-top:2px">tampons</div>
+      ${isComplete ? '<div style="margin-top:8px;font-size:14px;font-weight:700;color:#1a9e5c">🎉 Carte complète !</div>' : ''}
+    </div>
+    <div style="text-align:center;font-size:13px;color:#1a9e5c;font-weight:600;margin-bottom:16px">✓ Tampon ajouté</div>
+    <button onclick="closePopup()" style="width:100%;padding:14px;background:#f3f4f6;color:#374151;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer">
+      Scanner suivant
+    </button>`;
+  document.getElementById('scan-popup').classList.add('open');
+  showFlash(name);
 }
 
 function showPopupError(msg) {
