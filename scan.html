@@ -163,7 +163,20 @@ modeFidelite = !billetterieId;
 async function init() {
   if (modeFidelite) {
     document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('fidelite-pin-screen').style.display = 'flex';
+    const savedPin = loadPinLocally();
+    if (savedPin) {
+      fidelitePin = savedPin;
+      document.getElementById('fidelite-pin-screen').style.display = 'none';
+      document.getElementById('scan-event-name').textContent = 'Cartes fidélité';
+      document.getElementById('scan-counter').textContent = 'Mode fidélité';
+      document.getElementById('scan-status').textContent = 'Scanner actif';
+      document.getElementById('btn-actualiser').style.display = 'none';
+      document.getElementById('btn-changer').style.display = '';
+      document.getElementById('scanner-screen').style.display = 'block';
+      await startCamera();
+    } else {
+      document.getElementById('fidelite-pin-screen').style.display = 'flex';
+    }
     return;
   }
   const user = await Auth.getUser().catch(() => null);
