@@ -38,16 +38,27 @@ export async function onRequest({ request, env }) {
   // 2. Mettre à jour le statut si pas encore payée
   const already_paid = !['panier', 'en_attente'].includes(cmd.statut);
   if (!already_paid) {
+    // Recalculer le total depuis les items pour corriger un éventuel total_centimes périmé
+    const itemsRes = await fetch(
+      `${SB}/rest/v1/boutique_items?commande_id=eq.${cmd.id}&select=est_offert,prix_unitaire_centimes,quantite`,
+      { headers }
+    );
+    const items = await itemsRes.json().catch(() => []);
+    const totalCalc = (items || [])
+      .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+      .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
+    const patch = { statut: 'payee', updated_at: new Date().toISOString() };
+    if (totalCalc >= 100 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
     await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ statut: 'payee', updated_at: new Date().toISOString() }),
+      body: JSON.stringify(patch),
     });
   }
 
   // 3. Envoyer l'email de confirmation de paiement
   if (env.RESEND_API_KEY && cmd.email_acheteur) {
-    const total = formatEur(cmd.total_centimes || 0);
+    const total = formatEur((already_paid ? cmd.total_centimes : (typeof totalCalc !== 'undefined' && totalCalc >= 100 ? totalCalc : cmd.total_centimes)) || 0);
     const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
 <div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
@@ -56,7 +67,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
   </div>
   <div style="background:white;padding:24px">
-    <p style="margin:0 0 8px">Bonjour <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
+    <p style="margin:0 0 8px">Hello <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6">
       Ton paiement pour la commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> a bien été reçu (${total}). ✓
     </p>
