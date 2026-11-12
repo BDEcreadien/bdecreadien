@@ -37,6 +37,7 @@ export async function onRequest({ request, env }) {
 
   // 2. Mettre à jour le statut si pas encore payée
   const already_paid = !['panier', 'en_attente'].includes(cmd.statut);
+  let effectiveTotal = cmd.total_centimes;
   if (!already_paid) {
     // Recalculer le total depuis les items pour corriger un éventuel total_centimes périmé
     const itemsRes = await fetch(
@@ -47,6 +48,7 @@ export async function onRequest({ request, env }) {
     const totalCalc = (items || [])
       .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
       .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
+    if (totalCalc >= 100) effectiveTotal = totalCalc;
     const patch = { statut: 'payee', updated_at: new Date().toISOString() };
     if (totalCalc >= 100 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
     await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
@@ -58,7 +60,7 @@ export async function onRequest({ request, env }) {
 
   // 3. Envoyer l'email de confirmation de paiement
   if (env.RESEND_API_KEY && cmd.email_acheteur) {
-    const total = formatEur((already_paid ? cmd.total_centimes : (typeof totalCalc !== 'undefined' && totalCalc >= 100 ? totalCalc : cmd.total_centimes)) || 0);
+    const total = formatEur(effectiveTotal || 0);
     const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
 <div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
