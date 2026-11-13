@@ -198,10 +198,155 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════
+     MODE SCAN BILLETTERIE (?bil=<uuid>)
+     Complètement isolé du scan carte fidélité
+════════════════════════════════════════════════ -->
+<div class="card" id="bil-card" style="display:none">
+  <img src="/icon-512.png" class="logo" alt="BDE" onerror="this.style.display='none'">
+  <h1 id="bil-title" style="margin-bottom:4px;font-size:18px">Chargement…</h1>
+  <p id="bil-counter" style="color:rgba(255,255,255,.45);font-size:13px;font-weight:600;margin-bottom:20px;letter-spacing:.5px">— / — scannés</p>
+
+  <div id="bil-qr-wrap">
+    <div id="bil-qr-reader" style="width:260px;margin:0 auto 14px;border-radius:12px;overflow:hidden"></div>
+    <p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:0">Pointez la caméra vers le QR code du billet</p>
+  </div>
+
+  <div id="bil-result" style="display:none;text-align:left;background:rgba(255,255,255,.07);border-radius:14px;padding:16px;margin-top:16px">
+    <p id="bil-result-nom" style="font-size:22px;font-weight:800;color:white;margin-bottom:2px"></p>
+    <p id="bil-result-info" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:12px"></p>
+    <div id="bil-deja-badge" style="display:none;background:#fef3c7;color:#92400e;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;margin-bottom:12px;text-align:center">⚠️ Déjà scanné</div>
+    <button class="btn" id="bil-btn-valider" onclick="bilValider()" style="margin-bottom:8px">✓ Valider l'entrée</button>
+    <button class="btn btn-secondary" onclick="bilPasser()">Passer / Annuler</button>
+  </div>
+
+  <div id="bil-ok" style="display:none;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:14px;padding:16px;text-align:center;margin-top:16px">
+    <div style="font-size:32px;margin-bottom:4px">✅</div>
+    <p id="bil-ok-nom" style="font-size:16px;font-weight:700;color:#34d399;margin-bottom:2px"></p>
+    <p style="font-size:12px;color:rgba(255,255,255,.45);margin:0">Entrée validée</p>
+  </div>
+
+  <p id="bil-err" style="display:none;color:#f87171;font-size:13px;text-align:center;margin-top:12px"></p>
+</div>
+
 <script>
   const params = new URLSearchParams(window.location.search);
   const carteId = params.get('id');
   const uid = params.get('uid');
+  const bilId = params.get('bil');
+
+  // ═══════════════════════════════════════════════════
+  // MODE BILLETTERIE — s'initialise si ?bil= présent
+  // ═══════════════════════════════════════════════════
+  if (bilId) {
+    document.querySelector('.card').style.display = 'none';
+    document.getElementById('bil-card').style.display = 'block';
+    bilInit();
+  }
+
+  let _bilCurrentId = null;
+  let _bilQr = null;
+
+  async function bilApi(payload) {
+    const res = await fetch('/api/billetterie-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billetterie_id: bilId, ...payload }),
+    });
+    return res.json();
+  }
+
+  async function bilInit() {
+    const info = await bilApi({ action: 'info' });
+    if (info.titre) document.getElementById('bil-title').textContent = info.titre;
+    bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+    await bilStartScanner();
+  }
+
+  function bilUpdateCounter(scanned, total) {
+    document.getElementById('bil-counter').textContent = `${scanned} / ${total} scannés`;
+  }
+
+  async function bilStartScanner() {
+    document.getElementById('bil-result').style.display = 'none';
+    document.getElementById('bil-ok').style.display = 'none';
+    document.getElementById('bil-err').style.display = 'none';
+    document.getElementById('bil-qr-wrap').style.display = 'block';
+    _bilCurrentId = null;
+
+    if (!window.Html5Qrcode) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    if (_bilQr) { try { await _bilQr.stop(); } catch(e) {} }
+    _bilQr = new Html5Qrcode('bil-qr-reader');
+    await _bilQr.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 200, height: 200 } },
+      bilOnScan,
+      () => {}
+    );
+  }
+
+  async function bilOnScan(decodedText) {
+    if (_bilCurrentId === decodedText) return;
+    _bilCurrentId = decodedText;
+    if (_bilQr) { try { await _bilQr.stop(); } catch(e) {} }
+    document.getElementById('bil-qr-wrap').style.display = 'none';
+    document.getElementById('bil-result').style.display = 'block';
+    document.getElementById('bil-result-nom').textContent = '…';
+    document.getElementById('bil-result-info').textContent = '';
+    document.getElementById('bil-deja-badge').style.display = 'none';
+    document.getElementById('bil-btn-valider').disabled = false;
+    document.getElementById('bil-err').style.display = 'none';
+
+    const data = await bilApi({ action: 'lookup', inscription_id: decodedText });
+    if (!data.ok) {
+      document.getElementById('bil-result-nom').textContent = 'Introuvable';
+      document.getElementById('bil-result-info').textContent = data.error || 'QR code invalide pour cet événement';
+      document.getElementById('bil-btn-valider').disabled = true;
+      return;
+    }
+    const i = data.inscription;
+    document.getElementById('bil-result-nom').textContent = `${i.prenom} ${i.nom}`;
+    const infoParts = [i.tarif_nom, i.quantite > 1 ? `×${i.quantite}` : null].filter(Boolean);
+    document.getElementById('bil-result-info').textContent = infoParts.join(' · ');
+    if (i.scanne) {
+      document.getElementById('bil-deja-badge').style.display = 'block';
+      const d = new Date(i.scanne_at);
+      document.getElementById('bil-deja-badge').textContent = `⚠️ Déjà scanné à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+  }
+
+  async function bilValider() {
+    if (!_bilCurrentId) return;
+    document.getElementById('bil-btn-valider').disabled = true;
+    const res = await bilApi({ action: 'validate', inscription_id: _bilCurrentId });
+    if (!res.ok) {
+      document.getElementById('bil-err').textContent = 'Erreur lors de la validation.';
+      document.getElementById('bil-err').style.display = 'block';
+      return;
+    }
+    const nom = document.getElementById('bil-result-nom').textContent;
+    document.getElementById('bil-result').style.display = 'none';
+    document.getElementById('bil-ok').style.display = 'block';
+    document.getElementById('bil-ok-nom').textContent = nom;
+
+    // Mettre à jour le compteur
+    const info = await bilApi({ action: 'info' });
+    bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+
+    // Relancer le scanner après 2s
+    setTimeout(bilStartScanner, 2000);
+  }
+
+  function bilPasser() {
+    bilStartScanner();
+  }
 
   // PIN mémorisé jusqu'à ce soir 23h59 (fin de journée)
   function endOfDay() {
