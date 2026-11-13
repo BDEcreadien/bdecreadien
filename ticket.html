@@ -563,9 +563,8 @@
       document.getElementById('bt-total-detail').textContent = detail;
       const cta = document.getElementById('bt-cta');
       if (cta) cta.textContent = isGratuit ? 'S\'inscrire gratuitement' : 'Réserver ma place';
-      // Afficher le bloc promo seulement pour les events payants
-      const hasPayant = _cfg.tarifs.some(x => x.prix_centimes > 0);
-      document.getElementById('bt-promo-wrap').style.display = hasPayant ? '' : 'none';
+      // Afficher le bloc promo seulement si l'event a des codes promo actifs
+      document.getElementById('bt-promo-wrap').style.display = _hasPromos ? '' : 'none';
     }
 
     async function btCheckPromo() {
