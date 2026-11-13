@@ -1245,7 +1245,7 @@
   @media (max-width:1000px) { .bil-wrap { grid-template-columns:1fr; } }
   .bil-card { background:white; border:1px solid var(--gris-border,#e5e7eb); border-radius:12px; padding:20px; }
   /* Liste billetteries - style carte "premium" */
-  .bil-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap:16px; }
+  .bil-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(min(360px,100%), 1fr)); gap:16px; }
   .bil-item {
     background:white; border-radius:16px; overflow:hidden;
     box-shadow: 0 2px 8px rgba(70,1,134,0.06), 0 0 0 1px rgba(70,1,134,0.06);
