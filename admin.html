@@ -9652,74 +9652,64 @@ async function bilRendreParticipants(existingData, billetterieId) {
   });
   const customKeys = [...customKeysSet];
 
-  const total = _bilParticipantsData.length;
+  const total    = _bilParticipantsData.length;
   const confirmes = _bilParticipantsData.filter(r => ['confirme','confirmee','rejoint'].includes((r.statut||'').toLowerCase())).length;
-  const rejoints  = _bilParticipantsData.filter(r => r.statut?.toLowerCase() === 'rejoint').length;
+  const presents  = _bilParticipantsData.filter(r => r.scanne || r.statut?.toLowerCase() === 'rejoint').length;
 
   wrap.innerHTML = `
-    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:stretch;">
-      <div style="flex:1;min-width:110px;background:#f8f5ff;border:1px solid #e9d5ff;border-radius:14px;padding:14px 18px;">
+    <style>
+      .bil-p-cards { display:flex; flex-direction:column; gap:10px; }
+      .bil-p-card  { background:white; border:1px solid #ede9fe; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+      .bil-p-card:hover { background:#faf5ff; }
+      .bil-p-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+      .bil-p-avatar.scanned { background:linear-gradient(135deg,#059669,#10b981); }
+      .bil-p-info  { flex:1; min-width:0; }
+      .bil-p-name  { font-weight:700; color:#1a0030; font-size:14px; }
+      .bil-p-sub   { font-size:12px; color:#888; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .bil-p-badges { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+      .bil-p-scan-badge { font-size:10px; font-weight:700; color:#059669; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; padding:2px 8px; white-space:nowrap; }
+    </style>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:#f8f5ff;border:1px solid #e9d5ff;border-radius:14px;padding:14px 16px;">
         <div style="font-size:28px;font-weight:800;color:#460186;">${total}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Inscriptions</div>
       </div>
-      <div style="flex:1;min-width:110px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 18px;">
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 16px;">
         <div style="font-size:28px;font-weight:800;color:#166534;">${confirmes}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Confirmés</div>
       </div>
-      <div style="flex:1;min-width:110px;background:#ede9fe;border:1px solid #ddd6fe;border-radius:14px;padding:14px 18px;">
-        <div style="font-size:28px;font-weight:800;color:#5b21b6;">${rejoints}</div>
+      <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:28px;font-weight:800;color:#5b21b6;">${presents}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Présents</div>
       </div>
-      <a href="scan.html?bil=${id}" target="_blank" style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#460186,#D2396D);border-radius:14px;padding:14px 20px;text-decoration:none;cursor:pointer;min-width:110px;">
+      <a href="scan.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#460186,#D2396D);border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
         <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="19" y="14" width="2" height="2" rx=".5" fill="white"/><rect x="19" y="19" width="2" height="2" rx=".5" fill="white"/><rect x="14" y="19" width="2" height="2" rx=".5" fill="white"/></svg>
         <span style="font-size:11px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:.5px">Scanner</span>
       </a>
     </div>
-    <div style="overflow-x:auto;border-radius:16px;border:1px solid #ede9fe;overflow:hidden;">
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead>
-          <tr style="background:linear-gradient(135deg,#460186,#D2396D);color:white;">
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Participant</th>
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Contact</th>
-            ${customKeys.map(k => { const label = k.replace(/^(Ton |Ta |Votre )/i,''); return `<th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;" title="${escapeHtml(k)}">${escapeHtml(label.length > 18 ? label.slice(0,18)+'…' : label)}</th>`; }).join('')}
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Statut</th>
-            <th style="padding:12px 16px;text-align:left;font-weight:700;white-space:nowrap;">Date</th>
-            <th style="padding:12px 16px;text-align:center;font-weight:700;white-space:nowrap;">Groupe</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${_bilParticipantsData.map((r, i) => {
-            const initials = ((r.prenom||'').charAt(0) + (r.nom||'').charAt(0)).toUpperCase();
-            const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-            const isRejoint = r.statut?.toLowerCase() === 'rejoint';
-            const extraInfo = r.suggestions ? `<div style="font-size:11px;color:#999;margin-top:2px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(r.suggestions)}">${escapeHtml(r.suggestions)}</div>` : '';
-            return `<tr style="border-bottom:1px solid #f0e8ff;${i%2===0?'background:white;':'background:#faf5ff;'}transition:background .15s;" onmouseover="this.style.background='#f3eeff'" onmouseout="this.style.background='${i%2===0?'white':'#faf5ff'}'">
-              <td style="padding:12px 16px;">
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${initials}</div>
-                  <div>
-                    <div style="font-weight:600;color:#1a0030;">${escapeHtml(r.prenom||'')} ${escapeHtml(r.nom||'')}</div>
-                  </div>
-                </div>
-              </td>
-              <td style="padding:12px 16px;">
-                <div style="color:#333;">${escapeHtml(r.email||'')}</div>
-                ${r.tel ? `<div style="font-size:11px;color:#888;margin-top:2px;">${escapeHtml(r.tel)}</div>` : ''}
-              </td>
-              ${customKeys.map(k => `<td style="padding:12px 16px;color:#333;">${escapeHtml(String(r.custom_answers?.[k] ?? '—'))}</td>`).join('')}
-              <td style="padding:12px 16px;">${bilStatutChip(r.statut)}</td>
-              <td style="padding:12px 16px;font-size:12px;color:#888;white-space:nowrap;">${date}</td>
-              <td style="padding:12px 16px;text-align:center;">
-                <button onclick="bilToggleRejoint('${r.id}', '${escapeHtml(r.statut||'')}')"
-                  style="padding:5px 12px;border-radius:20px;border:none;cursor:pointer;font-size:11px;font-weight:700;transition:all .15s;
-                  ${isRejoint ? 'background:#ede9fe;color:#5b21b6;' : 'background:#f3f4f6;color:#374151;'}">
-                  ${isRejoint ? '✓ Rejoint' : 'Marquer rejoint'}
-                </button>
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
+    <div class="bil-p-cards">
+      ${_bilParticipantsData.map((r) => {
+        const initials = ((r.prenom||'').charAt(0) + (r.nom||'').charAt(0)).toUpperCase();
+        const isScanned = r.scanne;
+        const isRejoint = r.statut?.toLowerCase() === 'rejoint';
+        const present = isScanned || isRejoint;
+        const customLine = customKeys.map(k => r.custom_answers?.[k]).filter(Boolean).join(' · ');
+        const scanTime = isScanned && r.scanne_at ? new Date(r.scanne_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
+        return `<div class="bil-p-card">
+          <div class="bil-p-avatar ${present ? 'scanned' : ''}">${initials}</div>
+          <div class="bil-p-info">
+            <div class="bil-p-name">${escapeHtml(r.prenom||'')} ${escapeHtml(r.nom||'')}</div>
+            <div class="bil-p-sub">${escapeHtml(r.email||'')}${customLine ? ' · ' + escapeHtml(customLine) : ''}</div>
+          </div>
+          <div class="bil-p-badges">
+            ${present ? `<span class="bil-p-scan-badge">✓ Présent${scanTime ? ' ' + scanTime : ''}</span>` : bilStatutChip(r.statut)}
+            <button onclick="bilToggleRejoint('${r.id}', '${escapeHtml(r.statut||'')}')"
+              style="padding:4px 10px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
+              ${isRejoint ? '↩ Retirer' : '+ Présent'}
+            </button>
+          </div>
+        </div>`;
+      }).join('')}
     </div>
     <div style="margin-top:10px;font-size:12px;color:#aaa;text-align:right;">${total} inscription${total > 1 ? 's' : ''}</div>`;
 }
