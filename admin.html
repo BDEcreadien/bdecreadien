@@ -10004,8 +10004,8 @@ function btqaDateFilteredCommandes() {
   startOfWeek.setDate(startOfDay.getDate() - ((startOfDay.getDay() + 6) % 7));
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   return _btqaCommandes.filter(c => {
-    if (_btqaDateFilter === 'all' || !c.created_at) return true;
-    const d = new Date(c.created_at);
+    if (_btqaDateFilter === 'all') return true;
+    const d = btqaDateRef(c);
     if (_btqaDateFilter === 'today') return d >= startOfDay;
     if (_btqaDateFilter === 'week')  return d >= startOfWeek;
     if (_btqaDateFilter === 'month') return d >= startOfMonth;
