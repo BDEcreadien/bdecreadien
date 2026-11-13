@@ -10003,9 +10003,10 @@ function btqaDateFilteredCommandes() {
   const startOfWeek = new Date(startOfDay);
   startOfWeek.setDate(startOfDay.getDate() - ((startOfDay.getDay() + 6) % 7));
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const statutsPaies = ['payee','production','livraison','confirmee','remise','physique'];
   return _btqaCommandes.filter(c => {
     if (_btqaDateFilter === 'all') return true;
-    const d = btqaDateRef(c);
+    const d = new Date((statutsPaies.includes(c.statut) && c.updated_at) ? c.updated_at : c.created_at);
     if (_btqaDateFilter === 'today') return d >= startOfDay;
     if (_btqaDateFilter === 'week')  return d >= startOfWeek;
     if (_btqaDateFilter === 'month') return d >= startOfMonth;
