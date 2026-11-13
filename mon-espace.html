@@ -2369,9 +2369,18 @@
       await loadUsers();
     }
     async function deleteUser(id, name) {
-      if (!confirm(`Supprimer définitivement le compte de ${name} ?\n\nToutes ses annonces, inscriptions et feedbacks seront effacés.`)) return;
-      const { error } = await Auth.sb.from('profils').delete().eq('id', id);
-      if (error) { alert(error.message); return; }
+      if (!confirm(`Supprimer définitivement le compte de ${name} ?\n\nToutes ses données (profil, annonces, inscriptions, carte fidélité) seront effacées. Cette action est irréversible.`)) return;
+      const session = await Auth.sb.auth.getSession();
+      const token = session?.data?.session?.access_token;
+      if (!token) { alert('Session expirée, reconnecte-toi.'); return; }
+      const res = await fetch('/api/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ targetId: id }),
+      }).catch(() => null);
+      if (!res) { alert('Erreur réseau.'); return; }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { alert(data.error || 'Erreur lors de la suppression.'); return; }
       await Promise.all([loadUsers(), loadAnnuaire()]);
     }
 
