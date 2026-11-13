@@ -439,6 +439,7 @@
     let _tarifSelId = null;
     let _qty = 1;
     let _promo = null; // { id, type, valeur } ou null
+    let _hasPromos = false;
 
     async function loadConfig() {
       // Mode preview (admin) : la config est passée en URL, on l'utilise directement
