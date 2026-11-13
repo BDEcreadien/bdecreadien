@@ -332,15 +332,20 @@
 
     const data = await bilApi({ action: 'lookup', inscription_id: decodedText });
     if (!data.ok) {
+      document.getElementById('bil-result-avatar').textContent = '?';
       document.getElementById('bil-result-nom').textContent = 'Introuvable';
       document.getElementById('bil-result-info').textContent = data.error || 'QR code invalide pour cet événement';
       document.getElementById('bil-btn-valider').disabled = true;
       return;
     }
     const i = data.inscription;
+    document.getElementById('bil-result-avatar').textContent = bilInitials(i.prenom, i.nom);
     document.getElementById('bil-result-nom').textContent = `${i.prenom} ${i.nom}`;
-    const infoParts = [i.tarif_nom, i.quantite > 1 ? `×${i.quantite}` : null].filter(Boolean);
-    document.getElementById('bil-result-info').textContent = infoParts.join(' · ');
+    // Masquer le tarif_nom s'il est générique ("Standard", "Tarif standard", etc.)
+    const tarif = (i.tarif_nom || '').trim();
+    const isGeneric = !tarif || /^(standard|tarif standard|tarif|billet|place)$/i.test(tarif);
+    const infoParts = [isGeneric ? null : tarif, i.quantite > 1 ? `×${i.quantite} places` : null].filter(Boolean);
+    document.getElementById('bil-result-info').textContent = infoParts.join(' · ') || '';
     if (i.scanne) {
       document.getElementById('bil-deja-badge').style.display = 'block';
       const d = new Date(i.scanne_at);
