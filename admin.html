@@ -9705,7 +9705,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
             ${present ? `<span class="bil-p-scan-badge">✓ Présent${scanTime ? ' ' + scanTime : ''}</span>` : bilStatutChip(r.statut)}
             <button onclick="bilToggleRejoint('${r.id}', '${escapeHtml(r.statut||'')}')"
               style="padding:4px 10px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
-              ${isRejoint ? '↩ Retirer' : '+ Présent'}
+              ${(isRejoint || isScanned) ? '↩ Retirer' : '+ Présent'}
             </button>
           </div>
         </div>`;
