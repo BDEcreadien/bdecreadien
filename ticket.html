@@ -899,6 +899,10 @@
     (async function init() {
       _cfg = await loadConfig();
       if (_cfg?.tarifs?.length) _tarifSelId = _cfg.tarifs[0].id;
+      // Vérifier si des codes promo actifs existent pour cet event
+      const { data: promoRows } = await _sb.from('billetterie_codes_promo')
+        .select('id').eq('actif', true).eq('billetterie_slug', slug).limit(1);
+      _hasPromos = !!(promoRows?.length);
       renderPage();
       btChangeQty(0);
 
