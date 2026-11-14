@@ -45,12 +45,14 @@ export async function onRequest({ request, env }) {
       { headers }
     );
     const items = await itemsRes.json().catch(() => []);
+    // Recalcul sans filtrer est_offert : on est dans le retour HelloAsso,
+    // le paiement a eu lieu, on veut le vrai total payé (tous les articles positifs)
     const totalCalc = (items || [])
-      .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+      .filter(i => i.prix_unitaire_centimes > 0)
       .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
-    if (totalCalc >= 100) effectiveTotal = totalCalc;
+    if (totalCalc > 0) effectiveTotal = totalCalc;
     const patch = { statut: 'payee', updated_at: new Date().toISOString() };
-    if (totalCalc >= 100 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
+    if (totalCalc > 0 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
     await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
       method: 'PATCH',
       headers,
