@@ -11745,8 +11745,13 @@ async function btqaCreatePhysOrder() {
 
 // ── Remise ───────────────────────────────────────────────────
 async function btqaLookup() {
-  const raw = document.getElementById('btqa-r-numero').value.trim();
+  let raw = document.getElementById('btqa-r-numero').value.trim();
   if (!raw) return showToast('Entre un numéro de commande ou scanne une carte', 'error');
+  // Auto-complétion : si l'utilisateur tape seulement des chiffres → BDE-YYYY-XXXX
+  if (/^\d+$/.test(raw)) {
+    raw = `BDE-${new Date().getFullYear()}-${raw.padStart(4, '0')}`;
+    document.getElementById('btqa-r-numero').value = raw;
+  }
   const sb = window.Auth.sb;
   const res = document.getElementById('btqa-r-result');
   res.innerHTML = '<p style="color:#888;font-size:13px;padding:20px;text-align:center">Recherche…</p>';
