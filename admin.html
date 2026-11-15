@@ -1912,74 +1912,50 @@
     </div>
   </div>
 
-  <!-- Modal auto-emails boutique -->
-  <div class="btqa-prod-modal-overlay" id="btqa-autoemail-modal-overlay" onclick="if(event.target===this)document.getElementById('btqa-autoemail-modal-overlay').classList.remove('open')">
-    <div class="btqa-prod-modal" style="width:500px;max-width:95vw">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <h4 style="margin:0;font-size:17px">⏰ Emails automatiques</h4>
-        <button onclick="document.getElementById('btqa-autoemail-modal-overlay').classList.remove('open')" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+  <!-- Modal emails campagne boutique -->
+  <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
+    <div style="background:white;border-radius:20px;width:560px;max-width:95vw;overflow:hidden;box-shadow:0 24px 60px rgba(70,1,134,0.18)">
+      <!-- Header dégradé -->
+      <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <p style="margin:0 0 2px;color:rgba(255,255,255,.65);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">Boutique</p>
+          <h4 style="margin:0;color:white;font-size:18px;font-weight:800">Email à tous les acheteurs</h4>
+        </div>
+        <button onclick="btqaCloseEmailModal()" style="border:none;background:rgba(255,255,255,.18);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:16px;color:white;display:flex;align-items:center;justify-content:center;font-weight:700">✕</button>
       </div>
-
-      <!-- Relance commande non payée (panier + en_attente) -->
-      <div style="border:1.5px solid #f0e8ff;border-radius:12px;padding:16px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-          <div>
-            <p style="margin:0;font-weight:700;font-size:14px">Relance commande non payée</p>
-            <p style="margin:3px 0 0;font-size:12px;color:#888">Envoyé automatiquement aux personnes qui n'ont pas encore payé</p>
-          </div>
-          <label style="position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;margin-left:12px">
-            <input type="checkbox" id="btqa-auto-relance" style="opacity:0;width:0;height:0" onchange="btqaSaveAutoEmail('relance',this.checked)">
-            <span onclick="this.previousElementSibling.click()" style="position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:11px;transition:.3s" id="btqa-auto-relance-knob"></span>
-          </label>
+      <!-- Compteur -->
+      <div style="background:#f9f5ff;border-bottom:1px solid #ede5ff;padding:10px 24px">
+        <p id="btqa-em-count" style="margin:0;font-size:13px;color:#666;font-weight:600">Chargement…</p>
+      </div>
+      <!-- Corps -->
+      <div style="padding:20px 24px 24px">
+        <!-- Templates -->
+        <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Template rapide</p>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px">
+          <button onclick="btqaLoadTemplate('production')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🏭 Production lancée</button>
+          <button onclick="btqaLoadTemplate('livraison')"  style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🚚 En livraison</button>
+          <button onclick="btqaLoadTemplate('confirmee')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🎉 Prête à retirer</button>
+          <button onclick="btqaLoadTemplate('vide')"      style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0d8f0;background:#f9f5ff;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:all .15s" onmouseover="this.style.background='#ede5ff'" onmouseout="this.style.background='#f9f5ff'">✏️ Vide</button>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-          <label style="font-size:12px;font-weight:600;color:#666;white-space:nowrap">Date d'envoi :</label>
-          <input type="datetime-local" id="btqa-auto-relance-date"
-            style="flex:1;padding:7px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;outline:none">
-          <label style="font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap">
-            <input type="checkbox" id="btqa-auto-relance-weekly" onchange="btqaSaveAutoEmail('relance',document.getElementById('btqa-auto-relance').checked)" style="accent-color:#460186"> Répéter chaque semaine
-          </label>
-        </div>
-        <textarea id="btqa-auto-relance-body" rows="3" placeholder="Hello {{prenom}}, tu as une commande {{numero}} ({{total}}) en attente sur la boutique BDE !"
-          style="width:100%;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:12px;font-family:inherit;resize:none;box-sizing:border-box;outline:none"></textarea>
-        <button onclick="btqaSendAutoNow('relance')" style="margin-top:10px;padding:7px 16px;background:#f3f0ff;color:#460186;border:1.5px solid #d0c4ff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
-          Envoyer maintenant
+        <!-- Sujet -->
+        <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Sujet</p>
+        <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email"
+          style="width:100%;padding:11px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:14px;box-sizing:border-box;margin-bottom:16px;outline:none;font-family:inherit;transition:border-color .15s"
+          onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
+        <!-- Message -->
+        <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">
+          Message <span style="font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;color:#aaa">— variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span>
+        </p>
+        <textarea id="btqa-em-body" rows="7"
+          style="width:100%;padding:11px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:20px;line-height:1.6;transition:border-color .15s"
+          onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'"></textarea>
+        <!-- Bouton envoi -->
+        <button onclick="btqaSendEmailCampagne(this)"
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#460186,#D2396D,#FF741F);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px;transition:opacity .2s"
+          onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+          Envoyer à tous les acheteurs →
         </button>
       </div>
-
-      <p style="font-size:11px;color:#aaa;margin:14px 0 0">Variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</p>
-    </div>
-  </div>
-
-  <!-- Modal emails boutique -->
-  <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
-    <div class="btqa-prod-modal" style="width:540px;max-width:95vw">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <h4 style="margin:0;font-size:17px">✉ Email à tous les acheteurs</h4>
-        <button onclick="btqaCloseEmailModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
-      </div>
-      <p id="btqa-em-count" style="font-size:12px;color:#888;margin:0 0 16px">Chargement…</p>
-
-      <p class="btqa-prod-modal-label" style="margin-bottom:8px">Template</p>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
-        <button onclick="btqaLoadTemplate('production')" style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🏭 Production</button>
-        <button onclick="btqaLoadTemplate('livraison')"  style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🚚 Livraison</button>
-        <button onclick="btqaLoadTemplate('confirmee')" style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:600;cursor:pointer;color:#460186">🎉 Récupérable</button>
-        <button onclick="btqaLoadTemplate('vide')"      style="padding:5px 12px;border-radius:20px;border:1.5px solid #e0d8f0;background:#f9f5ff;font-size:12px;font-weight:600;cursor:pointer;color:#888">✏️ Vide</button>
-      </div>
-
-      <p class="btqa-prod-modal-label">Sujet</p>
-      <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email"
-        style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none">
-
-      <p class="btqa-prod-modal-label">Message <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">- variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span></p>
-      <textarea id="btqa-em-body" rows="8"
-        style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:18px"></textarea>
-
-      <button onclick="btqaSendEmailCampagne(this)"
-        style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
-        Envoyer maintenant
-      </button>
     </div>
   </div>
 
