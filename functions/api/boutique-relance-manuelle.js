@@ -64,18 +64,27 @@ export async function onRequest({ request, env }) {
   <div style="background:white;padding:24px">
     <p style="margin:0 0 8px">Hello <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444">
-      Ta commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> est toujours en attente de paiement (${total}).
+      Ta commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> est toujours en attente de paiement — ${total} sont réservés pour toi.
     </p>
-    <p style="margin:0 0 20px;font-size:14px;color:#666;line-height:1.6">
-      Elle sera automatiquement annulée si le paiement n'est pas effectué prochainement.<br>
-      Clique sur le bouton ci-dessous pour finaliser ta commande.
+    <p style="margin:0 0 24px;font-size:14px;color:#666;line-height:1.6">
+      Ne laisse pas passer ta commande, elle sera annulée si le paiement n'est pas effectué prochainement.
     </p>
-    <p style="margin:24px 0;text-align:center">
-      <a href="${payUrl}"
-        style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#460186,#D2396D);color:white;text-decoration:none;border-radius:12px;font-family:sans-serif;font-weight:700;font-size:16px">
-        Finaliser ma commande →
-      </a>
-    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px">
+      <tr>
+        <td style="padding-right:6px">
+          <a href="${payUrl}"
+            style="display:block;padding:13px 10px;background:linear-gradient(135deg,#460186,#D2396D,#FF741F);color:white;text-decoration:none;border-radius:12px;font-family:sans-serif;font-weight:700;font-size:15px;text-align:center">
+            💳 Payer ma commande
+          </a>
+        </td>
+        <td style="padding-left:6px">
+          <a href="${payUrl}"
+            style="display:block;padding:13px 10px;background:white;color:#460186;text-decoration:none;border-radius:12px;font-family:sans-serif;font-weight:700;font-size:15px;text-align:center;border:2px solid #d0c4ff">
+            🛒 Voir mon panier
+          </a>
+        </td>
+      </tr>
+    </table>
     <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">
       Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
       &nbsp;·&nbsp; <a href="https://bdecreadien.fr" style="color:#D2396D;text-decoration:none">bdecreadien.fr</a>
