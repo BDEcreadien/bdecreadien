@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contrôle entrée — BDE CREAD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0a0812;
+      min-height: 100vh;
+      color: white;
+    }
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #460186, #D2396D, #FF741F);
+      color: white;
+      margin-bottom: 10px;
+      transition: opacity 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { opacity: 0.82; }
+    .btn:disabled { opacity: 0.35; cursor: default; }
+    .btn-secondary {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      padding: 12px;
+    }
+  </style>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-v2.svg?v=4">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-v2-96x96.png?v=4">
+  <link rel="shortcut icon" href="/favicon-v2.ico?v=4">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png?v=4">
+</head>
+<body>
+
+  <!-- Header -->
+  <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+      <img src="/assets/Logo.png" style="width:32px;height:32px;border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'" alt="BDE">
+      <div style="min-width:0;">
+        <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;">Contrôle entrée</div>
+        <div id="bil-title" style="font-size:15px;font-weight:800;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Chargement…</div>
+      </div>
+    </div>
+    <div id="bil-counter" style="background:rgba(255,255,255,.08);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:rgba(255,255,255,.7);white-space:nowrap;flex-shrink:0;">— / —</div>
+  </div>
+
+  <!-- Zone scanner -->
+  <div id="bil-qr-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;">
+    <div style="position:relative;width:min(280px,80vw);margin-bottom:20px;">
+      <div id="bil-qr-reader" style="width:100%;border-radius:20px;overflow:hidden;background:#111;"></div>
+      <div style="position:absolute;top:-2px;left:-2px;width:28px;height:28px;border-top:3px solid #D2396D;border-left:3px solid #D2396D;border-radius:4px 0 0 0;pointer-events:none;"></div>
+      <div style="position:absolute;top:-2px;right:-2px;width:28px;height:28px;border-top:3px solid #D2396D;border-right:3px solid #D2396D;border-radius:0 4px 0 0;pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-2px;left:-2px;width:28px;height:28px;border-bottom:3px solid #D2396D;border-left:3px solid #D2396D;border-radius:0 0 0 4px;pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-bottom:3px solid #D2396D;border-right:3px solid #D2396D;border-radius:0 0 4px 0;pointer-events:none;"></div>
+    </div>
+    <p style="font-size:13px;color:rgba(255,255,255,.3);margin:0;text-align:center;">Pointez la caméra vers le QR code du billet</p>
+  </div>
+
+  <!-- Résultat scan -->
+  <div id="bil-result" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#13101f;border-top:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;padding:24px 20px 36px;">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px;"></div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div id="bil-result-avatar" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;flex-shrink:0;"></div>
+      <div style="min-width:0;">
+        <div id="bil-result-nom" style="font-size:22px;font-weight:800;color:white;line-height:1.1;"></div>
+        <div id="bil-result-info" style="font-size:13px;color:rgba(255,255,255,.4);margin-top:3px;"></div>
+      </div>
+    </div>
+    <div id="bil-deja-badge" style="display:none;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fbbf24;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;margin-bottom:14px;text-align:center;"></div>
+    <button class="btn" id="bil-btn-valider" onclick="bilValider()" style="margin-bottom:10px;font-size:16px;">✓ Valider l'entrée</button>
+    <button class="btn btn-secondary" onclick="bilPasser()">Annuler</button>
+  </div>
+
+  <!-- Confirmation -->
+  <div id="bil-ok" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d1f18;border-top:1px solid rgba(16,185,129,.2);border-radius:24px 24px 0 0;padding:28px 20px 40px;text-align:center;">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,.15);border:2px solid #10b981;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">✓</div>
+    <div id="bil-ok-nom" style="font-size:20px;font-weight:800;color:#34d399;margin-bottom:4px;"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,.4);">Entrée validée — retour au scan…</div>
+  </div>
+
+  <p id="bil-err" style="display:none;position:fixed;bottom:20px;left:20px;right:20px;background:#2d1515;border:1px solid #ef4444;color:#fca5a5;font-size:13px;text-align:center;padding:12px;border-radius:12px;"></p>
+
+  <!-- Pas de ?bil= -->
+  <div id="bil-no-id" style="display:none;padding:40px 20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+    <p style="color:rgba(255,255,255,.5);font-size:14px;">Lien invalide — aucun événement spécifié.</p>
+  </div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const bilId = params.get('bil');
+
+  if (!bilId) {
+    document.getElementById('bil-no-id').style.display = 'block';
+    document.getElementById('bil-qr-wrap').style.display = 'none';
+  } else {
+    bilInit();
+  }
+
+  let _bilCurrentId = null;
+  let _bilQr = null;
+
+  async function bilApi(payload) {
+    const res = await fetch('/api/billetterie-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billetterie_id: bilId, ...payload }),
+    });
+    return res.json();
+  }
+
+  async function bilInit() {
+    const info = await bilApi({ action: 'info' });
+    if (info.titre) document.getElementById('bil-title').textContent = info.titre;
+    bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+    await bilStartScanner();
+  }
+
+  function bilUpdateCounter(scanned, total) {
+    document.getElementById('bil-counter').textContent = `${scanned} / ${total} scannés`;
+  }
+
+  function bilInitials(prenom, nom) {
+    return ((prenom||'').charAt(0) + (nom||'').charAt(0)).toUpperCase();
+  }
+
+  async function bilStartScanner() {
+    document.getElementById('bil-result').style.display = 'none';
+    document.getElementById('bil-ok').style.display = 'none';
+    document.getElementById('bil-err').style.display = 'none';
+    document.getElementById('bil-qr-wrap').style.display = 'flex';
+    _bilCurrentId = null;
+
+    if (!window.Html5Qrcode) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    if (_bilQr) { try { await _bilQr.stop(); } catch(e) {} }
+    _bilQr = new Html5Qrcode('bil-qr-reader');
+    await _bilQr.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 200, height: 200 } },
+      bilOnScan,
+      () => {}
+    );
+  }
+
+  async function bilOnScan(decodedText) {
+    if (_bilCurrentId === decodedText) return;
+    _bilCurrentId = decodedText;
+    if (_bilQr) { try { await _bilQr.stop(); } catch(e) {} }
+    document.getElementById('bil-qr-wrap').style.display = 'none';
+    document.getElementById('bil-result').style.display = 'block';
+    document.getElementById('bil-result-nom').textContent = '…';
+    document.getElementById('bil-result-info').textContent = '';
+    document.getElementById('bil-deja-badge').style.display = 'none';
+    document.getElementById('bil-btn-valider').disabled = false;
+    document.getElementById('bil-err').style.display = 'none';
+
+    const data = await bilApi({ action: 'lookup', inscription_id: decodedText });
+    if (!data.ok) {
+      document.getElementById('bil-result-avatar').textContent = '?';
+      document.getElementById('bil-result-nom').textContent = 'Introuvable';
+      document.getElementById('bil-result-info').textContent = data.error || 'QR code invalide pour cet événement';
+      document.getElementById('bil-btn-valider').disabled = true;
+      return;
+    }
+    const i = data.inscription;
+    document.getElementById('bil-result-avatar').textContent = bilInitials(i.prenom, i.nom);
+    document.getElementById('bil-result-nom').textContent = `${i.prenom} ${i.nom}`;
+    const tarif = (i.tarif_nom || '').trim();
+    const isGeneric = !tarif || /^(standard|tarif standard|tarif|billet|place)$/i.test(tarif);
+    const infoParts = [isGeneric ? null : tarif, i.quantite > 1 ? `×${i.quantite} places` : null].filter(Boolean);
+    document.getElementById('bil-result-info').textContent = infoParts.join(' · ') || '';
+    if (i.scanne) {
+      document.getElementById('bil-deja-badge').style.display = 'block';
+      const d = new Date(i.scanne_at);
+      document.getElementById('bil-deja-badge').textContent = `⚠️ Déjà scanné à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+  }
+
+  async function bilValider() {
+    if (!_bilCurrentId) return;
+    document.getElementById('bil-btn-valider').disabled = true;
+    const res = await bilApi({ action: 'validate', inscription_id: _bilCurrentId });
+    if (!res.ok) {
+      document.getElementById('bil-err').textContent = 'Erreur lors de la validation.';
+      document.getElementById('bil-err').style.display = 'block';
+      return;
+    }
+    const nom = document.getElementById('bil-result-nom').textContent;
+    document.getElementById('bil-result').style.display = 'none';
+    document.getElementById('bil-ok').style.display = 'block';
+    document.getElementById('bil-ok-nom').textContent = nom;
+
+    const info = await bilApi({ action: 'info' });
+    bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+
+    setTimeout(bilStartScanner, 2000);
+  }
+
+  function bilPasser() {
+    bilStartScanner();
+  }
+</script>
+</body>
+</html>
