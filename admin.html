@@ -11432,16 +11432,16 @@ function btqaLoadTemplate(key) {
   document.getElementById('btqa-em-body').value  = t.body;
 }
 async function btqaSendEmailCampagne(btn) {
-  const statuts = ['en_attente', 'confirmee', 'remise'];
   const sujet = document.getElementById('btqa-em-sujet').value.trim();
   const body  = document.getElementById('btqa-em-body').value.trim();
   if (!sujet) return showToast('Entre un sujet', 'error');
   if (!body)  return showToast('Entre un message', 'error');
 
-  const destinataires = (_btqaCommandes || []).filter(c => statuts.includes(c.statut));
+  const ALL_STATUTS = ['panier', 'en_attente', 'payee', 'production', 'livraison', 'confirmee', 'remise', 'physique', 'annulee'];
+  const destinataires = (_btqaCommandes || []).filter(c => ALL_STATUTS.includes(c.statut) && c.email_acheteur);
   if (!destinataires.length) return showToast('Aucun destinataire', 'error');
 
-  if (!confirm(`Envoyer à ${destinataires.length} personne${destinataires.length > 1 ? 's' : ''} ?`)) return;
+  if (!confirm(`Envoyer à ${destinataires.length} acheteur${destinataires.length > 1 ? 's' : ''} (tous statuts) ?`)) return;
 
   btn.disabled = true; btn.textContent = 'Envoi en cours…';
   try {
@@ -11450,7 +11450,7 @@ async function btqaSendEmailCampagne(btn) {
     const r = await fetch('/api/boutique-email-campagne', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ statuts, sujet, body }),
+      body: JSON.stringify({ statuts: ALL_STATUTS, sujet, body }),
     });
     const data = await r.json();
     console.log('[email-campagne] response', r.status, data);
@@ -11462,7 +11462,7 @@ async function btqaSendEmailCampagne(btn) {
   } catch (e) {
     showToast('Erreur : ' + e.message, 'error');
   }
-  btn.disabled = false; btn.textContent = 'Envoyer maintenant';
+  btn.disabled = false; btn.textContent = 'Envoyer à tous les acheteurs →';
 }
 
 let _btqaMembres = [];
