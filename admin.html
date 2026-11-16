@@ -9742,18 +9742,32 @@ async function bilToggleRejoint(inscriptionId, isPresent) {
 
 function bilExportCsv() {
   if (!_bilParticipantsData.length) return;
-  const cols = ['prenom','nom','email','tel','classe','suggestions','custom_answers','tarif_nom','quantite','statut','created_at'];
-  const headers = ['Prénom','Nom','Email','Tél','Classe','Suggestions','Champs sup.','Tarif','Qté','Statut','Date'];
   const escape = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const rows = [headers.map(escape).join(',')];
+
+  // Collecter toutes les clés custom_answers présentes dans les données
+  const customKeys = [];
+  const customKeysSet = new Set();
   for (const r of _bilParticipantsData) {
-    let d = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
-    rows.push(cols.map(c => {
-      if (c === 'created_at') return escape(d);
-      if (c === 'custom_answers' && r[c] && typeof r[c] === 'object') return escape(Object.entries(r[c]).map(([k,v])=>`${k}: ${v}`).join(' | '));
-      return escape(r[c] ?? '');
-    }).join(','));
+    if (r.custom_answers && typeof r.custom_answers === 'object') {
+      for (const k of Object.keys(r.custom_answers)) {
+        if (!customKeysSet.has(k)) { customKeysSet.add(k); customKeys.push(k); }
+      }
+    }
   }
+
+  const baseCols    = ['prenom','nom','email','tel','classe','suggestions','tarif_nom','quantite','statut','created_at'];
+  const baseHeaders = ['Prénom','Nom','Email','Tél','Classe','Suggestions','Tarif','Qté','Statut','Date'];
+
+  const headers = [...baseHeaders, ...customKeys];
+  const rows = [headers.map(escape).join(',')];
+
+  for (const r of _bilParticipantsData) {
+    const d = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
+    const baseVals = baseCols.map(c => c === 'created_at' ? escape(d) : escape(r[c] ?? ''));
+    const customVals = customKeys.map(k => escape(r.custom_answers?.[k] ?? ''));
+    rows.push([...baseVals, ...customVals].join(','));
+  }
+
   const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
