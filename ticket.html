@@ -614,7 +614,7 @@
 
       const firstName = document.getElementById('bt-prenom').value.trim();
       const lastName = document.getElementById('bt-nom').value.trim();
-      const email = document.getElementById('bt-email').value.trim();
+      const email = document.getElementById('bt-email').value.trim().toLowerCase();
       const tel = document.getElementById('bt-tel').value.trim();
       const fc = _cfg.formulaire_champs || {};
       const classe = fc.classe ? document.getElementById('bt-classe').value.trim() : null;
