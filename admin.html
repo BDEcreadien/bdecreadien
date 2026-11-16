@@ -9717,14 +9717,15 @@ async function bilRendreParticipants(existingData, billetterieId) {
 
 async function bilToggleRejoint(inscriptionId, isPresent) {
   const action = isPresent ? 'unmark' : 'validate';
-  const token = (await Auth.sb.auth.getSession())?.data?.session?.access_token || '';
-  const res = await fetch('/api/billetterie-scan', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ action, billetterie_id: _bilParticipantsBilletterieId, inscription_id: inscriptionId }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.error) { showToast('Erreur : ' + (data.error || res.status), 'error'); return; }
+  try {
+    const res = await fetch('/api/billetterie-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, billetterie_id: _bilParticipantsBilletterieId, inscription_id: inscriptionId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) { showToast('Erreur : ' + (data.error || res.status), 'error'); return; }
+  } catch (e) { showToast('Erreur réseau', 'error'); return; }
   const idx = _bilParticipantsData.findIndex(r => r.id === inscriptionId);
   if (idx !== -1) {
     _bilParticipantsData[idx].scanne = !isPresent;
