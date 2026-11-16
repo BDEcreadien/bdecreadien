@@ -9657,7 +9657,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
   const customKeys = [...customKeysSet];
 
   const total    = _bilParticipantsData.length;
-  const confirmes = _bilParticipantsData.filter(r => ['confirme','confirmee','rejoint'].includes((r.statut||'').toLowerCase())).length;
+  const confirmes = _bilParticipantsData.filter(r => ['confirme','confirmee','rejoint','payee'].includes((r.statut||'').toLowerCase())).length;
   const presents  = _bilParticipantsData.filter(r => r.scanne || r.statut?.toLowerCase() === 'rejoint').length;
 
   wrap.innerHTML = `
