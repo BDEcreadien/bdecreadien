@@ -59,5 +59,15 @@ export async function onRequest({ request, env }) {
     return json({ ok: true });
   }
 
+  // ── unmark : retirer la présence ────────────────────────────────────────
+  if (action === 'unmark') {
+    if (!inscription_id) return json({ error: 'inscription_id manquant' }, 400);
+    await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}`,
+      { method: 'PATCH', headers: h, body: JSON.stringify({ scanne: false, scanne_at: null }) }
+    );
+    return json({ ok: true });
+  }
+
   return json({ error: 'Action inconnue' }, 400);
 }
