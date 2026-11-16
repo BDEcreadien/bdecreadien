@@ -8288,6 +8288,10 @@ const LNK_EMOJIS_PRESETS = [
 
 async function initLiens() {
   document.getElementById('lnk-form').style.display = 'none';
+  const profil = await window.Auth.getProfil();
+  window._lnkIsBureau = profil && profil.bureau === true;
+  const btnNouveau = document.getElementById('lnk-btn-nouveau');
+  if (btnNouveau) btnNouveau.style.display = window._lnkIsBureau ? '' : 'none';
   lnkBuildEmojiPicker();
   await Promise.all([lnkLoad(), lnkLoadStats()]);
 }
@@ -8360,9 +8364,10 @@ const LNK_SOCIAL_LABELS = {
 function lnkRender() {
   const wrap = document.getElementById('lnk-list');
   if (!_lnkList.length) {
-    wrap.innerHTML = '<div class="empty-state">Aucun lien créé. Clique sur "+ Nouveau lien".</div>';
+    wrap.innerHTML = '<div class="empty-state">Aucun lien créé.</div>';
     return;
   }
+  const isBureau = !!window._lnkIsBureau;
   const maxClicks = Math.max(1, ...Object.values(_lnkStats.byId));
 
   // Grouper par type pour affichage lisible
@@ -8392,10 +8397,10 @@ function lnkRender() {
     return `
       <div class="form-card visible" style="margin-bottom:10px;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;gap:2px;">
+          ${isBureau ? `<div style="display:flex;flex-direction:column;gap:2px;">
             <button onclick="lnkMove('${l.id}', -1)" title="Monter" style="${upDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▲</button>
             <button onclick="lnkMove('${l.id}', 1)" title="Descendre" style="${downDisabled}background:none;border:1px solid var(--gris-border);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">▼</button>
-          </div>
+          </div>` : ''}
           ${thumb}
           <div style="flex:1;min-width:180px;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
@@ -8412,11 +8417,11 @@ function lnkRender() {
               <div style="height:100%;width:${barPct}%;background:var(--gradient);border-radius:99px;"></div>
             </div>
           </div>
-          <div style="display:flex;gap:6px;">
+          ${isBureau ? `<div style="display:flex;gap:6px;">
             <button class="btn-edit" onclick="lnkToggleActif('${l.id}')" style="padding:6px 12px;font-size:12px;">${l.actif ? 'Désactiver' : 'Activer'}</button>
             <button class="btn-edit" onclick="lnkEdit('${l.id}')" style="padding:6px 12px;font-size:12px;">Modifier</button>
             <button class="btn-edit" onclick="lnkDelete('${l.id}')" style="padding:6px 12px;font-size:12px;background:rgba(220,50,50,0.08);color:#c0392b;">Supprimer</button>
-          </div>
+          </div>` : ''}
         </div>
       </div>
     `;
@@ -8711,7 +8716,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   const profil = await Auth.getProfil();
   document.getElementById('screen-auth-check').style.display = 'none';
 
-  // Cards bureau-only (Finances + Organisation soirée + Planning semaine + Liens)
+  // Card Liens visible pour tous les membres
+  const lnkCard = document.getElementById('page-card-liens');
+  if (lnkCard) lnkCard.style.display = '';
+
+  // Cards bureau-only (Finances + Organisation soirée + Planning semaine)
   if (profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true) {
     const finCard = document.getElementById('page-card-finances');
     if (finCard) finCard.style.display = '';
@@ -8721,8 +8730,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (facCard) facCard.style.display = '';
     const bilCard = document.getElementById('page-card-billetterie');
     if (bilCard) bilCard.style.display = '';
-    const lnkCard = document.getElementById('page-card-liens');
-    if (lnkCard) lnkCard.style.display = '';
     const btqCard = document.getElementById('page-card-boutique');
     if (btqCard) btqCard.style.display = '';
   }
