@@ -8288,10 +8288,7 @@ const LNK_EMOJIS_PRESETS = [
 
 async function initLiens() {
   document.getElementById('lnk-form').style.display = 'none';
-  const profil = await window.Auth.getProfil();
-  window._lnkIsBureau = profil && profil.bureau === true;
-  const btnNouveau = document.getElementById('lnk-btn-nouveau');
-  if (btnNouveau) btnNouveau.style.display = window._lnkIsBureau ? '' : 'none';
+  window._lnkIsBureau = true;
   lnkBuildEmojiPicker();
   await Promise.all([lnkLoad(), lnkLoadStats()]);
 }
