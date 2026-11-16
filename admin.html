@@ -9698,6 +9698,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
         const present = isScanned || isRejoint;
         const customLine = customKeys.map(k => r.custom_answers?.[k]).filter(Boolean).join(' · ');
         const scanTime = isScanned && r.scanne_at ? new Date(r.scanne_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
+        const scanBadge = present ? `<span class="bil-p-scan-badge">✓ Scanné${scanTime ? ' ' + scanTime : ''}</span>` : '';
         return `<div class="bil-p-card">
           <div class="bil-p-avatar ${present ? 'scanned' : ''}">${initials}</div>
           <div class="bil-p-info">
@@ -9705,7 +9706,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <div class="bil-p-sub">${escapeHtml(r.email||'')}${customLine ? ' · ' + escapeHtml(customLine) : ''}</div>
           </div>
           <div class="bil-p-badges">
-            ${present ? `<span class="bil-p-scan-badge">✓ Présent${scanTime ? ' ' + scanTime : ''}</span>` : bilStatutChip(r.statut)}
+            ${bilStatutChip(r.statut)}${scanBadge}
             <button onclick="bilToggleRejoint('${r.id}', ${present})"
               style="padding:4px 10px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
               ${present ? '↩ Retirer' : '+ Présent'}
