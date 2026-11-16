@@ -220,10 +220,12 @@ async function handleBoutiquePayment(order: any, meta: any) {
 
 async function confirmInscriptions(billetterieSlug: string, email: string) {
   if (!billetterieSlug || !email) return
+  const emailNorm = email.trim().toLowerCase()
+  // Cherche par email exact lowercase OU email avec casse originale
   await supa.from('billetterie_inscriptions')
-    .update({ statut: 'confirme' })
+    .update({ statut: 'payee' })
     .eq('billetterie_slug', billetterieSlug)
-    .eq('email', email.trim().toLowerCase())
+    .ilike('email', emailNorm)
     .eq('statut', 'en_attente')
 }
 
