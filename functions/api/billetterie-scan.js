@@ -62,11 +62,17 @@ export async function onRequest({ request, env }) {
   // ── unmark : retirer la présence ────────────────────────────────────────
   if (action === 'unmark') {
     if (!inscription_id) return json({ error: 'inscription_id manquant' }, 400);
+    const rows = await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&select=statut`,
+      { headers: h }
+    ).then(r => r.json()).catch(() => []);
+    const updateData = { scanne: false, scanne_at: null };
+    if ((rows?.[0]?.statut || '').toLowerCase() === 'rejoint') updateData.statut = 'payee';
     await fetch(
       `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}`,
-      { method: 'PATCH', headers: h, body: JSON.stringify({ scanne: false, scanne_at: null }) }
+      { method: 'PATCH', headers: h, body: JSON.stringify(updateData) }
     );
-    return json({ ok: true });
+    return json({ ok: true, statut: updateData.statut || rows?.[0]?.statut });
   }
 
   return json({ error: 'Action inconnue' }, 400);
