@@ -8689,21 +8689,6 @@ async function lnkDelete(id) {
   showToast('Supprimé', 'success');
 }
 
-async function lnkMove(id, delta) {
-  const i = _lnkList.findIndex(l => l.id === id);
-  if (i < 0) return;
-  const j = i + delta;
-  if (j < 0 || j >= _lnkList.length) return;
-  const a = _lnkList[i], b = _lnkList[j];
-  // Swap ordre - MAJ optimiste
-  const ordreA = a.ordre, ordreB = b.ordre;
-  [_lnkList[i], _lnkList[j]] = [b, a];
-  a.ordre = ordreB; b.ordre = ordreA;
-  lnkRender();
-  const { error: e1 } = await Auth.sb.from('liens').update({ ordre: ordreB }).eq('id', a.id);
-  const { error: e2 } = await Auth.sb.from('liens').update({ ordre: ordreA }).eq('id', b.id);
-  if (e1 || e2) { showToast('Erreur réordonnancement', 'error'); await lnkLoad(); }
-}
 
 // ============================================================
 // AUTO-LOGOUT sur inactivité (sécurité)
