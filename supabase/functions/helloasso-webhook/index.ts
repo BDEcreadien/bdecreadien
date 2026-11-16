@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
   // Vérif token (HelloAsso permet de configurer une URL avec un token en query)
   const url = new URL(req.url)
   const token = url.searchParams.get('token') || req.headers.get('x-webhook-token') || ''
-  if (!WEBHOOK_TOKEN || token !== WEBHOOK_TOKEN) return unauthorized()
+  if (WEBHOOK_TOKEN && token !== WEBHOOK_TOKEN) return unauthorized()
 
   let body: any
   try { body = await req.json() } catch { return bad('invalid json') }
