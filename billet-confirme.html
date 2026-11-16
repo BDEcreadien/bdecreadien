@@ -108,37 +108,20 @@
 
     if (!email && !profilId) return;
 
-    // Trouver l'inscription en_attente correspondante
-    let query = sb.from('billetterie_inscriptions')
-      .select('id, statut, billetterie_id')
-      .eq('billetterie_slug', slug)
-      .eq('statut', 'en_attente')
-      .order('created_at', { ascending: false })
-      .limit(1);
-    if (profilId) query = query.eq('profil_id', profilId);
-    else if (email) query = query.eq('email', email);
+    // Confirmer via CF function (service role, bypass RLS)
+    const res = await fetch('/api/billetterie-confirm-paiement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug, email: email || undefined, profil_id: profilId || undefined }),
+    }).catch(() => null);
+    const result = res ? await res.json().catch(() => ({})) : {};
 
-    const { data: rows } = await query;
-    const row = rows?.[0];
-    if (!row) return;
-
-    // Confirmer l'inscription
-    const update = { statut: 'confirme' };
-    if (profilId && !row.profil_id) update.profil_id = profilId;
-    await sb.from('billetterie_inscriptions').update(update).eq('id', row.id);
-
-    // Vérifier si cette billetterie offre une remise boutique
-    if (row.billetterie_id) {
-      const { data: bil } = await sb.from('billetteries')
-        .select('titre, remise_boutique_centimes')
-        .eq('id', row.billetterie_id)
-        .single();
-      if (bil?.remise_boutique_centimes > 0) {
-        const remiseEur = (bil.remise_boutique_centimes / 100).toFixed(0);
-        document.getElementById('cf-adhesion-txt').textContent =
-          `Ta réduction de ${remiseEur}€ sur la boutique BDE est maintenant active sur ton compte. Elle s\'applique automatiquement à ta prochaine commande !`;
-        document.getElementById('cf-adhesion-badge').style.display = '';
-      }
+    // Afficher la remise boutique si applicable
+    if (result.remise_boutique_centimes > 0) {
+      const remiseEur = (result.remise_boutique_centimes / 100).toFixed(0);
+      document.getElementById('cf-adhesion-txt').textContent =
+        `Ta réduction de ${remiseEur}€ sur la boutique BDE est maintenant active sur ton compte. Elle s\'applique automatiquement à ta prochaine commande !`;
+      document.getElementById('cf-adhesion-badge').style.display = '';
     }
 
     // Nettoyer sessionStorage
