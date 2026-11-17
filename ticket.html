@@ -917,7 +917,7 @@
         const countRes = await _sb
           .from('billetterie_inscriptions')
           .select('id', { count: 'exact', head: true })
-          .eq('billetterie_slug', slug)
+          .eq('billetterie_slug', _cfg.slug)
           .in('statut', ['confirmee', 'confirme', 'payee', 'rejoint']);
         const inscrits = countRes.count ?? 0;
         const restantes = _cfg.places_max - inscrits;
