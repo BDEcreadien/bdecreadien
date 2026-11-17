@@ -9616,6 +9616,9 @@ async function bilEnregistrer() {
     formulaire_champs: b.formulaire_champs || {},
     remise_boutique_centimes: b.remise_boutique_centimes || 0,
     places_max: b.places_max || null,
+    places_restantes_visible: !!b.places_restantes_visible,
+    places_restantes_seuil: b.places_restantes_seuil || null,
+    places_restantes_mode: b.places_restantes_mode || 'exact',
   };
   let error, saved;
   if (b.id) {
