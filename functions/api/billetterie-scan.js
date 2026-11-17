@@ -42,7 +42,7 @@ export async function onRequest({ request, env }) {
   if (action === 'lookup') {
     if (!inscription_id) return json({ error: 'inscription_id manquant' }, 400);
     const rows = await fetch(
-      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}&select=id,prenom,nom,tarif_nom,quantite,scanne,scanne_at`,
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}&select=id,prenom,nom,tarif_nom,quantite,scanne,scanne_at,boisson_scannee,boisson_at`,
       { headers: h }
     ).then(r => r.json());
     if (!rows?.length) return json({ error: 'Inscription introuvable pour cet événement' }, 404);
