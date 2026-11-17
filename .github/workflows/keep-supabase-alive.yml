@@ -1,5 +1,4 @@
 name: Keep Supabase alive
-# Note: voir aussi resend-billets.yml pour le rattrapage des emails échoués
 
 on:
   schedule:
