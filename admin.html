@@ -1408,6 +1408,29 @@
           </div>
         </div>
 
+        <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">📊 Affichage places restantes</h3>
+        <div class="bil-field" style="margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="bil-e-pr-visible" style="width:18px;height:18px;" onchange="bilOnChange()">
+            <span>Afficher le compteur de places restantes sur la page publique</span>
+          </label>
+        </div>
+        <div id="bil-e-pr-options" style="display:none;">
+          <div class="bil-field-row">
+            <div class="bil-field">
+              <label>Afficher à partir de X places restantes</label>
+              <input id="bil-e-pr-seuil" type="number" min="1" placeholder="Toujours afficher" oninput="bilOnChange()">
+            </div>
+            <div class="bil-field">
+              <label>Format d'affichage</label>
+              <select id="bil-e-pr-mode" onchange="bilOnChange()" style="width:100%;padding:9px 10px;border-radius:8px;border:1px solid #ddd;font-size:14px;background:white;">
+                <option value="exact">Nombre exact (ex : 12 places restantes)</option>
+                <option value="dizaine">Par dizaine (ex : moins de 20 places restantes)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">💰 Tarifs</h3>
         <div id="bil-e-tarifs"></div>
         <button type="button" onclick="bilAjouterTarif()" style="background:transparent;border:1px dashed #c4b5fd;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-top:6px;">+ Ajouter un tarif</button>
