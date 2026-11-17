@@ -9499,6 +9499,8 @@ function bilOnChange() {
   b.lieu_affiche = document.getElementById('bil-e-lieu').value;
   b.description = document.getElementById('bil-e-desc').value;
   b.max_par_acheteur = parseInt(document.getElementById('bil-e-max').value, 10) || 4;
+  const pmVal = parseInt(document.getElementById('bil-e-places-max').value, 10);
+  b.places_max = pmVal > 0 ? pmVal : null;
   b.cta_texte = document.getElementById('bil-e-cta').value;
   b.actif = document.getElementById('bil-e-actif').checked;
   // Formulaire participants
