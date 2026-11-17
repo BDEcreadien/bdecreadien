@@ -9582,6 +9582,7 @@ async function bilEnregistrer() {
     tarifs: b.tarifs,
     formulaire_champs: b.formulaire_champs || {},
     remise_boutique_centimes: b.remise_boutique_centimes || 0,
+    places_max: b.places_max || null,
   };
   let error, saved;
   if (b.id) {
