@@ -917,19 +917,29 @@
         const countRes = await _sb.rpc('billetterie_inscrits_count', { p_slug: _cfg.slug });
         const inscrits = countRes.data ?? 0;
         const restantes = _cfg.places_max - inscrits;
-        const seuil = _cfg.places_restantes_seuil;
-        if (restantes > 0 && (!seuil || restantes <= seuil)) {
-          const mode = _cfg.places_restantes_mode || 'exact';
-          let texte;
-          if (mode === 'dizaine') {
-            const dizaine = Math.ceil(restantes / 10) * 10;
-            texte = `Moins de ${dizaine} place${dizaine > 1 ? 's' : ''} restante${dizaine > 1 ? 's' : ''}`;
-          } else {
-            texte = `${restantes} place${restantes > 1 ? 's' : ''} restante${restantes > 1 ? 's' : ''}`;
-          }
-          const badge = document.getElementById('bt-places-badge');
-          badge.textContent = texte;
+        const badge = document.getElementById('bt-places-badge');
+        if (restantes <= 0) {
+          badge.textContent = '🎟️ Sold out — Plus de places disponibles';
+          badge.style.background = 'rgba(220,38,38,.15)';
+          badge.style.border = '1px solid rgba(220,38,38,.3)';
           badge.style.display = '';
+          const cta = document.getElementById('bt-cta');
+          cta.disabled = true;
+          cta.textContent = 'Sold out';
+        } else {
+          const seuil = _cfg.places_restantes_seuil;
+          if (_cfg.places_restantes_visible && (!seuil || restantes <= seuil)) {
+            const mode = _cfg.places_restantes_mode || 'exact';
+            let texte;
+            if (mode === 'dizaine') {
+              const dizaine = Math.ceil(restantes / 10) * 10;
+              texte = `Moins de ${dizaine} place${dizaine > 1 ? 's' : ''} restante${dizaine > 1 ? 's' : ''}`;
+            } else {
+              texte = `${restantes} place${restantes > 1 ? 's' : ''} restante${restantes > 1 ? 's' : ''}`;
+            }
+            badge.textContent = texte;
+            badge.style.display = '';
+          }
         }
       }
 
