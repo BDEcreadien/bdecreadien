@@ -914,12 +914,8 @@
 
       // Badge places restantes
       if (_cfg?.places_restantes_visible && _cfg?.places_max) {
-        const countRes = await _sb
-          .from('billetterie_inscriptions')
-          .select('id', { count: 'exact', head: true })
-          .eq('billetterie_slug', _cfg.slug)
-          .in('statut', ['confirmee', 'confirme', 'payee', 'rejoint']);
-        const inscrits = countRes.count ?? 0;
+        const countRes = await _sb.rpc('billetterie_inscrits_count', { p_slug: _cfg.slug });
+        const inscrits = countRes.data ?? 0;
         const restantes = _cfg.places_max - inscrits;
         const seuil = _cfg.places_restantes_seuil;
         if (restantes > 0 && (!seuil || restantes <= seuil)) {
