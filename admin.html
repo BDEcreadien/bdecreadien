@@ -9735,7 +9735,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
     </style>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
       <div style="background:#f8f5ff;border:1px solid #e9d5ff;border-radius:14px;padding:14px 16px;">
-        <div style="font-size:28px;font-weight:800;color:#460186;">${total}</div>
+        <div style="font-size:28px;font-weight:800;color:#460186;">${total}${_bilParticipantsPlacesMax ? `<span style="font-size:16px;font-weight:500;color:#9ca3af;"> / ${_bilParticipantsPlacesMax}</span>` : ''}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Inscriptions</div>
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 16px;">
