@@ -9530,6 +9530,11 @@ function bilOnChange() {
   const pmVal = parseInt(document.getElementById('bil-e-places-max').value, 10);
   b.places_max = pmVal > 0 ? pmVal : null;
   b.cta_texte = document.getElementById('bil-e-cta').value;
+  b.places_restantes_visible = document.getElementById('bil-e-pr-visible').checked;
+  document.getElementById('bil-e-pr-options').style.display = b.places_restantes_visible ? '' : 'none';
+  const prSeuil = parseInt(document.getElementById('bil-e-pr-seuil').value, 10);
+  b.places_restantes_seuil = prSeuil > 0 ? prSeuil : null;
+  b.places_restantes_mode = document.getElementById('bil-e-pr-mode').value || 'exact';
   b.actif = document.getElementById('bil-e-actif').checked;
   // Formulaire participants
   const fc = {};
