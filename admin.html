@@ -9796,6 +9796,28 @@ async function bilToggleRejoint(inscriptionId, isPresent) {
   showToast(isPresent ? 'Présence retirée' : 'Marqué comme présent !', 'success');
 }
 
+async function bilToggleBoisson(inscriptionId, hasBoisson) {
+  const action = hasBoisson ? 'unboisson' : 'boisson';
+  let data = {};
+  try {
+    const res = await fetch('/api/billetterie-scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, billetterie_id: _bilParticipantsBilletterieId, inscription_id: inscriptionId }),
+    });
+    data = await res.json().catch(() => ({}));
+    if (!res.ok && !data.deja_prise) { showToast('Erreur : ' + (data.error || res.status), 'error'); return; }
+  } catch (e) { showToast('Erreur réseau', 'error'); return; }
+  if (data.error && !data.deja_prise) { showToast(data.error, 'error'); return; }
+  const idx = _bilParticipantsData.findIndex(r => r.id === inscriptionId);
+  if (idx !== -1) {
+    _bilParticipantsData[idx].boisson_scannee = !hasBoisson;
+    _bilParticipantsData[idx].boisson_at = hasBoisson ? null : new Date().toISOString();
+  }
+  bilRendreParticipants(_bilParticipantsData);
+  showToast(hasBoisson ? 'Boisson retirée' : '🍹 Boisson validée !', 'success');
+}
+
 
 function bilExportCsv() {
   if (!_bilParticipantsData.length) return;
