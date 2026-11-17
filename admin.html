@@ -9720,19 +9720,20 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <div class="bil-p-name">${escapeHtml(r.prenom||'')} ${escapeHtml(r.nom||'')}</div>
             <div class="bil-p-sub">${escapeHtml(r.email||'')}${customLine ? ' · ' + escapeHtml(customLine) : ''}</div>
           </div>
-          <div class="bil-p-badges">
-            ${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}
-            <button onclick="bilEnvoyerEmail('${r.id}', this)"
-              style="padding:4px 10px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
-              title="Renvoyer l'email billet">✉</button>
-            <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
-              style="padding:4px 10px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;">
-              ${hasBoisson ? '↩ Boisson' : '🍹 Boisson'}
-            </button>
-            <button onclick="bilToggleRejoint('${r.id}', ${present})"
-              style="padding:4px 10px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
-              ${present ? '↩ Retirer' : '+ Présent'}
-            </button>
+          <div class="bil-p-right">
+            <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
+            <div class="bil-p-actions">
+              <button onclick="bilEnvoyerEmail('${r.id}', this)"
+                style="padding:4px 8px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+                title="Renvoyer l'email billet">✉</button>
+              <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
+                style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"
+                title="${hasBoisson ? 'Retirer boisson' : 'Valider boisson'}">🍹</button>
+              <button onclick="bilToggleRejoint('${r.id}', ${present})"
+                style="padding:4px 8px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
+                ${present ? '↩' : '✓'}
+              </button>
+            </div>
           </div>
         </div>`;
       }).join('')}
