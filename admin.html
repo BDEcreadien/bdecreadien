@@ -9292,6 +9292,10 @@ function bilRemplirEditor() {
   document.getElementById('bil-e-max').value = b.max_par_acheteur || 4;
   document.getElementById('bil-e-places-max').value = b.places_max || '';
   document.getElementById('bil-e-cta').value = b.cta_texte || 'Payer ma place';
+  document.getElementById('bil-e-pr-visible').checked = !!b.places_restantes_visible;
+  document.getElementById('bil-e-pr-seuil').value = b.places_restantes_seuil || '';
+  document.getElementById('bil-e-pr-mode').value = b.places_restantes_mode || 'exact';
+  document.getElementById('bil-e-pr-options').style.display = b.places_restantes_visible ? '' : 'none';
   document.getElementById('bil-e-actif').checked = !!b.actif;
   // Formulaire participants
   const fc = b.formulaire_champs || {};
