@@ -26,12 +26,28 @@ export async function onRequestPost({ request, env }) {
   const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
   const h   = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
 
-  // Récupérer config billetterie pour le titre et whatsapp_url
+  // Récupérer config billetterie pour le titre, whatsapp_url et places_max
   let titre = event_titre || slug;
   let whatsappUrl = null;
-  const cfgRes = await fetch(`${SB}/rest/v1/billetteries?slug=eq.${encodeURIComponent(slug)}&select=titre,whatsapp_url`, { headers: h });
+  let placesMax = null;
+  const cfgRes = await fetch(`${SB}/rest/v1/billetteries?slug=eq.${encodeURIComponent(slug)}&select=titre,whatsapp_url,places_max`, { headers: h });
   const cfgArr = await cfgRes.json();
-  if (cfgArr?.[0]) { titre = cfgArr[0].titre || titre; whatsappUrl = cfgArr[0].whatsapp_url || null; }
+  if (cfgArr?.[0]) {
+    titre = cfgArr[0].titre || titre;
+    whatsappUrl = cfgArr[0].whatsapp_url || null;
+    placesMax = cfgArr[0].places_max || null;
+  }
+
+  // Vérifier la capacité si places_max est défini
+  if (placesMax) {
+    const countRes = await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?billetterie_slug=eq.${encodeURIComponent(slug)}&statut=eq.confirmee&select=id`,
+      { headers: { ...h, Prefer: 'count=exact', 'Range-Unit': 'items', Range: '0-0' } }
+    );
+    const contentRange = countRes.headers.get('Content-Range') || '';
+    const total = parseInt(contentRange.split('/')[1] || '0', 10);
+    if (total >= placesMax) return json({ error: 'Complet', code: 'SOLD_OUT' }, 409);
+  }
 
   // Insérer l'inscription avec statut confirmee
   const inscRes = await fetch(`${SB}/rest/v1/billetterie_inscriptions`, {
