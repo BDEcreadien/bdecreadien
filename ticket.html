@@ -912,6 +912,31 @@
       renderPage();
       btChangeQty(0);
 
+      // Badge places restantes
+      if (_cfg?.places_restantes_visible && _cfg?.places_max) {
+        const countRes = await _sb
+          .from('billetterie_inscriptions')
+          .select('id', { count: 'exact', head: true })
+          .eq('billetterie_slug', slug)
+          .eq('statut', 'confirmee');
+        const inscrits = countRes.count ?? 0;
+        const restantes = _cfg.places_max - inscrits;
+        const seuil = _cfg.places_restantes_seuil;
+        if (restantes > 0 && (!seuil || restantes <= seuil)) {
+          const mode = _cfg.places_restantes_mode || 'exact';
+          let texte;
+          if (mode === 'dizaine') {
+            const dizaine = Math.ceil(restantes / 10) * 10;
+            texte = `Moins de ${dizaine} place${dizaine > 1 ? 's' : ''} restante${dizaine > 1 ? 's' : ''}`;
+          } else {
+            texte = `${restantes} place${restantes > 1 ? 's' : ''} restante${restantes > 1 ? 's' : ''}`;
+          }
+          const badge = document.getElementById('bt-places-badge');
+          badge.textContent = texte;
+          badge.style.display = '';
+        }
+      }
+
       // Bannière compte : vérifier si déjà connecté (cache auth.js ou sessionStorage modal)
       const cachedProfil = btGetCachedProfil();
       if (cachedProfil) btFillWithProfil(cachedProfil);
