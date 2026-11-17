@@ -75,5 +75,33 @@ export async function onRequest({ request, env }) {
     return json({ ok: true, statut: updateData.statut || rows?.[0]?.statut });
   }
 
+  // ── boisson : valider la boisson (2ème passage) ────────────────────────
+  if (action === 'boisson') {
+    if (!inscription_id) return json({ error: 'inscription_id manquant' }, 400);
+    const rows = await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}&select=prenom,nom,scanne,boisson_scannee`,
+      { headers: h }
+    ).then(r => r.json()).catch(() => []);
+    if (!rows?.length) return json({ error: 'Inscription introuvable' }, 404);
+    const insc = rows[0];
+    if (!insc.scanne) return json({ error: 'Entrée non validée — scanner d\'abord à l\'entrée' }, 400);
+    if (insc.boisson_scannee) return json({ ok: false, deja_prise: true, prenom: insc.prenom, nom: insc.nom });
+    await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}`,
+      { method: 'PATCH', headers: h, body: JSON.stringify({ boisson_scannee: true, boisson_at: new Date().toISOString() }) }
+    );
+    return json({ ok: true, prenom: insc.prenom, nom: insc.nom });
+  }
+
+  // ── unboisson : retirer la boisson (correction manuelle) ───────────────
+  if (action === 'unboisson') {
+    if (!inscription_id) return json({ error: 'inscription_id manquant' }, 400);
+    await fetch(
+      `${SB}/rest/v1/billetterie_inscriptions?id=eq.${encodeURIComponent(inscription_id)}&billetterie_id=eq.${encodeURIComponent(billetterie_id)}`,
+      { method: 'PATCH', headers: h, body: JSON.stringify({ boisson_scannee: false, boisson_at: null }) }
+    );
+    return json({ ok: true });
+  }
+
   return json({ error: 'Action inconnue' }, 400);
 }
