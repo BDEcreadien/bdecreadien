@@ -656,24 +656,30 @@
       // Pour les tarifs gratuits c'est la Pages Function qui insère directement avec statut 'confirmee'
       if (totalAmountCents > 0) {
         try {
-          const inscRow = {
-            billetterie_id: _cfg.id || null,
-            billetterie_slug: slug,
-            prenom: firstName,
-            nom: lastName,
-            email,
-            tel: tel || null,
-            classe: classe || null,
-            suggestions: suggestions || null,
-            tarif_id: t.id,
-            tarif_nom: t.nom,
-            quantite: _qty,
-            statut: 'en_attente',
-            custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
-            profil_id: profilId,
-          };
-          const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
-          if (inscError) console.error('[billetterie] inscription INSERT error:', inscError.message, inscError.code, inscError.hint);
+          // Vérifier si déjà inscrit (évite les doublons en cas de double-soumission)
+          const { data: existingInsc } = await _sb.from('billetterie_inscriptions')
+            .select('id').eq('billetterie_slug', slug).ilike('email', email)
+            .not('statut', 'in', '("annulee","remboursee")').maybeSingle();
+          if (!existingInsc) {
+            const inscRow = {
+              billetterie_id: _cfg.id || null,
+              billetterie_slug: slug,
+              prenom: firstName,
+              nom: lastName,
+              email,
+              tel: tel || null,
+              classe: classe || null,
+              suggestions: suggestions || null,
+              tarif_id: t.id,
+              tarif_nom: t.nom,
+              quantite: _qty,
+              statut: 'en_attente',
+              custom_answers: Object.keys(customAnswers).length ? customAnswers : null,
+              profil_id: profilId,
+            };
+            const { error: inscError } = await _sb.from('billetterie_inscriptions').insert(inscRow);
+            if (inscError) console.error('[billetterie] inscription INSERT error:', inscError.message, inscError.code, inscError.hint);
+          }
           try { sessionStorage.setItem('_btInsc', JSON.stringify({ slug, email, profilId })); } catch (_) {}
         } catch (e) { console.warn('[inscription] exception (non-bloquant):', e.message); }
       }
