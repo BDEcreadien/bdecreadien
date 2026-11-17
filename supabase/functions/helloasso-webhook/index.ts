@@ -291,16 +291,12 @@ Deno.serve(async (req) => {
 
         const vente = await upsertVenteFromOrder(data, formSlug)
         await confirmInscriptions(billetterieSlug, payerEmail)
-        sendConfirmationEmail(
-          payerEmail,
-          data?.payer?.firstName ?? '',
-          data?.payer?.lastName ?? '',
-          eventTitre,
-          tarifNom || 'Billet',
-          quantite,
-          vente.montant_total_centimes ?? 0,
-          billetterieSlug,
-        )
+        // Email avec QR code via la CF function
+        fetch('https://bdecreadien.fr/api/billetterie-email-confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vente_id: vente.id, billetterie_slug: billetterieSlug }),
+        }).catch(() => {})
       }
     } else if (eventType === 'Refund' || data?.state === 'Refunded') {
       await markRefunded(data)
