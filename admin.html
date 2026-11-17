@@ -9665,6 +9665,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
   const total    = _bilParticipantsData.length;
   const confirmes = _bilParticipantsData.filter(r => ['confirme','confirmee','rejoint','payee'].includes((r.statut||'').toLowerCase())).length;
   const presents  = _bilParticipantsData.filter(r => r.scanne).length;
+  const boissons  = _bilParticipantsData.filter(r => r.boisson_scannee).length;
 
   wrap.innerHTML = `
     <style>
@@ -9678,8 +9679,9 @@ async function bilRendreParticipants(existingData, billetterieId) {
       .bil-p-sub   { font-size:12px; color:#888; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       .bil-p-badges { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
       .bil-p-scan-badge { font-size:10px; font-weight:700; color:#059669; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; padding:2px 8px; white-space:nowrap; }
+      .bil-p-boisson-badge { font-size:10px; font-weight:700; color:#ea580c; background:#fff7ed; border:1px solid #fed7aa; border-radius:20px; padding:2px 8px; white-space:nowrap; }
     </style>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
       <div style="background:#f8f5ff;border:1px solid #e9d5ff;border-radius:14px;padding:14px 16px;">
         <div style="font-size:28px;font-weight:800;color:#460186;">${total}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Inscriptions</div>
@@ -9687,6 +9689,12 @@ async function bilRendreParticipants(existingData, billetterieId) {
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 16px;">
         <div style="font-size:28px;font-weight:800;color:#059669;">${presents}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Présents</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:28px;font-weight:800;color:#ea580c;">${boissons}</div>
+        <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Boissons</div>
       </div>
       <a href="scan-entree.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#460186,#D2396D);border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
         <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="19" y="14" width="2" height="2" rx=".5" fill="white"/><rect x="19" y="19" width="2" height="2" rx=".5" fill="white"/><rect x="14" y="19" width="2" height="2" rx=".5" fill="white"/></svg>
@@ -9699,9 +9707,11 @@ async function bilRendreParticipants(existingData, billetterieId) {
         const isScanned = r.scanne;
         const isRejoint = r.statut?.toLowerCase() === 'rejoint';
         const present = isScanned || isRejoint;
+        const hasBoisson = r.boisson_scannee;
         const customLine = customKeys.map(k => r.custom_answers?.[k]).filter(Boolean).join(' · ');
         const scanTime = isScanned && r.scanne_at ? new Date(r.scanne_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
         const scanBadge = present ? `<span class="bil-p-scan-badge">✓ Scanné${scanTime ? ' ' + scanTime : ''}</span>` : '';
+        const boissonBadge = hasBoisson ? `<span class="bil-p-boisson-badge">🍹 Boisson</span>` : '';
         return `<div class="bil-p-card">
           <div class="bil-p-avatar ${present ? 'scanned' : ''}">${initials}</div>
           <div class="bil-p-info">
@@ -9709,10 +9719,14 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <div class="bil-p-sub">${escapeHtml(r.email||'')}${customLine ? ' · ' + escapeHtml(customLine) : ''}</div>
           </div>
           <div class="bil-p-badges">
-            ${bilStatutChip(r.statut)}${scanBadge}
+            ${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}
             <button onclick="bilEnvoyerEmail('${r.id}', this)"
               style="padding:4px 10px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
               title="Renvoyer l'email billet">✉</button>
+            <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
+              style="padding:4px 10px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;">
+              ${hasBoisson ? '↩ Boisson' : '🍹 Boisson'}
+            </button>
             <button onclick="bilToggleRejoint('${r.id}', ${present})"
               style="padding:4px 10px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
               ${present ? '↩ Retirer' : '+ Présent'}
