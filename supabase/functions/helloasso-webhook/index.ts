@@ -218,15 +218,25 @@ async function handleBoutiquePayment(order: any, meta: any) {
   })
 }
 
-async function confirmInscriptions(billetterieSlug: string, email: string) {
-  if (!billetterieSlug || !email) return
+async function confirmInscriptions(billetterieSlug: string, email: string): Promise<string | null> {
+  if (!billetterieSlug || !email) return null
   const emailNorm = email.trim().toLowerCase()
-  // Cherche par email exact lowercase OU email avec casse originale
+  // Met à jour les inscriptions en attente (au cas où le statut serait encore 'en_attente')
   await supa.from('billetterie_inscriptions')
     .update({ statut: 'payee' })
     .eq('billetterie_slug', billetterieSlug)
     .ilike('email', emailNorm)
     .eq('statut', 'en_attente')
+  // Retourne l'inscription_id pour l'email (cherche la plus récente quelle que soit le statut)
+  const { data } = await supa.from('billetterie_inscriptions')
+    .select('id')
+    .eq('billetterie_slug', billetterieSlug)
+    .ilike('email', emailNorm)
+    .not('statut', 'in', '("annulee","remboursee")')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return data?.id ?? null
 }
 
 async function markRefunded(order: any) {
