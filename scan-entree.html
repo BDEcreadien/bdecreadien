@@ -81,11 +81,25 @@
     <button class="btn btn-secondary" onclick="bilPasser()">Annuler</button>
   </div>
 
-  <!-- Confirmation -->
+  <!-- Confirmation entrée -->
   <div id="bil-ok" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0d1f18;border-top:1px solid rgba(16,185,129,.2);border-radius:24px 24px 0 0;padding:28px 20px 40px;text-align:center;">
     <div style="width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,.15);border:2px solid #10b981;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">✓</div>
     <div id="bil-ok-nom" style="font-size:20px;font-weight:800;color:#34d399;margin-bottom:4px;"></div>
     <div style="font-size:14px;color:rgba(255,255,255,.4);">Entrée validée — retour au scan…</div>
+  </div>
+
+  <!-- Confirmation boisson -->
+  <div id="bil-ok-boisson" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0f00;border-top:1px solid rgba(251,146,60,.2);border-radius:24px 24px 0 0;padding:28px 20px 40px;text-align:center;">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(251,146,60,.15);border:2px solid #fb923c;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">🍹</div>
+    <div id="bil-ok-boisson-nom" style="font-size:20px;font-weight:800;color:#fb923c;margin-bottom:4px;"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,.4);">Boisson validée — retour au scan…</div>
+  </div>
+
+  <!-- Boisson déjà prise -->
+  <div id="bil-boisson-deja" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0808;border-top:1px solid rgba(239,68,68,.2);border-radius:24px 24px 0 0;padding:28px 20px 40px;text-align:center;">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(239,68,68,.15);border:2px solid #ef4444;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">🚫</div>
+    <div id="bil-boisson-deja-nom" style="font-size:20px;font-weight:800;color:#f87171;margin-bottom:4px;"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,.4);">Boisson déjà prise — retour au scan…</div>
   </div>
 
   <p id="bil-err" style="display:none;position:fixed;bottom:20px;left:20px;right:20px;background:#2d1515;border:1px solid #ef4444;color:#fca5a5;font-size:13px;text-align:center;padding:12px;border-radius:12px;"></p>
