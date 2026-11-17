@@ -148,9 +148,13 @@
     return ((prenom||'').charAt(0) + (nom||'').charAt(0)).toUpperCase();
   }
 
+  let _bilMode = 'entree'; // 'entree' | 'boisson'
+
   async function bilStartScanner() {
     document.getElementById('bil-result').style.display = 'none';
     document.getElementById('bil-ok').style.display = 'none';
+    document.getElementById('bil-ok-boisson').style.display = 'none';
+    document.getElementById('bil-boisson-deja').style.display = 'none';
     document.getElementById('bil-err').style.display = 'none';
     document.getElementById('bil-qr-wrap').style.display = 'flex';
     _bilCurrentId = null;
