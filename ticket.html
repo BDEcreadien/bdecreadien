@@ -930,13 +930,8 @@
         const restantes = _cfg.places_max - inscrits;
         const badge = document.getElementById('bt-places-badge');
         if (restantes <= 0) {
-          badge.textContent = '🎟️ Sold out — Plus de places disponibles';
-          badge.style.background = 'rgba(220,38,38,.15)';
-          badge.style.border = '1px solid rgba(220,38,38,.3)';
-          badge.style.display = '';
-          const cta = document.getElementById('bt-cta');
-          cta.disabled = true;
-          cta.textContent = 'Sold out';
+          document.querySelector('.bt-card-body:has(#bt-tarifs)').innerHTML =
+            '<div style="text-align:center;padding:20px 0;font-size:18px;font-weight:800;color:#9ca3af;letter-spacing:2px;text-transform:uppercase;">Sold out</div>';
         } else {
           const seuil = _cfg.places_restantes_seuil;
           if (_cfg.places_restantes_visible && (!seuil || restantes <= seuil)) {
