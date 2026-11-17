@@ -204,29 +204,73 @@
     const isGeneric = !tarif || /^(standard|tarif standard|tarif|billet|place)$/i.test(tarif);
     const infoParts = [isGeneric ? null : tarif, i.quantite > 1 ? `×${i.quantite} places` : null].filter(Boolean);
     document.getElementById('bil-result-info').textContent = infoParts.join(' · ') || '';
-    if (i.scanne) {
+    const btn = document.getElementById('bil-btn-valider');
+    if (!i.scanne) {
+      // Pas encore scanné → proposer validation entrée
+      _bilMode = 'entree';
+      btn.textContent = '✓ Valider l\'entrée';
+      btn.style.background = 'linear-gradient(135deg, #460186, #D2396D, #FF741F)';
+      btn.disabled = false;
+    } else if (!i.boisson_scannee) {
+      // Entrée OK, boisson pas encore prise → proposer validation boisson
+      _bilMode = 'boisson';
       document.getElementById('bil-deja-badge').style.display = 'block';
       const d = new Date(i.scanne_at);
-      document.getElementById('bil-deja-badge').textContent = `⚠️ Déjà scanné à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+      document.getElementById('bil-deja-badge').textContent = `✓ Entrée validée à ${d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+      document.getElementById('bil-deja-badge').style.background = 'rgba(16,185,129,.12)';
+      document.getElementById('bil-deja-badge').style.borderColor = 'rgba(16,185,129,.3)';
+      document.getElementById('bil-deja-badge').style.color = '#34d399';
+      btn.textContent = '🍹 Valider la boisson';
+      btn.style.background = 'linear-gradient(135deg, #c2410c, #fb923c)';
+      btn.disabled = false;
+    } else {
+      // Boisson déjà prise
+      _bilMode = 'deja';
+      document.getElementById('bil-deja-badge').style.display = 'block';
+      document.getElementById('bil-deja-badge').textContent = '🚫 Boisson déjà prise';
+      document.getElementById('bil-deja-badge').style.background = 'rgba(239,68,68,.12)';
+      document.getElementById('bil-deja-badge').style.borderColor = 'rgba(239,68,68,.3)';
+      document.getElementById('bil-deja-badge').style.color = '#f87171';
+      btn.disabled = true;
+      btn.textContent = '🚫 Boisson déjà prise';
+      btn.style.background = 'rgba(255,255,255,0.07)';
     }
   }
 
   async function bilValider() {
     if (!_bilCurrentId) return;
-    document.getElementById('bil-btn-valider').disabled = true;
-    const res = await bilApi({ action: 'validate', inscription_id: _bilCurrentId });
-    if (!res.ok) {
-      document.getElementById('bil-err').textContent = 'Erreur lors de la validation.';
-      document.getElementById('bil-err').style.display = 'block';
-      return;
-    }
+    const btn = document.getElementById('bil-btn-valider');
+    btn.disabled = true;
     const nom = document.getElementById('bil-result-nom').textContent;
     document.getElementById('bil-result').style.display = 'none';
-    document.getElementById('bil-ok').style.display = 'block';
-    document.getElementById('bil-ok-nom').textContent = nom;
 
-    const info = await bilApi({ action: 'info' });
-    bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+    if (_bilMode === 'entree') {
+      const res = await bilApi({ action: 'validate', inscription_id: _bilCurrentId });
+      if (!res.ok) {
+        document.getElementById('bil-err').textContent = 'Erreur lors de la validation.';
+        document.getElementById('bil-err').style.display = 'block';
+        setTimeout(bilStartScanner, 2000);
+        return;
+      }
+      document.getElementById('bil-ok').style.display = 'block';
+      document.getElementById('bil-ok-nom').textContent = nom;
+      const info = await bilApi({ action: 'info' });
+      bilUpdateCounter(info.scanned ?? 0, info.total ?? 0);
+    } else if (_bilMode === 'boisson') {
+      const res = await bilApi({ action: 'boisson', inscription_id: _bilCurrentId });
+      if (res.deja_prise) {
+        document.getElementById('bil-boisson-deja').style.display = 'block';
+        document.getElementById('bil-boisson-deja-nom').textContent = nom;
+      } else if (res.ok) {
+        document.getElementById('bil-ok-boisson').style.display = 'block';
+        document.getElementById('bil-ok-boisson-nom').textContent = nom;
+      } else {
+        document.getElementById('bil-err').textContent = res.error || 'Erreur boisson.';
+        document.getElementById('bil-err').style.display = 'block';
+        setTimeout(bilStartScanner, 2000);
+        return;
+      }
+    }
 
     setTimeout(bilStartScanner, 2000);
   }
