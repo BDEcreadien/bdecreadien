@@ -259,19 +259,45 @@ Deno.serve(async (req) => {
       } else {
         // ── Billetterie ───────────────────────────────────────
         const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
-        const billetterieSlug = data?.metadata?.billetterie_slug ?? formSlug
+        const payerEmail = (data?.payer?.email ?? '').trim().toLowerCase()
+
+        // HelloAsso ne retransmet pas toujours le metadata : on le récupère depuis la DB
+        let billetterieSlug = data?.metadata?.billetterie_slug ?? ''
+        let eventTitreFromMeta = data?.metadata?.event_titre ?? ''
+        let tarifNom = data?.metadata?.tarif_nom ?? ''
+        let quantite = Number(data?.metadata?.quantite) || 1
+
+        if ((!billetterieSlug || !eventTitreFromMeta) && payerEmail) {
+          const { data: insc } = await supa.from('billetterie_inscriptions')
+            .select('billetterie_slug, tarif_nom, quantite')
+            .ilike('email', payerEmail)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (insc) {
+            if (!billetterieSlug) billetterieSlug = insc.billetterie_slug ?? ''
+            if (!tarifNom) tarifNom = insc.tarif_nom ?? ''
+            if (!quantite || quantite === 1) quantite = insc.quantite ?? 1
+          }
+        }
+        if (!billetterieSlug) billetterieSlug = formSlug
+
+        // Titre de l'événement : metadata > table billetteries > slug
+        let eventTitre = eventTitreFromMeta
+        if (!eventTitre && billetterieSlug) {
+          const { data: bil } = await supa.from('billetteries').select('titre').eq('slug', billetterieSlug).maybeSingle()
+          eventTitre = bil?.titre ?? (await findEventBySlug(billetterieSlug))?.titre ?? billetterieSlug
+        }
+
         const vente = await upsertVenteFromOrder(data, formSlug)
-        // Mettre à jour le statut des inscriptions
-        await confirmInscriptions(billetterieSlug, data?.payer?.email ?? '')
-        // Email de confirmation via Resend (fire-and-forget)
-        const eventTitre = data?.metadata?.event_titre ?? (await findEventBySlug(formSlug))?.titre ?? billetterieSlug
+        await confirmInscriptions(billetterieSlug, payerEmail)
         sendConfirmationEmail(
-          data?.payer?.email ?? '',
+          payerEmail,
           data?.payer?.firstName ?? '',
           data?.payer?.lastName ?? '',
           eventTitre,
-          data?.metadata?.tarif_nom ?? 'Billet',
-          Number(data?.metadata?.quantite) || 1,
+          tarifNom || 'Billet',
+          quantite,
           vente.montant_total_centimes ?? 0,
           billetterieSlug,
         )
