@@ -41,7 +41,7 @@ export async function onRequestPost({ request, env }) {
   // Vérifier la capacité si places_max est défini
   if (placesMax) {
     const countRes = await fetch(
-      `${SB}/rest/v1/billetterie_inscriptions?billetterie_slug=eq.${encodeURIComponent(slug)}&statut=eq.confirmee&select=id`,
+      `${SB}/rest/v1/billetterie_inscriptions?billetterie_slug=eq.${encodeURIComponent(slug)}&statut=in.(confirmee,confirme,payee,rejoint)&select=id`,
       { headers: { ...h, Prefer: 'count=exact', 'Range-Unit': 'items', Range: '0-0' } }
     );
     const contentRange = countRes.headers.get('Content-Range') || '';
