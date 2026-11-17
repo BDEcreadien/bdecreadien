@@ -721,6 +721,17 @@
         return;
       }
 
+      // Vérifier la capacité avant de lancer le paiement
+      if (_cfg.places_max) {
+        const capRes = await _sb.rpc('billetterie_inscrits_count', { p_slug: _cfg.slug });
+        const capInscrits = capRes.data ?? 0;
+        if (capInscrits >= _cfg.places_max) {
+          showError('Désolé, il n\'y a plus de places disponibles.');
+          cta.disabled = true; cta.textContent = 'Sold out';
+          return;
+        }
+      }
+
       try {
         const res = await fetch(`${SUPABASE_URL_VAL}/functions/v1/helloasso-checkout`, {
           method: 'POST',
