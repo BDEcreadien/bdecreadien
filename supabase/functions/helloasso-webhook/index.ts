@@ -266,8 +266,8 @@ Deno.serve(async (req) => {
       // ── Boutique BDE ─────────────────────────────────────────
       if (meta.commande_id || meta.numero) {
         await handleBoutiquePayment(data, meta)
-      } else {
-        // ── Billetterie ───────────────────────────────────────
+      } else if (eventType === 'Order') {
+        // ── Billetterie : on ignore les événements Payment (doublons avec montant=0) ──
         const formSlug = data?.formSlug ?? data?.form?.formSlug ?? ''
         const payerEmail = (data?.payer?.email ?? '').trim().toLowerCase()
 
