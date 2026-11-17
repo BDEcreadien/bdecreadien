@@ -922,6 +922,7 @@
           document.querySelector('.bt-card-body:has(#bt-tarifs)').innerHTML =
             '<div style="text-align:center;padding:20px 0;font-size:18px;font-weight:800;color:#9ca3af;letter-spacing:2px;text-transform:uppercase;">Sold out</div>';
           document.getElementById('bt-form-card').style.display = 'none';
+          document.getElementById('bt-account-banner').style.display = 'none';
         } else {
           const seuil = _cfg.places_restantes_seuil;
           if (_cfg.places_restantes_visible && (!seuil || restantes <= seuil)) {
