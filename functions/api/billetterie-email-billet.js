@@ -81,5 +81,13 @@ export async function onRequest({ request, env }) {
     const err = await r.text().catch(() => '');
     return json({ error: err }, 500);
   }
+
+  // Marquer l'email comme envoyé pour le cron de rattrapage
+  await fetch(`${SB}/rest/v1/billetterie_inscriptions?id=eq.${inscription_id}`, {
+    method: 'PATCH',
+    headers: h,
+    body: JSON.stringify({ billet_email_sent_at: new Date().toISOString() }),
+  }).catch(() => {});
+
   return json({ ok: true });
 }
