@@ -64,14 +64,12 @@ export async function onRequest({ request, env }) {
       ${dateAffiche ? `<div style="flex:1;min-width:130px;padding-right:18px;${lieuAffiche ? 'border-right:2px solid #e9d5ff;margin-right:18px;' : ''}"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Date</span><span style="font-size:14px;font-weight:700;color:#460186">${dateAffiche}</span></div>` : ''}
       ${lieuAffiche ? `<div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Lieu</span><span style="font-size:14px;font-weight:700;color:#460186">${lieuAffiche}</span></div>` : ''}
     </div>
-    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
-      ${tarifNom ? `<div style="flex:1;min-width:130px;padding-right:18px;border-right:2px solid #e9d5ff;margin-right:18px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
-      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Montant payé</span><span style="font-size:14px;font-weight:700;color:#460186">${montant}</span></div>
-    </div>` : `
-    <div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
-      ${tarifNom ? `<div style="flex:1;min-width:130px;padding-right:18px;border-right:2px solid #e9d5ff;margin-right:18px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>` : ''}
-      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Montant payé</span><span style="font-size:22px;font-weight:800;color:#460186">${montant}</span></div>
-    </div>`;
+    ${tarifNom ? `<div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>
+    </div>` : ''}` : `
+    ${tarifNom ? `<div style="background:#f9f5ff;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:0;flex-wrap:wrap;">
+      <div style="flex:1;min-width:130px;"><span style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tarif</span><span style="font-size:14px;font-weight:700;color:#460186">${tarifNom}${quantite > 1 ? ` × ${quantite}` : ''}</span></div>
+    </div>` : ''}`;
 
   const qrBlock = qrUrl ? `
     <div style="background:#faf5ff;border:1.5px solid #ede5ff;border-radius:16px;padding:24px;margin-top:24px;text-align:center;">
