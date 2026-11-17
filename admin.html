@@ -9677,7 +9677,9 @@ async function bilRendreParticipants(existingData, billetterieId) {
       .bil-p-info  { flex:1; min-width:0; }
       .bil-p-name  { font-weight:700; color:#1a0030; font-size:14px; }
       .bil-p-sub   { font-size:12px; color:#888; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      .bil-p-badges { display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0; }
+      .bil-p-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+      .bil-p-badges { display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-end; }
+      .bil-p-actions { display:flex; gap:4px; }
       .bil-p-scan-badge { font-size:10px; font-weight:700; color:#059669; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; padding:2px 8px; white-space:nowrap; }
       .bil-p-boisson-badge { font-size:10px; font-weight:700; color:#ea580c; background:#fff7ed; border:1px solid #fed7aa; border-radius:20px; padding:2px 8px; white-space:nowrap; }
     </style>
