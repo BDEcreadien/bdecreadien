@@ -78,7 +78,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
   </div>
   <div style="background:white;padding:24px">
-    <p style="margin:0 0 8px">Bonjour <strong>${cmd.nom_acheteur}</strong>,</p>
+    <p style="margin:0 0 8px">Hello <strong>${cmd.nom_acheteur}</strong>,</p>
     <p style="margin:0 0 20px;font-size:16px;font-weight:700;color:${e.couleur}">${e.titre}</p>
     <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#444">${e.message(cmd)}</p>
     <p style="margin:0 0 6px;font-size:12px;color:#aaa;letter-spacing:1px;text-transform:uppercase">Numéro de commande</p>
