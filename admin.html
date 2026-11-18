@@ -12038,13 +12038,12 @@ function btqaAddItemBlock(cmdId) {
       <button onclick="document.getElementById('btqa-add-${cmdId}').hidden=!document.getElementById('btqa-add-${cmdId}').hidden" style="width:100%;padding:9px;border:1.5px dashed #c9b8ee;background:#faf8ff;border-radius:10px;font-size:13px;font-weight:700;color:#460186;cursor:pointer">+ Ajouter un article</button>
       <div id="btqa-add-${cmdId}" hidden style="margin-top:8px;padding:12px;background:#f8f5ff;border:1.5px solid #ede5ff;border-radius:12px">
         <select id="btqa-add-prod-${cmdId}" onchange="btqaAddItemProdChange('${cmdId}')" style="${inp};margin-bottom:8px"><option value="">Choisir un produit…</option>${opts}</select>
+        <input type="hidden" id="btqa-add-design-${cmdId}"><input type="hidden" id="btqa-add-couleur-${cmdId}"><input type="hidden" id="btqa-add-taille-${cmdId}">
+        <div id="btqa-add-chips-${cmdId}"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <input id="btqa-add-design-${cmdId}" placeholder="Design (ex : Design 4)" style="${inp}">
-          <input id="btqa-add-couleur-${cmdId}" placeholder="Couleur" style="${inp}">
-          <input id="btqa-add-taille-${cmdId}" placeholder="Taille (S, M, L…)" style="${inp}">
           <input id="btqa-add-qte-${cmdId}" type="number" min="1" value="1" placeholder="Quantité" style="${inp}">
+          <input id="btqa-add-prix-${cmdId}" type="number" min="0" step="0.01" placeholder="Prix € (selon produit)" style="${inp}">
         </div>
-        <input id="btqa-add-prix-${cmdId}" type="number" min="0" step="0.01" placeholder="Prix unitaire en € (rempli selon le produit)" style="${inp};margin-bottom:8px">
         <button onclick="btqaAddItemSave('${cmdId}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Ajouter à la commande</button>
       </div>
     </div>`;
