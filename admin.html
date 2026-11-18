@@ -12051,6 +12051,24 @@ function btqaAddItemBlock(cmdId) {
 function btqaAddItemProdChange(cmdId) {
   const p = (_btqaProduits || []).find(x => x.id === document.getElementById('btqa-add-prod-' + cmdId).value);
   document.getElementById('btqa-add-prix-' + cmdId).value = p ? (p.prix_centimes / 100).toFixed(2) : '';
+  ['design', 'couleur', 'taille'].forEach(k => { document.getElementById(`btqa-add-${k}-${cmdId}`).value = ''; });
+  const wrap = document.getElementById('btqa-add-chips-' + cmdId);
+  if (!p) { wrap.innerHTML = ''; return; }
+  const esc = v => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  const groups = [
+    ['design', 'Design', (p.designs || []).map(d => d.nom)],
+    ['couleur', 'Couleur', p.couleurs_disponibles || []],
+    ['taille', 'Taille', p.tailles_disponibles || []],
+  ];
+  wrap.innerHTML = groups.filter(g => g[2].length).map(([k, label, vals]) => `
+    <p style="margin:0 0 5px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px">${label}</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${vals.map(v =>
+      `<button type="button" class="btqa-psel-btn" data-v="${esc(v)}" onclick="btqaAddPick('${cmdId}','${k}',this)">${esc(v)}</button>`).join('')}</div>`).join('');
+  groups.forEach(([k, , vals]) => { if (vals.length === 1) wrap.querySelector(`[onclick*="'${k}'"]`)?.click(); });
+}
+function btqaAddPick(cmdId, k, btn) {
+  document.getElementById(`btqa-add-${k}-${cmdId}`).value = btn.dataset.v;
+  btn.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('selected', b === btn));
 }
 async function btqaAddItemSave(cmdId) {
   const g = k => document.getElementById(`btqa-add-${k}-${cmdId}`).value.trim();
