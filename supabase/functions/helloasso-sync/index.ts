@@ -143,6 +143,11 @@ Deno.serve(async (req) => {
     <p style="margin:0 0 20px;font-size:14px;color:#666;line-height:1.6">
       Ta commande est maintenant en cours de préparation. Tu recevras un email dès qu'elle sera prête à être récupérée.
     </p>
+    <div style="text-align:center;margin:20px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
+      <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#460186">Ton QR code de retrait</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(cmd.numero)}&size=180x180&margin=8&color=460186" alt="${escHtml(cmd.numero)}" style="width:180px;height:180px">
+      <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#460186;letter-spacing:2px">${escHtml(cmd.numero)}</p>
+    </div>
     <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">
       Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
     </p>
