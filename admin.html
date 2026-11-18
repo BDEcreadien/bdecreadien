@@ -11174,7 +11174,54 @@ async function btqaCancel(id) {
 }
 
 // ── Actions groupées ─────────────────────────────────────────
+function btqaMailPaiementApplicable(c) {
+  return c.type !== 'physique' && !!c.email_acheteur && ['payee','production','livraison','confirmee','remise'].includes(c.statut);
+}
+async function btqaEnvoyerMailPaiement(c) {
+  try {
+    const r = await fetch('/api/boutique-email-etape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: c.id, etape: 'payee' }),
+    });
+    if (!r.ok) return false;
+    c.email_confirmation_sent_at = new Date().toISOString();
+    return true;
+  } catch { return false; }
+}
+async function btqaRenvoyerPaiement(id, btn) {
+  const c = (_btqaCommandes || []).find(x => x.id === id);
+  if (!c) return;
+  if (c.email_confirmation_sent_at && !confirm(`Renvoyer le mail de confirmation à ${c.email_acheteur} ?`)) return;
+  btn.disabled = true; btn.textContent = '…';
+  const ok = await btqaEnvoyerMailPaiement(c);
+  if (!ok) { btn.disabled = false; btn.textContent = '✉ Envoyer'; alert('Envoi impossible (quota Resend atteint ?). Réessaie plus tard.'); return; }
+  btqaRenderTable(_btqaCommandes);
+  btqaUpdateBulkBar();
+}
+async function btqaBulkMailsPaiement(btn) {
+  const todo = (_btqaCommandes || []).filter(c => btqaMailPaiementApplicable(c) && !c.email_confirmation_sent_at);
+  if (!todo.length) return;
+  const batch = todo.slice(0, 90);
+  if (!confirm(`Envoyer le mail de confirmation de paiement (avec QR code) à ${batch.length} client(s) sur ${todo.length} ?\nLe quota Resend gratuit est de 100 mails par jour.`)) return;
+  let ok = 0;
+  for (const c of batch) {
+    btn.textContent = `Envoi ${ok + 1}/${batch.length}…`;
+    if (!(await btqaEnvoyerMailPaiement(c))) break;
+    ok++;
+    await new Promise(r => setTimeout(r, 400));
+  }
+  btqaRenderTable(_btqaCommandes);
+  btqaUpdateBulkBar();
+  alert(ok === batch.length ? `${ok} mail(s) envoyé(s).` : `${ok} mail(s) envoyé(s), arrêt sur une erreur (quota Resend ?). Réessaie plus tard, seuls les non-envoyés seront relancés.`);
+}
 function btqaUpdateBulkBar() {
+  const mailBtn = document.getElementById('btqa-bulk-mails');
+  if (mailBtn) {
+    const n = (_btqaCommandes || []).filter(c => btqaMailPaiementApplicable(c) && !c.email_confirmation_sent_at).length;
+    mailBtn.style.display = n ? '' : 'none';
+    mailBtn.textContent = `✉ Mails de paiement non envoyés (${n})`;
+  }
   const counts = { payee: 0, production: 0, livraison: 0 };
   (_btqaCommandes || []).forEach(c => { if (counts[c.statut] !== undefined) counts[c.statut]++; });
   const map = { production: 'payee', livraison: 'production', confirmee: 'livraison' };
