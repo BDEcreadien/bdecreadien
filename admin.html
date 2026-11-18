@@ -9753,7 +9753,10 @@ async function bilRendreParticipants(existingData, billetterieId) {
         <span style="font-size:11px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:.5px">Scanner</span>
       </a>
     </div>
-    <div class="bil-p-cards">
+    <input type="search" id="bil-search" oninput="bilFiltrerParticipants()" placeholder="🔍 Rechercher par nom, email…"
+      style="width:100%;border:1.5px solid #ede9fe;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box;"
+      onfocus="this.style.borderColor='#c4b5fd'" onblur="this.style.borderColor='#ede9fe'">
+    <div class="bil-p-cards" id="bil-p-cards">
       ${_bilParticipantsData.map((r) => {
         const initials = ((r.prenom||'').charAt(0) + (r.nom||'').charAt(0)).toUpperCase();
         const isScanned = r.scanne;
