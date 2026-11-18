@@ -11096,6 +11096,7 @@ function btqaShowDetail(id) {
         <button onclick="document.getElementById('btqa-detail-edit-${c.id}').hidden=true" style="padding:10px 16px;background:white;color:#666;border:1.5px solid #e0d8f0;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer">Annuler</button>
       </div>
     </div>
+    <div style="margin-top:14px">${btqaMailBlock(c)}</div>
     <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
       ${c.statut === 'en_attente' ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee');document.getElementById('btqa-detail-modal').style.display='none'">Paiement confirme</button>` : ''}
       ${c.statut === 'payee'      ? `<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production');document.getElementById('btqa-detail-modal').style.display='none'">Lancer production</button>` : ''}
