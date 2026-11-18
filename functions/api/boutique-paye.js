@@ -45,19 +45,23 @@ export async function onRequest({ request, env }) {
       { headers }
     );
     const items = await itemsRes.json().catch(() => []);
-    // Recalcul sans filtrer est_offert : on est dans le retour HelloAsso,
-    // le paiement a eu lieu, on veut le vrai total payé (tous les articles positifs)
-    const totalCalc = (items || [])
+    // Même règle que boutique-commande.js (articles payants + remises négatives)
+    const calc = (items || [])
+      .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+      .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
+    // Repli : si tout est marqué offert par erreur, on prend les articles à prix positif
+    const totalCalc = calc > 0 ? calc : (items || [])
       .filter(i => i.prix_unitaire_centimes > 0)
       .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
     if (totalCalc > 0) effectiveTotal = totalCalc;
     const patch = { statut: 'payee', updated_at: new Date().toISOString() };
     if (totalCalc > 0 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
-    await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
+    const patchRes = await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
       method: 'PATCH',
       headers,
       body: JSON.stringify(patch),
     });
+    if (!patchRes.ok) return json({ error: 'Mise à jour impossible' }, 500);
   }
 
   // 3. Envoyer l'email de confirmation de paiement
