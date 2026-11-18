@@ -526,7 +526,7 @@ async function btqEnsurePanier() {
 async function btqSaveCart() {
   if (!_cmdId) return;
   const total = btqCalcTotal();
-  await _sb.from('boutique_commandes').update({ total_centimes: total }).eq('id', _cmdId);
+  await _sb.from('boutique_commandes').update({ total_centimes: total }).eq('id', _cmdId).in('statut', ['panier', 'en_attente']);
 }
 
 // ── Grille produits ─────────────────────────────────────────
