@@ -10918,7 +10918,11 @@ function btqaRenderTable(list) {
       if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
       if (c.statut === 'annulee')    actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Restaurer</button>`);
       if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
-      actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
+      if (btqaMailPaiementApplicable(c)) {
+      const sent = !!c.email_confirmation_sent_at;
+      actions.push(`<button class="btqa-act-btn ${sent ? 'detail' : 'cancel'}" title="${sent ? 'Envoyé le ' + new Date(c.email_confirmation_sent_at).toLocaleString('fr-FR') : 'Mail de confirmation de paiement non envoyé'}" onclick="btqaRenvoyerPaiement('${c.id}', this)">${sent ? '✉ Renvoyer' : '✉ Envoyer'}</button>`);
+    }
+    actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
       return `<div style="background:white;border-top:1.5px solid #f0e8ff;border-bottom:1.5px solid #f0e8ff;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#faf8ff;border-bottom:1px solid #f0e8ff">
           <span style="font-weight:800;font-size:14px;color:var(--violet)">${c.numero || '-'}</span>
@@ -10954,6 +10958,10 @@ function btqaRenderTable(list) {
     if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
     if (c.statut === 'annulee')    actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Restaurer</button>`);
     if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+    if (btqaMailPaiementApplicable(c)) {
+      const sent = !!c.email_confirmation_sent_at;
+      actions.push(`<button class="btqa-act-btn ${sent ? 'detail' : 'cancel'}" title="${sent ? 'Envoyé le ' + new Date(c.email_confirmation_sent_at).toLocaleString('fr-FR') : 'Mail de confirmation de paiement non envoyé'}" onclick="btqaRenvoyerPaiement('${c.id}', this)">${sent ? '✉ Renvoyer' : '✉ Envoyer'}</button>`);
+    }
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
     return `<tr>
       <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '-'}</td>
