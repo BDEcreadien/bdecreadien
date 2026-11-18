@@ -11216,12 +11216,6 @@ async function btqaBulkMailsPaiement(btn) {
   alert(ok === batch.length ? `${ok} mail(s) envoyé(s).` : `${ok} mail(s) envoyé(s), arrêt sur une erreur (quota Resend ?). Réessaie plus tard, seuls les non-envoyés seront relancés.`);
 }
 function btqaUpdateBulkBar() {
-  const mailBtn = document.getElementById('btqa-bulk-mails');
-  if (mailBtn) {
-    const n = (_btqaCommandes || []).filter(c => btqaMailPaiementApplicable(c) && !c.email_confirmation_sent_at).length;
-    mailBtn.style.display = n ? '' : 'none';
-    mailBtn.textContent = `✉ Mails de paiement non envoyés (${n})`;
-  }
   const counts = { payee: 0, production: 0, livraison: 0 };
   (_btqaCommandes || []).forEach(c => { if (counts[c.statut] !== undefined) counts[c.statut]++; });
   const map = { production: 'payee', livraison: 'production', confirmee: 'livraison' };
