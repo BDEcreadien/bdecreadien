@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     // 1. Récupérer les commandes en_attente ou panier avec email (créées < 7 jours)
     const since = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString()
     const cmdRes = await fetch(
-      `${SB}/rest/v1/boutique_commandes?statut=in.(en_attente,panier)&email_acheteur=not.is.null&created_at=gte.${since}&select=id,numero,statut,nom_acheteur,email_acheteur,total_centimes`,
+      `${SB}/rest/v1/boutique_commandes?statut=in.(en_attente,panier)&email_acheteur=not.is.null&total_centimes=gt.0&created_at=gte.${since}&select=id,numero,statut,nom_acheteur,email_acheteur,total_centimes`,
       { headers: sbHeaders }
     )
     const commandes: any[] = await cmdRes.json()
