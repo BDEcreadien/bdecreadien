@@ -12057,6 +12057,55 @@ async function btqaLookup() {
   `;
 }
 
+// ── Ajouter un article à une commande existante (fiche Remise) ──
+function btqaAddItemBlock(cmdId) {
+  const inp = 'width:100%;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:9px;font-size:13px;box-sizing:border-box;background:white';
+  const opts = (_btqaProduits || []).map(p => `<option value="${p.id}">${p.nom}</option>`).join('');
+  return `
+    <div style="margin-bottom:14px">
+      <button onclick="document.getElementById('btqa-add-${cmdId}').hidden=!document.getElementById('btqa-add-${cmdId}').hidden" style="width:100%;padding:9px;border:1.5px dashed #c9b8ee;background:#faf8ff;border-radius:10px;font-size:13px;font-weight:700;color:#460186;cursor:pointer">+ Ajouter un article</button>
+      <div id="btqa-add-${cmdId}" hidden style="margin-top:8px;padding:12px;background:#f8f5ff;border:1.5px solid #ede5ff;border-radius:12px">
+        <select id="btqa-add-prod-${cmdId}" onchange="btqaAddItemProdChange('${cmdId}')" style="${inp};margin-bottom:8px"><option value="">Choisir un produit…</option>${opts}</select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <input id="btqa-add-design-${cmdId}" placeholder="Design (ex : Design 4)" style="${inp}">
+          <input id="btqa-add-couleur-${cmdId}" placeholder="Couleur" style="${inp}">
+          <input id="btqa-add-taille-${cmdId}" placeholder="Taille (S, M, L…)" style="${inp}">
+          <input id="btqa-add-qte-${cmdId}" type="number" min="1" value="1" placeholder="Quantité" style="${inp}">
+        </div>
+        <input id="btqa-add-prix-${cmdId}" type="number" min="0" step="0.01" placeholder="Prix unitaire en € (rempli selon le produit)" style="${inp};margin-bottom:8px">
+        <button onclick="btqaAddItemSave('${cmdId}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Ajouter à la commande</button>
+      </div>
+    </div>`;
+}
+function btqaAddItemProdChange(cmdId) {
+  const p = (_btqaProduits || []).find(x => x.id === document.getElementById('btqa-add-prod-' + cmdId).value);
+  document.getElementById('btqa-add-prix-' + cmdId).value = p ? (p.prix_centimes / 100).toFixed(2) : '';
+}
+async function btqaAddItemSave(cmdId) {
+  const g = k => document.getElementById(`btqa-add-${k}-${cmdId}`).value.trim();
+  const p = (_btqaProduits || []).find(x => x.id === g('prod'));
+  if (!p) return showToast('Choisis un produit', 'error');
+  const qte = parseInt(g('qte')) || 1;
+  const prix = Math.round(parseFloat(g('prix').replace(',', '.')) * 100);
+  if (isNaN(prix) || prix < 0) return showToast('Prix invalide', 'error');
+  const sb = window.Auth.sb;
+  const { error } = await sb.from('boutique_items').insert({
+    commande_id: cmdId, produit_id: p.id, produit_nom: p.nom,
+    design_nom: g('design') || null, couleur: g('couleur') || null, taille: g('taille') || null,
+    quantite: qte, prix_unitaire_centimes: prix, est_offert: false,
+  });
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  // Recalcul du total à partir des articles (même règle que la boutique)
+  const { data: items } = await sb.from('boutique_items').select('*').eq('commande_id', cmdId);
+  const total = (items || []).filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+    .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
+  await sb.from('boutique_commandes').update({ total_centimes: total }).eq('id', cmdId);
+  const c = _btqaCommandes?.find(x => x.id === cmdId);
+  if (c) { c.boutique_items = items || []; c.total_centimes = total; }
+  showToast('Article ajouté', 'success');
+  await btqaLookupById(cmdId);
+}
+
 let _btqaListBackHTML = null;
 let _btqaListMemberNames = {};
 let _btqaEditItems = {};
