@@ -102,18 +102,25 @@ Deno.serve(async (req) => {
       const email = cmd.email_acheteur?.toLowerCase()
       if (!email || !paidByEmail[email]) continue
 
-      // Vérifier si un montant correspond (tolérance ±1 centime)
-      const montantCmd = cmd.total_centimes || 0
-      const match = paidByEmail[email].find(m => Math.abs(m - montantCmd) <= 1)
-      if (!match) continue
+      // Total attendu recalculé depuis les articles (total_centimes peut être faux ou périmé)
+      const itemsTotal = (cmd.boutique_items || [])
+        .filter((i: any) => !i.est_offert || i.prix_unitaire_centimes < 0)
+        .reduce((s: number, i: any) => s + i.prix_unitaire_centimes * i.quantite, 0)
+      const montantCmd = itemsTotal > 0 ? itemsTotal : (cmd.total_centimes || 0)
+      if (montantCmd <= 0) continue
 
-      // Mettre à jour en payee
+      // Vérifier si un montant correspond (tolérance ±1 centime)
+      const matchIdx = paidByEmail[email].findIndex(m => Math.abs(m - montantCmd) <= 1)
+      if (matchIdx === -1) continue
+      paidByEmail[email].splice(matchIdx, 1) // un paiement ne valide qu'une commande
+
+      // Mettre à jour en payee + corriger le total
       const upRes = await fetch(
         `${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`,
         {
           method: 'PATCH',
           headers: sbHeaders,
-          body: JSON.stringify({ statut: 'payee', updated_at: new Date().toISOString() }),
+          body: JSON.stringify({ statut: 'payee', total_centimes: montantCmd, updated_at: new Date().toISOString() }),
         }
       )
       if (!upRes.ok) { errors.push(cmd.numero); continue }
