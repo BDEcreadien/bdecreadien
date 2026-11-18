@@ -9794,6 +9794,54 @@ async function bilRendreParticipants(existingData, billetterieId) {
     <div style="margin-top:10px;font-size:12px;color:#aaa;text-align:right;">${total} inscription${total > 1 ? 's' : ''}</div>`;
 }
 
+function bilFiltrerParticipants() {
+  const q = (document.getElementById('bil-search')?.value || '').toLowerCase().trim();
+  const cards = document.getElementById('bil-p-cards');
+  if (!cards) return;
+  const customKeysSet = new Set();
+  _bilParticipantsData.forEach(r => {
+    if (r.custom_answers && typeof r.custom_answers === 'object')
+      Object.keys(r.custom_answers).forEach(k => customKeysSet.add(k));
+  });
+  const customKeys = [...customKeysSet];
+  const filtered = q ? _bilParticipantsData.filter(r =>
+    `${r.prenom||''} ${r.nom||''} ${r.email||''}`.toLowerCase().includes(q)
+  ) : _bilParticipantsData;
+  cards.innerHTML = filtered.length ? filtered.map((r) => {
+    const initials = ((r.prenom||'').charAt(0) + (r.nom||'').charAt(0)).toUpperCase();
+    const isScanned = r.scanne;
+    const isRejoint = r.statut?.toLowerCase() === 'rejoint';
+    const present = isScanned || isRejoint;
+    const hasBoisson = r.boisson_scannee;
+    const customLine = customKeys.map(k => r.custom_answers?.[k]).filter(Boolean).join(' · ');
+    const scanTime = isScanned && r.scanne_at ? new Date(r.scanne_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : null;
+    const scanBadge = present ? `<span class="bil-p-scan-badge">✓ Scanné${scanTime ? ' ' + scanTime : ''}</span>` : '';
+    const boissonBadge = hasBoisson ? `<span class="bil-p-boisson-badge">🍹 Boisson</span>` : '';
+    return `<div class="bil-p-card">
+      <div class="bil-p-avatar ${present ? 'scanned' : ''}">${initials}</div>
+      <div class="bil-p-info">
+        <div class="bil-p-name">${escapeHtml(r.prenom||'')} ${escapeHtml(r.nom||'')}</div>
+        <div class="bil-p-sub">${escapeHtml(r.email||'')}${customLine ? ' · ' + escapeHtml(customLine) : ''}</div>
+      </div>
+      <div class="bil-p-right">
+        <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
+        <div class="bil-p-actions">
+          <button onclick="bilEnvoyerEmail('${r.id}', this)"
+            style="padding:4px 8px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+            title="Renvoyer l'email billet">✉</button>
+          <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
+            style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"
+            title="${hasBoisson ? 'Retirer boisson' : 'Valider boisson'}">🍹</button>
+          <button onclick="bilToggleRejoint('${r.id}', ${present})"
+            style="padding:4px 8px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#374151;transition:all .15s;">
+            ${present ? '↩' : '✓'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') : `<div style="padding:30px;text-align:center;color:#999;">Aucun résultat pour "${escapeHtml(q)}"</div>`;
+}
+
 async function bilEnvoyerEmail(inscriptionId, btn) {
   const orig = btn.textContent;
   btn.disabled = true; btn.textContent = '…';
