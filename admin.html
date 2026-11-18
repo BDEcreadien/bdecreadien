@@ -11188,7 +11188,11 @@ async function btqaRenvoyerMailFiche(id, btn) {
     });
     if (!r.ok) throw new Error();
     showToast('Mail envoyé', 'success');
-    await btqaLookupById(id);
+    const c = (_btqaCommandes || []).find(x => x.id === id);
+    if (c) c.email_confirmation_sent_at = new Date().toISOString();
+    const detail = document.getElementById('btqa-detail-modal');
+    if (c && detail && detail.style.display !== 'none' && detail.contains(btn)) btqaShowDetail(id);
+    else await btqaLookupById(id);
   } catch {
     btn.disabled = false; btn.textContent = label;
     showToast('Envoi impossible (quota Resend ?)', 'error');
