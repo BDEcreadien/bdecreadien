@@ -11166,21 +11166,6 @@ async function btqaCancel(id) {
 }
 
 // ── Actions groupées ─────────────────────────────────────────
-function btqaMailPaiementApplicable(c) {
-  return c.type !== 'physique' && !!c.email_acheteur && ['payee','production','livraison','confirmee','remise'].includes(c.statut);
-}
-async function btqaEnvoyerMailPaiement(c) {
-  try {
-    const r = await fetch('/api/boutique-email-etape', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commande_id: c.id, etape: 'payee' }),
-    });
-    if (!r.ok) return false;
-    c.email_confirmation_sent_at = new Date().toISOString();
-    return true;
-  } catch { return false; }
-}
 // Bouton de la fiche Remise : renvoie le mail "Paiement confirmé" (avec QR code)
 function btqaMailBlock(data) {
   if (!['payee','production','livraison','confirmee','remise'].includes(data.statut) || !data.email_acheteur) return '';
