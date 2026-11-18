@@ -12433,7 +12433,17 @@ async function btqaDeleteProduit(id) {
   const sb = window.Auth.sb;
   // Récupérer les URLs d'images avant suppression
   const { data: prod } = await sb.from('boutique_produits').select('image_url,images,designs').eq('id', id).single();
-  // Supprimer les items de commandes liés d'abord (FK)
+  // Refuser si le produit figure dans une commande déjà validée (sinon ses lignes disparaissent)
+  const { data: lies } = await sb.from('boutique_items')
+    .select('id, boutique_commandes!inner(statut)')
+    .eq('produit_id', id)
+    .neq('boutique_commandes.statut', 'panier')
+    .limit(1);
+  if (lies && lies.length) {
+    showToast('Impossible : ce produit est dans des commandes validées. Désactive-le plutôt.', 'error');
+    return;
+  }
+  // Supprimer les items de paniers liés (FK)
   await sb.from('boutique_items').delete().eq('produit_id', id);
   const { error } = await sb.from('boutique_produits').delete().eq('id', id);
   if (error) { showToast('Erreur : ' + error.message, 'error'); console.error(error); return; }
