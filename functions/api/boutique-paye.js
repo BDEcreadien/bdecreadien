@@ -1,8 +1,6 @@
 // Appelé quand l'utilisateur revient de HelloAsso via ?paye=NUMERO
 // Utilise la clé service role (pas de RLS) → fiable même si non connecté
 
-const RESEND_FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
-
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -64,63 +62,16 @@ export async function onRequest({ request, env }) {
     if (!patchRes.ok) return json({ error: 'Mise à jour impossible' }, 500);
   }
 
-  // 3. Envoyer l'email de confirmation de paiement
+  // 3. Email de confirmation de paiement (même modèle que l'étape "payee" de l'admin, avec QR code)
   if (env.RESEND_API_KEY && cmd.email_acheteur) {
-    const total = formatEur(effectiveTotal || 0);
-    const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
-<body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
-<div style="max-width:560px;margin:0 auto;border:1px solid #ebe6f5;border-radius:16px;overflow:hidden;color:#1a0030">
-  <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 50%,#FF741F 100%);padding:14px 24px;text-align:center">
-    <p style="margin:0 0 2px;color:rgba(255,255,255,.6);font-size:9px;letter-spacing:4px;text-transform:uppercase">BDE CREAD LYON</p>
-    <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
-  </div>
-  <div style="background:white;padding:24px">
-    <p style="margin:0 0 8px">Hello <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6">
-      Ton paiement pour la commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> a bien été reçu (${total}). ✓
-    </p>
-    <p style="margin:0 0 20px;font-size:14px;color:#666;line-height:1.6">
-      Ta commande est maintenant en cours de préparation. Tu recevras un email dès qu'elle sera prête à être récupérée.
-    </p>
-    <div style="text-align:center;margin:20px 0;padding:16px;border:1px solid #f0e8ff;border-radius:12px">
-      <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#460186">Ton QR code de retrait</p>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(cmd.numero)}&size=180x180&margin=8&color=460186" alt="${escHtml(cmd.numero)}" style="width:180px;height:180px">
-      <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#460186;letter-spacing:2px">${escHtml(cmd.numero)}</p>
-    </div>
-    <p style="margin:16px 0 0;font-size:12px;color:#bbb;border-top:1px solid #f0e8ff;padding-top:14px">
-      Une question ? <a href="mailto:bdecreadien@gmail.com" style="color:#D2396D;text-decoration:none">bdecreadien@gmail.com</a>
-      &nbsp;·&nbsp; <a href="https://bdecreadien.fr" style="color:#D2396D;text-decoration:none">bdecreadien.fr</a>
-    </p>
-  </div>
-</div>
-</body></html>`;
-
-    const mailRes = await fetch('https://api.resend.com/emails', {
+    await fetch(`${new URL(request.url).origin}/api/boutique-email-etape`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-      body: JSON.stringify({
-        from: RESEND_FROM,
-        to: [cmd.email_acheteur],
-        subject: `Paiement confirmé — Commande ${cmd.numero}`,
-        html,
-      }),
-    }).catch(() => null);
-    if (mailRes?.ok) {
-      await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ email_confirmation_sent_at: new Date().toISOString() }),
-      }).catch(() => {});
-    }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: cmd.id, etape: 'payee' }),
+    }).catch(() => {});
   }
 
   return json({ ok: true, numero: cmd.numero, already_paid, email_sent: !!cmd.email_acheteur });
 }
 
-function escHtml(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
 
-function formatEur(centimes) {
-  return (centimes / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-}
