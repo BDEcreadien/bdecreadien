@@ -95,7 +95,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    await fetch('https://api.resend.com/emails', {
+    const mailRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
       body: JSON.stringify({
@@ -104,7 +104,14 @@ export async function onRequest({ request, env }) {
         subject: `Paiement confirmé — Commande ${cmd.numero}`,
         html,
       }),
-    }).catch(() => {});
+    }).catch(() => null);
+    if (mailRes?.ok) {
+      await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ email_confirmation_sent_at: new Date().toISOString() }),
+      }).catch(() => {});
+    }
   }
 
   return json({ ok: true, numero: cmd.numero, already_paid, email_sent: !!cmd.email_acheteur });
