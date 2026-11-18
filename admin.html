@@ -11189,31 +11189,32 @@ async function btqaEnvoyerMailPaiement(c) {
     return true;
   } catch { return false; }
 }
-async function btqaRenvoyerPaiement(id, btn) {
-  const c = (_btqaCommandes || []).find(x => x.id === id);
-  if (!c) return;
-  if (c.email_confirmation_sent_at && !confirm(`Renvoyer le mail de confirmation à ${c.email_acheteur} ?`)) return;
-  btn.disabled = true; btn.textContent = '…';
-  const ok = await btqaEnvoyerMailPaiement(c);
-  if (!ok) { btn.disabled = false; btn.textContent = '✉ Envoyer'; alert('Envoi impossible (quota Resend atteint ?). Réessaie plus tard.'); return; }
-  btqaRenderTable(_btqaCommandes);
-  btqaUpdateBulkBar();
+// Bouton de la fiche Remise : renvoie le mail "Paiement confirmé" (avec QR code)
+function btqaMailBlock(data) {
+  if (!['payee','production','livraison','confirmee','remise'].includes(data.statut) || !data.email_acheteur) return '';
+  const sent = data.email_confirmation_sent_at ? `Dernier envoi : ${new Date(data.email_confirmation_sent_at).toLocaleString('fr-FR')}` : 'Aucun envoi enregistré';
+  return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;background:#faf8ff;border:1.5px solid #ede5ff;border-radius:12px">
+    <span style="font-size:12px;color:#666">Mail de confirmation de paiement<br><span style="color:#999">${sent}</span></span>
+    <button onclick="btqaRenvoyerMailFiche('${data.id}', this)" style="padding:8px 14px;background:white;color:#460186;border:1.5px solid #d0c4ff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">✉ Renvoyer le mail</button>
+  </div>`;
 }
-async function btqaBulkMailsPaiement(btn) {
-  const todo = (_btqaCommandes || []).filter(c => btqaMailPaiementApplicable(c) && !c.email_confirmation_sent_at);
-  if (!todo.length) return;
-  const batch = todo.slice(0, 90);
-  if (!confirm(`Envoyer le mail de confirmation de paiement (avec QR code) à ${batch.length} client(s) sur ${todo.length} ?\nLe quota Resend gratuit est de 100 mails par jour.`)) return;
-  let ok = 0;
-  for (const c of batch) {
-    btn.textContent = `Envoi ${ok + 1}/${batch.length}…`;
-    if (!(await btqaEnvoyerMailPaiement(c))) break;
-    ok++;
-    await new Promise(r => setTimeout(r, 400));
+async function btqaRenvoyerMailFiche(id, btn) {
+  if (!confirm('Renvoyer au client le mail de confirmation de paiement (avec QR code) ?')) return;
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Envoi…';
+  try {
+    const r = await fetch('/api/boutique-email-etape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ commande_id: id, etape: 'payee' }),
+    });
+    if (!r.ok) throw new Error();
+    showToast('Mail envoyé', 'success');
+    await btqaLookupById(id);
+  } catch {
+    btn.disabled = false; btn.textContent = label;
+    showToast('Envoi impossible (quota Resend ?)', 'error');
   }
-  btqaRenderTable(_btqaCommandes);
-  btqaUpdateBulkBar();
-  alert(ok === batch.length ? `${ok} mail(s) envoyé(s).` : `${ok} mail(s) envoyé(s), arrêt sur une erreur (quota Resend ?). Réessaie plus tard, seuls les non-envoyés seront relancés.`);
 }
 function btqaUpdateBulkBar() {
   const counts = { payee: 0, production: 0, livraison: 0 };
