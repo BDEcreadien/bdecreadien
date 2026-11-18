@@ -10049,7 +10049,7 @@ async function initBoutiqueAdmin() {
   const { data: cmds } = await sb
     .from('boutique_commandes')
     .select('*, boutique_items(*)')
-    .neq('statut', 'panier')
+    .or('statut.neq.panier,numero.not.is.null')
     .order('created_at', { ascending: false });
   _btqaCommandes = cmds || [];
 
