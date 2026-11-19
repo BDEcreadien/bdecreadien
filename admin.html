@@ -10453,6 +10453,13 @@ function btqaRenderDesignFournisseur() {
   document.getElementById('btqr-design-body').innerHTML = html;
 }
 
+// Ordre des designs d'un modèle : celui de la config produit (puis alphabétique pour les inconnus)
+function btqaSortDesigns(collection, modele, noms) {
+  const prod = (_btqaProduits || []).find(p => p.nom === collection + ' - ' + modele || p.nom === modele);
+  const ordre = ((prod && prod.designs) || []).map(d => d.nom);
+  const idx = n => { const i = ordre.indexOf(n); return i === -1 ? 9999 : i; };
+  return noms.slice().sort((a, b) => idx(a) - idx(b) || a.localeCompare(b, 'fr'));
+}
 function btqaRenderRecap() {
   const statuts = btqaRecapStatuts();
   const cmds = _btqaCommandes.filter(c => statuts.includes(c.statut));
@@ -10546,7 +10553,7 @@ function btqaRenderRecap() {
             <th style="padding:8px 16px;text-align:center;font-weight:700;color:#460186">Achetés</th>
             <th style="padding:8px 16px;text-align:center;font-weight:700;color:#FF741F">Offerts</th>
           </tr></thead><tbody>`;
-        for (const design of Object.keys(designs).sort()) {
+        for (const design of btqaSortDesigns(collection, modele, Object.keys(designs))) {
           for (const v of Object.values(designs[design])) {
             const achetes = v.qty - v.offert;
             html += `<tr style="border-top:1px solid #f0e8ff">
@@ -10580,7 +10587,7 @@ function btqaRenderRecap() {
           <tbody>`;
 
       let prevDesign = null;
-      for (const design of Object.keys(designs).sort()) {
+      for (const design of btqaSortDesigns(collection, modele, Object.keys(designs))) {
         const variants = Object.values(designs[design]).sort(sortTaille);
         const byCouleur = {};
         variants.forEach(v => {
