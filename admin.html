@@ -11184,7 +11184,7 @@ async function btqaRenvoyerMailFiche(id, btn) {
     const r = await fetch('/api/boutique-email-etape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commande_id: id, etape: 'payee' }),
+      body: JSON.stringify({ commande_id: id, etape: 'payee', force: true }),
     });
     if (!r.ok) throw new Error();
     showToast('Mail envoyé', 'success');

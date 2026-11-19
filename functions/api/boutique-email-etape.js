@@ -41,12 +41,28 @@ export async function onRequest({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return json({ error: 'JSON invalide' }, 400); }
 
-  const { commande_id, etape } = body;
+  const { commande_id, etape, force } = body;
   if (!commande_id || !etape || !ETAPES[etape]) return json({ error: 'Paramètres invalides' }, 400);
 
   const SB  = env.SUPABASE_URL;
   const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
   const headers = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' };
+
+  // Mail "paiement confirmé" : un seul envoi par commande (sauf renvoi manuel force:true).
+  // Réservation atomique : seul le premier appel passe, les doublons (webhook, synchro, retour de page) sont ignorés.
+  let claimed = false;
+  if (etape === 'payee' && !force) {
+    const claim = await fetch(
+      `${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}&email_confirmation_sent_at=is.null`,
+      {
+        method: 'PATCH',
+        headers: { ...headers, Prefer: 'return=representation' },
+        body: JSON.stringify({ email_confirmation_sent_at: new Date().toISOString() }),
+      }
+    ).then(r => r.json()).catch(() => []);
+    if (!Array.isArray(claim) || !claim.length) return json({ ok: true, skipped: 'déjà envoyé' });
+    claimed = true;
+  }
 
   const [cmd] = await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}&select=*`, { headers }).then(r => r.json());
   if (!cmd) return json({ error: 'Commande introuvable' }, 404);
@@ -109,9 +125,17 @@ export async function onRequest({ request, env }) {
     }),
   }).catch(() => null);
 
-  if (!mailRes?.ok) return json({ error: 'Envoi email échoué' }, 502);
+  if (!mailRes?.ok) {
+    // Libérer la réservation pour qu'un nouvel essai (synchro, renvoi) puisse réussir
+    if (claimed) {
+      await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`, {
+        method: 'PATCH', headers, body: JSON.stringify({ email_confirmation_sent_at: null }),
+      }).catch(() => {});
+    }
+    return json({ error: 'Envoi email échoué' }, 502);
+  }
 
-  if (etape === 'payee') {
+  if (etape === 'payee' && !claimed) {
     await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${commande_id}`, {
       method: 'PATCH',
       headers,

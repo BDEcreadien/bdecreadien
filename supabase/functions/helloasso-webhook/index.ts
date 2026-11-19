@@ -192,19 +192,25 @@ async function handleBoutiquePayment(order: any, meta: any) {
   const montant = order?.amount?.total ?? 0
 
   if (commande_id) {
-    await supa.from('boutique_commandes')
+    // Idempotence : HelloAsso envoie Order ET Payment (et peut réessayer). On ne traite
+    // que la commande encore en attente, sinon on ferait doublon (mail, Finances) ou on
+    // ferait reculer une commande déjà en production.
+    const { data: transitions } = await supa.from('boutique_commandes')
       .update({ statut: 'payee', updated_at: new Date().toISOString() })
       .eq('id', commande_id)
+      .in('statut', ['panier', 'en_attente'])
+      .select('id')
+    if (!transitions?.length) return
 
-    // E-mail automatique "paiement confirmé"
-    fetch('https://bdecreadien.fr/api/boutique-email-etape', {
+    // E-mail automatique "paiement confirmé" (déduplication supplémentaire côté API)
+    await fetch('https://bdecreadien.fr/api/boutique-email-etape', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commande_id, etape: 'payee' }),
     }).catch(() => {})
   }
 
-  // Enregistrer en Finances
+  // Enregistrer en Finances (une seule fois : on n'arrive ici que sur la transition vers payée)
   const payer = order?.payer ?? {}
   const libelle = `Boutique · ${payer.firstName ?? ''} ${payer.lastName ?? ''} · ${meta.numero ?? ''}`.trim()
   await supa.from('transactions').insert({

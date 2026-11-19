@@ -1,5 +1,7 @@
 // Appelé quand l'utilisateur revient de HelloAsso via ?paye=NUMERO
-// Utilise la clé service role (pas de RLS) → fiable même si non connecté
+// IMPORTANT : cette route ne valide JAMAIS une commande d'elle-même (n'importe qui peut l'appeler).
+// Elle demande à la synchro HelloAsso de vérifier les vrais paiements, puis renvoie l'état réel.
+// Le mail de confirmation est envoyé par la synchro (une seule fois par commande).
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -23,55 +25,30 @@ export async function onRequest({ request, env }) {
 
   const SB  = env.SUPABASE_URL;
   const KEY = env.SUPABASE_SERVICE_ROLE_KEY;
-  const headers = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
+  const headers = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' };
 
-  // 1. Récupérer la commande par numéro (service role, pas de RLS)
-  const cmdRes = await fetch(
-    `${SB}/rest/v1/boutique_commandes?numero=eq.${encodeURIComponent(numero)}&select=id,numero,statut,nom_acheteur,email_acheteur,total_centimes`,
-    { headers }
-  );
-  const [cmd] = await cmdRes.json();
-  if (!cmd) return json({ error: 'Commande introuvable' }, 404);
-
-  // 2. Mettre à jour le statut si pas encore payée
-  const already_paid = !['panier', 'en_attente'].includes(cmd.statut);
-  let effectiveTotal = cmd.total_centimes;
-  if (!already_paid) {
-    // Recalculer le total depuis les items pour corriger un éventuel total_centimes périmé
-    const itemsRes = await fetch(
-      `${SB}/rest/v1/boutique_items?commande_id=eq.${cmd.id}&select=est_offert,prix_unitaire_centimes,quantite`,
+  const lire = async () => {
+    const r = await fetch(
+      `${SB}/rest/v1/boutique_commandes?numero=eq.${encodeURIComponent(numero)}&select=id,numero,statut`,
       { headers }
     );
-    const items = await itemsRes.json().catch(() => []);
-    // Même règle que boutique-commande.js (articles payants + remises négatives)
-    const calc = (items || [])
-      .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
-      .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
-    // Repli : si tout est marqué offert par erreur, on prend les articles à prix positif
-    const totalCalc = calc > 0 ? calc : (items || [])
-      .filter(i => i.prix_unitaire_centimes > 0)
-      .reduce((s, i) => s + i.prix_unitaire_centimes * i.quantite, 0);
-    if (totalCalc > 0) effectiveTotal = totalCalc;
-    const patch = { statut: 'payee', updated_at: new Date().toISOString() };
-    if (totalCalc > 0 && totalCalc !== cmd.total_centimes) patch.total_centimes = totalCalc;
-    const patchRes = await fetch(`${SB}/rest/v1/boutique_commandes?id=eq.${cmd.id}`, {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify(patch),
-    });
-    if (!patchRes.ok) return json({ error: 'Mise à jour impossible' }, 500);
-  }
+    const [c] = await r.json().catch(() => []);
+    return c;
+  };
 
-  // 3. Email de confirmation de paiement (même modèle que l'étape "payee" de l'admin, avec QR code)
-  if (env.RESEND_API_KEY && cmd.email_acheteur) {
-    await fetch(`${new URL(request.url).origin}/api/boutique-email-etape`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commande_id: cmd.id, etape: 'payee' }),
-    }).catch(() => {});
-  }
+  let cmd = await lire();
+  if (!cmd) return json({ error: 'Commande introuvable' }, 404);
 
-  return json({ ok: true, numero: cmd.numero, already_paid, email_sent: !!cmd.email_acheteur });
+  const estPayee = c => !['panier', 'en_attente'].includes(c.statut);
+  if (estPayee(cmd)) return json({ ok: true, numero: cmd.numero, paid: true });
+
+  // Vérification réelle auprès de HelloAsso (la synchro valide + envoie le mail si un paiement correspond)
+  await fetch(`${SB}/functions/v1/helloasso-sync`, {
+    method: 'POST',
+    headers,
+    body: '{}',
+  }).catch(() => {});
+
+  cmd = (await lire()) || cmd;
+  return json({ ok: true, numero: cmd.numero, paid: estPayee(cmd) });
 }
-
-

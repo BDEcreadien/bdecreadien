@@ -43,10 +43,11 @@ Deno.serve(async (req) => {
   const auth   = req.headers.get('Authorization') || ''
   const secret = auth.replace('Bearer ', '').trim()
   const token  = Deno.env.get('HELLOASSO_WEBHOOK_TOKEN') || ''
-  if (!token || secret !== token) return json({ error: 'Non autorisé' }, 401)
-
   const SB  = Deno.env.get('SUPABASE_URL') || ''
   const KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+  // Accepté : le jeton du cron, ou la clé service (appel serveur depuis /api/boutique-paye)
+  const autorise = !!secret && ((token && secret === token) || (KEY && secret === KEY))
+  if (!autorise) return json({ error: 'Non autorisé' }, 401)
   if (!SB || !KEY) return json({ error: 'Env manquant' }, 500)
 
   const sbHeaders = {
@@ -71,15 +72,30 @@ Deno.serve(async (req) => {
 
     // 3. Récupérer les paiements HelloAsso des 7 derniers jours
     const fromDate = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString()
-    const paymentsRes = await fetch(
-      `${HA_BASE}/v5/organizations/${HA_ORG}/payments?from=${fromDate}&pageSize=100`,
-      { headers: { ...HA_HEADERS, Authorization: `Bearer ${haToken}` } }
-    )
-    if (!paymentsRes.ok) {
-      return json({ error: `HelloAsso payments: ${paymentsRes.status}` }, 500)
+    // Plusieurs pages (jusqu'à 10 x 100). Dédoublonnage par identifiant de paiement :
+    // si l'API ignorait le numéro de page, on s'arrête dès qu'une page n'apporte rien de nouveau.
+    const payments: any[] = []
+    const seen = new Set<string>()
+    for (let page = 1; page <= 10; page++) {
+      const paymentsRes = await fetch(
+        `${HA_BASE}/v5/organizations/${HA_ORG}/payments?from=${fromDate}&pageSize=100&pageIndex=${page}`,
+        { headers: { ...HA_HEADERS, Authorization: `Bearer ${haToken}` } }
+      )
+      if (!paymentsRes.ok) {
+        if (page === 1) return json({ error: `HelloAsso payments: ${paymentsRes.status}` }, 500)
+        break
+      }
+      const pageData: any[] = (await paymentsRes.json()).data || []
+      let nouveaux = 0
+      for (const p of pageData) {
+        const id = String(p.id ?? '')
+        if (id && seen.has(id)) continue
+        if (id) seen.add(id)
+        payments.push(p)
+        nouveaux++
+      }
+      if (nouveaux === 0 || pageData.length < 100) break
     }
-    const paymentsData = await paymentsRes.json()
-    const payments: any[] = paymentsData.data || []
 
     // 4. Construire un index email → montant payé (en centimes)
     // On garde uniquement les paiements "Authorized" (réussis)

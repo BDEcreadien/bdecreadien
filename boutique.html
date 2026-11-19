@@ -306,15 +306,28 @@ async function btqInit() {
   const params = new URLSearchParams(location.search);
   if (params.get('paye')) {
     const numero = params.get('paye');
-    btqToast(`Paiement reçu ! Commande ${numero} confirmée.`);
     history.replaceState(null, '', location.pathname);
-    btqResetCart();
-    // Mise à jour statut + email via serveur (service role, pas de RLS)
+    // La commande vient d'être payée : ne surtout pas la garder comme panier modifiable
+    window._btqJustPaid = numero;
+    document.getElementById('btq-pb-' + numero)?.remove();
+    _cmdId = null; _cmdStatut = null; _cart = [];
+    btqUpdateCartUI();
+    btqToast(`Merci ! Vérification du paiement de la commande ${numero}…`);
+    // Le serveur vérifie le paiement auprès de HelloAsso (il ne se fie pas à cette URL)
     fetch('/api/boutique-paye', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ numero }),
-    }).catch(() => {});
+    }).then(r => r.json()).then(d => {
+      btqToast(d.paid
+        ? `Paiement confirmé ! Commande ${numero}. Un e-mail avec ton QR code t'a été envoyé.`
+        : `Paiement en cours de validation (quelques minutes). Tu recevras un e-mail de confirmation pour la commande ${numero}.`);
+      document.getElementById('btq-pending-wrap')?.querySelectorAll('.btq-pending-banner').forEach(el => {
+        if (el.textContent.includes(numero)) el.remove();
+      });
+    }).catch(() => {
+      btqToast(`Paiement en cours de validation. Tu recevras un e-mail de confirmation pour la commande ${numero}.`);
+    });
   } else if (params.get('annule') || params.get('erreur')) {
     btqToast('Paiement annulé. Ta commande est sauvegardée - tu peux la retrouver ci-dessous.');
     history.replaceState(null, '', location.pathname);
@@ -375,7 +388,7 @@ async function btqResumeEdit(cmdId, btn) {
       quantite: i.quantite, prix: i.prix_unitaire_centimes, est_offert: i.est_offert,
     }));
   }
-  await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+  await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId).eq('statut', 'en_attente');
   _cmdStatut = 'panier';
   document.getElementById('btq-pb-' + cmdId)?.remove();
   btqUpdateCartUI();
@@ -393,9 +406,11 @@ async function btqCheckPendingOrder() {
     .limit(3);
 
   const wrap = document.getElementById('btq-pending-wrap');
-  if (!wrap || !cmds?.length) return;
+  // On masque la commande qu'on vient de payer (en cours de vérification)
+  const aAfficher = (cmds || []).filter(c => c.numero !== window._btqJustPaid);
+  if (!wrap || !aAfficher.length) return;
 
-  wrap.innerHTML = cmds.map(cmd => `
+  wrap.innerHTML = aAfficher.map(cmd => `
     <div class="btq-pending-banner" id="btq-pb-${cmd.id}">
       <span class="btq-pending-icon">⏳</span>
       <div class="btq-pending-text">
@@ -966,7 +981,7 @@ async function btqAddToCart() {
   await btqEnsurePanier();
   // Si la commande était en_attente, la remettre en panier (l'utilisateur modifie)
   if (_cmdStatut === 'en_attente') {
-    await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId);
+    await _sb.from('boutique_commandes').update({ statut: 'panier' }).eq('id', _cmdId).eq('statut', 'en_attente');
     _cmdStatut = 'panier';
   }
 
