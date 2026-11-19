@@ -1464,6 +1464,7 @@ async function btqPlaceOrder() {
         commande_id: _cmdId,
         nom_acheteur: nom,
         email_acheteur: email,
+        skip_mail: true,
       }),
     });
     const data = await res.json();
