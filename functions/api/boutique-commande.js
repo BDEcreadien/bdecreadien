@@ -128,7 +128,8 @@ export async function onRequest({ request, env }) {
   }
 
   // ── 5. E-mail de confirmation ────────────────────────────
-  if (env.RESEND_API_KEY) {
+  // Le mail n'est sauté que si un lien de paiement existe (sinon le client n'aurait plus aucun moyen de payer)
+  if (env.RESEND_API_KEY && !(skip_mail && helloassoUrl)) {
     // Map produit_id → remise centimes pour rattacher la remise à son produit
     const remiseEmailMap = {};
     items.filter(i => i.est_offert && i.prix_unitaire_centimes < 0 && i.produit_id).forEach(i => {
