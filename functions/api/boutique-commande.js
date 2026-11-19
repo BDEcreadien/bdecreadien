@@ -17,7 +17,9 @@ export async function onRequest({ request, env }) {
   let body;
   try { body = await request.json(); } catch { return json({ error: 'JSON invalide' }, 400); }
 
-  const { commande_id, nom_acheteur, email_acheteur } = body;
+  // skip_mail : paiement direct (le client est redirigé vers HelloAsso) → pas de mail "commande enregistrée",
+  // il recevra uniquement le mail de confirmation de paiement (détail + QR code).
+  const { commande_id, nom_acheteur, email_acheteur, skip_mail } = body;
   if (!commande_id || !nom_acheteur || !email_acheteur) {
     return json({ error: 'Paramètres manquants' }, 400);
   }
