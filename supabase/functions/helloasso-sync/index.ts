@@ -112,9 +112,15 @@ Deno.serve(async (req) => {
     // 5. Pour chaque commande en attente, vérifier si le paiement existe
     let synced = 0
     const errors: string[] = []
+    // Diagnostic (réponse réservée à l'appelant autorisé) : pourquoi une commande n'est pas rapprochée
+    const details: any[] = []
 
     for (const cmd of commandes) {
       const email = cmd.email_acheteur?.toLowerCase()
+      const attendu = (cmd.boutique_items || [])
+        .filter((i: any) => !i.est_offert || i.prix_unitaire_centimes < 0)
+        .reduce((s: number, i: any) => s + i.prix_unitaire_centimes * i.quantite, 0)
+      details.push({ numero: cmd.numero, statut: cmd.statut, attendu_centimes: attendu, total_db: cmd.total_centimes, paiements_pour_email: email ? (paidByEmail[email] || []) : [] })
       if (!email || !paidByEmail[email]) continue
 
       // Total attendu recalculé depuis les articles (total_centimes peut être faux ou périmé)
