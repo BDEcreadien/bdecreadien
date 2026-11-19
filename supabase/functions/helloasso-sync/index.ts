@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
       synced++
     }
 
-    return json({ ok: true, synced, checked: commandes.length, errors })
+    return json({ ok: true, synced, checked: commandes.length, paiements_lus: payments.length, errors, details })
   } catch (e) {
     console.error('[helloasso-sync]', e)
     return json({ error: (e as Error).message }, 500)
