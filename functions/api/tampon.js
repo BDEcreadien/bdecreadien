@@ -140,7 +140,7 @@ async function sendRewardEmail(carte, env) {
     </td></tr>
   </table>
 </body></html>`;
-  await sendEmail(env.SUPABASE_SERVICE_ROLE_KEY, {
+  await sendEmail(env.BREVO_API_KEY, {
       from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
       to: [carte.email],
       bcc: ['bdecreadien@gmail.com'],

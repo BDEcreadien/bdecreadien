@@ -72,7 +72,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-  const r = await sendEmail(KEY, { from: FROM, to: [email], subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`, html });
+  const r = await sendEmail(env.BREVO_API_KEY, { from: FROM, to: [email], subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`, html });
 
   if (!r.ok) {
     const err = await r.text().catch(() => '');

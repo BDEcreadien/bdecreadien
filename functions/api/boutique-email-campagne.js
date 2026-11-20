@@ -89,7 +89,7 @@ export async function onRequest({ request, env }) {
 </body></html>`;
 
     try {
-      const r = await sendEmail(userToken, {
+      const r = await sendEmail(env.BREVO_API_KEY, {
           from:    'BDE CREAD Lyon <noreply@bdecreadien.fr>',
           to:      [c.email_acheteur],
           subject: sujet,

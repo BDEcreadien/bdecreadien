@@ -197,7 +197,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    await sendEmail(KEY, {
+    await sendEmail(env.BREVO_API_KEY, {
         from:    RESEND_FROM,
         to:      [email_acheteur],
         subject: `Commande ${numero} — BDE CREAD Boutique`,

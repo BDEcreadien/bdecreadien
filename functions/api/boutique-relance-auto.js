@@ -83,7 +83,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    const r = await sendEmail(KEY, {
+    const r = await sendEmail(env.BREVO_API_KEY, {
         from:    RESEND_FROM,
         to:      [cmd.email_acheteur],
         subject: `Ta commande ${cmd.numero} est en attente de paiement`,

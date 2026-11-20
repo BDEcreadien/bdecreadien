@@ -132,7 +132,7 @@ export async function onRequestPost({ request, env }) {
 </div>
 </body></html>`;
 
-    await sendEmail(KEY, {
+    await sendEmail(env.BREVO_API_KEY, {
         from:    RESEND_FROM,
         to:      [email],
         subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`,

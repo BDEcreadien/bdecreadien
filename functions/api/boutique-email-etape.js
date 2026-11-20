@@ -115,7 +115,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-  const mailRes = await sendEmail(KEY, {
+  const mailRes = await sendEmail(env.BREVO_API_KEY, {
       from:    RESEND_FROM,
       to:      [cmd.email_acheteur],
       subject: e.subject(cmd),
