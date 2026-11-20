@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 // Cloudflare Pages Function — inscription gratuite (tarif 0€)
 // Crée la ligne billetterie_inscriptions et envoie l'email de confirmation
 // sans passer par HelloAsso.
@@ -77,7 +78,7 @@ export async function onRequestPost({ request, env }) {
   const inscriptionId = inscArr?.[0]?.id;
 
   // Envoyer email de confirmation
-  if (env.RESEND_API_KEY) {
+  if (env.BREVO_API_KEY) {
     // description, date, lieu de l'événement
     let description = null, dateAffiche = null, lieuAffiche = null;
     const cfgFull = await fetch(`${SB}/rest/v1/billetteries?slug=eq.${encodeURIComponent(slug)}&select=description,date_affiche,lieu_affiche`, { headers: h }).then(r => r.json()).catch(() => []);
@@ -131,16 +132,12 @@ export async function onRequestPost({ request, env }) {
 </div>
 </body></html>`;
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-      body: JSON.stringify({
+    await sendEmail(KEY, {
         from:    RESEND_FROM,
         to:      [email],
         subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`,
         html,
-      }),
-    }).catch(() => {});
+      }).catch(() => {});
   }
 
   return json({ ok: true });

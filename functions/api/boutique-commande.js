@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 const RESEND_FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
 
 function json(data, status = 200) {
@@ -129,7 +130,7 @@ export async function onRequest({ request, env }) {
 
   // ── 5. E-mail de confirmation ────────────────────────────
   // Le mail n'est sauté que si un lien de paiement existe (sinon le client n'aurait plus aucun moyen de payer)
-  if (env.RESEND_API_KEY && !(skip_mail && helloassoUrl)) {
+  if (env.BREVO_API_KEY && !(skip_mail && helloassoUrl)) {
     // Map produit_id → remise centimes pour rattacher la remise à son produit
     const remiseEmailMap = {};
     items.filter(i => i.est_offert && i.prix_unitaire_centimes < 0 && i.produit_id).forEach(i => {
@@ -196,19 +197,12 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
+    await sendEmail(KEY, {
         from:    RESEND_FROM,
         to:      [email_acheteur],
         subject: `Commande ${numero} — BDE CREAD Boutique`,
         html,
-      }),
-    }).catch(() => {}); // non-bloquant
+      }).catch(() => {}); // non-bloquant
   }
 
   return json({ ok: true, numero, helloasso_url: helloassoUrl });

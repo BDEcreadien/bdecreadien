@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 // POST { statuts[], sujet, body } + Authorization: Bearer <supabase-access-token>
 // Envoie un email personnalisé à toutes les commandes des statuts donnés
 
@@ -88,16 +89,12 @@ export async function onRequest({ request, env }) {
 </body></html>`;
 
     try {
-      const r = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-        body: JSON.stringify({
+      const r = await sendEmail(userToken, {
           from:    'BDE CREAD Lyon <noreply@bdecreadien.fr>',
           to:      [c.email_acheteur],
           subject: sujet,
           html,
-        }),
-      });
+        });
       if (r.ok) {
         sent++;
       } else {

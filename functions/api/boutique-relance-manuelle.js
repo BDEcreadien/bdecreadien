@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 // Relance manuelle des commandes en_attente — appelé depuis l'admin BDE
 // Authentification : JWT Supabase de l'admin (Bearer token)
 
@@ -15,7 +16,7 @@ export async function onRequest({ request, env }) {
     return new Response(null, { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' } });
   }
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY || !env.RESEND_API_KEY) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY || !env.BREVO_API_KEY) {
     return json({ error: 'Env manquant' }, 500);
   }
 
@@ -93,16 +94,12 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    const r = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-      body: JSON.stringify({
+    const r = await sendEmail(KEY, {
         from:    RESEND_FROM,
         to:      [cmd.email_acheteur],
         subject: `Finalise ta commande ${cmd.numero} — BDE CREAD`,
         html,
-      }),
-    });
+      });
 
     if (r.ok) sent++;
     else {

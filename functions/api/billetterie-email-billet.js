@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 const FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
 
 function json(data, status = 200) {
@@ -6,7 +7,7 @@ function json(data, status = 200) {
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
-  if (!env.RESEND_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error: 'Env manquant' }, 500);
+  if (!env.BREVO_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ error: 'Env manquant' }, 500);
 
   let body;
   try { body = await request.json(); } catch { return json({ error: 'JSON invalide' }, 400); }
@@ -71,11 +72,7 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-  const r = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-    body: JSON.stringify({ from: FROM, to: [email], subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`, html }),
-  });
+  const r = await sendEmail(KEY, { from: FROM, to: [email], subject: `🎟️ Ton billet pour ${titre} — inscription confirmée !`, html });
 
   if (!r.ok) {
     const err = await r.text().catch(() => '');

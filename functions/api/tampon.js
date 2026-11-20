@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 // Cloudflare Pages Function — POST /api/tampon
 // Variables d'environnement à configurer dans Cloudflare Pages dashboard :
 //   SCAN_PIN                  : code court choisi par l'admin (ex: "BDE25")
@@ -94,7 +95,7 @@ async function handleSupabase(uid, validateur, event, env) {
   carte.historique = newHistorique;
 
   // Si la carte est maintenant pleine, envoyer un email de récompense
-  if (newTampons >= carte.total && carte.email && env.RESEND_API_KEY) {
+  if (newTampons >= carte.total && carte.email && env.BREVO_API_KEY) {
     // Fire-and-forget : on n'attend pas la réponse pour ne pas ralentir le scan
     sendRewardEmail(carte, env).catch(err => console.error('Reward email failed:', err));
   }
@@ -139,17 +140,13 @@ async function sendRewardEmail(carte, env) {
     </td></tr>
   </table>
 </body></html>`;
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  await sendEmail(env.SUPABASE_SERVICE_ROLE_KEY, {
       from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
       to: [carte.email],
       bcc: ['bdecreadien@gmail.com'],
       subject: '🎉 Ta carte fidélité BDE est complète !',
       html
-    })
-  });
+    });
 }
 
 function escapeHtml(s) {

@@ -21,7 +21,7 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Unauthorized' }, 401);
   }
 
-  if (!env.RESEND_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!env.BREVO_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
     return json({ error: 'Env manquant' }, 500);
   }
 

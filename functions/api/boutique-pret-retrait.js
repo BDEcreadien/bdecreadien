@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 const RESEND_FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
 
 function json(data, status = 200) {
@@ -9,7 +10,7 @@ function json(data, status = 200) {
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
-  if (!env.RESEND_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: true });
+  if (!env.BREVO_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) return json({ ok: true });
 
   let body;
   try { body = await request.json(); } catch { return json({ error: 'JSON invalide' }, 400); }
@@ -74,16 +75,12 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-    body: JSON.stringify({
+  await sendEmail(KEY, {
       from:    RESEND_FROM,
       to:      [cmd.email_acheteur],
       subject: `Ta commande ${cmd.numero} est prête à retirer !`,
       html,
-    }),
-  }).catch(() => {});
+    }).catch(() => {});
 
   return json({ ok: true });
 }

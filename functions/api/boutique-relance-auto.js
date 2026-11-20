@@ -1,3 +1,4 @@
+import { sendEmail } from '../_lib/mail.js'
 // Endpoint appelé par un cron externe (cron-job.org) une fois par jour
 // Envoie une relance aux commandes en_attente créées entre 48h et 96h
 // Protection : header Authorization: Bearer <CRON_SECRET>
@@ -21,7 +22,7 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Non autorisé' }, 401);
   }
 
-  if (!env.RESEND_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!env.BREVO_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
     return json({ error: 'Env manquant' }, 500);
   }
 
@@ -82,16 +83,12 @@ export async function onRequest({ request, env }) {
 </div>
 </body></html>`;
 
-    const r = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.RESEND_API_KEY}` },
-      body: JSON.stringify({
+    const r = await sendEmail(KEY, {
         from:    RESEND_FROM,
         to:      [cmd.email_acheteur],
         subject: `Ta commande ${cmd.numero} est en attente de paiement`,
         html,
-      }),
-    });
+      });
 
     if (r.ok) sent++;
     else {
