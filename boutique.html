@@ -801,6 +801,32 @@ function btqSelectDesign(idx, nom, el) {
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   btqTrack('design_select', _modalProd?.id, _modalProd?.nom, { design: nom });
+  // Mettre à jour la dispo des couleurs selon ce design
+  const design = (_modalProd?.designs || []).find(d => d.nom === nom);
+  const indispo = design?.couleurs_indispo || [];
+  document.querySelectorAll('#btq-color-row .btq-color-chip').forEach(btn => {
+    const c = btn.textContent.trim();
+    const unavail = indispo.includes(c);
+    btn.disabled = unavail;
+    btn.style.opacity = unavail ? '0.35' : '';
+    btn.style.pointerEvents = unavail ? 'none' : '';
+    btn.title = unavail ? 'Indisponible' : '';
+    // Si la couleur sélectionnée devient indisponible, déselectionner
+    if (unavail && btn.classList.contains('selected')) {
+      btn.classList.remove('selected');
+      _modalCouleur = null;
+      _modalCouleurExplicite = false;
+    }
+  });
+  // Auto-sélectionner la première couleur dispo si aucune n'est sélectionnée
+  if (!_modalCouleur) {
+    const couleurs = _modalProd?.couleurs_disponibles || [];
+    const firstDispo = couleurs.find(c => !indispo.includes(c));
+    if (firstDispo) {
+      const btn = [...document.querySelectorAll('#btq-color-row .btq-color-chip')].find(b => b.textContent.trim() === firstDispo);
+      if (btn) btn.click();
+    }
+  }
   btqUpdateThumbs();
 }
 
