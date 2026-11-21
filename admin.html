@@ -12203,6 +12203,20 @@ function btqaSelectCouleur(val) {
     b.style.borderColor = active ? 'transparent' : '#e0d8f0';
   });
 }
+function btqaToggleCouleurIndispo(btn) {
+  const block = btn.closest('.bp-design-couleur-block');
+  const indispo = block.dataset.indispo !== 'true';
+  block.dataset.indispo = indispo;
+  block.style.background = indispo ? '#f9f9f9' : '#f5f0ff';
+  block.style.border = `1px solid ${indispo ? '#e5e5e5' : '#e0d8f0'}`;
+  block.style.opacity = indispo ? '0.5' : '1';
+  btn.textContent = indispo ? 'Indispo' : 'Dispo';
+  btn.style.background = indispo ? '#fef3c7' : '#d1fae5';
+  btn.style.color = indispo ? '#92400e' : '#065f46';
+  btn.style.borderColor = indispo ? '#fcd34d' : '#6ee7b7';
+  const label = block.querySelector('span');
+  if (label) label.style.color = indispo ? '#999' : '#460186';
+}
 function btqaToggleDesignActif(btn) {
   const row = btn.closest('.bp-design-row');
   const actif = row.dataset.actif !== 'false';
