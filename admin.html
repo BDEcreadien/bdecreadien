@@ -12664,6 +12664,13 @@ async function btqaToggleProduit(id, actif) {
   showToast(actif ? 'Produit activé' : 'Produit désactivé');
 }
 
+async function btqaToggleActifProduit(id, actuel) {
+  const sb = window.Auth.sb;
+  const { error } = await sb.from('boutique_produits').update({ actif: !actuel }).eq('id', id);
+  if (error) return showToast('Erreur : ' + error.message, 'error');
+  showToast(actuel ? 'Produit désactivé — grisé sur la boutique' : 'Produit activé', 'success');
+  btqaRenderConfigProduits();
+}
 async function btqaDeleteProduit(id) {
   if (!confirm('Supprimer ce produit ? Cette action est irréversible.')) return;
   const sb = window.Auth.sb;
