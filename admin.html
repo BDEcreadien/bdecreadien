@@ -12203,6 +12203,17 @@ function btqaSelectCouleur(val) {
     b.style.borderColor = active ? 'transparent' : '#e0d8f0';
   });
 }
+function btqaToggleDesignActif(btn) {
+  const row = btn.closest('.bp-design-row');
+  const actif = row.dataset.actif !== 'false';
+  const newActif = !actif;
+  row.dataset.actif = newActif;
+  btn.textContent = newActif ? 'Dispo' : 'Indispo';
+  btn.style.background = newActif ? '#d1fae5' : '#fef3c7';
+  btn.style.color = newActif ? '#065f46' : '#92400e';
+  btn.style.borderColor = newActif ? '#6ee7b7' : '#fcd34d';
+  row.style.opacity = newActif ? '1' : '0.55';
+}
 function btqaToggleProduitEdit() {
   const fields = document.getElementById('btqa-edit-produit-fields');
   const btn = document.getElementById('btqa-edit-produit-toggle-btn');
