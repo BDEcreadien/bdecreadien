@@ -12531,10 +12531,12 @@ function btqaDesignRowHtml(idx, nom, designImages, couleurs) {
     </div>`;
   }).join('');
 
-  return `<div class="bp-design-row" data-idx="${idx}" style="padding:12px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
+  return `<div class="bp-design-row" data-idx="${idx}" data-actif="true" style="padding:12px;border-radius:12px;border:1.5px solid #eee;background:#fafafa">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:${(couleurs||[]).length ? '4px' : '0'}">
       <input type="text" class="bp-design-nom" placeholder="Nom du design (ex: Design 1)" value="${nom}"
         style="flex:1;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none">
+      <button type="button" class="bp-design-toggle-btn" onclick="btqaToggleDesignActif(this)"
+        style="flex-shrink:0;padding:4px 10px;border-radius:20px;border:1.5px solid #6ee7b7;background:#d1fae5;color:#065f46;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap">Dispo</button>
       <button type="button" onclick="this.closest('.bp-design-row').remove()"
         style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:#fee2e2;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
