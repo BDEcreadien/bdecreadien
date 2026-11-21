@@ -13219,7 +13219,11 @@ async function btqaSaveProduit(id) {
         images[colorName][side] = url;
       }
     });
-    designs.push({ nom: n, images, actif: row.dataset.actif !== 'false' });
+    const couleurs_indispo = [];
+    row.querySelectorAll('.bp-design-couleur-block').forEach(block => {
+      if (block.dataset.indispo === 'true') couleurs_indispo.push(block.dataset.couleur);
+    });
+    designs.push({ nom: n, images, actif: row.dataset.actif !== 'false', couleurs_indispo });
   });
 
   // image_url = première photo de la galerie hors guide_taille (préserver l'existante si galerie vide)
