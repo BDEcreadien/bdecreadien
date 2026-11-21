@@ -11410,7 +11410,8 @@ function btqaOpenProdModal(prodId) {
   // Couleurs filtrées selon le design sélectionné
   const designActif = designs.find(d => d.nom === _btqaPM.design);
   const couleursDesign = designActif?.images ? Object.keys(designActif.images).filter(c => designActif.images[c]?.front || designActif.images[c]?.dos) : [];
-  const couleursFiltrees = couleursDesign.length ? couleurs.filter(c => couleursDesign.includes(c)) : couleurs;
+  const indispoInit = designActif?.couleurs_indispo || [];
+  const couleursFiltrees = (couleursDesign.length ? couleurs.filter(c => couleursDesign.includes(c)) : couleurs).filter(c => !indispoInit.includes(c));
 
   const cw = document.getElementById('btqa-pm-couleur-wrap');
   cw.style.display = couleursFiltrees.length ? '' : 'none';
