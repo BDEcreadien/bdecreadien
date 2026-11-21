@@ -1,6 +1,7 @@
 import { sendEmail } from '../_lib/mail.js'
-// Relance manuelle des commandes en_attente — appelé depuis l'admin BDE
-// Authentification : JWT Supabase de l'admin (Bearer token)
+// Relance manuelle des commandes en_attente et des paniers — appelé depuis l'admin BDE
+// Body : { ids: [uuid, ...] } (commandes choisies) ; sans ids : toutes les commandes en_attente (ancien comportement)
+// Authentification : JWT Supabase d'un membre du bureau (Bearer token)
 
 const RESEND_FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>';
 
@@ -34,10 +35,24 @@ export async function onRequest({ request, env }) {
     headers: { apikey: KEY, Authorization: `Bearer ${userJwt}` },
   });
   if (!userRes.ok) return json({ error: 'Non autorisé' }, 401);
+  const user = await userRes.json();
+  const profRes = await fetch(`${SB}/rest/v1/profils?id=eq.${encodeURIComponent(user.id)}&select=role,bureau`, { headers: h });
+  const profData = await profRes.json();
+  const prof = Array.isArray(profData) ? profData[0] : null;
+  if (!prof || (prof.role !== 'admin' && !(prof.role === 'membre' && prof.bureau))) {
+    return json({ error: 'Réservé au bureau' }, 403);
+  }
 
-  // Récupérer TOUTES les commandes en_attente avec un email
+  let body = {};
+  try { body = await request.json(); } catch {}
+  const ids = Array.isArray(body.ids) ? body.ids.filter(i => /^[0-9a-f-]{36}$/i.test(String(i))) : null;
+
+  const sel = 'id,numero,statut,nom_acheteur,email_acheteur,total_centimes,boutique_items(est_offert,prix_unitaire_centimes,quantite)';
+  const filtre = ids
+    ? `id=in.(${ids.join(',')})&statut=in.(en_attente,panier)`
+    : 'statut=eq.en_attente';
   const cmdsRes = await fetch(
-    `${SB}/rest/v1/boutique_commandes?statut=eq.en_attente&email_acheteur=not.is.null&select=id,numero,nom_acheteur,email_acheteur,total_centimes`,
+    `${SB}/rest/v1/boutique_commandes?${filtre}&email_acheteur=not.is.null&select=${sel}`,
     { headers: h }
   );
   const commandes = await cmdsRes.json();
@@ -53,7 +68,11 @@ export async function onRequest({ request, env }) {
     if (!cmd.email_acheteur) continue;
 
     const payUrl = `https://bdecreadien.fr/boutique.html?commande=${encodeURIComponent(cmd.id)}`;
-    const total  = formatEur(cmd.total_centimes || 0);
+    const calc = (cmd.boutique_items || [])
+      .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+      .reduce((t, i) => t + i.prix_unitaire_centimes * i.quantite, 0);
+    const total  = formatEur(calc > 0 ? calc : (cmd.total_centimes || 0));
+    const estPanier = cmd.statut === 'panier';
 
     const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
 <body style="margin:0;padding:16px;background:white;font-family:sans-serif;color-scheme:light">
@@ -65,23 +84,27 @@ export async function onRequest({ request, env }) {
   <div style="background:white;padding:24px">
     <p style="margin:0 0 8px">Hello <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444">
-      Ta commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> est toujours en attente de paiement — ${total} sont réservés pour toi.
+      ${estPanier
+        ? `Tu as laissé des articles dans ton panier (<strong style="color:#460186">${escHtml(cmd.numero)}</strong>, ${total}).`
+        : `Ta commande <strong style="color:#460186">${escHtml(cmd.numero)}</strong> est toujours en attente de paiement — ${total} sont réservés pour toi.`}
     </p>
     <p style="margin:0 0 24px;font-size:14px;color:#666;line-height:1.6">
-      Ne laisse pas passer ta commande, elle sera annulée si le paiement n'est pas effectué prochainement.
+      ${estPanier
+        ? 'Tu peux le retrouver et finaliser ta commande en quelques clics, avant la fermeture de la boutique.'
+        : 'Pense à finaliser ton paiement avant la fermeture de la boutique.'}
     </p>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px">
       <tr>
         <td style="padding-right:6px">
           <a href="${payUrl}"
             style="display:block;padding:13px 10px;background:linear-gradient(135deg,#460186,#D2396D,#FF741F);color:white;text-decoration:none;border-radius:12px;font-family:sans-serif;font-weight:700;font-size:15px;text-align:center">
-            💳 Payer ma commande
+            ${estPanier ? '🛒 Finaliser ma commande' : '💳 Payer ma commande'}
           </a>
         </td>
         <td style="padding-left:6px">
           <a href="${payUrl}"
             style="display:block;padding:13px 10px;background:white;color:#460186;text-decoration:none;border-radius:12px;font-family:sans-serif;font-weight:700;font-size:15px;text-align:center;border:2px solid #d0c4ff">
-            🛒 Voir mon panier
+            ${estPanier ? '👀 Voir mon panier' : '🛒 Voir mon panier'}
           </a>
         </td>
       </tr>

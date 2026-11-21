@@ -1919,7 +1919,7 @@
       <button id="btqa-bulk-production" onclick="btqaBulk('payee','production')" style="padding:7px 16px;background:linear-gradient(135deg,#460186,#6b0070);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🏭 Payées → Production <span id="btqa-bulk-count-production" style="opacity:.7"></span></button>
       <button id="btqa-bulk-livraison" onclick="btqaBulk('production','livraison')" style="padding:7px 16px;background:linear-gradient(135deg,#D2396D,#ff5500);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🚚 Production → Livraison <span id="btqa-bulk-count-livraison" style="opacity:.7"></span></button>
       <button id="btqa-bulk-confirmee" onclick="btqaBulk('livraison','confirmee')" style="padding:7px 16px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">✅ Livraison → Récupérable <span id="btqa-bulk-count-confirmee" style="opacity:.7"></span></button>
-      <button id="btqa-btn-relance" onclick="btqaRelanceCommandes(this)" style="padding:7px 16px;background:white;color:#460186;border:1.5px solid #d0c4ff;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto">📧 Relancer les paniers</button>
+      <button id="btqa-btn-relance" onclick="btqaRelanceCommandes()" style="padding:7px 16px;background:white;color:#460186;border:1.5px solid #d0c4ff;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto">📧 Relancer les paniers</button>
     </div>
     <div class="btqa-table-wrap" id="btqa-table-wrap">
       <table class="btqa-table">
@@ -11309,28 +11309,72 @@ async function btqaBulk(from, to) {
 }
 
 // ── Export CSV ───────────────────────────────────────────────
-async function btqaRelanceCommandes(btn) {
-  const enAttente = (_btqaCommandes || []).filter(c => c.statut === 'en_attente' && c.email_acheteur);
-  if (!enAttente.length) { alert('Aucune commande en attente avec un email.'); return; }
-  if (!confirm(`Envoyer un email de relance à ${enAttente.length} personne(s) en attente ?`)) return;
+function btqaRelanceCommandes() {
+  const total = c => (c.boutique_items || []).filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
+    .reduce((t, i) => t + i.prix_unitaire_centimes * i.quantite, 0);
+  const cibles = (_btqaCommandes || [])
+    .filter(c => (c.statut === 'en_attente' || c.statut === 'panier') && c.email_acheteur && c.numero)
+    .sort((a, b) => (a.statut === b.statut ? 0 : a.statut === 'en_attente' ? -1 : 1) || (b.numero || '').localeCompare(a.numero || ''));
+  if (!cibles.length) { alert('Aucune commande en attente ou panier avec un email.'); return; }
+  const esc = btqaWhoEsc;
+  let m = document.getElementById('btqa-relance-modal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'btqa-relance-modal';
+    m.className = 'btqa-detail-modal';
+    m.onclick = e => { if (e.target === m) m.style.display = 'none'; };
+    document.body.appendChild(m);
+  }
+  const lignes = cibles.map(c => {
+    const t = total(c);
+    return `<label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid #f0e8ff;cursor:pointer;font-size:13px">
+      <input type="checkbox" class="btqa-relance-cb" value="${esc(c.id)}" ${t > 0 ? 'checked' : ''} onchange="btqaRelanceCount()">
+      <span style="font-weight:800;color:#460186;white-space:nowrap">${esc(c.numero)}</span>
+      <span style="flex:1;min-width:0"><b style="font-weight:600">${esc(c.nom_acheteur || '-')}</b> <span style="color:#888;font-size:12px">${esc(c.email_acheteur)}</span></span>
+      <span style="font-weight:700;white-space:nowrap">${btqaFmt(t)}</span>
+      <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
+    </label>`;
+  }).join('');
+  m.innerHTML = `<div style="background:white;border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow:auto;padding:20px">
+    <div style="font-size:17px;font-weight:900;color:#460186;margin-bottom:4px">Relancer des commandes</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px">Décoche celles à ne pas relancer. Les commandes à 0 € sont décochées par défaut.</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #d0c4ff;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=true);btqaRelanceCount()">Tout cocher</button>
+      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #d0c4ff;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=false);btqaRelanceCount()">Tout décocher</button>
+    </div>
+    ${lignes}
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+      <button style="font-size:13px;font-weight:700;padding:8px 16px;border:1.5px solid #460186;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.getElementById('btqa-relance-modal').style.display='none'">Annuler</button>
+      <button id="btqa-relance-send" style="font-size:13px;font-weight:800;padding:8px 18px;border:none;background:linear-gradient(135deg,#460186,#D2396D);color:white;border-radius:8px;cursor:pointer" onclick="btqaRelanceEnvoyer(this)">Envoyer</button>
+    </div>
+  </div>`;
+  m.style.display = 'flex';
+  btqaRelanceCount();
+}
+function btqaRelanceCount() {
+  const n = document.querySelectorAll('.btqa-relance-cb:checked').length;
+  const b = document.getElementById('btqa-relance-send');
+  if (b) { b.textContent = n ? `Envoyer à ${n} personne${n > 1 ? 's' : ''}` : 'Envoyer'; b.disabled = !n; b.style.opacity = n ? 1 : .5; }
+}
+async function btqaRelanceEnvoyer(btn) {
+  const ids = [...document.querySelectorAll('.btqa-relance-cb:checked')].map(x => x.value);
+  if (!ids.length) return;
+  if (!confirm(`Envoyer un mail de relance à ${ids.length} personne(s) ?`)) return;
   btn.disabled = true; btn.textContent = 'Envoi en cours…';
   try {
     const { data: { session } } = await Auth.sb.auth.getSession();
     const res = await fetch('/api/boutique-relance-manuelle', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({}),
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({ ids }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erreur');
-    alert(`✅ Relance envoyée : ${data.sent} email(s) sur ${data.total} commandes en attente.${data.errors?.length ? `\n⚠️ ${data.errors.length} échec(s).` : ''}`);
-  } catch(e) {
+    document.getElementById('btqa-relance-modal').style.display = 'none';
+    alert(`Relance envoyée : ${data.sent} mail(s) sur ${data.total} commande(s).${data.errors?.length ? `\n${data.errors.length} échec(s).` : ''}`);
+  } catch (e) {
     alert('Erreur : ' + e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = '📧 Relancer les paniers';
+    btn.disabled = false; btqaRelanceCount();
   }
 }
 
