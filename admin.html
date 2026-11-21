@@ -2009,11 +2009,18 @@
             <p id="btqa-edit-item-nom" style="margin:0;font-weight:700;font-size:13px;color:#460186;line-height:1.4;flex:1"></p>
             <button onclick="btqaToggleProduitEdit()" id="btqa-edit-produit-toggle-btn" style="border:none;background:#ede5ff;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#460186;white-space:nowrap;flex-shrink:0;transition:background .15s">Changer</button>
           </div>
-          <!-- Champs modification produit (masqués par défaut) -->
-          <div id="btqa-edit-produit-fields" hidden style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
-            <input id="btqa-edit-item-produit-nom" type="text" placeholder="Nom du produit" style="width:100%;padding:9px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
-            <input id="btqa-edit-item-design-nom" type="text" placeholder="Design (ex: Design 2, optionnel)" style="width:100%;padding:9px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
-            <input id="btqa-edit-item-prix" type="number" placeholder="Prix unitaire en centimes (ex: 2600)" min="0" step="100" style="width:100%;padding:9px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
+          <!-- Sélecteur produit (masqué par défaut) -->
+          <div id="btqa-edit-produit-fields" hidden style="margin-top:12px">
+            <p style="margin:0 0 7px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.2px">Produit</p>
+            <div id="btqa-edit-prod-list" style="display:flex;flex-direction:column;gap:6px"></div>
+            <div id="btqa-edit-prod-step2" hidden style="margin-top:10px">
+              <p style="margin:0 0 7px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.2px">Design</p>
+              <div id="btqa-edit-design-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+            </div>
+            <div id="btqa-edit-prod-prix-row" hidden style="margin-top:10px"></div>
+            <input id="btqa-edit-item-produit-nom" type="hidden">
+            <input id="btqa-edit-item-design-nom" type="hidden">
+            <input id="btqa-edit-item-prix" type="hidden">
           </div>
         </div>
       </div>
