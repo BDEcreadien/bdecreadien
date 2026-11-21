@@ -11507,7 +11507,8 @@ function btqaPMRefreshCouleurs() {
   const design = (p.designs || []).find(d => d.nom === _btqaPM.design);
   // Couleurs dispo pour ce design = celles qui ont une image configurée, sinon toutes
   const couleursDesign = design?.images ? Object.keys(design.images).filter(c => design.images[c]?.front || design.images[c]?.dos) : [];
-  const couleurs = couleursDesign.length ? (p.couleurs_disponibles || []).filter(c => couleursDesign.includes(c)) : (p.couleurs_disponibles || []);
+  const indispo = design?.couleurs_indispo || [];
+  const couleurs = (couleursDesign.length ? (p.couleurs_disponibles || []).filter(c => couleursDesign.includes(c)) : (p.couleurs_disponibles || [])).filter(c => !indispo.includes(c));
 
   const cw = document.getElementById('btqa-pm-couleur-wrap');
   cw.style.display = couleurs.length ? '' : 'none';
