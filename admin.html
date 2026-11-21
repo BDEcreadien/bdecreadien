@@ -10330,6 +10330,60 @@ function btqaShowDetailStats() {
 function btqaRecapStatuts() {
   return ['payee', 'production', 'livraison', 'confirmee', 'remise', 'physique'];
 }
+// ── Récap stock : clic sur une quantité = liste des acheteurs ──
+let _btqaWho = [];
+function btqaWhoRef(f) { _btqaWho.push(f); return _btqaWho.length - 1; }
+function btqaWhoEsc(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function btqaWhoShow(i) {
+  const f = _btqaWho[i]; if (!f) return;
+  const statuts = btqaRecapStatuts();
+  const rows = [];
+  _btqaCommandes.filter(c => statuts.includes(c.statut)).forEach(c => (c.boutique_items || []).forEach(it => {
+    const nom = it.produit_nom || '';
+    const sep = nom.indexOf(' - ');
+    const collection = sep > -1 ? nom.slice(0, sep) : 'Autre';
+    const modele     = sep > -1 ? nom.slice(sep + 3) : nom;
+    if (f.beart && !collection.toLowerCase().includes('be art')) return;
+    if (f.collection !== undefined && collection !== f.collection) return;
+    if (f.modele !== undefined && modele !== f.modele) return;
+    if ((it.design_nom || 'Sans design') !== f.design) return;
+    if ((it.couleur || '-') !== f.couleur) return;
+    if (f.taille != null && (it.taille || '-').toUpperCase() !== String(f.taille).toUpperCase()) return;
+    rows.push({ c, it, modele });
+  }));
+  rows.sort((a, b) => (a.c.numero || '').localeCompare(b.c.numero || ''));
+  const total = rows.reduce((s, r) => s + (r.it.quantite || 1), 0);
+  const emails = [...new Set(rows.map(r => r.c.email_acheteur).filter(Boolean))];
+  const titre = [f.design, f.couleur !== '-' ? f.couleur : '', f.taille != null ? f.taille : ''].filter(Boolean).join(' · ');
+  const lignes = rows.map(r => `
+    <tr style="border-top:1px solid #f0e8ff">
+      <td style="padding:8px 10px;font-weight:800;color:#460186;white-space:nowrap">${btqaWhoEsc(r.c.numero)}</td>
+      <td style="padding:8px 10px;font-weight:600">${btqaWhoEsc(r.c.nom_acheteur || '-')}</td>
+      <td style="padding:8px 10px;color:#666;font-size:12px">${btqaWhoEsc(r.c.email_acheteur || '')}</td>
+      <td style="padding:8px 10px;color:#555;font-size:12px;white-space:nowrap">${f.beart ? btqaWhoEsc(r.modele) + ' · ' : ''}${btqaWhoEsc(r.it.taille || '-')}</td>
+      <td style="padding:8px 10px;text-align:center;font-weight:800">×${r.it.quantite || 1}${r.it.est_offert ? ' <span style="color:#16a34a;font-size:10px">OFFERT</span>' : ''}</td>
+      <td style="padding:8px 10px"><span class="btqa-badge ${r.c.statut}" style="font-size:11px">${btqaStatutLabel(r.c.statut)}</span></td>
+    </tr>`).join('');
+  let m = document.getElementById('btqa-who-modal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'btqa-who-modal';
+    m.className = 'btqa-detail-modal';
+    m.onclick = e => { if (e.target === m) m.style.display = 'none'; };
+    document.body.appendChild(m);
+  }
+  m.innerHTML = `<div style="background:white;border-radius:16px;max-width:760px;width:100%;max-height:85vh;overflow:auto;padding:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="flex:1"><div style="font-size:17px;font-weight:900;color:#460186">${btqaWhoEsc(titre)}</div>
+      <div style="font-size:12px;color:#888">${total} pièce${total > 1 ? 's' : ''} · ${rows.length} commande${rows.length > 1 ? 's' : ''}</div></div>
+      ${emails.length ? `<button class="btn" style="font-size:12px;padding:6px 12px" onclick="navigator.clipboard.writeText(${btqaWhoEsc(JSON.stringify(emails.join(', ')))}).then(()=>{this.textContent='Copié !'})">Copier les ${emails.length} e-mail${emails.length > 1 ? 's' : ''}</button>` : ''}
+      <button class="btn" style="font-size:12px;padding:6px 12px" onclick="document.getElementById('btqa-who-modal').style.display='none'">Fermer</button>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">${lignes || '<tr><td style="padding:20px;color:#aaa;text-align:center">Aucune commande</td></tr>'}</table>
+  </div>`;
+  m.style.display = 'flex';
+}
+
 function btqaSubTab(sub) {
   document.getElementById('btqr-view-recap').style.display  = sub === 'recap'  ? '' : 'none';
   document.getElementById('btqr-view-detail').style.display = sub === 'detail' ? '' : 'none';
@@ -10423,10 +10477,10 @@ function btqaRenderDesignFournisseur() {
     html += `<tr style="${borderStyle}">
       <td style="padding:8px 16px;font-weight:700;color:#333;white-space:nowrap">${isNewDesign ? r.design : ''}</td>
       <td style="padding:7px 12px;white-space:nowrap">${couleurBadge(r.couleur)}</td>
-      <td style="padding:7px 10px;text-align:center;font-weight:800;font-size:15px;color:#1a0030">${r.total}</td>
+      <td style="padding:7px 10px;text-align:center;font-weight:800;font-size:15px;color:#1a0030;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({beart:true,design:r.design,couleur:r.couleur})})">${r.total}</td>
       ${taillesPresentes.map(t => {
         const q = r.tailles[t] || 0;
-        return q ? `<td style="padding:7px 8px;text-align:center;font-weight:700;color:#460186">${q}</td>`
+        return q ? `<td style="padding:7px 8px;text-align:center;font-weight:700;color:#460186;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({beart:true,design:r.design,couleur:r.couleur,taille:t})})">${q}</td>`
                  : `<td style="padding:7px 8px;text-align:center;color:#ddd">—</td>`;
       }).join('')}
     </tr>`;
@@ -10558,7 +10612,7 @@ function btqaRenderRecap() {
             const achetes = v.qty - v.offert;
             html += `<tr style="border-top:1px solid #f0e8ff">
               <td style="padding:9px 16px;font-weight:600;color:#333">${design === 'Sans design' ? modele : design}</td>
-              <td style="padding:9px 16px;text-align:center;font-weight:800;font-size:16px;color:#1a0030">${v.qty}</td>
+              <td style="padding:9px 16px;text-align:center;font-weight:800;font-size:16px;color:#1a0030;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur:v.couleur})})">${v.qty}</td>
               <td style="padding:9px 16px;text-align:center;font-weight:700;color:#460186">${achetes}</td>
               <td style="padding:9px 16px;text-align:center;font-weight:700;color:#FF741F">${v.offert || '—'}</td>
             </tr>`;
@@ -10606,7 +10660,7 @@ function btqaRenderRecap() {
             const v = vList.find(x => x.taille.toUpperCase() === t.toUpperCase());
             if (!v) return '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
             const off = v.offert ? `<span style="font-size:10px;color:#FF741F;display:block">(+${v.offert})</span>` : '';
-            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186">${v.qty}${off}</td>`;
+            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#460186;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur,taille:t})})">${v.qty}${off}</td>`;
           };
           const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()) && v.taille !== '-');
           const autresCell = autresTailles.length
@@ -10618,7 +10672,7 @@ function btqaRenderRecap() {
           html += `<tr style="${borderTop}">
             ${firstRow ? `<td rowspan="${designRowCount}" style="padding:8px 16px;font-weight:700;color:#333;vertical-align:top;border-right:1px solid #f0e8ff">${design}</td>` : ''}
             <td style="padding:6px 10px;color:#555;white-space:nowrap">${couleur}</td>
-            <td style="padding:6px 8px;text-align:center;font-weight:800;font-size:15px;color:#1a0030">${totalRow}</td>
+            <td style="padding:6px 8px;text-align:center;font-weight:800;font-size:15px;color:#1a0030;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur})})">${totalRow}</td>
             ${qtyFor('XS')}${qtyFor('S')}${qtyFor('M')}${qtyFor('L')}${qtyFor('XL')}${qtyFor('2XL')}
             ${autresCell}
           </tr>`;
