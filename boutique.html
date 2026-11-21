@@ -585,22 +585,22 @@ function btqRenderGrid(cat = 'tous') {
     if (p.a_tailles) _metaParts.push('Tailles');
     const metaTailles = p.categorie === 'Accessoire' ? '' : _metaParts.join(' · ');
     return `
-    <div class="btq-card" style="animation-delay:${i * 60}ms" onclick="btqOpenModal('${p.id}')">
+    <div class="btq-card" style="animation-delay:${i * 60}ms${p.actif===false?';opacity:0.45;filter:grayscale(.6);pointer-events:none':''}" ${p.actif!==false?`onclick="btqOpenModal('${p.id}')"`:''}>
       <div class="btq-card-img">
         <div class="btq-card-img-bg"></div>
         ${p.image_url ? `<img src="${p.image_url}" alt="${p.nom}" loading="lazy">` : `<span class="btq-card-img-icon">${btqProdIcon(p)}</span>`}
-        ${window._adhesionRemiseCentimes > 0 && window._adhesionProduitIds?.has(p.id)
-          ? `<div class="btq-card-price-badge" style="display:flex;align-items:center;gap:6px;"><s style="opacity:.5;font-size:14px;">${btqFmt(p.prix_centimes)}</s><span style="color:#4ade80;">${btqFmt(p.prix_centimes - window._adhesionRemiseCentimes)}</span></div>`
-          : `<div class="btq-card-price-badge">${btqFmt(p.prix_centimes)}</div>`
+        ${p.actif===false
+          ? `<div class="btq-card-price-badge" style="background:rgba(100,100,100,.7)">Indisponible</div>`
+          : (window._adhesionRemiseCentimes > 0 && window._adhesionProduitIds?.has(p.id)
+            ? `<div class="btq-card-price-badge" style="display:flex;align-items:center;gap:6px;"><s style="opacity:.5;font-size:14px;">${btqFmt(p.prix_centimes)}</s><span style="color:#4ade80;">${btqFmt(p.prix_centimes - window._adhesionRemiseCentimes)}</span></div>`
+            : `<div class="btq-card-price-badge">${btqFmt(p.prix_centimes)}</div>`)
         }
         ${designDots}
       </div>
       <div class="btq-card-body">
         <p class="btq-card-name">${p.nom}</p>
         <p class="btq-card-meta">${metaTailles}</p>
-        <button class="btq-card-add" onclick="event.stopPropagation();btqOpenModal('${p.id}')">
-          Choisir &amp; ajouter
-        </button>
+        ${p.actif!==false ? `<button class="btq-card-add" onclick="event.stopPropagation();btqOpenModal('${p.id}')">Choisir &amp; ajouter</button>` : `<p style="font-size:12px;color:rgba(255,255,255,.4);margin:0;text-align:center;padding:8px 0">Bientôt disponible</p>`}
       </div>
     </div>`;
   }).join('') + packsGridItem;
