@@ -1,3 +1,4 @@
+import { sendEmail } from '../_shared/mail.ts'
 // Edge function : envoi push OneSignal aux membres bureau
 // Auth : appelant doit être bureau (RLS bypass via service key)
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -28,7 +29,7 @@ serve(async (req) => {
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const ONESIGNAL_REST_KEY = Deno.env.get('ONESIGNAL_REST_API_KEY');
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY');
   if (!ONESIGNAL_REST_KEY) {
     return new Response(JSON.stringify({ error: 'ONESIGNAL_REST_API_KEY manquante' }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
@@ -132,7 +133,7 @@ serve(async (req) => {
 
   // 2) Email fallback via Resend (envoyé à TOUS les membres BDE qui n'ont pas désactivé)
   let emailSent = 0, emailErrors = 0;
-  if (RESEND_API_KEY && emails.length) {
+  if (BREVO_API_KEY && emails.length) {
     const escHtml = (s: string) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(title)}</title></head>
 <body style="margin:0;padding:0;background:#F0EFF8;font-family:Arial,Helvetica,sans-serif;">
@@ -156,16 +157,12 @@ serve(async (req) => {
 </body></html>`;
     for (const e of emails) {
       try {
-        const r = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const r = await sendEmail(BREVO_API_KEY, {
             from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
             to: [e.email],
             subject: `[BDE] ${title}`,
             html,
-          }),
-        });
+          });
         if (r.ok) emailSent++; else emailErrors++;
       } catch { emailErrors++; }
     }

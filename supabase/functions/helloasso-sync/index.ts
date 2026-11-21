@@ -4,7 +4,7 @@
 // et met à jour le statut en "payee" + envoie l'email de confirmation
 //
 // Secrets requis : HELLOASSO_CLIENT_ID, HELLOASSO_CLIENT_SECRET,
-//                  RESEND_API_KEY, SUPABASE_SERVICE_ROLE_KEY
+//                  BREVO_API_KEY, SUPABASE_SERVICE_ROLE_KEY
 // Protection : header Authorization: Bearer <HELLOASSO_WEBHOOK_TOKEN>
 
 const HA_BASE    = 'https://api.helloasso.com'

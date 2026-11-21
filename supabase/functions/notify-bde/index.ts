@@ -1,3 +1,4 @@
+import { sendEmail } from '../_shared/mail.ts'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -65,9 +66,9 @@ serve(async (req) => {
 
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: 'RESEND_API_KEY manquante' }), {
+  const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY');
+  if (!BREVO_API_KEY) {
+    return new Response(JSON.stringify({ error: 'BREVO_API_KEY manquante' }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
@@ -148,16 +149,12 @@ serve(async (req) => {
   let sent = 0, errors = 0;
   for (const email of recipients) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const res = await sendEmail(BREVO_API_KEY, {
           from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
           to: [email],
           subject: `[BDE] ${cfg.badge} — ${sujet || 'Nouvelle notification'}`,
           html,
-        }),
-      });
+        });
       if (res.ok) sent++; else errors++;
     } catch { errors++; }
   }

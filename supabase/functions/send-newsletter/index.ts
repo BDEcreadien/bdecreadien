@@ -1,3 +1,4 @@
+import { sendEmail } from '../_shared/mail.ts'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -25,9 +26,9 @@ serve(async (req) => {
 
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
   const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: 'RESEND_API_KEY manquante côté serveur' }), {
+  const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY');
+  if (!BREVO_API_KEY) {
+    return new Response(JSON.stringify({ error: 'BREVO_API_KEY manquante côté serveur' }), {
       status: 500, headers: { ...CORS, 'Content-Type': 'application/json' },
     });
   }
@@ -104,10 +105,7 @@ serve(async (req) => {
     const unsubUrl = `https://bdecreadien.fr/newsletter-desinscription.html?token=${r.unsubscribe_token}`;
     const html = String(contenu_html).replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubUrl);
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const res = await sendEmail(BREVO_API_KEY, {
           from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
           to: [r.email],
           subject: sujet,
@@ -116,8 +114,7 @@ serve(async (req) => {
             'List-Unsubscribe': `<${unsubUrl}>`,
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
           },
-        }),
-      });
+        });
       if (res.ok) sent++; else errors++;
     } catch (_) {
       errors++;

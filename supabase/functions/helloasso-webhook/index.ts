@@ -1,3 +1,4 @@
+import { sendEmail } from '../_shared/mail.ts'
 // Edge Function : helloasso-webhook
 // ============================================================================
 // Reçoit les notifications HelloAsso quand une commande est payée / remboursée.
@@ -14,7 +15,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const FROM    = 'BDE CREAD Lyon <noreply@bdecreadien.fr>'
 const SITE    = 'https://bdecreadien.fr'
-const RESEND  = Deno.env.get('RESEND_API_KEY') || ''
+const RESEND  = Deno.env.get('BREVO_API_KEY') || ''
 
 async function sendConfirmationEmail(to: string, prenom: string, nom: string, eventTitre: string, tarifNom: string, qty: number, montantCentimes: number, billetterieSlug: string) {
   if (!RESEND || !to) return
@@ -58,11 +59,7 @@ async function sendConfirmationEmail(to: string, prenom: string, nom: string, ev
   </div>
 </div>
 </body></html>`
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND}` },
-    body: JSON.stringify({ from: FROM, to: [to], subject: `Ton inscription à ${eventTitre} est confirmée !`, html }),
-  }).catch(() => {})
+  await sendEmail(RESEND, { from: FROM, to: [to], subject: `Ton inscription à ${eventTitre} est confirmée !`, html }).catch(() => {})
 }
 
 const cors = {

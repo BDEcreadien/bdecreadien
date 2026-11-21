@@ -1,8 +1,9 @@
+import { sendEmail } from '../_shared/mail.ts'
 // Auth Hook — Send Email
 // Intercepte tous les emails d'auth Supabase (inscription, reset, magic link)
 // et les envoie via Resend pour contourner la limite du plan gratuit.
 //
-// Secrets requis : RESEND_API_KEY
+// Secrets requis : BREVO_API_KEY
 
 const FROM = 'BDE CREAD Lyon <noreply@bdecreadien.fr>'
 const SITE = 'https://bdecreadien.fr'
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
   const to = user?.email
   if (!to) return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } })
 
-  const resendKey = Deno.env.get('RESEND_API_KEY')
+  const resendKey = Deno.env.get('BREVO_API_KEY')
   if (!resendKey) return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } })
 
   let subject = ''
@@ -78,11 +79,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } })
   }
 
-  const resendRes = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
-    body: JSON.stringify({ from: FROM, to: [to], subject, html }),
-  })
+  const resendRes = await sendEmail(resendKey, { from: FROM, to: [to], subject, html })
 
   if (!resendRes.ok) {
     const errBody = await resendRes.text().catch(() => '(no body)')

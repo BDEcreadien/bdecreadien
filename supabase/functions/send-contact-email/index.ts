@@ -1,3 +1,4 @@
+import { sendEmail } from '../_shared/mail.ts'
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const ALLOWED_ORIGINS = ['https://bdecreadien.fr', 'https://www.bdecreadien.fr'];
@@ -156,20 +157,16 @@ serve(async (req) => {
       });
     }
 
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY manquante');
+    const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY');
+    if (!BREVO_API_KEY) throw new Error('BREVO_API_KEY manquante');
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const res = await sendEmail(BREVO_API_KEY, {
         from: 'BDE CREAD Lyon <contact@bdecreadien.fr>',
         to: ['bdecreadien@gmail.com'],
         reply_to: email,
         subject: `[BDE CREAD] ${sujet} — Message de ${nom}`,
         html: buildEmailHtml(nom, email, sujet, message),
-      }),
-    });
+      });
 
     if (!res.ok) {
       const err = await res.text();
