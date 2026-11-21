@@ -12447,6 +12447,7 @@ async function btqaRenderConfigProduits() {
           <div class="btqa-prod-card-meta">${meta||'Accessoire'}</div>
           <div class="btqa-prod-card-actions">
             <button class="btqa-prod-card-btn edit" onclick="btqaOpenProduit('${p.id}')">Modifier</button>
+            <button class="btqa-prod-card-btn" onclick="btqaToggleActifProduit('${p.id}',${!!p.actif})" style="background:${p.actif?'#fef3c7':'#d1fae5'};color:${p.actif?'#92400e':'#065f46'};border:1.5px solid ${p.actif?'#fcd34d':'#6ee7b7'}">${p.actif?'Désactiver':'Activer'}</button>
             <button class="btqa-prod-card-btn toggle-off" onclick="btqaDeleteProduit('${p.id}')">Supprimer</button>
           </div>
         </div>
