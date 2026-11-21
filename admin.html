@@ -10115,7 +10115,7 @@ async function btqaLoadAnalytics(days) {
   wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#999">Chargement…</div>';
   const sb = window.Auth.sb;
   const since = new Date(Date.now() - _anPeriod * 86400000).toISOString();
-  const { data: rows } = await sb.from('btq_analytics').select('event,product_id,product_nom,data,created_at').gte('created_at', since);
+  const { data: rows } = await sb.from('btq_analytics').select('event,product_id,product_nom,data,created_at').gte('created_at', since).limit(50000);
   if (!rows) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
 
   const byEvent = t => rows.filter(r => r.event === t);
