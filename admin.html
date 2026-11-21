@@ -10632,11 +10632,6 @@ function btqaRenderRecap() {
         continue;
       }
 
-      // Tableau avec tailles — détecter si des tailles hors-norme existent
-      const hasAutres = Object.values(designs).some(d =>
-        Object.values(d).some(v => !tailleOrder.includes(v.taille.toUpperCase()) && v.taille !== '-')
-      );
-
       html += `<table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
             <tr style="background:#f0ebfa">
@@ -10649,7 +10644,6 @@ function btqaRenderRecap() {
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">L</th>
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">XL</th>
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">2XL</th>
-              ${hasAutres ? '<th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">Autre</th>' : ''}
             </tr>
           </thead>
           <tbody>`;
