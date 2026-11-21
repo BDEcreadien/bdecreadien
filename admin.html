@@ -13197,7 +13197,7 @@ async function btqaSaveProduit(id) {
         images[colorName][side] = url;
       }
     });
-    designs.push({ nom: n, images });
+    designs.push({ nom: n, images, actif: row.dataset.actif !== 'false' });
   });
 
   // image_url = première photo de la galerie hors guide_taille (préserver l'existante si galerie vide)
