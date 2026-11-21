@@ -861,7 +861,7 @@ function btqDesignFirstImg(design) {
 
 function btqUpdateThumbs() {
   if (!_modalProd || !_modalDesign) return;
-  const design = _modalProd.designs?.[_modalDesign.idx];
+  const design = (_modalProd.designs || []).find(d => d.nom === _modalDesign.nom) || _modalProd.designs?.[_modalDesign.idx];
   if (!design) return;
 
   let front = '', dos = '';
