@@ -721,10 +721,10 @@ function btqOpenModal(id) {
         ${designs.length ? `
           <p class="btq-modal-label">Design</p>
           <div class="btq-designs" id="btq-design-row">
-            ${designs.map((d, idx) => `
-              <button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">
-                ${d.nom}
-              </button>`).join('')}
+            ${designs.map((d, idx) => d.actif === false
+              ? `<button class="btq-design-chip" disabled style="opacity:0.35;pointer-events:none;cursor:default;text-decoration:line-through">${d.nom}</button>`
+              : `<button class="btq-design-chip" onclick="btqSelectDesign(${idx},'${btqEsc(d.nom)}',this)">${d.nom}</button>`
+            ).join('')}
           </div>` : ''}
 
         ${p.tailles_disponibles?.length ? `
