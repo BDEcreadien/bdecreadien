@@ -11390,7 +11390,7 @@ function btqaOpenProdModal(prodId) {
   document.getElementById('btqa-pm-price').textContent = btqaFmt(p.prix_centimes);
   document.getElementById('btqa-pm-qty').textContent   = 1;
 
-  const designs  = p.designs || [];
+  const designs  = (p.designs || []).filter(d => d.actif !== false);
   const couleurs = p.couleurs_disponibles || [];
   const tailles  = p.tailles_disponibles || [];
 
