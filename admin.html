@@ -12285,9 +12285,9 @@ function btqaOpenEditModal(itemId) {
   document.getElementById('btqa-edit-produit-toggle-btn').textContent = 'Changer';
   document.getElementById('btqa-edit-produit-toggle-btn').style.background = '#ede5ff';
   document.getElementById('btqa-edit-produit-toggle-btn').style.color = '#460186';
-  document.getElementById('btqa-edit-item-produit-nom').value = item.produit_nom || '';
-  document.getElementById('btqa-edit-item-design-nom').value = item.design_nom || '';
-  document.getElementById('btqa-edit-item-prix').value = item.prix_unitaire_centimes || '';
+  document.getElementById('btqa-edit-item-produit-nom').value = '';
+  document.getElementById('btqa-edit-item-design-nom').value = '';
+  document.getElementById('btqa-edit-item-prix').value = '';
   btqaSelectTaille(item.taille || '');
   btqaSelectCouleur(item.couleur || '');
   document.getElementById('btqa-edit-item-qty').value = item.quantite || 1;
