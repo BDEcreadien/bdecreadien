@@ -10115,28 +10115,39 @@ async function btqaLoadAnalytics(days) {
   wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#999">Chargement…</div>';
   const sb = window.Auth.sb;
   const since = new Date(Date.now() - _anPeriod * 86400000).toISOString();
-  const { data: rows } = await sb.from('btq_analytics').select('event,product_id,product_nom,data,created_at').gte('created_at', since).limit(50000);
-  if (!rows) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
 
-  const byEvent = t => rows.filter(r => r.event === t);
-  const pageViews   = byEvent('page_view').length;
-  const prodViews   = byEvent('product_view').length;
-  const addCarts    = byEvent('add_to_cart').length;
-  const helpClicks  = byEvent('help_click').length;
-  const convCart    = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
-  const mobile      = byEvent('page_view').filter(r => r.data?.device === 'mobile').length;
-  const pctMobile   = pageViews ? Math.round(mobile / pageViews * 100) : 0;
+  // Requêtes séparées par type pour éviter la limite de lignes Supabase
+  const [pvRes, prRes, acRes, ptRes, hcRes] = await Promise.all([
+    sb.from('btq_analytics').select('data,created_at').eq('event','page_view').gte('created_at',since).limit(5000),
+    sb.from('btq_analytics').select('product_nom,data').eq('event','product_view').gte('created_at',since).limit(5000),
+    sb.from('btq_analytics').select('id',{count:'exact',head:true}).eq('event','add_to_cart').gte('created_at',since),
+    sb.from('btq_analytics').select('product_nom,data').eq('event','product_time').gte('created_at',since).limit(5000),
+    sb.from('btq_analytics').select('id',{count:'exact',head:true}).eq('event','help_click').gte('created_at',since),
+  ]);
+  if (!pvRes.data) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
+
+  const pageViewRows = pvRes.data || [];
+  const prodViewRows = prRes.data || [];
+  const prodTimeRows = ptRes.data || [];
+
+  const pageViews = pageViewRows.length;
+  const prodViews = prodViewRows.length;
+  const addCarts  = acRes.count || 0;
+  const helpClicks = hcRes.count || 0;
+  const convCart  = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
+  const mobile    = pageViewRows.filter(r => r.data?.device === 'mobile').length;
+  const pctMobile = pageViews ? Math.round(mobile / pageViews * 100) : 0;
 
   // Top produits vus
   const prodCount = {};
-  byEvent('product_view').forEach(r => { prodCount[r.product_nom||'?'] = (prodCount[r.product_nom||'?']||0)+1; });
+  prodViewRows.forEach(r => { prodCount[r.product_nom||'?'] = (prodCount[r.product_nom||'?']||0)+1; });
   const topProds = Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const maxProd  = topProds[0]?.[1] || 1;
 
   // Temps moyen par produit (secondes)
   const timeMap = {};
   const timeCnt = {};
-  byEvent('product_time').forEach(r => {
+  prodTimeRows.forEach(r => {
     const n = r.product_nom||'?'; const s = r.data?.seconds||0;
     timeMap[n] = (timeMap[n]||0)+s; timeCnt[n]=(timeCnt[n]||0)+1;
   });
@@ -10148,7 +10159,7 @@ async function btqaLoadAnalytics(days) {
     const d = new Date(Date.now()-i*86400000);
     dayMap[d.toISOString().slice(0,10)] = 0;
   }
-  byEvent('page_view').forEach(r => { const d=r.created_at.slice(0,10); if(d in dayMap) dayMap[d]++; });
+  pageViewRows.forEach(r => { const d=r.created_at.slice(0,10); if(d in dayMap) dayMap[d]++; });
   const days7 = Object.entries(dayMap).sort((a,b)=>a[0]>b[0]?1:-1);
   const maxDay = Math.max(...days7.map(d=>d[1]),1);
 
