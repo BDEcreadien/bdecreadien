@@ -12190,13 +12190,38 @@ function btqaSelectTaille(val) {
     b.style.borderColor = active ? 'transparent' : '#e0d8f0';
   });
 }
+function btqaSelectCouleur(val) {
+  document.getElementById('btqa-edit-item-couleur').value = val;
+  document.querySelectorAll('#btqa-edit-couleur-btns button').forEach(b => {
+    const active = b.dataset.couleur === val;
+    b.style.background = active ? 'linear-gradient(135deg,#460186,#D2396D)' : 'white';
+    b.style.color = active ? 'white' : (b.dataset.couleur === '' ? '#888' : '#333');
+    b.style.borderColor = active ? 'transparent' : '#e0d8f0';
+  });
+}
+function btqaToggleProduitEdit() {
+  const fields = document.getElementById('btqa-edit-produit-fields');
+  const btn = document.getElementById('btqa-edit-produit-toggle-btn');
+  const hidden = fields.hidden;
+  fields.hidden = !hidden;
+  btn.textContent = hidden ? 'Annuler' : 'Changer';
+  btn.style.background = hidden ? '#fee2e2' : '#ede5ff';
+  btn.style.color = hidden ? '#991b1b' : '#460186';
+}
 function btqaOpenEditModal(itemId) {
   const item = _btqaEditItems[itemId];
   if (!item) return;
   _btqaEditCurrent = { itemId, cmdId: item._cmdId, origin: item._origin || 'remise' };
   document.getElementById('btqa-edit-item-nom').textContent = item.produit_nom + (item.design_nom ? ' - ' + item.design_nom : '');
+  document.getElementById('btqa-edit-produit-fields').hidden = true;
+  document.getElementById('btqa-edit-produit-toggle-btn').textContent = 'Changer';
+  document.getElementById('btqa-edit-produit-toggle-btn').style.background = '#ede5ff';
+  document.getElementById('btqa-edit-produit-toggle-btn').style.color = '#460186';
+  document.getElementById('btqa-edit-item-produit-nom').value = item.produit_nom || '';
+  document.getElementById('btqa-edit-item-design-nom').value = item.design_nom || '';
+  document.getElementById('btqa-edit-item-prix').value = item.prix_unitaire_centimes || '';
   btqaSelectTaille(item.taille || '');
-  document.getElementById('btqa-edit-item-couleur').value = item.couleur || '';
+  btqaSelectCouleur(item.couleur || '');
   document.getElementById('btqa-edit-item-qty').value = item.quantite || 1;
   document.getElementById('btqa-edit-confirm-step').hidden = true;
   document.getElementById('btqa-edit-action-step').hidden = false;
