@@ -12527,7 +12527,7 @@ function btqaImgPickerHtml(idx, cKey, colorName, side, url, label) {
   </div>`;
 }
 
-function btqaDesignRowHtml(idx, nom, designImages, couleurs) {
+function btqaDesignRowHtml(idx, nom, designImages, couleurs, actif) {
   // designImages = { "Blanc": { front: url, dos: url }, ... }  (new structure)
   // couleurs = ["Blanc", "Noir", ...] - if empty, show no image fields (added later when colors are set)
   const colorsHtml = (couleurs || []).map(c => {
