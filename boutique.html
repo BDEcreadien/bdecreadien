@@ -800,6 +800,10 @@ function btqSelectDesign(idx, nom, el) {
   document.querySelectorAll('.btq-design-chip').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   btqTrack('design_select', _modalProd?.id, _modalProd?.nom, { design: nom });
+  // Réinitialiser d'abord toutes les couleurs (état normal)
+  document.querySelectorAll('#btq-color-row .btq-color-chip').forEach(btn => {
+    btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; btn.style.textDecoration = '';
+  });
   // Mettre à jour la dispo des couleurs selon ce design (grisées mais visibles)
   const design = (_modalProd?.designs || []).find(d => d.nom === nom);
   const indispo = design?.couleurs_indispo || [];
