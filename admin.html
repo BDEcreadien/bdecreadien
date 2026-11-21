@@ -10116,50 +10116,30 @@ async function btqaLoadAnalytics(days) {
   const sb = window.Auth.sb;
   const since = new Date(Date.now() - _anPeriod * 86400000).toISOString();
 
-  // Requêtes séparées par type pour éviter la limite de lignes Supabase
-  const [pvRes, prRes, acRes, ptRes, hcRes] = await Promise.all([
-    sb.from('btq_analytics').select('data,created_at').eq('event','page_view').gte('created_at',since).limit(5000),
-    sb.from('btq_analytics').select('product_nom,data').eq('event','product_view').gte('created_at',since).limit(5000),
-    sb.from('btq_analytics').select('id',{count:'exact',head:true}).eq('event','add_to_cart').gte('created_at',since),
-    sb.from('btq_analytics').select('product_nom,data').eq('event','product_time').gte('created_at',since).limit(5000),
-    sb.from('btq_analytics').select('id',{count:'exact',head:true}).eq('event','help_click').gte('created_at',since),
-  ]);
-  if (!pvRes.data) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
+  const { data, error } = await sb.rpc('get_analytics_summary', { since_ts: since });
+  if (error || !data) { wrap.innerHTML = '<div style="text-align:center;padding:2rem;color:#c00">Erreur de chargement</div>'; return; }
 
-  const pageViewRows = pvRes.data || [];
-  const prodViewRows = prRes.data || [];
-  const prodTimeRows = ptRes.data || [];
+  const pageViews  = data.page_views  || 0;
+  const prodViews  = data.prod_views  || 0;
+  const addCarts   = data.add_carts   || 0;
+  const helpClicks = data.help_clicks || 0;
+  const mobile     = data.mobile_views || 0;
+  const convCart   = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
+  const pctMobile  = pageViews ? Math.round(mobile / pageViews * 100) : 0;
 
-  const pageViews = pageViewRows.length;
-  const prodViews = prodViewRows.length;
-  const addCarts  = acRes.count || 0;
-  const helpClicks = hcRes.count || 0;
-  const convCart  = prodViews ? Math.round(addCarts / prodViews * 100) : 0;
-  const mobile    = pageViewRows.filter(r => r.data?.device === 'mobile').length;
-  const pctMobile = pageViews ? Math.round(mobile / pageViews * 100) : 0;
-
-  // Top produits vus
-  const prodCount = {};
-  prodViewRows.forEach(r => { prodCount[r.product_nom||'?'] = (prodCount[r.product_nom||'?']||0)+1; });
-  const topProds = Object.entries(prodCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const topProds = (data.top_products || []).map(p => [p.nom || '?', p.count || 0]);
   const maxProd  = topProds[0]?.[1] || 1;
 
-  // Temps moyen par produit (secondes)
-  const timeMap = {};
-  const timeCnt = {};
-  prodTimeRows.forEach(r => {
-    const n = r.product_nom||'?'; const s = r.data?.seconds||0;
-    timeMap[n] = (timeMap[n]||0)+s; timeCnt[n]=(timeCnt[n]||0)+1;
-  });
-  const topTime = Object.entries(timeMap).map(([n,s])=>([n, Math.round(s/(timeCnt[n]||1))])).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topTime = (data.avg_time || []).map(p => [p.nom || '?', p.avg_s || 0]);
 
   // Visites par jour
+  const serverDaily = data.daily || {};
   const dayMap = {};
   for (let i=0;i<_anPeriod;i++) {
     const d = new Date(Date.now()-i*86400000);
-    dayMap[d.toISOString().slice(0,10)] = 0;
+    const key = d.toLocaleDateString('fr-CA'); // YYYY-MM-DD in local time
+    dayMap[key] = serverDaily[key] || 0;
   }
-  pageViewRows.forEach(r => { const d=r.created_at.slice(0,10); if(d in dayMap) dayMap[d]++; });
   const days7 = Object.entries(dayMap).sort((a,b)=>a[0]>b[0]?1:-1);
   const maxDay = Math.max(...days7.map(d=>d[1]),1);
 
