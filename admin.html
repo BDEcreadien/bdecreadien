@@ -10998,6 +10998,7 @@ function btqaRenderTable(list) {
       if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
       if (c.statut === 'annulee')    actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Restaurer</button>`);
       if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+      if (c.statut === 'panier') actions.push(`<button class="btqa-act-btn cancel" onclick="btqaDeletePanier('${c.id}')">Supprimer</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
       return `<div style="background:white;border-top:1.5px solid #f0e8ff;border-bottom:1.5px solid #f0e8ff;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#faf8ff;border-bottom:1px solid #f0e8ff">
@@ -11034,6 +11035,7 @@ function btqaRenderTable(list) {
     if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
     if (c.statut === 'annulee')    actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Restaurer</button>`);
     if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
+    if (c.statut === 'panier') actions.push(`<button class="btqa-act-btn cancel" onclick="btqaDeletePanier('${c.id}')">Supprimer</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
     return `<tr>
       <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '-'}</td>
@@ -11235,6 +11237,19 @@ async function btqaRemettre(id) {
   btqaFilterTable();
   showToast('Commande marquée comme remise');
 }
+async function btqaDeletePanier(id) {
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (!c || c.statut !== 'panier') return;
+  const nb = (c.boutique_items || []).length;
+  if (!confirm(`Supprimer définitivement le panier ${c.numero || ''} de ${c.nom_acheteur || 'ce client'} (${nb} article${nb > 1 ? 's' : ''}) ?\nCette action est irréversible.`)) return;
+  const { data, error } = await window.Auth.sb.from('boutique_commandes').delete().eq('id', id).eq('statut', 'panier').select('id');
+  if (error || !data?.length) { alert('Suppression impossible : ' + (error?.message || 'panier introuvable ou déjà validé')); return; }
+  _btqaCommandes = _btqaCommandes.filter(x => x.id !== id);
+  btqaRenderStats();
+  btqaUpdateBulkBar();
+  btqaFilterTable();
+  showToast('Panier supprimé');
+}
 async function btqaCancel(id) {
   if (!confirm('Annuler cette commande ? Cette action est définitive.')) return;
   await window.Auth.sb.from('boutique_commandes').update({ statut: 'annulee' }).eq('id', id);
@@ -11328,18 +11343,18 @@ function btqaRelanceCommandes() {
   const lignes = cibles.map(c => {
     const t = total(c);
     return `<label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid #f0e8ff;cursor:pointer;font-size:13px">
-      <input type="checkbox" class="btqa-relance-cb" value="${esc(c.id)}" ${t > 0 ? 'checked' : ''} onchange="btqaRelanceCount()">
+      <input type="checkbox" class="btqa-relance-cb" value="${esc(c.id)}" ${t > 0 ? 'checked' : 'disabled'} onchange="btqaRelanceCount()">
       <span style="font-weight:800;color:#460186;white-space:nowrap">${esc(c.numero)}</span>
       <span style="flex:1;min-width:0"><b style="font-weight:600">${esc(c.nom_acheteur || '-')}</b> <span style="color:#888;font-size:12px">${esc(c.email_acheteur)}</span></span>
-      <span style="font-weight:700;white-space:nowrap">${btqaFmt(t)}</span>
+      <span style="font-weight:700;white-space:nowrap">${t > 0 ? btqaFmt(t) : '<span style="color:#dc2626">Vide</span>'}</span>
       <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
     </label>`;
   }).join('');
   m.innerHTML = `<div style="background:white;border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow:auto;padding:20px">
     <div style="font-size:17px;font-weight:900;color:#460186;margin-bottom:4px">Relancer des commandes</div>
-    <div style="font-size:12px;color:#888;margin-bottom:10px">Décoche celles à ne pas relancer. Les commandes à 0 € sont décochées par défaut.</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px">Décoche celles à ne pas relancer. Les commandes vides (0 €) ne peuvent pas être relancées.</div>
     <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #d0c4ff;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=true);btqaRelanceCount()">Tout cocher</button>
+      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #d0c4ff;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb:not(:disabled)').forEach(x=>x.checked=true);btqaRelanceCount()">Tout cocher</button>
       <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #d0c4ff;background:white;color:#460186;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=false);btqaRelanceCount()">Tout décocher</button>
     </div>
     ${lignes}
@@ -11371,7 +11386,7 @@ async function btqaRelanceEnvoyer(btn) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erreur');
     document.getElementById('btqa-relance-modal').style.display = 'none';
-    alert(`Relance envoyée : ${data.sent} mail(s) sur ${data.total} commande(s).${data.errors?.length ? `\n${data.errors.length} échec(s).` : ''}`);
+    alert(`Relance envoyée : ${data.sent} mail(s) sur ${data.total} commande(s).${data.skipped?.length ? `\n${data.skipped.length} ignorée(s) car vide(s) : ${data.skipped.join(', ')}` : ''}${data.errors?.length ? `\n${data.errors.length} échec(s).` : ''}`);
   } catch (e) {
     alert('Erreur : ' + e.message);
     btn.disabled = false; btqaRelanceCount();

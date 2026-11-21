@@ -63,6 +63,7 @@ export async function onRequest({ request, env }) {
 
   let sent = 0;
   const errors = [];
+  const skipped = [];
 
   for (const cmd of commandes) {
     if (!cmd.email_acheteur) continue;
@@ -71,7 +72,9 @@ export async function onRequest({ request, env }) {
     const calc = (cmd.boutique_items || [])
       .filter(i => !i.est_offert || i.prix_unitaire_centimes < 0)
       .reduce((t, i) => t + i.prix_unitaire_centimes * i.quantite, 0);
-    const total  = formatEur(calc > 0 ? calc : (cmd.total_centimes || 0));
+    // Commande vide ou à 0 € : rien à payer ni à retrouver, on ne relance pas
+    if (calc <= 0) { skipped.push(cmd.numero); continue; }
+    const total  = formatEur(calc);
     const estPanier = cmd.statut === 'panier';
 
     const html = `<!DOCTYPE html><html><head><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
@@ -131,7 +134,7 @@ export async function onRequest({ request, env }) {
     }
   }
 
-  return json({ ok: true, sent, total: commandes.length, errors });
+  return json({ ok: true, sent, total: commandes.length, errors, skipped });
 }
 
 function escHtml(s) {
