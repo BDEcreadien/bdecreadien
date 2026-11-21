@@ -12251,7 +12251,7 @@ function btqaEditSelectProduit(prodId) {
   document.getElementById('btqa-edit-item-produit-nom').value = p.nom;
   document.getElementById('btqa-edit-item-prix').value = p.prix_centimes;
   document.getElementById('btqa-edit-item-design-nom').value = '';
-  const designs = p.designs || [];
+  const designs = (p.designs || []).filter(d => d.actif !== false);
   const step2 = document.getElementById('btqa-edit-prod-step2');
   if (designs.length > 0) {
     document.getElementById('btqa-edit-design-list').innerHTML = designs.map(d =>
