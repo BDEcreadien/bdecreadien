@@ -669,9 +669,8 @@ function btqOpenModal(id) {
   _modalImgDos   = '';
   const couleurs = p.couleurs_disponibles || [];
 
-  // Ne garder que les designs actifs et qui ont au moins une photo sur au moins une couleur
+  // Garder tous les designs avec au moins une photo (actifs ou non), les inactifs seront grisés
   const designs = (p.designs || []).filter(d => {
-    if (d.actif === false) return false;
     if (!d.images) return false;
     return Object.values(d.images).some(ci => ci?.front || ci?.dos);
   });
