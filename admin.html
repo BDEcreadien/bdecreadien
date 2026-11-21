@@ -12207,10 +12207,74 @@ function btqaToggleProduitEdit() {
   const fields = document.getElementById('btqa-edit-produit-fields');
   const btn = document.getElementById('btqa-edit-produit-toggle-btn');
   const hidden = fields.hidden;
+  if (hidden) {
+    // Rendre la liste des produits
+    const list = document.getElementById('btqa-edit-prod-list');
+    list.innerHTML = (_btqaProduits || []).map(p =>
+      `<button onclick="btqaEditSelectProduit('${p.id}')" data-prod-id="${p.id}"
+        style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;color:#333;text-align:left;width:100%;transition:all .15s">
+        <span>${p.nom}</span>
+        <span style="color:#460186;font-weight:700">${btqaFmt(p.prix_centimes)}</span>
+      </button>`
+    ).join('');
+    document.getElementById('btqa-edit-prod-step2').hidden = true;
+    document.getElementById('btqa-edit-prod-prix-row').hidden = true;
+    document.getElementById('btqa-edit-item-produit-nom').value = '';
+    document.getElementById('btqa-edit-item-design-nom').value = '';
+    document.getElementById('btqa-edit-item-prix').value = '';
+  }
   fields.hidden = !hidden;
   btn.textContent = hidden ? 'Annuler' : 'Changer';
   btn.style.background = hidden ? '#fee2e2' : '#ede5ff';
   btn.style.color = hidden ? '#991b1b' : '#460186';
+}
+function btqaEditSelectProduit(prodId) {
+  const p = (_btqaProduits || []).find(x => x.id === prodId);
+  if (!p) return;
+  document.querySelectorAll('#btqa-edit-prod-list button').forEach(b => {
+    const active = b.dataset.prodId === prodId;
+    b.style.background = active ? 'linear-gradient(135deg,#460186,#D2396D)' : 'white';
+    b.style.color = active ? 'white' : '#333';
+    b.style.borderColor = active ? 'transparent' : '#e0d8f0';
+  });
+  document.getElementById('btqa-edit-item-produit-nom').value = p.nom;
+  document.getElementById('btqa-edit-item-prix').value = p.prix_centimes;
+  document.getElementById('btqa-edit-item-design-nom').value = '';
+  const designs = p.designs || [];
+  const step2 = document.getElementById('btqa-edit-prod-step2');
+  if (designs.length > 0) {
+    document.getElementById('btqa-edit-design-list').innerHTML = designs.map(d =>
+      `<button onclick="btqaEditSelectDesign('${d.nom.replace(/'/g,"\\'")}',${p.prix_centimes})" data-design-nom="${d.nom}"
+        style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">
+        ${d.nom}
+      </button>`
+    ).join('');
+    step2.hidden = false;
+    btqaEditSelectDesign(designs[0].nom, p.prix_centimes);
+  } else {
+    step2.hidden = true;
+    btqaEditShowPrixRow(p.nom, null, p.prix_centimes);
+  }
+}
+function btqaEditSelectDesign(designNom, prix) {
+  document.querySelectorAll('#btqa-edit-design-list button').forEach(b => {
+    const active = b.dataset.designNom === designNom;
+    b.style.background = active ? 'linear-gradient(135deg,#460186,#D2396D)' : 'white';
+    b.style.color = active ? 'white' : '#333';
+    b.style.borderColor = active ? 'transparent' : '#e0d8f0';
+  });
+  document.getElementById('btqa-edit-item-design-nom').value = designNom;
+  const prodNom = document.getElementById('btqa-edit-item-produit-nom').value;
+  const p = parseInt(prix || document.getElementById('btqa-edit-item-prix').value);
+  btqaEditShowPrixRow(prodNom, designNom, p);
+}
+function btqaEditShowPrixRow(prodNom, designNom, prix) {
+  const row = document.getElementById('btqa-edit-prod-prix-row');
+  row.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8f5ff;border-radius:10px;border:1px solid #ede5ff;margin-top:4px">
+    <span style="font-size:12px;font-weight:700;color:#460186">${prodNom}${designNom ? ' — ' + designNom : ''}</span>
+    <span style="font-size:14px;font-weight:800;color:#D2396D">${btqaFmt(prix)}</span>
+  </div>`;
+  row.hidden = false;
 }
 function btqaOpenEditModal(itemId) {
   const item = _btqaEditItems[itemId];
