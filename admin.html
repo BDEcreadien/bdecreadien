@@ -10909,92 +10909,90 @@ function btqaExportRecapPDF() {
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
 
-    const th = 'padding:7px 10px;text-align:center;background:#f0ebfa;color:#460186;font-size:10px;font-weight:700;border:1px solid #e0d8f0';
-    const thL = 'padding:7px 12px;text-align:left;background:#f0ebfa;color:#460186;font-size:10px;font-weight:700;border:1px solid #e0d8f0';
+    const tdH = 'padding:6px 10px;text-align:center;background:#f2f2f2;color:#111;font-size:10px;font-weight:700;border:1px solid #ccc';
+    const tdHL = 'padding:6px 12px;text-align:left;background:#f2f2f2;color:#111;font-size:10px;font-weight:700;border:1px solid #ccc';
 
     let pages = [];
 
     for (const collection of sortedCollections) {
       for (const modele of Object.keys(tree[collection]).sort()) {
         const designs = tree[collection][modele];
-        // Tailles présentes pour ce modèle
         const taillesPresentes = tailleOrder.filter(t =>
           Object.values(designs).some(d => Object.values(d).some(v => v.taille.toUpperCase() === t))
         );
         const hasTailles = taillesPresentes.length > 0;
 
-        // Construire les lignes
         let tbody = '';
         let totalGeneral = 0;
         const totauxTaille = {};
+        let rowIdx = 0;
 
         const sortedDesigns = btqaSortDesigns(collection, modele, Object.keys(designs));
         let prevDesign = null;
         for (const design of sortedDesigns) {
           const variants = Object.values(designs[design]);
-          // Grouper par couleur
           const byCouleur = {};
           variants.forEach(v => {
             if (!byCouleur[v.couleur]) byCouleur[v.couleur] = [];
             byCouleur[v.couleur].push(v);
           });
           const couleurs = Object.keys(byCouleur).sort();
-          const isNewDesign = design !== prevDesign;
 
           couleurs.forEach((couleur, ci) => {
             const vList = byCouleur[couleur];
             const totalRow = vList.reduce((s,v) => s+v.qty, 0);
             totalGeneral += totalRow;
-            const borderTop = isNewDesign && ci === 0 && prevDesign !== null ? 'border-top:2px solid #c4b5e8' : 'border-top:1px solid #ede8f8';
-            const bg = (ci % 2 === 0) ? '#faf8ff' : 'white';
+            const isNewDesign = design !== prevDesign && ci === 0;
+            const bg = rowIdx % 2 === 0 ? '#fafafa' : 'white';
+            const borderTop = isNewDesign && rowIdx > 0 ? 'border-top:2px solid #aaa' : 'border-top:1px solid #ddd';
 
             const qtyFor = (t) => {
               const v = vList.find(x => x.taille.toUpperCase() === t);
               const q = v ? v.qty : 0;
               if (q) totauxTaille[t] = (totauxTaille[t]||0) + q;
               return q
-                ? `<td style="padding:7px 10px;text-align:center;font-weight:700;font-size:11px;color:#460186;border:1px solid #ede8f8">${q}</td>`
-                : `<td style="padding:7px 10px;text-align:center;font-size:11px;color:#ccc;border:1px solid #ede8f8">—</td>`;
+                ? `<td style="padding:6px 8px;text-align:center;font-weight:600;font-size:11px;color:#111;border:1px solid #ddd">${q}</td>`
+                : `<td style="padding:6px 8px;text-align:center;font-size:11px;color:#bbb;border:1px solid #ddd">—</td>`;
             };
 
             tbody += `<tr style="background:${bg};${borderTop}">
-              ${ci === 0 ? `<td rowspan="${couleurs.length}" style="padding:7px 12px;font-weight:700;font-size:11px;color:#1a0030;border:1px solid #ede8f8;vertical-align:middle;border-right:2px solid #c4b5e8">${design}</td>` : ''}
-              <td style="padding:7px 10px;font-size:11px;color:#444;border:1px solid #ede8f8">${couleur}</td>
-              <td style="padding:7px 10px;text-align:center;font-weight:800;font-size:13px;color:#1a0030;border:1px solid #ede8f8">${totalRow}</td>
+              <td style="padding:6px 12px;font-size:11px;font-weight:${isNewDesign?'700':'400'};color:#111;border:1px solid #ddd">${isNewDesign ? design : ''}</td>
+              <td style="padding:6px 10px;font-size:11px;color:#333;border:1px solid #ddd">${couleur}</td>
+              <td style="padding:6px 8px;text-align:center;font-weight:700;font-size:12px;color:#111;border:1px solid #ddd">${totalRow}</td>
               ${hasTailles ? taillesPresentes.map(t => qtyFor(t)).join('') : ''}
             </tr>`;
             prevDesign = design;
+            rowIdx++;
           });
         }
 
-        // Ligne total
-        tbody += `<tr style="border-top:2px solid #460186;background:#ede8ff">
-          <td style="padding:8px 12px;font-weight:800;font-size:10px;color:#460186;border:1px solid #c4b5e8;letter-spacing:.5px">TOTAL</td>
-          <td style="border:1px solid #c4b5e8"></td>
-          <td style="padding:8px 10px;text-align:center;font-weight:900;font-size:15px;color:#460186;border:1px solid #c4b5e8">${totalGeneral}</td>
+        tbody += `<tr style="border-top:2px solid #333;background:#ebebeb">
+          <td style="padding:7px 12px;font-weight:700;font-size:10px;color:#111;border:1px solid #aaa;letter-spacing:.5px">TOTAL</td>
+          <td style="border:1px solid #aaa"></td>
+          <td style="padding:7px 8px;text-align:center;font-weight:800;font-size:14px;color:#111;border:1px solid #aaa">${totalGeneral}</td>
           ${hasTailles ? taillesPresentes.map(t => {
             const s = totauxTaille[t]||0;
             return s
-              ? `<td style="padding:8px 10px;text-align:center;font-weight:800;font-size:11px;color:#460186;border:1px solid #c4b5e8">${s}</td>`
-              : `<td style="padding:8px 10px;text-align:center;font-size:11px;color:#ccc;border:1px solid #c4b5e8">—</td>`;
+              ? `<td style="padding:7px 8px;text-align:center;font-weight:700;font-size:11px;color:#111;border:1px solid #aaa">${s}</td>`
+              : `<td style="padding:7px 8px;text-align:center;font-size:11px;color:#bbb;border:1px solid #aaa">—</td>`;
           }).join('') : ''}
         </tr>`;
 
         const pageHtml = `
           <div style="margin-bottom:8mm">
-            <div style="background:linear-gradient(135deg,#460186,#D2396D);border-radius:10px 10px 0 0;padding:12px 18px;display:flex;align-items:center;justify-content:space-between">
+            <div style="border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:0;display:flex;align-items:baseline;justify-content:space-between">
               <div>
-                <div style="font-size:9px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.5px;text-transform:uppercase">${collection}</div>
-                <div style="font-size:16px;font-weight:900;color:white;margin-top:1px">${modele}</div>
+                <span style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-right:8px">${collection}</span>
+                <span style="font-size:18px;font-weight:700;color:#111">${modele}</span>
               </div>
-              <div style="background:rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;color:white">${totalGeneral} pièces</div>
+              <span style="font-size:11px;color:#444;font-weight:600">${totalGeneral} pièces</span>
             </div>
-            <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;border:1px solid #e0d8f0">
+            <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif">
               <thead><tr>
-                <th style="${thL}">Design</th>
-                <th style="${thL}">Couleur</th>
-                <th style="${th}">Total</th>
-                ${hasTailles ? taillesPresentes.map(t => `<th style="${th}">${t}</th>`).join('') : ''}
+                <th style="${tdHL}">Design</th>
+                <th style="${tdHL}">Couleur</th>
+                <th style="${tdH}">Total</th>
+                ${hasTailles ? taillesPresentes.map(t => `<th style="${tdH}">${t}</th>`).join('') : ''}
               </tr></thead>
               <tbody>${tbody}</tbody>
             </table>
