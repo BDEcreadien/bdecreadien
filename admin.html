@@ -12325,11 +12325,10 @@ async function btqaDoSaveEdit() {
   const produitEdite = !document.getElementById('btqa-edit-produit-fields').hidden;
   const updatePayload = { taille, couleur, quantite };
   if (produitEdite) {
-    const produit_nom = document.getElementById('btqa-edit-item-produit-nom').value.trim();
-    const design_nom = document.getElementById('btqa-edit-item-design-nom').value.trim() || null;
+    const produit_nom = document.getElementById('btqa-edit-item-produit-nom').value;
+    const design_nom = document.getElementById('btqa-edit-item-design-nom').value || null;
     const prix_unitaire_centimes = parseInt(document.getElementById('btqa-edit-item-prix').value) || null;
-    if (!produit_nom) { showToast('Le nom du produit est requis', 'error'); return; }
-    if (!prix_unitaire_centimes) { showToast('Le prix est requis', 'error'); return; }
+    if (!produit_nom || !prix_unitaire_centimes) { showToast('Sélectionne un produit', 'error'); return; }
     updatePayload.produit_nom = produit_nom;
     updatePayload.design_nom = design_nom;
     updatePayload.prix_unitaire_centimes = prix_unitaire_centimes;
