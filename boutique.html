@@ -451,7 +451,7 @@ async function btqResumePay(commandeId, btn) {
 // ── Catalogue ──────────────────────────────────────────────
 async function btqLoadCatalogue() {
   const [produitsRes, packsRes] = await Promise.all([
-    _sb.from('boutique_produits').select('*').eq('actif', true).order('ordre'),
+    _sb.from('boutique_produits').select('*').order('ordre'),
     _sb.from('boutique_packs').select('*').eq('actif', true),
   ]);
   if (produitsRes.error) console.error('[boutique] boutique_produits SELECT error:', produitsRes.error.message, produitsRes.error.code, produitsRes.error.hint);
