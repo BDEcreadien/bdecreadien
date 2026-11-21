@@ -1371,7 +1371,7 @@ async function btqSaveOrder() {
   if (!_cmdId || !_cart.filter(i => !i.est_offert).length) return;
   const btn = document.getElementById('btq-save-btn');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
-  const nom = [_profil?.prenom, _profil?.nom].filter(Boolean).join(' ') || '';
+  const nom = [_profil?.prenom, _profil?.nom].filter(Boolean).join(' ') || _user?.user_metadata?.full_name || _user?.email?.split('@')[0] || 'Client';
   const email = _profil?.email || _user?.email || '';
   await _sb.from('boutique_commandes').update({
     statut: 'en_attente',
