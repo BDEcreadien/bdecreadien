@@ -12527,14 +12527,21 @@ function btqaImgPickerHtml(idx, cKey, colorName, side, url, label) {
   </div>`;
 }
 
-function btqaDesignRowHtml(idx, nom, designImages, couleurs, actif) {
+function btqaDesignRowHtml(idx, nom, designImages, couleurs, actif, couleursIndispo) {
   // designImages = { "Blanc": { front: url, dos: url }, ... }  (new structure)
   // couleurs = ["Blanc", "Noir", ...] - if empty, show no image fields (added later when colors are set)
+  // couleursIndispo = ["Bleu", ...] - couleurs désactivées pour ce design
+  const indispo = Array.isArray(couleursIndispo) ? couleursIndispo : [];
   const colorsHtml = (couleurs || []).map(c => {
     const cKey = c.replace(/[^a-zA-Z0-9]/g, '_');
     const existing = (designImages || {})[c] || {};
-    return `<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#f5f0ff;border:1px solid #e0d8f0">
-      <div style="font-size:11px;font-weight:700;color:#460186;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">${c}</div>
+    const cIndispo = indispo.includes(c);
+    return `<div class="bp-design-couleur-block" data-couleur="${c}" data-indispo="${cIndispo}" style="margin-top:8px;padding:8px 10px;border-radius:8px;background:${cIndispo?'#f9f9f9':'#f5f0ff'};border:1px solid ${cIndispo?'#e5e5e5':'#e0d8f0'};opacity:${cIndispo?'0.5':'1'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:${cIndispo?'#999':'#460186'};text-transform:uppercase;letter-spacing:.4px">${c}</span>
+        <button type="button" onclick="btqaToggleCouleurIndispo(this)" data-couleur="${c}"
+          style="padding:2px 8px;border-radius:20px;border:1.5px solid ${cIndispo?'#fcd34d':'#6ee7b7'};background:${cIndispo?'#fef3c7':'#d1fae5'};color:${cIndispo?'#92400e':'#065f46'};cursor:pointer;font-size:10px;font-weight:700;white-space:nowrap">${cIndispo?'Indispo':'Dispo'}</button>
+      </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         ${btqaImgPickerHtml(idx, cKey, c, 'front', existing.front || '', 'Devant')}
         ${btqaImgPickerHtml(idx, cKey, c, 'dos', existing.dos || '', 'Dos')}
