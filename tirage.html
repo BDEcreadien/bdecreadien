@@ -121,7 +121,7 @@
     .slot-card {
       width: 100%;
       border-radius: 22px;
-      padding: 16px 18px 14px;
+      padding: 24px 20px 20px;
       text-align: center;
       border: 1px solid var(--border);
       background: linear-gradient(145deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.02) 100%);
@@ -159,16 +159,16 @@
       letter-spacing: 3px;
       color: var(--muted);
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 14px;
     }
 
     .slot-name {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 38px;
+      font-size: 44px;
       font-weight: 900;
       line-height: 1.05;
       letter-spacing: 1px;
-      min-height: 40px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -197,11 +197,11 @@
     }
 
     .slot-details {
-      margin-top: 8px;
+      margin-top: 12px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      min-height: 30px;
+      gap: 3px;
+      min-height: 34px;
     }
     .slot-num   { font-size: 13px; color: var(--muted); font-weight: 500; }
     .slot-email { font-size: 12px; color: rgba(251,191,36,.55); }
@@ -517,8 +517,8 @@
     const section = document.getElementById('history-section');
     const list    = document.getElementById('history-list');
     section.hidden = _drawn.length === 0;
-    list.innerHTML = [..._drawn].reverse().map((d, i) => `
-      <div class="history-item${i === 0 ? ' new' : ''}">
+    list.innerHTML = _drawn.map((d, i) => `
+      <div class="history-item${i === _drawn.length - 1 ? ' new' : ''}">
         <div>
           <div class="hi-name">${d.nom}</div>
           <div class="hi-sub">n° ${d.numero}${d.email ? ' · ' + d.email : ''}</div>
