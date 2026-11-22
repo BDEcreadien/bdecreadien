@@ -430,9 +430,6 @@
     document.getElementById('stat-eligible').textContent = _eligibles.length;
   }
 
-  document.getElementById('opt-exclude-drawn').addEventListener('change', refreshEligibles);
-  document.getElementById('opt-one-per-person').addEventListener('change', refreshEligibles);
-
   function startDraw() {
     if (_rolling) return;
     if (_eligibles.length === 0) { alert('Plus de participants éligibles !'); return; }
