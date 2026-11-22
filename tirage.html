@@ -410,8 +410,8 @@
   }
 
   function refreshEligibles() {
-    const excludeDrawn = document.getElementById('opt-exclude-drawn').checked;
-    const onePerPerson = document.getElementById('opt-one-per-person').checked;
+    const excludeDrawn = true;
+    const onePerPerson = true;
     const drawnEmails  = new Set(_drawn.map(d => d.email.toLowerCase()));
     const drawnNoms    = new Set(_drawn.map(d => d.nom.toLowerCase()));
     const seenKey = new Set();
