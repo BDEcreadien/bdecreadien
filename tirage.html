@@ -406,9 +406,7 @@
       numero: c.numero || c.id.slice(0,8),
       commande_id: c.id,
     }));
-    document.getElementById('stat-total').textContent = _participants.length;
     refreshEligibles();
-    renderParticipants();
   }
 
   function refreshEligibles() {
