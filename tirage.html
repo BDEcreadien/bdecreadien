@@ -508,32 +508,6 @@
     refreshEligibles();
   }
 
-  function renderParticipants() {
-    const drawnEmails = new Set(_drawn.map(d => d.email?.toLowerCase() || ''));
-    const drawnNoms   = new Set(_drawn.map(d => d.nom.toLowerCase()));
-    const grid = document.getElementById('participants-grid');
-    const onePerPerson = document.getElementById('opt-one-per-person').checked;
-    const seen = new Set();
-    const list = onePerPerson
-      ? _participants.filter(p => {
-          const key = p.email ? p.email.toLowerCase() : p.nom.toLowerCase();
-          if (seen.has(key)) return false;
-          seen.add(key); return true;
-        })
-      : _participants;
-    grid.innerHTML = list.map(p => {
-      const excluded = drawnEmails.has(p.email?.toLowerCase() || '') || drawnNoms.has(p.nom.toLowerCase());
-      return `<div class="pchip${excluded ? ' excluded' : ''}">👤 ${p.nom}</div>`;
-    }).join('');
-  }
-
-  function toggleParticipants() {
-    const grid = document.getElementById('participants-grid');
-    const btn  = document.querySelector('.btn-toggle');
-    const open = grid.classList.toggle('open');
-    btn.textContent = open ? 'Masquer les participants' : 'Voir les participants';
-  }
-
   function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     canvas.hidden = false;
