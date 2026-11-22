@@ -189,11 +189,11 @@
       background: linear-gradient(130deg, var(--gold) 0%, var(--gold2) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: pop-winner .5s cubic-bezier(.175,.885,.32,1.275) both;
+      animation: pop-winner .35s cubic-bezier(.175,.885,.32,1.275) both;
     }
     @keyframes pop-winner {
-      0%   { transform: scale(.55) translateY(10px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
+      0%   { transform: scale(.88); opacity: .6; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     .slot-details {
@@ -478,12 +478,13 @@
     const totalTicks = 18;
     const interval = setInterval(() => {
       ticks++;
-      const fake = _participants[Math.floor(Math.random() * _participants.length)];
-      slotName.textContent = fake.nom.split(' ')[0];
       if (ticks >= totalTicks) {
         clearInterval(interval);
         revealWinner(winner, slotWrap, slotName, slotNum, slotMail, btn);
+        return;
       }
+      const fake = _participants[Math.floor(Math.random() * _participants.length)];
+      slotName.textContent = fake.nom.split(' ')[0];
     }, 80);
   }
 
@@ -499,7 +500,7 @@
     btn.textContent = 'Nouveau tirage';
     refreshEligibles();
     renderHistory();
-    launchConfetti();
+    setTimeout(launchConfetti, 60);
   }
 
   function renderHistory() {
