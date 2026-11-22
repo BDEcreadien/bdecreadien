@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tirage au sort — BDE CREAD</title>
+  <link rel="icon" href="/favicon-v2.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --violet: #460186;
+      --gradient: linear-gradient(135deg, #460186, #D2396D);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0d0d1a;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1a0030, #2d0050);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header a {
+      color: rgba(255,255,255,.5);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    /* Main */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 32px 20px 48px;
+      gap: 32px;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat-pill {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,.7);
+    }
+    .stat-pill strong { color: white; }
+
+    /* Draw zone */
+    .draw-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .slot-machine {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 2px solid rgba(70,1,134,.5);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .slot-machine::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(70,1,134,.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .slot-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 12px;
+    }
+    .slot-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      line-height: 1;
+      transition: all .05s;
+      min-height: 58px;
+    }
+    .slot-name.rolling { opacity: .7; }
+    .slot-name.winner {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 52px;
+      animation: pop .4s ease;
+    }
+    @keyframes pop {
+      0% { transform: scale(.8); }
+      60% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    .slot-numero {
+      font-size: 13px;
+      color: rgba(255,255,255,.4);
+      margin-top: 6px;
+      min-height: 20px;
+    }
+    .slot-email {
+      font-size: 12px;
+      color: rgba(210,57,109,.7);
+      margin-top: 2px;
+      min-height: 18px;
+    }
+
+    /* Bouton tirage */
+    .btn-draw {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--gradient);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 16px 48px;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-draw:hover:not(:disabled) { transform: scale(1.04); }
+    .btn-draw:active:not(:disabled) { transform: scale(.97); }
+    .btn-draw:disabled { opacity: .5; cursor: default; }
+
+    /* Options */
+    .options-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,.6);
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-label input[type=checkbox] { accent-color: #D2396D; width: 15px; height: 15px; cursor: pointer; }
+
+    /* Historique */
+    .history-section {
+      width: 100%;
+      max-width: 560px;
+    }
+    .history-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 10px;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .history-item {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .history-item .hi-name { font-weight: 700; color: white; }
+    .history-item .hi-num { color: rgba(255,255,255,.35); font-size: 11px; }
+    .history-item .hi-round {
+      background: rgba(70,1,134,.4);
+      border-radius: 100px;
+      padding: 2px 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,.5);
+    }
+    .btn-clear {
+      background: none;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      color: rgba(255,255,255,.4);
+      font-size: 12px;
+      padding: 5px 12px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-clear:hover { color: white; border-color: rgba(255,255,255,.3); }
+
+    /* Participants */
+    .participants-section {
+      width: 100%;
+      max-width: 560px;
+    }
+    .participants-toggle {
+      background: none;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 100px;
+      color: rgba(255,255,255,.4);
+      font-size: 12px;
+      padding: 6px 16px;
+      cursor: pointer;
+    }
+    .participants-toggle:hover { color: white; }
+    .participants-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .participants-grid.open { display: grid; }
+    .participant-chip {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,.6);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .participant-chip.excluded {
+      opacity: .3;
+      text-decoration: line-through;
+    }
+
+    /* Loading */
+    #screen-loading {
+      position: fixed;
+      inset: 0;
+      background: #0d0d1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: rgba(255,255,255,.4);
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen-loading">Chargement…</div>
+<canvas id="confetti-canvas" hidden></canvas>
+
+<div id="app" hidden>
+  <div class="header">
+    <span class="header-title">🎲 Tirage au sort</span>
+    <a href="/admin.html">← Admin</a>
+  </div>
+
+  <main>
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-pill"><strong id="stat-total">—</strong> participants</div>
+      <div class="stat-pill"><strong id="stat-eligible">—</strong> éligibles</div>
+    </div>
+
+    <div class="draw-zone">
+      <div class="slot-machine">
+        <div class="slot-label">Participant sélectionné</div>
+        <div class="slot-name" id="slot-name">?</div>
+        <div class="slot-numero" id="slot-numero"></div>
+        <div class="slot-email" id="slot-email"></div>
+      </div>
+
+      <button class="btn-draw" id="btn-draw" onclick="startDraw()">
+        Lancer le tirage
+      </button>
+
+      <div class="options-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="opt-exclude-drawn" checked>
+          Exclure les déjà tirés
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="opt-one-per-person" checked>
+          1 participation par personne
+        </label>
+      </div>
+    </div>
+
+    <div class="history-section" id="history-section" hidden>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="history-title">Historique des tirages</div>
+        <button class="btn-clear" onclick="clearHistory()">Réinitialiser</button>
+      </div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+
+    <div class="participants-section">
+      <button class="participants-toggle" onclick="toggleParticipants()">Voir les participants</button>
+      <div class="participants-grid" id="participants-grid"></div>
+    </div>
+  </main>
+</div>
+
+<script src="/js/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script src="/js/auth.js?v=12"></script>
+<script>
+  let _participants = [];   // { nom, email, numero, commande_id }
+  let _eligibles = [];      // participants éligibles au tirage courant
+  let _drawn = [];          // { nom, email, numero, round }
+  let _round = 0;
+  let _rolling = false;
+
+  const STATUTS_PAYES = ['payee','production','livraison','confirmee','remise','physique'];
+
+  // ── Init ──────────────────────────────────────────────
+  document.addEventListener('AuthReady', async ({ detail: { profil } }) => {
+    if (!profil || !['admin','membre_bde'].includes(profil.role)) {
+      document.getElementById('screen-loading').textContent = 'Accès réservé aux membres BDE.';
+      return;
+    }
+    await loadParticipants();
+    document.getElementById('screen-loading').hidden = true;
+    document.getElementById('app').hidden = false;
+  });
+
+  async function loadParticipants() {
+    const sb = window.Auth.sb;
+    // Charger toutes les commandes payées avec leurs acheteurs
+    let all = [], page = 0, PAGE = 1000;
+    while (true) {
+      const { data, error } = await sb
+        .from('boutique_commandes')
+        .select('id, numero, nom_acheteur, email_acheteur, statut')
+        .in('statut', STATUTS_PAYES)
+        .order('created_at', { ascending: true })
+        .range(page * PAGE, (page + 1) * PAGE - 1);
+      if (error || !data?.length) break;
+      all = all.concat(data);
+      if (data.length < PAGE) break;
+      page++;
+    }
+
+    _participants = all.map(c => ({
+      nom:   c.nom_acheteur || 'Anonyme',
+      email: c.email_acheteur || '',
+      numero: c.numero || c.id.slice(0,8),
+      commande_id: c.id,
+    }));
+
+    document.getElementById('stat-total').textContent = _participants.length;
+    refreshEligibles();
+    renderParticipants();
+  }
+
+  // ── Éligibles ─────────────────────────────────────────
+  function refreshEligibles() {
+    const excludeDrawn = document.getElementById('opt-exclude-drawn').checked;
+    const onePerPerson = document.getElementById('opt-one-per-person').checked;
+
+    const drawnEmails = new Set(_drawn.map(d => d.email.toLowerCase()));
+    const drawnNoms   = new Set(_drawn.map(d => d.nom.toLowerCase()));
+    const seenKey = new Set();
+
+    _eligibles = _participants.filter(p => {
+      if (excludeDrawn) {
+        if (p.email && drawnEmails.has(p.email.toLowerCase())) return false;
+        if (!p.email && drawnNoms.has(p.nom.toLowerCase())) return false;
+      }
+      if (onePerPerson) {
+        const key = p.email ? p.email.toLowerCase() : p.nom.toLowerCase();
+        if (seenKey.has(key)) return false;
+        seenKey.add(key);
+      }
+      return true;
+    });
+
+    document.getElementById('stat-eligible').textContent = _eligibles.length;
+    renderParticipants();
+  }
+
+  document.getElementById('opt-exclude-drawn').addEventListener('change', refreshEligibles);
+  document.getElementById('opt-one-per-person').addEventListener('change', refreshEligibles);
+
+  // ── Tirage ────────────────────────────────────────────
+  function startDraw() {
+    if (_rolling) return;
+    if (_eligibles.length === 0) {
+      alert('Plus de participants éligibles !');
+      return;
+    }
+    _rolling = true;
+    _round++;
+    const btn = document.getElementById('btn-draw');
+    btn.disabled = true;
+    btn.textContent = 'Tirage en cours…';
+
+    const slotName = document.getElementById('slot-name');
+    const slotNum  = document.getElementById('slot-numero');
+    const slotMail = document.getElementById('slot-email');
+    slotName.className = 'slot-name rolling';
+    slotNum.textContent = '';
+    slotMail.textContent = '';
+
+    const winner = _eligibles[Math.floor(Math.random() * _eligibles.length)];
+
+    // Animation : noms qui défilent
+    let ticks = 0;
+    const totalTicks = 28;
+    const interval = setInterval(() => {
+      ticks++;
+      const fake = _participants[Math.floor(Math.random() * _participants.length)];
+      slotName.textContent = fake.nom.split(' ')[0]; // prénom seulement pendant le rouleau
+      // Ralentissement
+      const delay = ticks < 15 ? 60 : ticks < 22 ? 100 : 160;
+      if (ticks >= totalTicks) {
+        clearInterval(interval);
+        revealWinner(winner, slotName, slotNum, slotMail, btn);
+      }
+    }, 90);
+  }
+
+  function revealWinner(winner, slotName, slotNum, slotMail, btn) {
+    slotName.textContent = winner.nom;
+    slotName.className = 'slot-name winner';
+    slotNum.textContent = `Commande n° ${winner.numero}`;
+    slotMail.textContent = winner.email || '';
+
+    _drawn.push({ ...winner, round: _round });
+    _rolling = false;
+    btn.disabled = false;
+    btn.textContent = 'Nouveau tirage';
+    refreshEligibles();
+    renderHistory();
+    launchConfetti();
+  }
+
+  // ── Historique ────────────────────────────────────────
+  function renderHistory() {
+    const section = document.getElementById('history-section');
+    const list    = document.getElementById('history-list');
+    section.hidden = _drawn.length === 0;
+    list.innerHTML = [..._drawn].reverse().map(d => `
+      <div class="history-item">
+        <div>
+          <div class="hi-name">${d.nom}</div>
+          <div class="hi-num">n° ${d.numero}${d.email ? ' · ' + d.email : ''}</div>
+        </div>
+        <div class="hi-round">Tirage ${d.round}</div>
+      </div>`).join('');
+  }
+
+  function clearHistory() {
+    _drawn = [];
+    _round = 0;
+    document.getElementById('slot-name').textContent = '?';
+    document.getElementById('slot-name').className = 'slot-name';
+    document.getElementById('slot-numero').textContent = '';
+    document.getElementById('slot-email').textContent = '';
+    document.getElementById('btn-draw').textContent = 'Lancer le tirage';
+    renderHistory();
+    refreshEligibles();
+  }
+
+  // ── Participants ───────────────────────────────────────
+  function renderParticipants() {
+    const drawnEmails = new Set(_drawn.map(d => d.email.toLowerCase()));
+    const drawnNoms   = new Set(_drawn.map(d => d.nom.toLowerCase()));
+    const grid = document.getElementById('participants-grid');
+    const onePerPerson = document.getElementById('opt-one-per-person').checked;
+    const seen = new Set();
+    const list = onePerPerson
+      ? _participants.filter(p => {
+          const key = p.email ? p.email.toLowerCase() : p.nom.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key); return true;
+        })
+      : _participants;
+
+    grid.innerHTML = list.map(p => {
+      const excluded = drawnEmails.has(p.email.toLowerCase()) || drawnNoms.has(p.nom.toLowerCase());
+      return `<div class="participant-chip${excluded ? ' excluded' : ''}">
+        <span>👤</span>
+        <span>${p.nom}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleParticipants() {
+    const grid = document.getElementById('participants-grid');
+    const btn  = document.querySelector('.participants-toggle');
+    const open = grid.classList.toggle('open');
+    btn.textContent = open ? 'Masquer les participants' : 'Voir les participants';
+  }
+
+  // ── Confetti ──────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.hidden = false;
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pieces = Array.from({ length: 90 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10,
+      vx: (Math.random() - .5) * 3,
+      vy: Math.random() * 4 + 2,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - .5) * .15,
+      w: Math.random() * 10 + 6,
+      h: Math.random() * 6 + 4,
+      color: ['#460186','#D2396D','#f472b6','#ffffff','#a855f7'][Math.floor(Math.random() * 5)],
+    }));
+    let frame;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      pieces.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vy += .05;
+        if (p.y < canvas.height + 20) alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, 1 - p.y / canvas.height);
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      });
+      if (alive) frame = requestAnimationFrame(draw);
+      else { canvas.hidden = true; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    };
+    if (frame) cancelAnimationFrame(frame);
+    requestAnimationFrame(draw);
+  }
+</script>
+</body>
+</html>
