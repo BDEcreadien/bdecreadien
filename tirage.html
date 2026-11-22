@@ -236,6 +236,11 @@
       to   { opacity: .65; transform: scale(1.01); }
     }
 
+    /* Écran en colonne : la liste des gagnants se colle au bas de l'écran */
+    #app { display: flex; flex-direction: column; flex: 1; min-height: 100vh; min-height: 100dvh; }
+    #app main { flex: 1; }
+    #history-section { margin-top: auto; padding-bottom: env(safe-area-inset-bottom, 0px); }
+
     /* Section */
     .section { width: 100%; max-width: 520px; }
     .section-header {
@@ -265,6 +270,11 @@
     .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.2); }
 
     .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item.new { animation: slide-up .45s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes slide-up {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
     .history-item {
       background: rgba(255,255,255,.03);
       border: 1px solid var(--border);
@@ -381,7 +391,7 @@
 
     <div class="section" id="history-section" hidden>
       <div class="section-header">
-        <div class="section-title">Historique</div>
+        <div class="section-title">Gagnants</div>
         <button class="btn-ghost" onclick="clearHistory()">Réinitialiser</button>
       </div>
       <div class="history-list" id="history-list"></div>
@@ -507,8 +517,8 @@
     const section = document.getElementById('history-section');
     const list    = document.getElementById('history-list');
     section.hidden = _drawn.length === 0;
-    list.innerHTML = [..._drawn].reverse().map(d => `
-      <div class="history-item">
+    list.innerHTML = [..._drawn].reverse().map((d, i) => `
+      <div class="history-item${i === 0 ? ' new' : ''}">
         <div>
           <div class="hi-name">${d.nom}</div>
           <div class="hi-sub">n° ${d.numero}${d.email ? ' · ' + d.email : ''}</div>
