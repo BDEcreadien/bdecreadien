@@ -368,11 +368,9 @@
   const STATUTS_PAYES = ['payee','production','livraison','confirmee','remise','physique'];
 
   // ── Init ──────────────────────────────────────────────
-  document.addEventListener('AuthReady', async ({ detail: { profil } }) => {
-    if (!profil || !['admin','membre_bde'].includes(profil.role)) {
-      document.getElementById('screen-loading').textContent = 'Accès réservé aux membres BDE.';
-      return;
-    }
+  window.addEventListener('DOMContentLoaded', async () => {
+    const ok = await Auth.requireRole('membre');
+    if (!ok) return;
     await loadParticipants();
     document.getElementById('screen-loading').hidden = true;
     document.getElementById('app').hidden = false;
