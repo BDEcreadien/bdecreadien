@@ -10433,9 +10433,14 @@ function btqaRenderDesignFournisseur() {
     });
   });
 
+  // Ordre des couleurs = celui de la config produit (Blanc, Noir, Bleu...), pas alphabétique
+  const cOrdre = [];
+  (_btqaProduits || []).filter(p => (p.nom || '').toLowerCase().includes('be art'))
+    .forEach(p => (p.couleurs_disponibles || []).forEach(c => { if (!cOrdre.includes(c)) cOrdre.push(c); }));
+  const cIdx = c => { const i = cOrdre.indexOf(c); return i === -1 ? 9999 : i; };
   const rows = Object.values(map).sort((a, b) => {
     if (a.design !== b.design) return a.design.localeCompare(b.design, 'fr');
-    return a.couleur.localeCompare(b.couleur, 'fr');
+    return cIdx(a.couleur) - cIdx(b.couleur) || a.couleur.localeCompare(b.couleur, 'fr');
   });
 
   if (!rows.length) {
