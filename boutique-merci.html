@@ -56,5 +56,11 @@
     </div>
     <a href="/" class="back">← Retour au site</a>
   </div>
+<script>
+(function(){
+  const CLOSE = new Date('2026-11-23T17:00:00+01:00');
+  if(Date.now() < CLOSE) location.replace('/boutique.html');
+})();
+</script>
 </body>
 </html>
