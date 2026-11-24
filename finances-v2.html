@@ -1287,6 +1287,11 @@ function updateCharts() {
   } else {
     _chartSolde.data.datasets[1].data = forecastData;
   }
+  // Highlight the selected period's month on x-axis
+  const periodYM = _dateStart
+    ? `${_dateStart.getFullYear()}-${String(_dateStart.getMonth()+1).padStart(2,'0')}`
+    : nowYM;
+  _chartSolde._highlightIdx = allMonths.indexOf(periodYM);
   _chartSolde.update();
 
   // Doughnut: depenses by category for current period
