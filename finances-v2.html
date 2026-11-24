@@ -929,7 +929,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('period-label').textContent = label;
       document.getElementById('header-sub').innerHTML = `<span class="period-badge">${label}</span>`;
       document.getElementById('journal-period-badge').textContent = label;
-      document.getElementById('chart-period-label').textContent = label;
       document.getElementById('export-period-label').textContent = label;
       applyPeriodFilter();
     }
@@ -1020,7 +1019,6 @@ function setPeriod(type, skipReload) {
   document.getElementById('period-label').textContent = label;
   document.getElementById('header-sub').innerHTML = `<span class="period-badge">${label}</span>`;
   document.getElementById('journal-period-badge').textContent = label;
-  document.getElementById('chart-period-label').textContent = label;
   document.getElementById('export-period-label').textContent = label;
   closePeriodDropdown();
 
@@ -1070,7 +1068,6 @@ function shiftMonth(delta) {
   document.getElementById('period-label').textContent = label;
   document.getElementById('header-sub').innerHTML = `<span class="period-badge">${label}</span>`;
   document.getElementById('journal-period-badge').textContent = label;
-  document.getElementById('chart-period-label').textContent = label;
   document.getElementById('export-period-label').textContent = label;
   applyPeriodFilter();
   renderAll();
@@ -1203,7 +1200,7 @@ function updateCharts() {
   // Current month using local time (avoids UTC timezone shift midnight bug)
   const nowYM = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
   const syStartYM = sy.start.slice(0,7);
-  const junYM = `${parseInt(sy.end.slice(0,4))+1}-06`;
+  const junYM = `${sy.end.slice(0,4)}-06`;
 
   // Increment YYYY-MM by 1 month using string arithmetic (no Date object = no timezone)
   function nextYM(ym) {
