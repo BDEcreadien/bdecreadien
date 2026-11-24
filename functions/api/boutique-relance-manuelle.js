@@ -85,7 +85,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
   </div>
   <div style="background:white;padding:24px">
-    <p style="margin:0 0 8px">Hello <strong>${escHtml(cmd.nom_acheteur || '')}</strong>,</p>
+    <p style="margin:0 0 8px">Hello <strong>${escHtml(prenomDe(cmd.nom_acheteur))}</strong>,</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#444">
       ${estPanier
         ? `Tu as laissé des articles dans ton panier (<strong style="color:#460186">${escHtml(cmd.numero)}</strong>, ${total}).`
@@ -143,4 +143,10 @@ function escHtml(s) {
 
 function formatEur(centimes) {
   return (centimes / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+// Prénom seul pour les "Hello ..." (nom_acheteur = "Prénom Nom")
+function prenomDe(nom) {
+  const p = String(nom || '').trim().split(/\s+/)[0] || '';
+  return p.charAt(0).toUpperCase() + p.slice(1);
 }
