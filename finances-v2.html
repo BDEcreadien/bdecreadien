@@ -1849,11 +1849,12 @@ async function saveTx() {
   const cat      = document.getElementById('f-categorie').value;
   const moyen    = document.getElementById('f-moyen').value;
   const fourn    = document.getElementById('f-fournisseur').value.trim();
+  const evtName  = document.getElementById('f-evenement').value.trim();
   const notes    = document.getElementById('f-notes').value.trim();
   if (!libelle || isNaN(montantR) || !date || !cat) { toast('Remplis les champs requis', 'error'); return; }
   const sign   = _txType === 'gain' ? 1 : -1;
   const montant= sign * montantR;
-  const payload = { libelle, montant, date, categorie:cat, moyen_paiement:moyen, fournisseur:fourn||null, notes:notes||null };
+  const payload = { libelle, montant, date, categorie:cat, moyen_paiement:moyen, fournisseur:fourn||null, evenement:evtName||null, notes:notes||null };
   const btn = document.getElementById('drawer-save-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>';
