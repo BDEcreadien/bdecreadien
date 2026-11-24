@@ -1419,7 +1419,7 @@ function renderRecur() {
       <td><span class="mpay">📅 Jour ${r.jour_du_mois}</span></td>
       <td class="tx-date">${fmtDate(r.date_debut)} ${dFin}</td>
       <td class="tx-montant ${m>=0?'pos':'neg'}">${m>=0?'+':''}${formatEur(m)}</td>
-      <td><div class="tx-actions"><button class="btn-icon" onclick="editRecur('${r.id}')">✏️</button><button class="btn-icon danger" onclick="confirmDeleteRecur('${r.id}','${esc(r.libelle)}')">🗑️</button></div></td>
+      <td><div class="tx-actions"><button class="btn-icon" onclick="openRecurDrawer('${r.id}')">✏️</button><button class="btn-icon danger" onclick="confirmDeleteRecur('${r.id}','${esc(r.libelle)}')">🗑️</button></div></td>
     </tr>`;
   }).join('');
 }
