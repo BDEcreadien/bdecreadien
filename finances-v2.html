@@ -1197,17 +1197,30 @@ function initCharts() {
 
 function updateCharts() {
   if (!_chartSolde || !_chartCat) return;
-  // Solde line chart: monthly running balance
+  // Solde line chart: full school year (Sep → Jun), always global view
+  const sy = getSchoolYearBounds();
   const groups = {};
   for (const t of _all) {
-    const m = t.date.slice(0,7);
-    groups[m] = (groups[m] || 0) + Number(t.montant);
+    if (t.date >= sy.start && t.date <= sy.end) {
+      const m = t.date.slice(0,7);
+      groups[m] = (groups[m] || 0) + Number(t.montant);
+    }
   }
-  const months = Object.keys(groups).sort();
+  // Build all months Sep → Jun (or current month if earlier)
+  const junEnd = `${sy.end.slice(0,4)}-06`;
+  const nowYM  = new Date().toISOString().slice(0,7);
+  const lastM  = nowYM < junEnd ? nowYM : junEnd;
+  const allMonths = [];
+  const startM = sy.start.slice(0,7);
+  let cur = new Date(parseInt(startM.slice(0,4)), parseInt(startM.slice(5,7))-1, 1);
+  while (cur.toISOString().slice(0,7) <= lastM) {
+    allMonths.push(cur.toISOString().slice(0,7));
+    cur.setMonth(cur.getMonth()+1);
+  }
   let running = _soldeInitial;
   const labels = [], values = [];
-  for (const m of months) {
-    running += groups[m];
+  for (const m of allMonths) {
+    running += (groups[m] || 0);
     labels.push(fmtMonth(m));
     values.push(parseFloat(running.toFixed(2)));
   }
