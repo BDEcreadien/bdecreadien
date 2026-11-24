@@ -2002,7 +2002,7 @@ function closeModal() { document.getElementById('modal-overlay').classList.remov
 function confirmModalAction() { closeModal(); if (_modalCb) _modalCb(); }
 
 // ── Section nav ───────────────────────────────────────────────────
-const SEC_TITLES = { overview:'Vue d\'ensemble', journal:'Transactions', budget:'Budget', recurrent:'Récurrents', rapport:'Rapport', export:'Export', params:'Paramètres' };
+const SEC_TITLES = { overview:'Vue d\'ensemble', journal:'Transactions', budget:'Budget', evenements:'Événements', recurrent:'Récurrents', rapport:'Rapport', export:'Export', params:'Paramètres' };
 function showSec(sec) {
   document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(el => el.classList.toggle('active', el.dataset.sec === sec));
