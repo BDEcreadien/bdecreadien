@@ -39,7 +39,7 @@ async function sendConfirmationEmail(to: string, prenom: string, nom: string, ev
     <p style="margin:0;color:white;font-size:32px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">${eventTitre.toUpperCase()}</p>
   </div>
   <div style="background:white;padding:24px 28px">
-    <p style="margin:0 0 8px;font-size:15px">Bonjour <strong>${prenom} ${nom}</strong>,</p>
+    <p style="margin:0 0 8px;font-size:15px">Salut <strong>${prenom}</strong>,</p>
     <p style="margin:0 0 20px;font-size:17px;font-weight:700;color:#16a34a">Ton inscription est confirmée !</p>
     <p style="margin:0 0 20px;font-size:14px;line-height:1.65;color:#444">
       Ton paiement pour <strong>${eventTitre}</strong> a bien été reçu et validé.
