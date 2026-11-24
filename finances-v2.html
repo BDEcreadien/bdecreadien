@@ -1727,8 +1727,7 @@ function resetDrawer() {
 
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
-  if (!document.getElementById('drawer-dettes').style.transform)
-    document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
   _editId = null;
 }
 
