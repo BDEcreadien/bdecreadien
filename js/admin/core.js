@@ -93,6 +93,7 @@ function showStep(step, opts = {}) {
   const btqaEl = document.getElementById('step-boutique');
   if (btqaEl) btqaEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
+  if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); }
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
   // Sync URL : /admin sans param quand on est sur les cartes de choix,
   // /admin?page=X sinon (permet un refresh cohérent avec ce qu'on voit)
@@ -129,6 +130,8 @@ function goBack() {
 }
 
 function selectPage(page) {
+  window._adminPage = page;
+  if (typeof adminSyncSidebar === 'function') adminSyncSidebar();
   navStack = ['pages'];
   if (page === 'agenda') {
     openEditor('evenements', true, 'Agenda', 'Événements');
@@ -331,3 +334,54 @@ function showConfirm(title, subtitle = '') {
 
 
 // ============================================================
+
+
+// ============================================================
+// SIDEBAR (générée depuis les cartes visibles : un seul endroit à maintenir,
+// elle respecte donc automatiquement les rôles et les modules activés)
+// ============================================================
+function adminBuildSidebar() {
+  const nav = document.getElementById('sb-nav');
+  if (!nav) return;
+  let html = `<button class="sb-item" data-page="home" onclick="adminGoHome()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Vue d'ensemble</button>`;
+  document.querySelectorAll('#step-pages .admin-group-title').forEach(title => {
+    const grid = title.nextElementSibling;
+    if (!grid || !grid.classList.contains('pages-grid')) return;
+    const cards = [...grid.querySelectorAll('.page-card')].filter(c => c.style.display !== 'none');
+    if (!cards.length) return;
+    html += `<div class="sb-section-label">${title.textContent.trim()}</div>`;
+    cards.forEach(c => {
+      const m = (c.getAttribute('onclick') || '').match(/selectPage\('([^']+)'\)/);
+      if (!m) return;
+      const svg = c.querySelector('.page-card-icon svg');
+      const nom = c.querySelector('.page-card-name').textContent.trim();
+      html += `<button class="sb-item" data-page="${m[1]}" onclick="selectPage('${m[1]}');adminToggleSidebar(false)">${svg ? svg.outerHTML : ''}<span>${nom}</span></button>`;
+    });
+  });
+  nav.innerHTML = html;
+  document.body.classList.add('admin-ready');
+  adminSyncSidebar();
+}
+
+function adminSyncSidebar() {
+  const cur = window._adminPage || 'home';
+  let label = '';
+  document.querySelectorAll('#sb-nav .sb-item').forEach(b => {
+    const on = b.dataset.page === cur;
+    b.classList.toggle('active', on);
+    if (on) label = b.textContent.trim();
+  });
+  const t = document.getElementById('tb-title');
+  if (t) t.textContent = cur === 'home' ? '' : label;
+}
+
+function adminGoHome() {
+  navStack = ['pages'];
+  showStep('pages');
+  adminToggleSidebar(false);
+}
+
+function adminToggleSidebar(force) {
+  const open = typeof force === 'boolean' ? force : !document.body.classList.contains('sb-open');
+  document.body.classList.toggle('sb-open', open);
+}

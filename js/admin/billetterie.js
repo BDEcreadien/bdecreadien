@@ -191,18 +191,18 @@ function bilFcRenderCustom() {
   wrap.innerHTML = _bilFcCustomFields.map((f, i) => {
     const isChoice = f.type === 'choice';
     return `
-    <div style="background:#f9f7ff;border:1.5px solid #ede5ff;border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+    <div style="background:#f8fafc;border:1.5px solid #e8eef6;border-radius:12px;padding:10px 12px;margin-bottom:8px;">
       <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:${isChoice ? '8px' : '0'}">
         <input value="${escapeHtml(f.label)}" placeholder="Libellé (ex: Choix de pizza)"
-          style="flex:2;min-width:140px;padding:6px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;outline:none;"
+          style="flex:2;min-width:140px;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;"
           oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
         <select onchange="_bilFcCustomFields[${i}].type=this.value;bilFcRenderCustom();bilOnChange()"
-          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e0d8f0;background:white;cursor:pointer;font-weight:600;color:#460186;">
+          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-weight:600;color:#2563eb;">
           <option value="text" ${!isChoice?'selected':''}>Texte libre</option>
           <option value="choice" ${isChoice?'selected':''}>Choix (liste)</option>
         </select>
         <select onchange="_bilFcCustomFields[${i}].required=this.value==='1';bilOnChange()"
-          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e0d8f0;background:white;">
+          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e2e8f0;background:white;">
           <option value="0" ${f.required?'':'selected'}>Facultatif</option>
           <option value="1" ${f.required?'selected':''}>Obligatoire</option>
         </select>
@@ -213,7 +213,7 @@ function bilFcRenderCustom() {
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:11px;font-weight:700;color:#888;white-space:nowrap;">Options :</span>
         <input value="${escapeHtml((f.options||[]).join(', '))}" placeholder="ex: Margherita, 4 fromages, Végétarienne"
-          style="flex:1;padding:6px 10px;border:1.5px solid #e0d8f0;border-radius:8px;font-size:13px;outline:none;"
+          style="flex:1;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;"
           oninput="_bilFcCustomFields[${i}].options=this.value.split(',').map(s=>s.trim()).filter(Boolean);bilOnChange()">
       </div>` : ''}
     </div>`;
@@ -251,18 +251,18 @@ function bilPromoRender() {
   if (!_bilPromos.length) { list.innerHTML = '<div style="font-size:13px;color:#aaa;padding:4px 0;">Aucun code pour cet événement.</div>'; btn.style.display = 'none'; return; }
   btn.style.display = '';
   list.innerHTML = _bilPromos.map((p, i) => p._deleted ? '' : `
-    <div style="display:flex;gap:8px;align-items:center;background:#f8f5ff;border-radius:10px;padding:10px 12px;flex-wrap:wrap;">
+    <div style="display:flex;gap:8px;align-items:center;background:#f8fafc;border-radius:10px;padding:10px 12px;flex-wrap:wrap;">
       <input value="${escapeHtml(p.code)}" placeholder="CODE" oninput="_bilPromos[${i}].code=this.value.toUpperCase().replace(/\\s/g,'');this.value=_bilPromos[${i}].code;"
-        style="width:110px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;font-weight:700;text-transform:uppercase;">
-      <select onchange="_bilPromos[${i}].type=this.value;bilPromoRender()" style="padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+        style="width:110px;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;font-weight:700;text-transform:uppercase;">
+      <select onchange="_bilPromos[${i}].type=this.value;bilPromoRender()" style="padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;">
         <option value="percent" ${p.type==='percent'?'selected':''}>%</option>
         <option value="fixed"   ${p.type==='fixed'?'selected':''}>€</option>
       </select>
       <input type="number" min="${p.type==='percent'?1:0.01}" step="${p.type==='percent'?1:0.01}" value="${p.valeur||''}" placeholder="${p.type==='percent'?'50':'2'}" oninput="_bilPromos[${i}].valeur=parseFloat(this.value)||0"
-        style="width:70px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+        style="width:70px;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;">
       <span style="font-size:11px;color:#888;">max&nbsp;uses</span>
       <input type="number" min="1" value="${p.max_utilisations||''}" placeholder="∞" oninput="_bilPromos[${i}].max_utilisations=parseInt(this.value)||null"
-        style="width:60px;padding:7px 10px;border-radius:8px;border:1.5px solid #e0d8f0;font-size:13px;">
+        style="width:60px;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;font-size:13px;">
       ${p.nb_utilisations ? `<span style="font-size:11px;color:#888;">${p.nb_utilisations} utilisé${p.nb_utilisations>1?'s':''}</span>` : ''}
       <button onclick="bilPromoSupprimer(${i})" style="margin-left:auto;background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-weight:700;">✕</button>
     </div>`).join('');
@@ -548,11 +548,11 @@ async function bilRendreParticipants(existingData, billetterieId) {
     <style>
       .bil-p-cards { display:flex; flex-direction:column; gap:10px; }
       .bil-p-card  { background:white; border:1px solid #ede9fe; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:12px; }
-      .bil-p-card:hover { background:#faf5ff; }
-      .bil-p-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+      .bil-p-card:hover { background:#f8fafc; }
+      .bil-p-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
       .bil-p-avatar.scanned { background:linear-gradient(135deg,#059669,#10b981); }
       .bil-p-info  { flex:1; min-width:0; }
-      .bil-p-name  { font-weight:700; color:#1a0030; font-size:14px; }
+      .bil-p-name  { font-weight:700; color:#0f172a; font-size:14px; }
       .bil-p-sub   { font-size:12px; color:#888; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
       .bil-p-right { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
       .bil-p-badges { display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-end; }
@@ -561,8 +561,8 @@ async function bilRendreParticipants(existingData, billetterieId) {
       .bil-p-boisson-badge { font-size:10px; font-weight:700; color:#ea580c; background:#fff7ed; border:1px solid #fed7aa; border-radius:20px; padding:2px 8px; white-space:nowrap; }
     </style>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
-      <div style="background:#f8f5ff;border:1px solid #e9d5ff;border-radius:14px;padding:14px 16px;">
-        <div style="font-size:28px;font-weight:800;color:#460186;">${total}${_bilParticipantsPlacesMax ? `<span style="font-size:16px;font-weight:500;color:#9ca3af;"> / ${_bilParticipantsPlacesMax}</span>` : ''}</div>
+      <div style="background:#f8fafc;border:1px solid #dbeafe;border-radius:14px;padding:14px 16px;">
+        <div style="font-size:28px;font-weight:800;color:#2563eb;">${total}${_bilParticipantsPlacesMax ? `<span style="font-size:16px;font-weight:500;color:#9ca3af;"> / ${_bilParticipantsPlacesMax}</span>` : ''}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Inscriptions</div>
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 16px;">
@@ -575,14 +575,14 @@ async function bilRendreParticipants(existingData, billetterieId) {
         <div style="font-size:28px;font-weight:800;color:#ea580c;">${boissons}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Boissons</div>
       </div>
-      <a href="scan-entree.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#460186,#D2396D);border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
+      <a href="scan-entree.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
         <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="19" y="14" width="2" height="2" rx=".5" fill="white"/><rect x="19" y="19" width="2" height="2" rx=".5" fill="white"/><rect x="14" y="19" width="2" height="2" rx=".5" fill="white"/></svg>
         <span style="font-size:11px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:.5px">Scanner</span>
       </a>
     </div>
     <input type="search" id="bil-search" oninput="bilFiltrerParticipants()" placeholder="🔍 Rechercher par nom, email…"
       style="width:100%;border:1.5px solid #ede9fe;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box;"
-      onfocus="this.style.borderColor='#c4b5fd'" onblur="this.style.borderColor='#ede9fe'">
+      onfocus="this.style.borderColor='#bfdbfe'" onblur="this.style.borderColor='#ede9fe'">
     <div class="bil-p-cards" id="bil-p-cards">
       ${_bilParticipantsData.map((r) => {
         const initials = ((r.prenom||'').charAt(0) + (r.nom||'').charAt(0)).toUpperCase();
@@ -604,7 +604,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
             <div class="bil-p-actions">
               <button onclick="bilEnvoyerEmail('${r.id}', this)"
-                style="padding:4px 8px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+                style="padding:4px 8px;border-radius:20px;border:1px solid #bfdbfe;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
                 title="Renvoyer l'email billet">✉</button>
               <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
                 style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"
@@ -654,7 +654,7 @@ function bilFiltrerParticipants() {
         <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
         <div class="bil-p-actions">
           <button onclick="bilEnvoyerEmail('${r.id}', this)"
-            style="padding:4px 8px;border-radius:20px;border:1px solid #c4b5fd;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+            style="padding:4px 8px;border-radius:20px;border:1px solid #bfdbfe;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
             title="Renvoyer l'email billet">✉</button>
           <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
             style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"
@@ -681,7 +681,7 @@ async function bilEnvoyerEmail(inscriptionId, btn) {
     else { btn.textContent = '✗'; btn.style.color = '#dc2626'; }
   } catch { btn.textContent = '✗'; btn.style.color = '#dc2626'; }
   btn.disabled = false;
-  setTimeout(() => { btn.textContent = orig; btn.style.color = '#6d28d9'; btn.style.borderColor = '#c4b5fd'; }, 3000);
+  setTimeout(() => { btn.textContent = orig; btn.style.color = '#6d28d9'; btn.style.borderColor = '#bfdbfe'; }, 3000);
 }
 
 async function bilEnvoyerATous(btn) {

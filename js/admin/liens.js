@@ -207,7 +207,7 @@ function lnkSetType(type) {
   document.querySelectorAll('.lnk-type-btn').forEach(b => {
     const active = b.dataset.type === type;
     b.style.borderColor = active ? 'var(--violet)' : 'var(--gris-border)';
-    b.style.background = active ? '#f5f0ff' : 'white';
+    b.style.background = active ? '#f1f5f9' : 'white';
   });
   document.getElementById('lnk-fields-principal').style.display = type === 'principal' ? '' : 'none';
   document.getElementById('lnk-fields-social').style.display = type === 'social' ? '' : 'none';

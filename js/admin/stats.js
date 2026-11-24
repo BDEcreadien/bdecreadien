@@ -36,9 +36,9 @@ async function loadSbStats(days) {
     body.innerHTML = `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:1.5rem;">
         ${tile('Membres inscrits', s.profils_total || 0, `+${s.profils_7j||0} en 7j · +${s.profils_30j||0} en 30j`)}
-        ${tile('Étudiants', s.profils_etudiant || 0, `${s.profils_membre||0} membres BDE · ${s.profils_admin||0} admin`, '#D2396D')}
+        ${tile('Étudiants', s.profils_etudiant || 0, `${s.profils_membre||0} membres BDE · ${s.profils_admin||0} admin`, '#1d4ed8')}
         ${tile('Événements à venir', evUpcoming, '', '#FF741F')}
-        ${tile('Newsletter', s.newsletter_active || 0, 'abonnés actifs', '#D2396D')}
+        ${tile('Newsletter', s.newsletter_active || 0, 'abonnés actifs', '#1d4ed8')}
       </div>
 
       <h3 style="font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.5rem 0 0.75rem;">Annonces</h3>
@@ -77,7 +77,7 @@ async function loadSbStats(days) {
           ${tile('Pages vues', t.pageviews_total || 0)}
           ${tile('Clics trackés', t.clicks_total || 0, 'boutons importants')}
           ${tile('Pages / session', t.avg_session_pages || 0, 'moyenne')}
-          ${tile('Durée session', fmtDuration(t.avg_session_seconds || 0), 'moyenne', '#D2396D')}
+          ${tile('Durée session', fmtDuration(t.avg_session_seconds || 0), 'moyenne', '#1d4ed8')}
         </div>
         ${(t.top_pages && t.top_pages.length) ? `
           <h4 style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gris-texte);margin:1.25rem 0 0.5rem;">Top pages</h4>

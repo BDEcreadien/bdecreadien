@@ -127,7 +127,7 @@ function renderFideliteList() {
   // Mode filtre event : affichage simplifié - juste qui a participé
   if (nf) {
     list.innerHTML = `
-      <div style="margin-bottom:16px;padding:10px 16px;background:#f8f5ff;border-radius:10px;border:1px solid #e8d8ff;font-size:13px;font-weight:700;color:#460186">
+      <div style="margin-bottom:16px;padding:10px 16px;background:#f8fafc;border-radius:10px;border:1px solid #dbeafe;font-size:13px;font-weight:700;color:#2563eb">
         ${cartes.length} participant${cartes.length > 1 ? 's' : ''} à "${eventFilter}"
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
@@ -135,9 +135,9 @@ function renderFideliteList() {
           const passages = (c.historique || []).filter(h => h.event && norm(h.event).includes(nf));
           const pid = 'fev-' + ci;
           return `
-          <div style="background:white;border:1.5px solid #e8d8ff;border-radius:12px;overflow:hidden;cursor:pointer" onclick="(function(el){const d=el.querySelector('.fev-detail');const open=d.style.display!=='none';d.style.display=open?'none':'block';el.style.borderColor=open?'#e8d8ff':'#460186'})(this)">
+          <div style="background:white;border:1.5px solid #dbeafe;border-radius:12px;overflow:hidden;cursor:pointer" onclick="(function(el){const d=el.querySelector('.fev-detail');const open=d.style.display!=='none';d.style.display=open?'none':'block';el.style.borderColor=open?'#dbeafe':'#2563eb'})(this)">
             <div style="padding:12px 14px;display:flex;align-items:center;gap:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#460186,#D2396D);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:13px;color:white">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:13px;color:white">
                 ${(c.prenom||'?')[0].toUpperCase()}
               </div>
               <div style="min-width:0;flex:1">
@@ -146,10 +146,10 @@ function renderFideliteList() {
               </div>
               <span style="font-size:11px;color:#bbb">▾</span>
             </div>
-            <div class="fev-detail" style="display:none;border-top:1px solid #f0e8ff;padding:10px 14px;background:#faf8ff">
+            <div class="fev-detail" style="display:none;border-top:1px solid #eef2f7;padding:10px 14px;background:#f8fafc">
               ${passages.map(h => `
-                <div style="font-size:12px;padding:5px 0;border-bottom:1px solid #f0e8ff;display:flex;flex-direction:column;gap:1px">
-                  <span style="font-weight:700;color:#460186">${h.date}${h.heure ? ' · ' + h.heure : ''}</span>
+                <div style="font-size:12px;padding:5px 0;border-bottom:1px solid #eef2f7;display:flex;flex-direction:column;gap:1px">
+                  <span style="font-weight:700;color:#2563eb">${h.date}${h.heure ? ' · ' + h.heure : ''}</span>
                   <span style="color:#555">${h.event || ''}</span>
                   <span style="color:#aaa;font-size:11px">par ${h.validateur || '-'}</span>
                 </div>`).join('')}
@@ -184,7 +184,7 @@ function renderFideliteList() {
           <div class="item-card-title">${c.prenom} ${c.nom}</div>
           <div class="item-card-sub" style="display:flex;align-items:center;gap:10px;margin-top:6px;">
             <div style="flex:1;max-width:160px;height:5px;background:var(--gris-border);border-radius:99px;overflow:hidden;">
-              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#460186,#6A0F9E,#9B1889,#D2396D,#F04A34,#FF741F);border-radius:99px;"></div>
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#2563eb,#2563eb,#1d4ed8,#1d4ed8,#1d4ed8,#0ea5e9);border-radius:99px;"></div>
             </div>
             <span style="font-size:12px;font-weight:600;color:var(--violet);">${c.tampons}/${c.total||10}</span>
             ${c.tampons >= (c.total||10) ? '<span style="font-size:11px;background:#1a9e5c;color:white;padding:2px 8px;border-radius:99px;font-weight:600;">OFFERT</span>' : ''}
@@ -193,8 +193,8 @@ function renderFideliteList() {
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;flex-shrink:0;justify-content:flex-end;">
           <button class="btn-edit" onclick="ajouterTampon(${i})">+ Tampon</button>
-          <button class="btn-edit" style="background:rgba(70,1,134,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Lien</button>
-          ${historique.length ? `<button class="btn-edit" style="background:rgba(70,1,134,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
+          <button class="btn-edit" style="background:rgba(37,99,235,0.06);" onclick="navigator.clipboard.writeText('${lien}');showToast('Lien copié !','success')">Lien</button>
+          ${historique.length ? `<button class="btn-edit" style="background:rgba(37,99,235,0.06);" onclick="toggleHist(${i},this)">Passages ↓</button>` : ''}
           ${c.tampons >= (c.total||10) ? `<button class="btn-edit" style="background:rgba(26,158,92,0.1);color:#1a9e5c;" onclick="reinitialiserCarte(${i})">Reset</button>` : ''}
           <button class="btn-delete" onclick="supprimerCarte(${i})">Supprimer</button>
         </div>

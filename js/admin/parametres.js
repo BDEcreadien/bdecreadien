@@ -15,8 +15,8 @@ const BDE_PARAM_SCHEMA = [
     { cle: 'logo_url',     label: 'Logo',                      type: 'image' },
   ]},
   { titre: 'Couleurs', champs: [
-    { cle: 'couleur_principale', label: 'Couleur principale',  type: 'color', def: '#460186' },
-    { cle: 'couleur_secondaire', label: 'Couleur secondaire',  type: 'color', def: '#D2396D' },
+    { cle: 'couleur_principale', label: 'Couleur principale',  type: 'color', def: '#2563eb' },
+    { cle: 'couleur_secondaire', label: 'Couleur secondaire',  type: 'color', def: '#1d4ed8' },
     { cle: 'couleur_accent',     label: 'Couleur d\'accent',   type: 'color', def: '#FF741F' },
   ]},
   { titre: 'Contact & réseaux', champs: [
@@ -85,9 +85,9 @@ function bdeParamRender() {
         if (c.type === 'color') return `<div class="form-row"><label>${c.label}</label><div style="display:flex;gap:10px;align-items:center"><input type="color" id="${id}" value="${bdeParamEsc(v)}" style="width:56px;height:38px;padding:2px"><code style="font-size:12px;color:#888" id="${id}-hex">${bdeParamEsc(v)}</code></div></div>`;
         if (c.type === 'image') return `<div class="form-row"><label>${c.label}</label>
           <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-            <img id="${id}-preview" src="${bdeParamEsc(v)}" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:#f0ebfa;border:1px solid #e0d8f0">
+            <img id="${id}-preview" src="${bdeParamEsc(v)}" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:#eff6ff;border:1px solid #e2e8f0">
             <div style="flex:1;min-width:220px"><input type="text" id="${id}" value="${bdeParamEsc(v)}" placeholder="https://… ou /assets/logo.png" oninput="document.getElementById('${id}-preview').src=this.value">
-            <label style="display:inline-block;margin-top:8px;padding:7px 14px;border:1.5px solid #460186;color:#460186;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">📷 Envoyer une image<input type="file" accept="image/*" style="display:none" onchange="bdeParamUploadLogo(this)"></label></div>
+            <label style="display:inline-block;margin-top:8px;padding:7px 14px;border:1.5px solid #2563eb;color:#2563eb;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">📷 Envoyer une image<input type="file" accept="image/*" style="display:none" onchange="bdeParamUploadLogo(this)"></label></div>
           </div></div>`;
         return `<div class="form-row"><label>${c.label}</label><input type="${c.type || 'text'}" id="${id}" value="${bdeParamEsc(v)}" placeholder="${bdeParamEsc(c.ph || '')}"></div>`;
       }).join('')}
@@ -96,8 +96,8 @@ function bdeParamRender() {
     <p style="font-size:13px;color:var(--gris-texte);margin:0 0 .75rem">Décoche ce que ce BDE n'utilise pas : les cartes correspondantes disparaissent de l'admin.</p>
     ${BDE_MODULES.map(m => `<label style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14px;cursor:pointer"><input type="checkbox" class="bdep-mod" value="${m.id}" ${actifs.includes(m.id) ? 'checked' : ''} style="width:auto"> ${m.label}</label>`).join('')}
   </div>
-  <div style="display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;padding:12px 0;background:var(--bg,#f5f0ff)">
-    <button class="btn-primary" onclick="bdeParamSave(this)" style="padding:11px 26px;border:none;border-radius:10px;background:linear-gradient(135deg,#460186,#D2396D);color:#fff;font-weight:800;cursor:pointer">Enregistrer</button>
+  <div style="display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;padding:12px 0;background:var(--bg,#f1f5f9)">
+    <button class="btn-primary" onclick="bdeParamSave(this)" style="padding:11px 26px;border:none;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;cursor:pointer">Enregistrer</button>
   </div>`;
   document.getElementById('bde-param-body').innerHTML = html;
   document.querySelectorAll('#bde-param-body input[type=color]').forEach(i =>

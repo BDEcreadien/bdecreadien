@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - BDE CREAD Lyon</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --violet: #460186; --orange: #FF741F;
-      --gradient: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
+      --violet: #2563eb; --orange: #FF741F;
+      --gradient: linear-gradient(135deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%);
       --noir: #0f0f10; --gris-bg: #f5f5f7;
       --gris-border: #e0e0e5; --gris-texte: #6b6b7b; --radius: 14px;
     }
@@ -29,7 +29,7 @@
 
     /* LOGIN */
     #screen-login { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 2rem; }
-    .login-card { background: white; border-radius: 20px; padding: 2.5rem; max-width: 420px; width: 100%; box-shadow: 0 4px 40px rgba(70,1,134,0.10); }
+    .login-card { background: white; border-radius: 20px; padding: 2.5rem; max-width: 420px; width: 100%; box-shadow: 0 4px 40px rgba(37,99,235,0.10); }
     .login-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 0.5rem; }
     .login-card p { font-size: 14px; color: var(--gris-texte); margin-bottom: 1.5rem; line-height: 1.6; }
     .login-card input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gris-border); border-radius: 10px; font-size: 14px; font-family: monospace; margin-bottom: 1rem; transition: border-color 0.2s; }
@@ -47,7 +47,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.06); cursor: pointer;
       border: 2px solid transparent; transition: all 0.2s; text-align: center;
     }
-    .page-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(70,1,134,0.12); }
+    .page-card:hover { border-color: var(--violet); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.12); }
     .page-card-icon { margin-bottom: 0.75rem; display:flex; justify-content:center; } .page-card-icon svg { width:40px; height:40px; stroke:var(--violet); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
     .page-card-name { font-size: 16px; font-weight: 700; margin-bottom: 0.25rem; }
     .page-card-desc { font-size: 12px; color: var(--gris-texte); line-height: 1.4; }
@@ -58,7 +58,7 @@
     #step-sections { display: none; }
     .step-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
     .step-header h2 { font-size: 20px; font-weight: 700; }
-    .step-header .page-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: rgba(70,1,134,0.1); color: var(--violet); }
+    .step-header .page-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: rgba(37,99,235,0.1); color: var(--violet); }
 
     .sections-list { display: flex; flex-direction: column; gap: 1rem; }
     .section-card {
@@ -89,8 +89,8 @@
     .item-card-sub { font-size: 12px; color: var(--gris-texte); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
     .item-card-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
     .btn-edit, .btn-delete { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
-    .btn-edit { background: rgba(70,1,134,0.08); color: var(--violet); }
-    .btn-edit:hover { background: rgba(70,1,134,0.15); }
+    .btn-edit { background: rgba(37,99,235,0.08); color: var(--violet); }
+    .btn-edit:hover { background: rgba(37,99,235,0.15); }
     .btn-delete { background: rgba(220,50,50,0.08); color: #c0392b; }
     .btn-delete:hover { background: rgba(220,50,50,0.15); }
 
@@ -110,7 +110,7 @@
     .btn-cancel { padding: 10px 20px; border-radius: 10px; border: 1.5px solid var(--gris-border); background: white; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--gris-texte); }
     .btn-save { padding: 10px 24px; border-radius: 10px; border: none; background: var(--gradient); color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
     .btn-add { display: flex; align-items: center; gap: 0.5rem; padding: 11px 20px; background: white; border: 2px dashed var(--gris-border); border-radius: var(--radius); font-size: 14px; font-weight: 600; color: var(--violet); cursor: pointer; width: 100%; justify-content: center; transition: all 0.2s; }
-    .btn-add:hover { border-color: var(--violet); background: rgba(70,1,134,0.04); }
+    .btn-add:hover { border-color: var(--violet); background: rgba(37,99,235,0.04); }
     .empty-state { text-align: center; padding: 2rem; color: var(--gris-texte); font-size: 14px; background: white; border-radius: var(--radius); }
 
     /* AUTOCOMPLETE */
@@ -118,7 +118,7 @@
     .autocomplete-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: white; border: 1.5px solid var(--violet); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; max-height: 200px; overflow-y: auto; }
     .autocomplete-item { padding: 9px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--gris-border); line-height: 1.4; }
     .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background: rgba(70,1,134,0.06); }
+    .autocomplete-item:hover { background: rgba(37,99,235,0.06); }
     .autocomplete-item strong { color: var(--violet); }
 
     /* MÉDIAS */
@@ -139,22 +139,22 @@
     .galerie-admin-actions { display:flex; gap:0.75rem; align-items:center; }
     .galerie-upload-btn { display:flex; align-items:center; gap:0.5rem; padding:9px 18px; background:var(--gradient); color:white; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
     .galerie-save-btn { padding:9px 18px; background:white; border:1.5px solid var(--violet); color:var(--violet); border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
-    .galerie-save-btn:hover { background:rgba(70,1,134,0.06); }
+    .galerie-save-btn:hover { background:rgba(37,99,235,0.06); }
     .galerie-admin-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
     .galerie-admin-card { background:white; border-radius:14px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.07); transition:box-shadow 0.2s; position:relative; }
-    .galerie-admin-card:hover { box-shadow:0 6px 20px rgba(70,1,134,0.12); }
+    .galerie-admin-card:hover { box-shadow:0 6px 20px rgba(37,99,235,0.12); }
     .galerie-admin-card img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
     .galerie-admin-card-body { padding:0.75rem; }
     .galerie-admin-caption { width:100%; border:1.5px solid var(--gris-border); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; color:var(--noir); transition:border-color 0.2s; resize:none; }
     .galerie-admin-caption:focus { outline:none; border-color:var(--violet); }
     .galerie-admin-card-footer { display:flex; align-items:center; justify-content:space-between; padding:0 0.75rem 0.75rem; gap:0.4rem; }
     .galerie-move-btn { width:30px; height:30px; border:1.5px solid var(--gris-border); border-radius:8px; background:white; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:var(--gris-texte); transition:all 0.15s; }
-    .galerie-move-btn:hover:not(:disabled) { border-color:var(--violet); color:var(--violet); background:rgba(70,1,134,0.06); }
+    .galerie-move-btn:hover:not(:disabled) { border-color:var(--violet); color:var(--violet); background:rgba(37,99,235,0.06); }
     .galerie-move-btn:disabled { opacity:0.25; cursor:default; }
     .galerie-del-btn { width:30px; height:30px; border:none; border-radius:8px; background:rgba(220,50,50,0.08); cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; color:#c0392b; margin-left:auto; transition:background 0.15s; }
     .galerie-del-btn:hover { background:rgba(220,50,50,0.16); }
     .galerie-admin-drop { border:2px dashed var(--gris-border); border-radius:14px; padding:2.5rem; text-align:center; color:var(--gris-texte); font-size:14px; transition:all 0.2s; cursor:pointer; }
-    .galerie-admin-drop:hover, .galerie-admin-drop.drag-over { border-color:var(--violet); color:var(--violet); background:rgba(70,1,134,0.04); }
+    .galerie-admin-drop:hover, .galerie-admin-drop.drag-over { border-color:var(--violet); color:var(--violet); background:rgba(37,99,235,0.04); }
     .galerie-badge-new { position:absolute; top:8px; left:8px; background:var(--gradient); color:white; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; letter-spacing:0.5px; }
 
     /* TOAST */
@@ -222,18 +222,105 @@
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/favicon-v2-96x96.png?v=4">
   <link rel="shortcut icon" href="/favicon-v2.ico?v=4">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon-v2.png?v=4">
+
+  <style id="admin-shell-css">
+    /* ===== Design neutre (même langage que finances-v2) ===== */
+    :root {
+      --bg:#f1f5f9; --surface:#fff; --surface2:#f8fafc; --border:#e2e8f0; --border2:#cbd5e1;
+      --text:#0f172a; --text2:#64748b; --text3:#94a3b8;
+      --accent:#2563eb; --accent-h:#1d4ed8; --accent-lt:#eff6ff;
+      --sb-bg:#0f172a; --sb-txt:#94a3b8; --sb-w:232px;
+      --gradient: linear-gradient(135deg,#2563eb,#1d4ed8);
+      --noir:#0f172a; --gris-bg:#f1f5f9; --gris-border:#e2e8f0; --gris-texte:#64748b; --radius:12px;
+    }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); font-size:14px; -webkit-font-smoothing:antialiased; }
+    #admin-layout { display:flex; min-height:100vh; }
+    #admin-main { flex:1; min-width:0; display:flex; flex-direction:column; }
+
+    /* Sidebar */
+    #sidebar { width:var(--sb-w); flex-shrink:0; background:var(--sb-bg); position:sticky; top:0; height:100vh; display:none; flex-direction:column; z-index:50; }
+    body.admin-ready #sidebar { display:flex; }
+    .sb-logo { padding:18px 16px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.06); }
+    .sb-logo img { width:34px; height:34px; border-radius:9px; object-fit:cover; background:#1e293b; flex-shrink:0; }
+    .sb-logo-text { font-weight:700; font-size:13px; color:#fff; line-height:1.2; }
+    .sb-logo-sub { font-size:10px; color:var(--sb-txt); font-weight:500; }
+    .sb-nav { flex:1; padding:12px 8px; overflow-y:auto; }
+    .sb-section-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.7px; color:var(--sb-txt); padding:0 10px; margin:16px 0 6px; }
+    .sb-section-label:first-child { margin-top:2px; }
+    .sb-item { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:9px; color:var(--sb-txt); font-size:13px; font-weight:500; cursor:pointer; transition:all .18s ease; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:0; background:none; width:100%; text-align:left; font-family:inherit; }
+    .sb-item svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    .sb-item:hover { background:rgba(255,255,255,.06); color:#e2e8f0; }
+    .sb-item.active { background:rgba(37,99,235,.18); color:#60a5fa; font-weight:600; }
+    .sb-footer { padding:12px 8px; border-top:1px solid rgba(255,255,255,.06); }
+    .sb-back { display:block; padding:8px 10px; border-radius:9px; color:var(--sb-txt); font-size:12px; font-weight:500; text-decoration:none; margin-bottom:6px; }
+    .sb-back:hover { background:rgba(255,255,255,.06); color:#e2e8f0; }
+    .sb-user { display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:9px; background:rgba(255,255,255,.04); }
+    .sb-avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#2563eb,#0ea5e9); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+    .sb-user-name { font-size:12px; color:#e2e8f0; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sb-user-role { font-size:10px; color:var(--sb-txt); }
+    #sb-overlay { display:none; }
+
+    /* Barre du haut */
+    header.topbar { justify-content:flex-start; background:var(--surface); border-bottom:1px solid var(--border); padding:.7rem 1.5rem; display:flex; align-items:center; gap:.75rem; min-height:56px; position:sticky; top:0; z-index:40; }
+    .tb-burger { display:none; border:1px solid var(--border); background:var(--surface); border-radius:8px; width:34px; height:34px; font-size:16px; cursor:pointer; color:var(--text); }
+    .btn-back { background:var(--surface); border:1px solid var(--border); color:var(--text2); padding:6px 14px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:none; font-family:inherit; }
+    .btn-back:hover { background:var(--surface2); color:var(--text); border-color:var(--border2); }
+    .tb-title { font-weight:700; font-size:15px; }
+
+    #screen-app { max-width:1280px; width:100%; padding:1.75rem 2rem; margin:0 auto; }
+    #step-editor, #step-sections { max-width:920px; margin:0 auto; }
+
+    /* Vue d'ensemble */
+    .home-head { margin-bottom:1.25rem; }
+    .home-head h2 { font-size:22px; font-weight:700; margin:0 0 4px !important; color:var(--text); }
+    .home-head p { font-size:13px; color:var(--text2); }
+    #step-pages h2 { color:var(--text); }
+    .admin-group-title { font-size:11px !important; font-weight:600 !important; text-transform:uppercase; letter-spacing:.7px !important; color:var(--text2) !important; border-bottom:0 !important; margin:26px 0 10px !important; padding:0 !important; }
+    .pages-grid { grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:.85rem; }
+    .page-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); padding:1rem 1.1rem; text-align:left; display:grid; grid-template-columns:40px 1fr; column-gap:12px; align-items:center; transition:all .18s ease; }
+    .page-card:hover { border-color:var(--accent); transform:none; box-shadow:0 4px 12px rgba(0,0,0,.07); }
+    .page-card-icon { grid-row:1 / span 2; margin:0; width:40px; height:40px; background:var(--accent-lt); border-radius:10px; align-items:center; }
+    .page-card-icon svg { width:20px; height:20px; stroke:var(--accent); }
+    .page-card-name { font-size:14px; font-weight:600; margin:0; color:var(--text); }
+    .page-card-desc { font-size:12px; color:var(--text2); }
+    .page-card-preview { grid-column:2; color:var(--accent); font-size:11px; margin-top:4px; }
+
+    /* Connexion / attente */
+    .login-card { border:1px solid var(--border); box-shadow:0 4px 24px rgba(15,23,42,.08); }
+    .btn-primary { background:var(--accent); }
+    .btn-primary:hover { background:var(--accent-h); }
+
+    /* Mobile */
+    @media (max-width:900px) {
+      #sidebar { position:fixed; left:0; top:0; transform:translateX(-100%); transition:transform .22s ease; box-shadow:0 0 40px rgba(0,0,0,.35); }
+      body.admin-ready.sb-open #sidebar { transform:none; }
+      body.sb-open #sb-overlay { display:block; position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:45; }
+      .tb-burger { display:block; }
+      header.topbar { padding:.6rem 1rem; }
+      #screen-app { padding:1.1rem 1rem; }
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="header-logo">
-    <img loading="lazy" decoding="async" src="assets/Logo.png?v=6" alt="BDE CREAD">
-    <span>ADMIN - BDE CREAD</span>
+<div id="admin-layout">
+<aside id="sidebar" aria-label="Navigation de l'administration">
+  <div class="sb-logo">
+    <img src="/assets/Logo-nav.png" data-bde-src="logo_url" alt="" width="34" height="34">
+    <div><div class="sb-logo-text" data-bde="nom">BDE CREAD Lyon</div><div class="sb-logo-sub">Administration</div></div>
   </div>
-  <div class="header-right">
-    <a href="/mon-espace.html" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.75);padding:6px 14px;border-radius:8px;font-size:13px;text-decoration:none;">← Espace BDE</a>
-    <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
+  <nav class="sb-nav" id="sb-nav"></nav>
+  <div class="sb-footer">
+    <a class="sb-back" href="/mon-espace.html">← Espace BDE</a>
+    <div class="sb-user"><div class="sb-avatar" id="sb-avatar">?</div><div style="min-width:0"><div class="sb-user-name" id="sb-name">…</div><div class="sb-user-role" id="sb-role"></div></div></div>
   </div>
+</aside>
+<div id="sb-overlay" onclick="adminToggleSidebar(false)"></div>
+<div id="admin-main">
+<header class="topbar">
+  <button class="tb-burger" onclick="adminToggleSidebar()" aria-label="Menu">☰</button>
+  <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
+  <span class="tb-title" id="tb-title"></span>
 </header>
 
 <!-- SETUP - token GitHub (visible uniquement pour admin lors du premier setup) -->
@@ -266,13 +353,13 @@
 
   <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
   <div id="step-pages">
-    <h2>Quelle page veux-tu modifier ?</h2>
+    <div class="home-head"><h2>Vue d'ensemble</h2><p>Choisis un module pour le gérer.</p></div>
     <style>
       .admin-group-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#666; margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid #e5e7eb; }
       .admin-group-title:first-of-type { margin-top:8px; }
     </style>
 
-    <div class="admin-group-title">🌍 Pages publiques</div>
+    <div class="admin-group-title">Pages publiques</div>
     <div class="pages-grid">
       <div class="page-card" onclick="selectPage('accueil')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></div>
@@ -294,7 +381,7 @@
       </div>
     </div>
 
-    <div class="admin-group-title">📢 Contenu & communauté</div>
+    <div class="admin-group-title">Contenu &amp; communauté</div>
     <div class="pages-grid">
       <div class="page-card" onclick="selectPage('annonces')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
@@ -322,7 +409,7 @@
       </div>
     </div>
 
-    <div class="admin-group-title">📊 Marketing & analytics</div>
+    <div class="admin-group-title">Marketing &amp; analytics</div>
     <div class="pages-grid">
       <div class="page-card" onclick="selectPage('stats')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor" stroke="none"/></svg></div>
@@ -341,7 +428,7 @@
       </div>
     </div>
 
-    <div class="admin-group-title">🎓 Bureau (interne)</div>
+    <div class="admin-group-title">Bureau (interne)</div>
     <div class="pages-grid">
       <div class="page-card" id="page-card-finances" style="display:none;" onclick="selectPage('finances')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
@@ -376,7 +463,7 @@
       </div>
     </div>
 
-    <div class="admin-group-title">⚙️ Configuration</div>
+    <div class="admin-group-title">Configuration</div>
     <div class="pages-grid">
       <div class="page-card" id="page-card-bde" style="display:none;" onclick="selectPage('bde')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></div>
@@ -495,7 +582,7 @@
         <textarea id="nl-contenu" rows="14" placeholder="Salut à tous !&#10;&#10;Cette semaine au BDE :&#10;&#10;- Soirée jeudi 20h&#10;- Sortie musée samedi&#10;&#10;À très vite,&#10;L'équipe BDE" style="width:100%;padding:12px;border:1.5px solid var(--gris-border);border-radius:0 0 8px 8px;background:white;color:var(--texte);font-family:'Barlow',sans-serif;font-size:14px;line-height:1.7;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
 
         <!-- Mini panneau lien/bouton -->
-        <div id="nl-inline-panel" style="display:none;margin-top:12px;padding:14px;background:#F5F4FF;border:1.5px solid var(--violet);border-radius:10px;">
+        <div id="nl-inline-panel" style="display:none;margin-top:12px;padding:14px;background:#f1f5f9;border:1.5px solid var(--violet);border-radius:10px;">
           <p id="nl-inline-title" style="margin:0 0 10px;font-weight:700;font-size:14px;color:var(--violet);">Insérer un lien</p>
           <div class="form-row" style="margin-bottom:8px;">
             <label style="font-size:12px;">Texte à afficher</label>
@@ -590,7 +677,7 @@
 
       <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-save" onclick="finTogglerFormEv()" id="fin-btn-nouveau-ev">+ Nouvel événement</button>
-        <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau" style="background:linear-gradient(90deg, #FF741F 0%, #F04A34 25%, #D2396D 60%, #9B1889 100%);">+ Nouvelle transaction</button>
+        <button class="btn-save" onclick="finTogglerForm()" id="fin-btn-nouveau" style="background:linear-gradient(90deg, #0ea5e9 0%, #1d4ed8 25%, #1d4ed8 60%, #1d4ed8 100%);">+ Nouvelle transaction</button>
       </div>
 
       <div id="fin-form-ev" class="form-card" style="margin-bottom:1.5rem;">
@@ -935,7 +1022,7 @@
   .pln-modal-overlay.visible { display:flex; }
   .pln-modal-card { background:white;border-radius:16px;padding:2rem;max-width:640px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto; }
   .pln-tache-row { display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--gris-border);border-radius:10px;background:#fafafd;margin-bottom:8px;flex-wrap:wrap; }
-  .pln-tache-row.mine { background:#f5f0ff;border-color:var(--violet); }
+  .pln-tache-row.mine { background:#f1f5f9;border-color:var(--violet); }
   .pln-tache-checkbox { width:26px;height:26px;border:2px solid var(--gris-border);border-radius:7px;background:white;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;transition:all .15s; }
   .pln-tache-checkbox.checked { background:var(--violet);border-color:var(--violet); }
   .pln-tache-checkbox:not(.disabled):hover { border-color:var(--violet); }
@@ -1040,7 +1127,7 @@
   .fac-list { border:1px solid var(--gris-border,#e5e7eb); border-radius:10px; overflow:hidden; background:white; }
   .fac-row { display:grid; grid-template-columns:110px 110px 1fr 110px auto; gap:10px; padding:12px 14px; align-items:center; border-bottom:1px solid #f0f0f5; font-size:13px; }
   .fac-row:last-child { border-bottom:none; }
-  .fac-row.header { background:#faf5ff; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#666; }
+  .fac-row.header { background:#f8fafc; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#666; }
   .fac-row-actions { display:flex; gap:6px; }
   .fac-row-actions button { background:transparent; border:1px solid #e5e7eb; border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer; }
   .fac-row-actions button:hover { background:#f5f5f7; }
@@ -1048,7 +1135,7 @@
   .fac-row-actions .btn-del:hover { background:#fee2e2; }
   /* --- Aperçu / éditeur facture (mise en page A4) --- */
   .fac-editor-wrap { display:grid; grid-template-columns:1fr; gap:16px; }
-  .fac-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:12px; background:#faf5ff; border-radius:10px; border:1px solid #e9d5ff; }
+  .fac-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid #dbeafe; }
   .fac-toolbar button { background:white; border:1px solid #e5e7eb; border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:600; font-size:13px; }
   .fac-toolbar button.primary { background:var(--violet); color:white; border-color:var(--violet); }
   .fac-toolbar button.danger { color:#dc2626; border-color:#fca5a5; }
@@ -1068,7 +1155,7 @@
   .fac-party .fac-party-info { line-height:1.55; color:#333; }
   .fac-party.right { text-align:right; }
   .fac-tab { width:100%; border-collapse:collapse; margin-bottom:20px; }
-  .fac-tab thead { background:linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%); }
+  .fac-tab thead { background:linear-gradient(90deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%); }
   .fac-tab thead th { padding:10px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; color:white; border-bottom:none; background:transparent; }
   .fac-tab thead th.right { text-align:right; }
   .fac-tab tbody td { padding:12px; border-bottom:1px solid #f0f0f5; vertical-align:top; font-size:12.5px; }
@@ -1076,12 +1163,12 @@
   .fac-tab tbody td.action { width:34px; padding:12px 4px 12px 0; text-align:center; }
   .fac-tab tbody td.action button { background:transparent; border:none; color:#dc2626; cursor:pointer; font-size:16px; padding:2px 6px; border-radius:4px; }
   .fac-tab tbody td.action button:hover { background:#fee2e2; }
-  .fac-add-line { background:transparent; border:1px dashed #c4b5fd; color:var(--violet); border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:600; margin-bottom:24px; font-size:12px; }
-  .fac-add-line:hover { background:#faf5ff; }
+  .fac-add-line { background:transparent; border:1px dashed #bfdbfe; color:var(--violet); border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:600; margin-bottom:24px; font-size:12px; }
+  .fac-add-line:hover { background:#f8fafc; }
   .fac-totaux { display:grid; grid-template-columns:1fr auto; gap:8px; margin:22px 0; font-size:13px; }
   .fac-totaux .lbl { text-align:right; font-weight:600; padding:6px 12px; }
   .fac-totaux .val { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; padding:6px 12px; min-width:130px; }
-  .fac-totaux .final .lbl, .fac-totaux .final .val { background:#faf5ff; border-top:2px solid var(--violet); border-bottom:2px solid var(--violet); color:#000; }
+  .fac-totaux .final .lbl, .fac-totaux .final .val { background:#f8fafc; border-top:2px solid var(--violet); border-bottom:2px solid var(--violet); color:#000; }
   .fac-bottom { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px; font-size:11.5px; line-height:1.55; }
   .fac-bottom .col b { display:block; font-weight:700; margin-bottom:4px; letter-spacing:.5px; }
   .fac-bottom .rib-line { display:grid; grid-template-columns:130px 1fr; gap:4px; }
@@ -1253,13 +1340,13 @@
   .bil-list-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(min(360px,100%), 1fr)); gap:16px; }
   .bil-item {
     background:white; border-radius:16px; overflow:hidden;
-    box-shadow: 0 2px 8px rgba(70,1,134,0.06), 0 0 0 1px rgba(70,1,134,0.06);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.06), 0 0 0 1px rgba(37,99,235,0.06);
     transition: box-shadow .18s, transform .18s;
     display: flex; flex-direction: column;
   }
-  .bil-item:hover { box-shadow: 0 8px 28px rgba(70,1,134,0.12), 0 0 0 1px rgba(70,1,134,0.12); transform: translateY(-2px); }
+  .bil-item:hover { box-shadow: 0 8px 28px rgba(37,99,235,0.12), 0 0 0 1px rgba(37,99,235,0.12); transform: translateY(-2px); }
   .bil-item-header {
-    background: linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%);
     color: white; padding: 18px 20px 16px; position:relative;
   }
   .bil-item-header .bil-status {
@@ -1274,7 +1361,7 @@
   .bil-item-body { padding: 14px 18px 16px; display:flex; flex-direction:column; gap:12px; flex:1; }
   .bil-url-box {
     display:flex; align-items:center; gap:6px;
-    background:#faf5ff; border:1px solid #e9d5ff; border-radius:10px;
+    background:#f8fafc; border:1px solid #dbeafe; border-radius:10px;
     padding:8px 10px; font-size:12px;
   }
   .bil-url-box .bil-url {
@@ -1283,13 +1370,13 @@
     flex:1; min-width:0;
   }
   .bil-url-box button, .bil-url-box a {
-    background:white; border:1px solid #d8b4fe; color:var(--violet);
+    background:white; border:1px solid #dbeafe; color:var(--violet);
     border-radius:8px; padding:5px 10px; cursor:pointer;
     font-size:11px; font-weight:700; text-decoration:none; letter-spacing:.3px;
     display:inline-flex; align-items:center; gap:3px; white-space:nowrap;
     transition: background .12s, transform .12s;
   }
-  .bil-url-box button:hover, .bil-url-box a:hover { background:#f3ecff; transform: translateY(-1px); }
+  .bil-url-box button:hover, .bil-url-box a:hover { background:#f1f5f9; transform: translateY(-1px); }
   .bil-item-actions { display:flex; gap:8px; justify-content:flex-end; padding-top:2px; border-top:1px solid #f0f0f5; padding:12px 0 0; }
   .bil-item-actions button {
     background: white; border: 1.5px solid #e5e7eb; color: #333;
@@ -1298,9 +1385,9 @@
     display: inline-flex; align-items: center; gap: 6px;
     transition: all .12s;
   }
-  .bil-item-actions button:hover { border-color: var(--violet); color: var(--violet); background: #faf5ff; }
+  .bil-item-actions button:hover { border-color: var(--violet); color: var(--violet); background: #f8fafc; }
   .bil-item-actions button.primary { background: var(--violet); color: white; border-color: var(--violet); }
-  .bil-item-actions button.primary:hover { background: #5a0aa5; }
+  .bil-item-actions button.primary:hover { background: #1d4ed8; }
   .bil-status { font-size:10px; text-transform:uppercase; letter-spacing:1.2px; padding:4px 10px; border-radius:99px; font-weight:800; }
   .bil-status.actif { background:#dcfce7; color:#166534; }
   .bil-status.inactif { background:#fee2e2; color:#991b1b; }
@@ -1316,7 +1403,7 @@
   .bil-tarif input { padding:8px 10px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; }
   .bil-tarif .del { background:transparent; border:1px solid #fca5a5; color:#dc2626; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:12px; }
   .bil-preview-frame { width:100%; height:820px; border:1px solid #e5e7eb; border-radius:12px; background:white; }
-  .bil-preview-note { font-size:12px; color:#666; margin-bottom:10px; padding:8px 12px; background:#f3ecff; border-radius:8px; border:1px solid #e9d5ff; }
+  .bil-preview-note { font-size:12px; color:#666; margin-bottom:10px; padding:8px 12px; background:#f1f5f9; border-radius:8px; border:1px solid #dbeafe; }
 </style>
 <div id="step-billetterie" style="display:none;padding:clamp(1rem,4vw,2rem);max-width:1400px;margin:0 auto;">
   <!-- Vue liste -->
@@ -1336,7 +1423,7 @@
         <h2 style="margin:0;" id="bil-p-titre">Participants</h2>
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn-save" onclick="bilEnvoyerATous(this)" style="background:linear-gradient(135deg,#460186,#D2396D);">✉ Envoyer à tous</button>
+        <button class="btn-save" onclick="bilEnvoyerATous(this)" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">✉ Envoyer à tous</button>
         <button class="btn-save" onclick="bilExportCsv()" style="background:linear-gradient(135deg,#059669,#10b981);">⬇️ Exporter CSV</button>
       </div>
     </div>
@@ -1358,10 +1445,10 @@
     </div>
 
     <!-- URL preview + copie rapide -->
-    <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:linear-gradient(135deg, #faf5ff, #fff5f0);border:1px solid #e9d5ff;border-radius:12px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:linear-gradient(135deg, #f8fafc, #fff5f0);border:1px solid #dbeafe;border-radius:12px;margin-bottom:16px;">
       <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--violet);white-space:nowrap;">🔗 URL publique</span>
       <span id="bil-e-url-preview" style="font-family:monospace;font-size:13px;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">-</span>
-      <button onclick="bilCopierLienEditor(this)" style="background:white;border:1px solid #d8b4fe;color:var(--violet);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;">📋 Copier</button>
+      <button onclick="bilCopierLienEditor(this)" style="background:white;border:1px solid #dbeafe;color:var(--violet);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;">📋 Copier</button>
     </div>
 
     <div class="bil-wrap">
@@ -1438,7 +1525,7 @@
 
         <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">💰 Tarifs</h3>
         <div id="bil-e-tarifs"></div>
-        <button type="button" onclick="bilAjouterTarif()" style="background:transparent;border:1px dashed #c4b5fd;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-top:6px;">+ Ajouter un tarif</button>
+        <button type="button" onclick="bilAjouterTarif()" style="background:transparent;border:1px dashed #bfdbfe;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-top:6px;">+ Ajouter un tarif</button>
 
         <div class="bil-field" style="margin-top:16px;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
@@ -1488,14 +1575,14 @@
           <div style="border-top:1px solid rgba(0,0,0,.08);margin-top:6px;padding-top:10px;">
             <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:8px;">Champs supplémentaires</div>
             <div id="bil-fc-custom-list"></div>
-            <button type="button" onclick="bilFcAddCustom()" style="background:transparent;border:1px dashed #c4b5fd;color:var(--violet);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:12px;width:100%;margin-top:4px;">+ Ajouter un champ</button>
+            <button type="button" onclick="bilFcAddCustom()" style="background:transparent;border:1px dashed #bfdbfe;color:var(--violet);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600;font-size:12px;width:100%;margin-top:4px;">+ Ajouter un champ</button>
           </div>
         </div>
 
         <h3 style="margin:24px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gris-texte);">🏷️ Codes promo</h3>
         <div id="bil-promo-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
-        <button type="button" onclick="bilPromoAjouter()" style="background:transparent;border:1px dashed #c4b5fd;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-bottom:4px;">+ Ajouter un code promo</button>
-        <button type="button" onclick="bilPromoSauvegarder()" id="bil-promo-save-btn" style="display:none;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:700;width:100%;font-size:13px;">Enregistrer les codes promo</button>
+        <button type="button" onclick="bilPromoAjouter()" style="background:transparent;border:1px dashed #bfdbfe;color:var(--violet);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;width:100%;margin-bottom:4px;">+ Ajouter un code promo</button>
+        <button type="button" onclick="bilPromoSauvegarder()" id="bil-promo-save-btn" style="display:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:700;width:100%;font-size:13px;">Enregistrer les codes promo</button>
         <div id="bil-promo-msg" style="font-size:12px;margin-top:6px;min-height:16px;"></div>
       </div>
 
@@ -1511,7 +1598,7 @@
 <style>
 /* ── Boutique admin ────────────────────────────── */
 .btqa-header {
-  background: linear-gradient(135deg,#460186 0%,#D2396D 55%,#FF741F 100%);
+  background: linear-gradient(135deg,#2563eb 0%,#1d4ed8 55%,#0ea5e9 100%);
   border-radius:20px;padding:28px 28px 24px;margin-bottom:1.5rem;
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
   position:relative;overflow:hidden;
@@ -1537,11 +1624,11 @@
 .btqa-btn-outline:hover { background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.7); }
 .btqa-btn-solid {
   padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
-  border:none;background:white;color:#460186;transition:all .15s;text-decoration:none;
+  border:none;background:white;color:#2563eb;transition:all .15s;text-decoration:none;
   display:inline-flex;align-items:center;gap:6px;
 }
-.btqa-btn-solid:hover { background:#f0e8ff; }
-.btqa-tabs { display:flex;gap:0;border-bottom:2px solid #f0e8ff;margin:0 -2rem 1.5rem;padding:0 1rem;overflow-x:auto; }
+.btqa-btn-solid:hover { background:#eef2f7; }
+.btqa-tabs { display:flex;gap:0;border-bottom:2px solid #eef2f7;margin:0 -2rem 1.5rem;padding:0 1rem;overflow-x:auto; }
 .btqa-tab { background:none;border:none;padding:12px 20px;font-size:14px;font-weight:600;
   color:var(--gris-texte);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;
   white-space:nowrap;transition:color .15s,border-color .15s;flex:1;text-align:center; }
@@ -1551,20 +1638,20 @@
 .btqa-pane.active { display:block; }
 .btqa-search-bar {
   display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;
-  background:white;border:1.5px solid #f0e8ff;border-radius:14px;padding:10px;
-  box-shadow:0 2px 10px rgba(70,1,134,.05);
+  background:white;border:1.5px solid #eef2f7;border-radius:14px;padding:10px;
+  box-shadow:0 2px 10px rgba(37,99,235,.05);
 }
 .btqa-df-btn {
-  padding:6px 14px;border:1.5px solid #e8e0f5;border-radius:20px;font-size:13px;font-weight:600;
+  padding:6px 14px;border:1.5px solid #e2e8f0;border-radius:20px;font-size:13px;font-weight:600;
   font-family:inherit;background:white;color:#666;cursor:pointer;transition:all .15s;
 }
-.btqa-df-btn:hover { border-color:#460186;color:#460186; }
-.btqa-df-active { background:#460186;color:white;border-color:#460186; }
+.btqa-df-btn:hover { border-color:#2563eb;color:#2563eb; }
+.btqa-df-active { background:#2563eb;color:white;border-color:#2563eb; }
 .btqa-stats-banner {
-  background:linear-gradient(135deg,#460186 0%,#D2396D 55%,#FF741F 100%);
+  background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 55%,#0ea5e9 100%);
   border-radius:20px;margin-bottom:1.5rem;
   display:flex;align-items:stretch;overflow:hidden;
-  box-shadow:0 6px 24px rgba(70,1,134,.28);
+  box-shadow:0 6px 24px rgba(37,99,235,.28);
 }
 .btqa-stat {
   flex:1;padding:22px 16px;text-align:center;position:relative;
@@ -1576,20 +1663,20 @@
 }
 .btqa-stat-val { font-size:32px;font-weight:800;color:white;line-height:1; }
 .btqa-stat-lbl { font-size:10px;color:rgba(255,255,255,.7);margin-top:5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px; }
-.btqa-table-wrap { overflow-x:auto;border-radius:14px;box-shadow:0 2px 12px rgba(70,1,134,.07); }
+.btqa-table-wrap { overflow-x:auto;border-radius:14px;box-shadow:0 2px 12px rgba(37,99,235,.07); }
 .btqa-table { width:100%;border-collapse:collapse;font-size:13px; }
-.btqa-table thead tr { background:linear-gradient(90deg,#460186 0%,#D2396D 55%,#FF741F 100%); }
+.btqa-table thead tr { background:linear-gradient(90deg,#2563eb 0%,#1d4ed8 55%,#0ea5e9 100%); }
 .btqa-table th { background:transparent;color:white;padding:12px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap; }
 .btqa-table th:first-child { border-radius:14px 0 0 0; }
 .btqa-table th:last-child  { border-radius:0 14px 0 0; }
-.btqa-table td { padding:10px 14px;border-bottom:1px solid #f0e8ff;vertical-align:middle; }
+.btqa-table td { padding:10px 14px;border-bottom:1px solid #eef2f7;vertical-align:middle; }
 .btqa-table tr:last-child td { border-bottom:none; }
-.btqa-table tr:hover td { background:#faf8ff; }
+.btqa-table tr:hover td { background:#f8fafc; }
 .btqa-badge { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase; }
 .btqa-badge.panier     { background:#f3f4f6;color:#666; }
 .btqa-badge.en_attente { background:#fef3c7;color:#92400e; }
 .btqa-badge.payee      { background:#dcfce7;color:#166534; }
-.btqa-badge.production { background:#f3e8ff;color:#6b21a8; }
+.btqa-badge.production { background:#eff6ff;color:#6b21a8; }
 .btqa-badge.livraison  { background:#e0f2fe;color:#075985; }
 .btqa-badge.confirmee  { background:#ffedd5;color:#9a3412; }
 .btqa-badge.remise     { background:#e0e7ff;color:#3730a3; }
@@ -1606,17 +1693,17 @@
 .btqa-form-row { margin-bottom:14px; }
 .btqa-form-row label { display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:5px; }
 .btqa-form-row input,.btqa-form-row select,.btqa-form-row textarea {
-  width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;
+  width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;
   font-size:14px;font-family:inherit;color:var(--noir);outline:none;box-sizing:border-box; }
 .btqa-form-row input:focus,.btqa-form-row select:focus { border-color:var(--violet); }
-.btqa-scan-box { border:2px dashed #d0c4ff;border-radius:16px;padding:40px;text-align:center;margin:20px 0;background:#faf8ff; }
+.btqa-scan-box { border:2px dashed #bfdbfe;border-radius:16px;padding:40px;text-align:center;margin:20px 0;background:#f8fafc; }
 .btqa-scan-box video { width:100%;max-width:320px;border-radius:12px; }
-.btqa-order-result { background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:14px;padding:20px;margin-top:16px;border:1px solid #f0e8ff; }
+.btqa-order-result { background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:14px;padding:20px;margin-top:16px;border:1px solid #eef2f7; }
 .btqa-phys-item-row { display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;align-items:start;margin-bottom:8px; }
 /* ── Photo picker ── */
 .btqa-img-picker { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
 .btqa-img-preview-wrap { position:relative;flex-shrink:0; }
-.btqa-img-preview-img { width:64px;height:64px;object-fit:cover;border-radius:10px;border:1.5px solid #e0d8f0;display:block; }
+.btqa-img-preview-img { width:64px;height:64px;object-fit:cover;border-radius:10px;border:1.5px solid #e2e8f0;display:block; }
 .btqa-img-clear {
   position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;
   background:#ef4444;color:white;border:none;cursor:pointer;
@@ -1624,30 +1711,30 @@
 }
 .btqa-img-btn {
   display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
-  border-radius:10px;border:1.5px dashed #c4b5fd;background:#faf8ff;
-  color:#460186;font-size:12px;font-weight:700;cursor:pointer;
+  border-radius:10px;border:1.5px dashed #bfdbfe;background:#f8fafc;
+  color:#2563eb;font-size:12px;font-weight:700;cursor:pointer;
   transition:background .15s,border-color .15s;white-space:nowrap;
 }
-.btqa-img-btn:hover { background:#f0e8ff;border-color:#8b5cf6; }
+.btqa-img-btn:hover { background:#eef2f7;border-color:#8b5cf6; }
 .btqa-img-uploading { opacity:.6;pointer-events:none; }
 /* ── Config produits visual grid ── */
 .btqa-prod-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-prod-card {
   border-radius:16px;overflow:hidden;cursor:grab;
-  background:linear-gradient(135deg,#f8f5ff,#fff0f7);
-  border:1.5px solid #f0e8ff;
+  background:linear-gradient(135deg,#f8fafc,#eff6ff);
+  border:1.5px solid #eef2f7;
   transition:transform .2s,box-shadow .2s,border-color .2s,opacity .15s;
-  box-shadow:0 2px 10px rgba(70,1,134,.06);
+  box-shadow:0 2px 10px rgba(37,99,235,.06);
   display:flex;flex-direction:column;
 }
-.btqa-prod-card:hover { transform:translateY(-4px);box-shadow:0 10px 28px rgba(70,1,134,.16);border-color:#c084fc; }
+.btqa-prod-card:hover { transform:translateY(-4px);box-shadow:0 10px 28px rgba(37,99,235,.16);border-color:#c084fc; }
 .btqa-prod-card.dragging { opacity:.35;transform:scale(.97); }
-.btqa-prod-card.drag-over { border-color:#460186;box-shadow:0 0 0 3px rgba(70,1,134,.2); transform:scale(1.03); }
+.btqa-prod-card.drag-over { border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.2); transform:scale(1.03); }
 .btqa-prod-drag-handle { position:absolute;top:6px;left:6px;color:rgba(255,255,255,.75);font-size:14px;cursor:grab;z-index:2;line-height:1; }
 .btqa-prod-card-img {
   width:100%;height:120px;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,rgba(70,1,134,.12),rgba(210,57,109,.1));
+  background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(210,57,109,.1));
 }
 .btqa-prod-card-img img { width:100%;height:100%;object-fit:cover;position:absolute;inset:0; }
 .btqa-prod-card-icon { font-size:44px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.15)); }
@@ -1657,7 +1744,7 @@
 }
 .btqa-prod-card-price-badge {
   position:absolute;bottom:8px;left:8px;
-  background:linear-gradient(135deg,rgba(70,1,134,.9),rgba(210,57,109,.9));
+  background:linear-gradient(135deg,rgba(37,99,235,.9),rgba(210,57,109,.9));
   color:white;font-size:11px;font-weight:800;letter-spacing:.3px;
   padding:2px 8px;border-radius:99px;
 }
@@ -1676,7 +1763,7 @@
 .btqa-physique-split { display:grid;grid-template-columns:1fr 520px;gap:24px;align-items:stretch;min-height:600px; }
 @media(max-width:1024px) { .btqa-physique-split { grid-template-columns:1fr; } }
 .btqa-catalog-panel {
-  background:#faf8ff;border-radius:16px;border:1.5px solid #f0e8ff;padding:16px;
+  background:#f8fafc;border-radius:16px;border:1.5px solid #eef2f7;padding:16px;
   display:flex;flex-direction:column;overflow:hidden;
 }
 .btqa-catalog-panel #btqa-phys-catalog {
@@ -1684,13 +1771,13 @@
 }
 .btqa-catalog-title { font-weight:800;font-size:15px;margin:0 0 14px;color:var(--noir);display:flex;align-items:center;gap:8px; }
 .btqa-mini-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }
-.btqa-mini-card { border-radius:12px;overflow:hidden;background:white;border:1.5px solid #f0e8ff;transition:box-shadow .15s,border-color .15s;cursor:pointer; }
-.btqa-mini-card:hover { box-shadow:0 4px 16px rgba(70,1,134,.16);border-color:#c4b5fd;transform:translateY(-1px); }
+.btqa-mini-card { border-radius:12px;overflow:hidden;background:white;border:1.5px solid #eef2f7;transition:box-shadow .15s,border-color .15s;cursor:pointer; }
+.btqa-mini-card:hover { box-shadow:0 4px 16px rgba(37,99,235,.16);border-color:#bfdbfe;transform:translateY(-1px); }
 .btqa-mini-card-img { width:100%;height:110px;object-fit:cover;display:block; }
-.btqa-mini-card-icon { width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,rgba(70,1,134,.08),rgba(210,57,109,.06)); }
+.btqa-mini-card-icon { width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(210,57,109,.06)); }
 .btqa-mini-card-body { padding:10px 12px 12px; }
 .btqa-mini-card-name { font-weight:700;font-size:13px;color:var(--noir);margin:0 0 2px;line-height:1.3; }
-.btqa-mini-card-price { font-size:12px;font-weight:700;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0; }
+.btqa-mini-card-price { font-size:12px;font-weight:700;background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0; }
 /* Modal sélection produit physique */
 .btqa-prod-modal-overlay {
   position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;
@@ -1710,19 +1797,19 @@
 /* Col 1 : vignettes */
 .btqa-pm-thumbs {
   display:flex;flex-direction:column;gap:8px;padding:12px 8px;
-  border-right:1px solid #f0e8ff;overflow-y:auto;
+  border-right:1px solid #eef2f7;overflow-y:auto;
 }
 .btqa-pm-thumb {
-  width:56px;height:56px;border-radius:10px;border:2px solid #e0d8f0;
-  background:#f8f5ff;cursor:pointer;overflow:hidden;flex-shrink:0;
+  width:56px;height:56px;border-radius:10px;border:2px solid #e2e8f0;
+  background:#f8fafc;cursor:pointer;overflow:hidden;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:18px;
   transition:border-color .15s;position:relative;
 }
 .btqa-pm-thumb img { width:100%;height:100%;object-fit:contain;padding:3px; }
-.btqa-pm-thumb.active { border-color:#460186; }
+.btqa-pm-thumb.active { border-color:#2563eb; }
 .btqa-pm-thumb-lbl {
   position:absolute;bottom:0;left:0;right:0;text-align:center;
-  font-size:8px;font-weight:700;color:#460186;
+  font-size:8px;font-weight:700;color:#2563eb;
   background:rgba(255,255,255,.85);padding:1px 0;
 }
 /* Col 2 : grande image */
@@ -1735,83 +1822,83 @@
 .btqa-pm-detail-col { padding:20px;overflow-y:auto;display:flex;flex-direction:column; }
 @media(max-width:640px) {
   .btqa-pm-layout { grid-template-columns:1fr;grid-template-rows:auto auto auto; }
-  .btqa-pm-thumbs { flex-direction:row;border-right:none;border-bottom:1px solid #f0e8ff;padding:8px 12px; }
+  .btqa-pm-thumbs { flex-direction:row;border-right:none;border-bottom:1px solid #eef2f7;padding:8px 12px; }
   .btqa-pm-img-main { height:200px; }
 }
 .btqa-prod-modal-overlay.open .btqa-prod-modal { transform:scale(1); }
 .btqa-prod-modal h4 { margin:0 0 4px;font-size:17px;color:var(--noir); }
-.btqa-prod-modal-price { font-size:13px;font-weight:700;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 18px; }
+.btqa-prod-modal-price { font-size:13px;font-weight:700;background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 18px; }
 .btqa-prod-modal-label { font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px; }
 .btqa-prod-modal-btns { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px; }
-.btqa-psel-btn { padding:7px 14px;border-radius:8px;border:1.5px solid #d0c4ff;background:white;color:#460186;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s; }
-.btqa-psel-btn:hover,.btqa-psel-btn.selected { background:#460186;color:white;border-color:#460186; }
-.btqa-psel-color { padding:6px 12px 6px 8px;border-radius:100px;border:1.5px solid #d0c4ff;background:white;display:flex;align-items:center;gap:6px;color:#333;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s; }
-.btqa-psel-color:hover,.btqa-psel-color.selected { border-color:#460186;background:#f3f0ff; }
+.btqa-psel-btn { padding:7px 14px;border-radius:8px;border:1.5px solid #bfdbfe;background:white;color:#2563eb;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s; }
+.btqa-psel-btn:hover,.btqa-psel-btn.selected { background:#2563eb;color:white;border-color:#2563eb; }
+.btqa-psel-color { padding:6px 12px 6px 8px;border-radius:100px;border:1.5px solid #bfdbfe;background:white;display:flex;align-items:center;gap:6px;color:#333;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s; }
+.btqa-psel-color:hover,.btqa-psel-color.selected { border-color:#2563eb;background:#f1f5f9; }
 .btqa-psel-dot { width:16px;height:16px;border-radius:50%;flex-shrink:0; }
 .btqa-prod-modal-qty { display:flex;align-items:center;gap:12px;margin-bottom:20px; }
-.btqa-prod-modal-qty button { width:32px;height:32px;border-radius:8px;border:1.5px solid #d0c4ff;background:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#460186;font-weight:700; }
+.btqa-prod-modal-qty button { width:32px;height:32px;border-radius:8px;border:1.5px solid #bfdbfe;background:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#2563eb;font-weight:700; }
 .btqa-prod-modal-qty span { font-size:16px;font-weight:700;min-width:24px;text-align:center; }
 .btqa-form-panel {
-  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:20px;
+  background:white;border-radius:16px;border:1.5px solid #eef2f7;padding:20px;
   position:sticky;top:20px;max-height:calc(100vh - 80px);overflow-y:auto;
-  box-shadow:0 2px 16px rgba(70,1,134,.07);
+  box-shadow:0 2px 16px rgba(37,99,235,.07);
 }
 .btqa-form-panel h3 { margin:0 0 16px;font-size:16px;color:var(--noir);font-weight:800; }
 /* ── Remise split ── */
 .btqa-remise-split { display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start; }
 @media(max-width:900px) { .btqa-remise-split { grid-template-columns:1fr; } }
 .btqa-remise-search-panel {
-  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:22px;
-  box-shadow:0 2px 12px rgba(70,1,134,.06);position:sticky;top:20px;
+  background:white;border-radius:16px;border:1.5px solid #eef2f7;padding:22px;
+  box-shadow:0 2px 12px rgba(37,99,235,.06);position:sticky;top:20px;
 }
 .btqa-remise-result-panel {
-  background:white;border-radius:16px;border:1.5px solid #f0e8ff;padding:24px;
-  box-shadow:0 2px 12px rgba(70,1,134,.06);min-height:260px;
+  background:white;border-radius:16px;border:1.5px solid #eef2f7;padding:24px;
+  box-shadow:0 2px 12px rgba(37,99,235,.06);min-height:260px;
 }
 /* ── Pack cards ── */
 .btqa-pack-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:4px 0 8px; }
 .btqa-pack-card {
   border-radius:16px;padding:20px;
-  background:linear-gradient(135deg,#f8f5ff,#fff0f7);
-  border:1.5px solid #f0e8ff;
-  box-shadow:0 2px 10px rgba(70,1,134,.06);
+  background:linear-gradient(135deg,#f8fafc,#eff6ff);
+  border:1.5px solid #eef2f7;
+  box-shadow:0 2px 10px rgba(37,99,235,.06);
   transition:transform .2s,box-shadow .2s;
 }
-.btqa-pack-card:hover { transform:translateY(-3px);box-shadow:0 8px 24px rgba(70,1,134,.14); }
+.btqa-pack-card:hover { transform:translateY(-3px);box-shadow:0 8px 24px rgba(37,99,235,.14); }
 .btqa-pack-card-title { font-weight:800;font-size:15px;color:var(--noir);margin:0 0 4px; }
 .btqa-pack-card-desc { font-size:12px;color:var(--gris-texte);margin:0 0 12px;line-height:1.5; }
 .btqa-pack-badge {
   display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;
-  background:linear-gradient(135deg,#460186,#D2396D);color:white;margin-bottom:10px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;margin-bottom:10px;
 }
-.btqa-pack-offer { display:flex;align-items:center;gap:8px;font-size:13px;color:#460186;font-weight:600; }
+.btqa-pack-offer { display:flex;align-items:center;gap:8px;font-size:13px;color:#2563eb;font-weight:600; }
 
 /* ── Analytiques ── */
 .btqa-an-kpis { display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:1.5rem; }
-.btqa-an-kpi { background:#fff;border:1.5px solid #f0e8ff;border-radius:14px;padding:16px 18px;text-align:center; }
-.btqa-an-kpi .val { font-size:2rem;font-weight:800;color:#460186;line-height:1; }
+.btqa-an-kpi { background:#fff;border:1.5px solid #eef2f7;border-radius:14px;padding:16px 18px;text-align:center; }
+.btqa-an-kpi .val { font-size:2rem;font-weight:800;color:#2563eb;line-height:1; }
 .btqa-an-kpi .lbl { font-size:11px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.5px; }
-.btqa-an-section { background:#fff;border:1.5px solid #f0e8ff;border-radius:14px;padding:18px 20px;margin-bottom:1rem; }
-.btqa-an-section h4 { margin:0 0 14px;font-size:13px;font-weight:700;color:#460186;text-transform:uppercase;letter-spacing:.5px; }
+.btqa-an-section { background:#fff;border:1.5px solid #eef2f7;border-radius:14px;padding:18px 20px;margin-bottom:1rem; }
+.btqa-an-section h4 { margin:0 0 14px;font-size:13px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.5px; }
 .btqa-an-bar-row { display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px; }
 .btqa-an-bar-label { width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#333;font-weight:600; }
-.btqa-an-bar-track { flex:1;background:#f0e8ff;border-radius:99px;height:10px;overflow:hidden; }
-.btqa-an-bar-fill { height:100%;background:linear-gradient(90deg,#460186,#D2396D);border-radius:99px;transition:width .4s; }
+.btqa-an-bar-track { flex:1;background:#eef2f7;border-radius:99px;height:10px;overflow:hidden; }
+.btqa-an-bar-fill { height:100%;background:linear-gradient(90deg,#2563eb,#1d4ed8);border-radius:99px;transition:width .4s; }
 .btqa-an-bar-count { width:36px;text-align:right;color:#666;font-size:12px; }
 .btqa-an-day-row { display:flex;gap:6px;align-items:flex-end;height:80px; }
 .btqa-an-day-col { flex:1;display:flex;flex-direction:column;align-items:center;gap:4px; }
-.btqa-an-day-bar { width:100%;background:linear-gradient(180deg,#460186,#D2396D);border-radius:6px 6px 0 0;transition:height .4s;min-height:2px; }
+.btqa-an-day-bar { width:100%;background:linear-gradient(180deg,#2563eb,#1d4ed8);border-radius:6px 6px 0 0;transition:height .4s;min-height:2px; }
 .btqa-an-day-label { font-size:9px;color:#aaa;white-space:nowrap; }
 .btqa-an-funnel { display:flex;gap:0;align-items:stretch; }
-.btqa-an-funnel-step { flex:1;text-align:center;padding:14px 8px;background:#faf8ff;border:1px solid #f0e8ff; }
+.btqa-an-funnel-step { flex:1;text-align:center;padding:14px 8px;background:#f8fafc;border:1px solid #eef2f7; }
 .btqa-an-funnel-step:first-child { border-radius:12px 0 0 12px; }
 .btqa-an-funnel-step:last-child { border-radius:0 12px 12px 0; }
-.btqa-an-funnel-step .fval { font-size:1.5rem;font-weight:800;color:#460186; }
+.btqa-an-funnel-step .fval { font-size:1.5rem;font-weight:800;color:#2563eb; }
 .btqa-an-funnel-step .flbl { font-size:11px;color:#888;margin-top:2px; }
-.btqa-an-funnel-step .fpct { font-size:11px;color:#D2396D;font-weight:700;margin-top:4px; }
+.btqa-an-funnel-step .fpct { font-size:11px;color:#1d4ed8;font-weight:700;margin-top:4px; }
 .btqa-an-period { display:flex;gap:6px;margin-bottom:1.5rem; }
-.btqa-an-period button { padding:6px 14px;border-radius:99px;border:1.5px solid #e0d0f0;background:#fff;font-size:12px;font-weight:600;color:#666;cursor:pointer; }
-.btqa-an-period button.active { background:#460186;color:#fff;border-color:#460186; }
+.btqa-an-period button { padding:6px 14px;border-radius:99px;border:1.5px solid #e2e8f0;background:#fff;font-size:12px;font-weight:600;color:#666;cursor:pointer; }
+.btqa-an-period button.active { background:#2563eb;color:#fff;border-color:#2563eb; }
 
 /* ── Responsive mobile ── */
 @media(max-width:640px) {
@@ -1895,10 +1982,10 @@
         <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none" width="16" height="16" fill="none" stroke="#999" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input id="btqa-search" type="text" placeholder="Rechercher numéro, nom, email…"
           oninput="btqaFilterTable()"
-          style="padding:10px 14px 10px 36px;border:1.5px solid #e8e0f5;border-radius:12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;font-family:inherit;color:var(--noir);background:white;">
+          style="padding:10px 14px 10px 36px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;width:100%;box-sizing:border-box;outline:none;font-family:inherit;color:var(--noir);background:white;">
       </div>
       <select id="btqa-filter-statut" onchange="btqaFilterTable()"
-        style="padding:10px 14px;border:1.5px solid #e8e0f5;border-radius:12px;font-size:14px;font-family:inherit;color:var(--noir);background:white;outline:none;cursor:pointer;min-width:160px;">
+        style="padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;color:var(--noir);background:white;outline:none;cursor:pointer;min-width:160px;">
         <option value="">Tous les statuts</option>
         <option value="en_attente">En attente</option>
         <option value="confirmee">Confirmée</option>
@@ -1907,7 +1994,7 @@
         <option value="expiree">Expirée</option>
       </select>
       <select id="btqa-filter-type" onchange="btqaFilterTable()"
-        style="padding:10px 14px;border:1.5px solid #e8e0f5;border-radius:12px;font-size:14px;font-family:inherit;color:var(--noir);background:white;outline:none;cursor:pointer;min-width:140px;">
+        style="padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:inherit;color:var(--noir);background:white;outline:none;cursor:pointer;min-width:140px;">
         <option value="">Tous les types</option>
         <option value="ligne">En ligne</option>
         <option value="physique">Physique</option>
@@ -1920,12 +2007,12 @@
       <button onclick="btqaSetDateFilter('week')" id="btqa-df-week" class="btqa-df-btn">Cette semaine</button>
     </div>
     <!-- Actions groupées -->
-    <div id="btqa-bulk-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;background:rgba(70,1,134,.06);border-radius:14px;margin-bottom:12px">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#460186;flex-shrink:0">Passer en masse :</span>
-      <button id="btqa-bulk-production" onclick="btqaBulk('payee','production')" style="padding:7px 16px;background:linear-gradient(135deg,#460186,#6b0070);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🏭 Payées → Production <span id="btqa-bulk-count-production" style="opacity:.7"></span></button>
-      <button id="btqa-bulk-livraison" onclick="btqaBulk('production','livraison')" style="padding:7px 16px;background:linear-gradient(135deg,#D2396D,#ff5500);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🚚 Production → Livraison <span id="btqa-bulk-count-livraison" style="opacity:.7"></span></button>
+    <div id="btqa-bulk-bar" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;background:rgba(37,99,235,.06);border-radius:14px;margin-bottom:12px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#2563eb;flex-shrink:0">Passer en masse :</span>
+      <button id="btqa-bulk-production" onclick="btqaBulk('payee','production')" style="padding:7px 16px;background:linear-gradient(135deg,#2563eb,#1e40af);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🏭 Payées → Production <span id="btqa-bulk-count-production" style="opacity:.7"></span></button>
+      <button id="btqa-bulk-livraison" onclick="btqaBulk('production','livraison')" style="padding:7px 16px;background:linear-gradient(135deg,#1d4ed8,#ff5500);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">🚚 Production → Livraison <span id="btqa-bulk-count-livraison" style="opacity:.7"></span></button>
       <button id="btqa-bulk-confirmee" onclick="btqaBulk('livraison','confirmee')" style="padding:7px 16px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:none">✅ Livraison → Récupérable <span id="btqa-bulk-count-confirmee" style="opacity:.7"></span></button>
-      <button id="btqa-btn-relance" onclick="btqaRelanceCommandes()" style="padding:7px 16px;background:white;color:#460186;border:1.5px solid #d0c4ff;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto">📧 Relancer les paniers</button>
+      <button id="btqa-btn-relance" onclick="btqaRelanceCommandes()" style="padding:7px 16px;background:white;color:#2563eb;border:1.5px solid #bfdbfe;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:auto">📧 Relancer les paniers</button>
     </div>
     <div class="btqa-table-wrap" id="btqa-table-wrap">
       <table class="btqa-table">
@@ -1952,9 +2039,9 @@
 
   <!-- Modal emails campagne boutique -->
   <div class="btqa-prod-modal-overlay" id="btqa-email-modal-overlay" onclick="if(event.target===this)btqaCloseEmailModal()">
-    <div style="background:white;border-radius:20px;width:560px;max-width:95vw;overflow:hidden;box-shadow:0 24px 60px rgba(70,1,134,0.18)">
+    <div style="background:white;border-radius:20px;width:560px;max-width:95vw;overflow:hidden;box-shadow:0 24px 60px rgba(37,99,235,0.18)">
       <!-- Header dégradé -->
-      <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+      <div style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
         <div>
           <p style="margin:0 0 2px;color:rgba(255,255,255,.65);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">Boutique</p>
           <h4 style="margin:0;color:white;font-size:18px;font-weight:800">Email à tous les acheteurs</h4>
@@ -1962,7 +2049,7 @@
         <button onclick="btqaCloseEmailModal()" style="border:none;background:rgba(255,255,255,.18);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:16px;color:white;display:flex;align-items:center;justify-content:center;font-weight:700">✕</button>
       </div>
       <!-- Compteur -->
-      <div style="background:#f9f5ff;border-bottom:1px solid #ede5ff;padding:10px 24px">
+      <div style="background:#f8fafc;border-bottom:1px solid #e8eef6;padding:10px 24px">
         <p id="btqa-em-count" style="margin:0;font-size:13px;color:#666;font-weight:600">Chargement…</p>
       </div>
       <!-- Corps -->
@@ -1970,26 +2057,26 @@
         <!-- Templates -->
         <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Template rapide</p>
         <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px">
-          <button onclick="btqaLoadTemplate('production')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🏭 Production lancée</button>
-          <button onclick="btqaLoadTemplate('livraison')"  style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🚚 En livraison</button>
-          <button onclick="btqaLoadTemplate('confirmee')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #d0c4ff;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#460186;transition:all .15s" onmouseover="this.style.background='#f3f0ff'" onmouseout="this.style.background='white'">🎉 Prête à retirer</button>
-          <button onclick="btqaLoadTemplate('vide')"      style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0d8f0;background:#f9f5ff;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:all .15s" onmouseover="this.style.background='#ede5ff'" onmouseout="this.style.background='#f9f5ff'">✏️ Vide</button>
+          <button onclick="btqaLoadTemplate('production')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #bfdbfe;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#2563eb;transition:all .15s" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">🏭 Production lancée</button>
+          <button onclick="btqaLoadTemplate('livraison')"  style="padding:7px 14px;border-radius:20px;border:1.5px solid #bfdbfe;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#2563eb;transition:all .15s" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">🚚 En livraison</button>
+          <button onclick="btqaLoadTemplate('confirmee')" style="padding:7px 14px;border-radius:20px;border:1.5px solid #bfdbfe;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#2563eb;transition:all .15s" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">🎉 Prête à retirer</button>
+          <button onclick="btqaLoadTemplate('vide')"      style="padding:7px 14px;border-radius:20px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:12px;font-weight:700;cursor:pointer;color:#999;transition:all .15s" onmouseover="this.style.background='#e8eef6'" onmouseout="this.style.background='#f8fafc'">✏️ Vide</button>
         </div>
         <!-- Sujet -->
         <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Sujet</p>
         <input id="btqa-em-sujet" type="text" placeholder="Sujet de l'email"
-          style="width:100%;padding:11px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:14px;box-sizing:border-box;margin-bottom:16px;outline:none;font-family:inherit;transition:border-color .15s"
-          onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'">
+          style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;box-sizing:border-box;margin-bottom:16px;outline:none;font-family:inherit;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'">
         <!-- Message -->
         <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">
           Message <span style="font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;color:#aaa">— variables : {{prenom}}, {{nom}}, {{numero}}, {{total}}</span>
         </p>
         <textarea id="btqa-em-body" rows="7"
-          style="width:100%;padding:11px 14px;border:1.5px solid #e0d8f0;border-radius:12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:20px;line-height:1.6;transition:border-color .15s"
-          onfocus="this.style.borderColor='#460186'" onblur="this.style.borderColor='#e0d8f0'"></textarea>
+          style="width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none;margin-bottom:20px;line-height:1.6;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
         <!-- Bouton envoi -->
         <button onclick="btqaSendEmailCampagne(this)"
-          style="width:100%;padding:14px;background:linear-gradient(135deg,#460186,#D2396D,#FF741F);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px;transition:opacity .2s"
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#2563eb,#1d4ed8,#0ea5e9);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px;transition:opacity .2s"
           onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
           Envoyer à tous les acheteurs →
         </button>
@@ -1999,9 +2086,9 @@
 
   <!-- Modal modifier article commande -->
   <div class="btqa-prod-modal-overlay" id="btqa-edit-item-modal" onclick="if(event.target===this)btqaCloseEditModal()">
-    <div style="background:white;border-radius:20px;width:520px;max-width:95vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(70,1,134,0.18)">
+    <div style="background:white;border-radius:20px;width:520px;max-width:95vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(37,99,235,0.18)">
       <!-- Header dégradé -->
-      <div style="background:linear-gradient(135deg,#460186 0%,#D2396D 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
+      <div style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center">
         <div>
           <p style="margin:0 0 2px;color:rgba(255,255,255,.65);font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600">Boutique</p>
           <h4 style="margin:0;color:white;font-size:18px;font-weight:800">Modifier l'article</h4>
@@ -2010,10 +2097,10 @@
       </div>
       <!-- Nom article -->
       <div style="padding:0 24px">
-        <div style="margin-top:-1px;padding:14px 16px;background:#f8f5ff;border-radius:0 0 14px 14px;border:1.5px solid #ede5ff;border-top:none">
+        <div style="margin-top:-1px;padding:14px 16px;background:#f8fafc;border-radius:0 0 14px 14px;border:1.5px solid #e8eef6;border-top:none">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
-            <p id="btqa-edit-item-nom" style="margin:0;font-weight:700;font-size:13px;color:#460186;line-height:1.4;flex:1"></p>
-            <button onclick="btqaToggleProduitEdit()" id="btqa-edit-produit-toggle-btn" style="border:none;background:#ede5ff;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#460186;white-space:nowrap;flex-shrink:0;transition:background .15s">Changer</button>
+            <p id="btqa-edit-item-nom" style="margin:0;font-weight:700;font-size:13px;color:#2563eb;line-height:1.4;flex:1"></p>
+            <button onclick="btqaToggleProduitEdit()" id="btqa-edit-produit-toggle-btn" style="border:none;background:#e8eef6;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#2563eb;white-space:nowrap;flex-shrink:0;transition:background .15s">Changer</button>
           </div>
           <!-- Sélecteur produit (masqué par défaut) -->
           <div id="btqa-edit-produit-fields" hidden style="margin-top:12px">
@@ -2035,34 +2122,34 @@
         <!-- Taille : boutons visuels -->
         <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Taille</p>
         <div id="btqa-edit-taille-btns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
-          <button onclick="btqaSelectTaille('')"  data-taille=""    style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#888;transition:all .15s">—</button>
-          <button onclick="btqaSelectTaille('XS')"  data-taille="XS"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XS</button>
-          <button onclick="btqaSelectTaille('S')"   data-taille="S"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">S</button>
-          <button onclick="btqaSelectTaille('M')"   data-taille="M"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">M</button>
-          <button onclick="btqaSelectTaille('L')"   data-taille="L"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">L</button>
-          <button onclick="btqaSelectTaille('XL')"  data-taille="XL"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XL</button>
-          <button onclick="btqaSelectTaille('XXL')" data-taille="XXL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XXL</button>
-          <button onclick="btqaSelectTaille('2XL')" data-taille="2XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">2XL</button>
-          <button onclick="btqaSelectTaille('3XL')" data-taille="3XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">3XL</button>
+          <button onclick="btqaSelectTaille('')"  data-taille=""    style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#888;transition:all .15s">—</button>
+          <button onclick="btqaSelectTaille('XS')"  data-taille="XS"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XS</button>
+          <button onclick="btqaSelectTaille('S')"   data-taille="S"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">S</button>
+          <button onclick="btqaSelectTaille('M')"   data-taille="M"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">M</button>
+          <button onclick="btqaSelectTaille('L')"   data-taille="L"   style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">L</button>
+          <button onclick="btqaSelectTaille('XL')"  data-taille="XL"  style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XL</button>
+          <button onclick="btqaSelectTaille('XXL')" data-taille="XXL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">XXL</button>
+          <button onclick="btqaSelectTaille('2XL')" data-taille="2XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">2XL</button>
+          <button onclick="btqaSelectTaille('3XL')" data-taille="3XL" style="padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s">3XL</button>
         </div>
         <input id="btqa-edit-item-taille" type="hidden" value="">
         <!-- Couleur : boutons visuels -->
         <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Couleur</p>
         <div id="btqa-edit-couleur-btns" style="display:flex;flex-wrap:nowrap;gap:6px;margin-bottom:20px">
-          <button onclick="btqaSelectCouleur('')" data-couleur="" style="padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#888;transition:all .15s">—</button>
-          <button onclick="btqaSelectCouleur('Blanc')" data-couleur="Blanc" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#FFFFFF;border:1.5px solid #d0c8e0;flex-shrink:0"></span>Blanc</button>
-          <button onclick="btqaSelectCouleur('Noir')" data-couleur="Noir" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#1a1a1a;border:1.5px solid transparent;flex-shrink:0"></span>Noir</button>
-          <button onclick="btqaSelectCouleur('Bleu')" data-couleur="Bleu" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#3B82F6;border:1.5px solid transparent;flex-shrink:0"></span>Bleu</button>
-          <button onclick="btqaSelectCouleur('Rose')" data-couleur="Rose" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#EC4899;border:1.5px solid transparent;flex-shrink:0"></span>Rose</button>
-          <button onclick="btqaSelectCouleur('Marron')" data-couleur="Marron" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e0d8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#7B4F2E;border:1.5px solid transparent;flex-shrink:0"></span>Marron</button>
+          <button onclick="btqaSelectCouleur('')" data-couleur="" style="padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#888;transition:all .15s">—</button>
+          <button onclick="btqaSelectCouleur('Blanc')" data-couleur="Blanc" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#FFFFFF;border:1.5px solid #e2e8f0;flex-shrink:0"></span>Blanc</button>
+          <button onclick="btqaSelectCouleur('Noir')" data-couleur="Noir" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#1a1a1a;border:1.5px solid transparent;flex-shrink:0"></span>Noir</button>
+          <button onclick="btqaSelectCouleur('Bleu')" data-couleur="Bleu" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#3B82F6;border:1.5px solid transparent;flex-shrink:0"></span>Bleu</button>
+          <button onclick="btqaSelectCouleur('Rose')" data-couleur="Rose" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#EC4899;border:1.5px solid transparent;flex-shrink:0"></span>Rose</button>
+          <button onclick="btqaSelectCouleur('Marron')" data-couleur="Marron" style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:12px;font-weight:700;cursor:pointer;color:#333;transition:all .15s"><span style="width:11px;height:11px;border-radius:50%;background:#7B4F2E;border:1.5px solid transparent;flex-shrink:0"></span>Marron</button>
         </div>
         <input id="btqa-edit-item-couleur" type="hidden" value="">
         <!-- Quantité -->
         <p style="margin:0 0 8px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Quantite</p>
-        <div style="display:flex;align-items:center;border:1.5px solid #e0d8f0;border-radius:12px;overflow:hidden;max-width:160px;margin-bottom:4px">
-          <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;if(v>1)document.getElementById('btqa-edit-item-qty').value=v-1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#460186;font-weight:700;flex-shrink:0">−</button>
-          <input id="btqa-edit-item-qty" type="number" min="1" max="99" style="flex:1;border:none;text-align:center;font-size:15px;font-weight:700;color:#460186;padding:0;outline:none;font-family:inherit;width:0">
-          <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;document.getElementById('btqa-edit-item-qty').value=v+1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#460186;font-weight:700;flex-shrink:0">+</button>
+        <div style="display:flex;align-items:center;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden;max-width:160px;margin-bottom:4px">
+          <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;if(v>1)document.getElementById('btqa-edit-item-qty').value=v-1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#2563eb;font-weight:700;flex-shrink:0">−</button>
+          <input id="btqa-edit-item-qty" type="number" min="1" max="99" style="flex:1;border:none;text-align:center;font-size:15px;font-weight:700;color:#2563eb;padding:0;outline:none;font-family:inherit;width:0">
+          <button onclick="var v=parseInt(document.getElementById('btqa-edit-item-qty').value)||1;document.getElementById('btqa-edit-item-qty').value=v+1" style="border:none;background:white;width:38px;height:44px;font-size:18px;cursor:pointer;color:#2563eb;font-weight:700;flex-shrink:0">+</button>
         </div>
       </div>
       <!-- Bloc confirmation -->
@@ -2073,11 +2160,11 @@
       <!-- Boutons action -->
       <div style="padding:16px 24px 24px;display:flex;gap:10px">
         <div id="btqa-edit-action-step" style="flex:1">
-          <button onclick="btqaAskConfirmEdit()" style="width:100%;padding:13px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px">Enregistrer</button>
+          <button onclick="btqaAskConfirmEdit()" style="width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px">Enregistrer</button>
         </div>
         <div id="btqa-edit-confirm-btns" hidden style="display:flex;gap:8px;flex:1">
-          <button onclick="btqaDoSaveEdit()" style="flex:1;padding:13px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer">Confirmer</button>
-          <button onclick="btqaBackToEdit()" style="flex:1;padding:13px;background:#f3f0ff;color:#460186;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer">Retour</button>
+          <button onclick="btqaDoSaveEdit()" style="flex:1;padding:13px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer">Confirmer</button>
+          <button onclick="btqaBackToEdit()" style="flex:1;padding:13px;background:#f1f5f9;color:#2563eb;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer">Retour</button>
         </div>
       </div>
     </div>
@@ -2088,7 +2175,7 @@
     <div class="btqa-prod-modal">
       <!-- Bouton fermer -->
       <div style="display:flex;justify-content:flex-end;padding:12px 16px 0;flex-shrink:0">
-        <button onclick="btqaCloseProdModal()" style="border:none;background:#f3f0ff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#460186">✕</button>
+        <button onclick="btqaCloseProdModal()" style="border:none;background:#f1f5f9;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:#2563eb">✕</button>
       </div>
       <div class="btqa-pm-layout">
         <!-- Col 1 : vignettes -->
@@ -2124,7 +2211,7 @@
             <button onclick="btqaPMQty(1)">+</button>
           </div>
           <div style="margin-top:auto;padding-top:16px">
-            <button onclick="btqaConfirmProdModal()" style="width:100%;padding:12px;background:linear-gradient(135deg,#460186,#D2396D);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
+            <button onclick="btqaConfirmProdModal()" style="width:100%;padding:12px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">
               Ajouter au panier
             </button>
           </div>
@@ -2140,7 +2227,7 @@
       <!-- Colonne gauche : catalogue -->
       <div class="btqa-catalog-panel">
         <p class="btqa-catalog-title">
-          <svg width="18" height="18" fill="none" stroke="#460186" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <svg width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
           Catalogue boutique
         </p>
         <div id="btqa-phys-catalog"><p style="color:#bbb;font-size:13px">Chargement…</p></div>
@@ -2153,7 +2240,7 @@
           <label>Nom de l'acheteur</label>
           <input id="btqa-p-nom" type="text" placeholder="Prénom Nom" autocomplete="off"
             oninput="btqaNomAutocomplete(this.value)" onblur="setTimeout(()=>document.getElementById('btqa-p-nom-drop').style.display='none',150)">
-          <div id="btqa-p-nom-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #d0c4ff;border-radius:10px;box-shadow:0 4px 16px rgba(70,1,134,.12);z-index:200;max-height:200px;overflow-y:auto;margin-top:2px"></div>
+          <div id="btqa-p-nom-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid #bfdbfe;border-radius:10px;box-shadow:0 4px 16px rgba(37,99,235,.12);z-index:200;max-height:200px;overflow-y:auto;margin-top:2px"></div>
         </div>
         <div class="btqa-form-row">
           <label>E-mail</label>
@@ -2168,15 +2255,15 @@
         </div>
         <div class="btqa-form-row">
           <label>Notes (optionnel)</label>
-          <textarea id="btqa-p-notes" rows="2" style="width:100%;padding:10px 12px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none"></textarea>
+          <textarea id="btqa-p-notes" rows="2" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;outline:none"></textarea>
         </div>
 
         <div id="btqa-p-items-list" style="margin-bottom:10px"></div>
         <div id="btqa-p-pack-banner" style="display:none;align-items:center;gap:10px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:#166534;font-weight:600"></div>
 
-        <div style="background:linear-gradient(135deg,#f8f5ff,#fff0f7);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #f0e8ff;">
+        <div style="background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #eef2f7;">
           <span style="font-weight:700;font-size:15px;">Total estimé</span>
-          <span id="btqa-p-total" style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#460186,#D2396D);-webkit-background-clip:text;background-clip:text;color:transparent;">0,00 €</span>
+          <span id="btqa-p-total" style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;background-clip:text;color:transparent;">0,00 €</span>
         </div>
 
         <div style="display:flex;gap:10px">
@@ -2198,13 +2285,13 @@
         </div>
 
         <div id="btqa-phys-confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px">
-          <div style="background:white;border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(70,1,134,.25)">
-            <h3 style="margin:0 0 6px;font-size:18px;color:#1a0030">Confirmer la commande</h3>
+          <div style="background:white;border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(37,99,235,.25)">
+            <h3 style="margin:0 0 6px;font-size:18px;color:#0f172a">Confirmer la commande</h3>
             <p style="margin:0 0 16px;font-size:13px;color:#888">Vérifie les informations avant de valider.</p>
-            <div id="btqa-phys-confirm-recap" style="background:#faf8ff;border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;line-height:1.7;border:1px solid #f0e8ff"></div>
+            <div id="btqa-phys-confirm-recap" style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;line-height:1.7;border:1px solid #eef2f7"></div>
             <div style="display:flex;gap:10px">
-              <button onclick="btqaClosePhysConfirm()" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid #e0d8f0;background:white;color:#666;font-size:14px;font-weight:700;cursor:pointer">Annuler</button>
-              <button onclick="btqaCreatePhysOrder()" style="flex:1;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#460186,#D2396D);color:white;font-size:14px;font-weight:700;cursor:pointer">Valider</button>
+              <button onclick="btqaClosePhysConfirm()" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid #e2e8f0;background:white;color:#666;font-size:14px;font-weight:700;cursor:pointer">Annuler</button>
+              <button onclick="btqaCreatePhysOrder()" style="flex:1;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-size:14px;font-weight:700;cursor:pointer">Valider</button>
             </div>
           </div>
         </div>
@@ -2217,11 +2304,11 @@
   <div class="btqa-pane" id="btqa-pane-recap" style="padding:0 0 2rem">
 
     <!-- Sous-onglets seulement (toutes les commandes payées incluses automatiquement) -->
-    <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #e0d8f0">
-      <button id="btqr-sub-recap" onclick="btqaSubTab('recap')" style="padding:8px 20px;border:none;background:none;font-weight:800;font-size:13px;color:#460186;border-bottom:3px solid #460186;margin-bottom:-2px;cursor:pointer">Récap stock</button>
+    <div style="display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #e2e8f0">
+      <button id="btqr-sub-recap" onclick="btqaSubTab('recap')" style="padding:8px 20px;border:none;background:none;font-weight:800;font-size:13px;color:#2563eb;border-bottom:3px solid #2563eb;margin-bottom:-2px;cursor:pointer">Récap stock</button>
       <button id="btqr-sub-design" onclick="btqaSubTab('design')" style="padding:8px 20px;border:none;background:none;font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer">Par design</button>
       <button id="btqr-sub-detail" onclick="btqaSubTab('detail')" style="padding:8px 20px;border:none;background:none;font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer">Détail commandes</button>
-      <button id="btqr-export-btn" onclick="btqaExportPDFAuto()" style="margin-left:auto;padding:7px 16px;border-radius:8px;border:1.5px solid #460186;background:white;color:#460186;font-size:12px;font-weight:700;cursor:pointer">⬇ Export PDF récap</button>
+      <button id="btqr-export-btn" onclick="btqaExportPDFAuto()" style="margin-left:auto;padding:7px 16px;border-radius:8px;border:1.5px solid #2563eb;background:white;color:#2563eb;font-size:12px;font-weight:700;cursor:pointer">⬇ Export PDF récap</button>
     </div>
 
     <!-- Sous-vue Récap stock -->
@@ -2259,9 +2346,9 @@
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-          <div style="flex:1;height:1px;background:#e0d8f0"></div>
+          <div style="flex:1;height:1px;background:#e2e8f0"></div>
           <span style="font-size:12px;color:#aaa;font-weight:600">OU</span>
-          <div style="flex:1;height:1px;background:#e0d8f0"></div>
+          <div style="flex:1;height:1px;background:#e2e8f0"></div>
         </div>
 
         <div class="btqa-form-row" style="margin-bottom:0">
@@ -2279,7 +2366,7 @@
       <div class="btqa-remise-result-panel">
         <div id="btqa-r-result">
           <div style="text-align:center;padding:40px 20px;color:#ccc">
-            <svg width="56" height="56" fill="none" stroke="#d0c4ff" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01M17 20h.01M14 20h.01"/></svg>
+            <svg width="56" height="56" fill="none" stroke="#bfdbfe" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:16px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01M20 14h.01M20 17h.01M20 20h.01M17 20h.01M14 20h.01"/></svg>
             <p style="font-size:14px;font-weight:600;color:#bbb;margin:0">Scanne ou cherche une commande</p>
             <p style="font-size:12px;color:#ccc;margin:6px 0 0">Le détail apparaîtra ici</p>
           </div>
@@ -2345,7 +2432,7 @@
       <input id="btqa-pk-desc" type="text" placeholder="Ex : T-shirt + Sweat → Porte-clef offert">
     </div>
 
-    <div style="background:#f8f5ff;border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:#6d28d9;line-height:1.6">
+    <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:#6d28d9;line-height:1.6">
       <strong>Comment ça marche :</strong> chaque ligne = un groupe de produits dont <em>au moins un</em> doit être acheté.
       Coche plusieurs produits dans un groupe pour faire un "OU" (ex : T-shirt phrase <em>ou</em> T-shirt classique).
     </div>
@@ -2353,18 +2440,18 @@
     <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Produits à acheter</p>
     <div id="btqa-pk-conditions"></div>
     <button onclick="btqaAddPackCondition()"
-      style="width:100%;padding:9px;border:1.5px dashed #c4b5fd;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;">
+      style="width:100%;padding:9px;border:1.5px dashed #bfdbfe;border-radius:10px;background:white;color:#6d28d9;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;">
       + Ajouter un groupe
     </button>
 
     <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin:0 0 10px">Avantage accordé</p>
     <div style="display:flex;gap:8px;margin-bottom:16px">
       <button id="btqa-pk-type-offre" onclick="btqaSetPackType('offre')"
-        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #460186;background:#460186;color:white;transition:all .15s">
+        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #2563eb;background:#2563eb;color:white;transition:all .15s">
         🎁 Produit offert
       </button>
       <button id="btqa-pk-type-remise" onclick="btqaSetPackType('remise')"
-        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #e0d8f0;background:white;color:#888;transition:all .15s">
+        style="flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #e2e8f0;background:white;color:#888;transition:all .15s">
         🏷️ Remise
       </button>
     </div>
@@ -2375,7 +2462,7 @@
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
         <span style="font-size:13px;color:#555;white-space:nowrap">Quantité offerte :</span>
         <input id="btqa-pk-offre-qty" type="number" min="1" value="1"
-          style="width:70px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
+          style="width:70px;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
       </div>
     </div>
 
@@ -2383,10 +2470,10 @@
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <span style="font-size:13px;color:#555;white-space:nowrap">Montant :</span>
         <input id="btqa-pk-remise-montant" type="number" step="0.01" min="0" placeholder="0.00"
-          style="width:90px;padding:8px 10px;border:1.5px solid #e0d8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
-        <div style="display:flex;border:1.5px solid #e0d8f0;border-radius:10px;overflow:hidden">
+          style="width:90px;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;text-align:center;outline:none">
+        <div style="display:flex;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden">
           <button id="btqa-pk-remise-euro" type="button" onclick="btqaSetRemiseUnit('euro')"
-            style="padding:7px 14px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:#460186;color:white;transition:all .12s">€</button>
+            style="padding:7px 14px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:#2563eb;color:white;transition:all .12s">€</button>
           <button id="btqa-pk-remise-pct" type="button" onclick="btqaSetRemiseUnit('pct')"
             style="padding:7px 14px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:white;color:#888;transition:all .12s">%</button>
         </div>
@@ -2441,14 +2528,18 @@
   <div style="background:white;border-radius:16px;padding:2rem;width:320px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <p style="font-weight:700;font-size:15px;margin-bottom:1rem;" id="upload-label">Envoi en cours…</p>
     <div style="background:#f0f0f5;border-radius:99px;height:10px;overflow:hidden;">
-      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);border-radius:99px;transition:width 0.3s;"></div>
+      <div id="upload-bar" style="height:100%;width:0%;background:linear-gradient(90deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%);border-radius:99px;transition:width 0.3s;"></div>
     </div>
     <p id="upload-pct" style="font-size:13px;color:#6b6b7b;margin-top:0.6rem;">0%</p>
   </div>
 </div>
 
+</div><!-- /admin-main -->
+</div><!-- /admin-layout -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/supabase-config.js?v=2"></script>
+<script src="js/bde-config.js?v=1"></script>
 <script src="/js/image-utils.js?v=1"></script>
   <script src="js/auth.js?v=12"></script>
 <script defer src="js/notif.js?v=4"></script>
@@ -2476,7 +2567,7 @@
     <input id="mt-event" type="text" placeholder="Soirée de rentrée" onkeydown="if(event.key==='Enter')confirmerTampon()" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;margin-bottom:20px;font-family:inherit;box-sizing:border-box;">
     <div style="display:flex;gap:10px;">
       <button onclick="fermerModalTampon()" style="flex:1;padding:11px;border:1.5px solid #e0e0e0;border-radius:8px;background:white;cursor:pointer;font-size:14px;font-family:inherit;">Annuler</button>
-      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg, #460186 0%, #6A0F9E 18%, #9B1889 38%, #D2396D 58%, #F04A34 80%, #FF741F 100%);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
+      <button onclick="confirmerTampon()" style="flex:2;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%);color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;">Valider</button>
     </div>
   </div>
 </div>

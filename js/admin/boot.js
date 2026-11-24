@@ -84,6 +84,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       });
     }
   } catch (_) {}
+  try {
+    document.getElementById('sb-name').textContent = ((profil && profil.prenom) || '') + ' ' + ((profil && profil.nom) || '');
+    document.getElementById('sb-avatar').textContent = ((profil && profil.prenom) || '?')[0].toUpperCase();
+    document.getElementById('sb-role').textContent = profil && profil.role === 'admin' ? 'Administrateur' : (profil && profil.bureau ? 'Bureau BDE' : 'Membre BDE');
+  } catch (_) {}
+  adminBuildSidebar();
   window._monProfilId = profil ? profil.id : null;
 
   // 2. Charger le token GitHub et l'upload secret depuis Supabase

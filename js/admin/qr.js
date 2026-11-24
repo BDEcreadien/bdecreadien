@@ -146,7 +146,7 @@ function buildParametresEditor() {
     const pickerHtml = PICTO_LIST.map(p => `
       <button type="button" onclick="selectPicto(${i},'${p.key}')" id="picto-btn-${i}-${p.key}"
         title="${p.label}"
-        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:8px;border:2px solid ${selected===p.key?'var(--violet)':'var(--gris-border)'};background:${selected===p.key?'#f3eeff':'white'};cursor:pointer;color:${selected===p.key?'var(--violet)':'var(--gris-texte)'};transition:all .15s;">
+        style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:8px;border:2px solid ${selected===p.key?'var(--violet)':'var(--gris-border)'};background:${selected===p.key?'#f1f5f9':'white'};cursor:pointer;color:${selected===p.key?'var(--violet)':'var(--gris-texte)'};transition:all .15s;">
         ${PICTO_SVG[p.key]}
         <span style="font-size:10px;font-weight:500;">${p.label}</span>
       </button>`).join('');
@@ -203,7 +203,7 @@ function selectPicto(i, key) {
   document.querySelectorAll(`[id^="picto-btn-${i}-"]`).forEach(btn => {
     const isSelected = btn.id === `picto-btn-${i}-${key}`;
     btn.style.borderColor = isSelected ? 'var(--violet)' : 'var(--gris-border)';
-    btn.style.background = isSelected ? '#f3eeff' : 'white';
+    btn.style.background = isSelected ? '#f1f5f9' : 'white';
     btn.style.color = isSelected ? 'var(--violet)' : 'var(--gris-texte)';
   });
 }
@@ -380,7 +380,7 @@ function buildEditor(type) {
         // Équipe : géré séparément par buildEquipeEditor()
         if (type === 'equipe') return '';
 
-        const archiveBtn = type === 'evenements' ? `<button class="btn-edit" onclick="archiveEvenement(${i})" style="background:#f5f0ff;color:var(--violet);border-color:#d4c4f5;" title="Déplacer en archives">Archiver</button>` : '';
+        const archiveBtn = type === 'evenements' ? `<button class="btn-edit" onclick="archiveEvenement(${i})" style="background:#f1f5f9;color:var(--violet);border-color:#d4c4f5;" title="Déplacer en archives">Archiver</button>` : '';
         // Bouton activer/désactiver pour partenaires
         const isPartenaire = type === 'partenaires';
         const isActif = isPartenaire ? (item.actif !== false) : true;

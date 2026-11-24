@@ -205,7 +205,7 @@ function finShowRefreshing(on) {
   if (!el) {
     el = document.createElement('div');
     el.id = 'fin-refreshing';
-    el.style.cssText = 'position:fixed;top:70px;right:20px;background:rgba(70,1,134,0.95);color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;align-items:center;gap:8px;';
+    el.style.cssText = 'position:fixed;top:70px;right:20px;background:rgba(37,99,235,0.95);color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;align-items:center;gap:8px;';
     el.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:finSpin 0.6s linear infinite;"></span>Actualisation…';
     document.body.appendChild(el);
     const style = document.createElement('style');
