@@ -958,7 +958,6 @@ async function loadAll() {
   try {
     const { data } = await _sb.from('bde_config').select('value').eq('id', 'solde_initial').maybeSingle();
     _soldeInitial = data?.value ? parseFloat(data.value) : 0;
-    document.getElementById('solde-initial-val').textContent = formatEur(_soldeInitial);
   } catch(_) {}
 
   // Load all transactions (all history, for arrow navigation)
@@ -967,7 +966,6 @@ async function loadAll() {
     .order('date', { ascending: false });
   if (txErr) toast('Erreur chargement transactions : ' + txErr.message, 'error');
   _all = txs || [];
-  document.getElementById('solde-initial-val').textContent = formatEur(_soldeInitial) + ' · ' + _all.length + ' tx chargées';
 
   // Load recurring
   const { data: rec } = await _sb.from('transactions_recurrentes').select('*').order('created_at');
