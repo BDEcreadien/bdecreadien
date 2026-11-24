@@ -860,42 +860,6 @@ a{text-decoration:none;color:inherit}
   </div>
 </div>
 
-<!-- Dettes drawer (reuses same overlay) -->
-<div id="drawer-dettes" style="position:fixed;top:0;right:0;bottom:0;width:380px;max-width:95vw;background:var(--surface);box-shadow:var(--sh-lg);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1)">
-  <div class="drawer-header">
-    <div class="drawer-title" id="dette-drawer-title">Nouvelle créance</div>
-    <button class="btn-icon" onclick="closeDetteDrawer()">✕</button>
-  </div>
-  <div class="drawer-body">
-    <div class="form-group">
-      <label class="form-label">Nom / Organisation *</label>
-      <input class="form-input" id="dd-nom" type="text" placeholder="Prénom Nom">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description *</label>
-      <input class="form-input" id="dd-desc" type="text" placeholder="Raison de la dette/créance">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Montant (€) *</label>
-        <input class="form-input" id="dd-montant" type="number" min="0" step="0.01">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Échéance</label>
-        <input class="form-input" id="dd-echeance" type="date">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-input" id="dd-notes" rows="2" placeholder="Optionnel"></textarea>
-    </div>
-  </div>
-  <div class="drawer-footer">
-    <button class="btn btn-secondary" style="flex:1" onclick="closeDetteDrawer()">Annuler</button>
-    <button class="btn btn-primary" style="flex:2" onclick="saveDette()">Enregistrer</button>
-  </div>
-</div>
-
 <!-- Toast container -->
 <div id="toast-wrap"></div>
 
