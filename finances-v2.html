@@ -1203,8 +1203,6 @@ function updateCharts() {
   if (!_chartSolde || !_chartCat) return;
   // Solde line chart: monthly running balance
   const groups = {};
-  [..._all].sort((a,b) => a.date.localeCompare(b.date))
-    .forEach(t => {
   for (const t of _all) {
     const m = t.date.slice(0,7);
     groups[m] = (groups[m] || 0) + Number(t.montant);
