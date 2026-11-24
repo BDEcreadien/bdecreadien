@@ -87,7 +87,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:30px;font-weight:900;letter-spacing:1px;font-family:Impact,'Arial Narrow',Arial,sans-serif">${titre.toUpperCase()}</p>
   </div>
   <div style="padding:28px 32px">
-    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Hello ${prenom} !</p>
+    <p style="margin:0 0 6px;font-size:17px;font-weight:800;color:#1a0030">Salut ${prenom} !</p>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#444">
       Merci pour ton inscription à <strong>${titre}</strong> —
       on a hâte que l'événement arrive, c'est à ne pas rater !!

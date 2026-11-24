@@ -179,7 +179,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:36px;font-weight:900;letter-spacing:2px;font-family:Impact,'Arial Narrow',Arial,sans-serif">BOUTIQUE MERCH</p>
   </div>
   <div style="background:white;padding:24px">
-    <p style="margin:0 0 8px">Hello <strong>${escHtml(prenomDe(nom_acheteur))}</strong>,</p>
+    <p style="margin:0 0 8px">Salut <strong>${escHtml(prenomDe(nom_acheteur))}</strong>,</p>
     <p style="margin:0 0 16px">Ta commande est bien enregistrée !</p>
     <p style="margin:0 0 20px;font-size:24px;font-weight:800;color:#460186;letter-spacing:1px">${numero}</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px">
@@ -219,7 +219,7 @@ function formatEur(centimes) {
   }) + ' €';
 }
 
-// Prénom seul pour les "Hello ..." (nom_acheteur = "Prénom Nom")
+// Prénom seul pour les "Salut ..." (nom_acheteur = "Prénom Nom")
 function prenomDe(nom) {
   const p = String(nom || '').trim().split(/\s+/)[0] || '';
   return p.charAt(0).toUpperCase() + p.slice(1);

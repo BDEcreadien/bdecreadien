@@ -57,7 +57,7 @@ export async function onRequest({ request, env }) {
     <p style="margin:0;color:white;font-size:28px;font-weight:800;letter-spacing:-1px">Boutique Merch</p>
   </div>
   <div style="background:white;padding:28px">
-    <p style="margin:0 0 8px">Hello <strong>${prenomDe(cmd.nom_acheteur)}</strong>,</p>
+    <p style="margin:0 0 8px">Salut <strong>${prenomDe(cmd.nom_acheteur)}</strong>,</p>
     <p style="margin:0 0 20px;font-size:16px">Bonne nouvelle — <strong>ta commande est prête à être retirée à l'école !</strong> 🎉</p>
     <p style="margin:0 0 6px;font-size:13px;color:#888">Ton numéro de commande :</p>
     <p style="margin:0 0 20px;font-size:26px;font-weight:800;color:#ff5500;letter-spacing:1px">${cmd.numero}</p>
@@ -89,7 +89,7 @@ function formatEur(centimes) {
   return (centimes / 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 }
 
-// Prénom seul pour les "Hello ..." (nom_acheteur = "Prénom Nom")
+// Prénom seul pour les "Salut ..." (nom_acheteur = "Prénom Nom")
 function prenomDe(nom) {
   const p = String(nom || '').trim().split(/\s+/)[0] || '';
   return (p.charAt(0).toUpperCase() + p.slice(1)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
