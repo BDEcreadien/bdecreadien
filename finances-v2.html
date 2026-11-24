@@ -943,7 +943,7 @@ async function checkAuth() {
   const profil = await window.Auth.getProfil();
   if (!profil) { location.href = '/connexion.html?next=/finances-v2.html'; return; }
   if (!(profil.role === 'membre' || profil.role === 'admin') || !profil.bureau) {
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px;font-family:Inter,sans-serif"><p style="font-size:16px;color:#64748b">403 — Accès réservé aux membres du bureau.</p><a href="/admin.html" style="color:#4f46e5">← Retour</a></div>';
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px;font-family:Inter,sans-serif"><p style="font-size:16px;color:#64748b">403 — Accès réservé aux membres du bureau.</p><a href="/admin.html" style="color:#2563eb">← Retour</a></div>';
     return;
   }
   _profil = profil;
