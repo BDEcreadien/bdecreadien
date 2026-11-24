@@ -1783,11 +1783,18 @@ async function saveSoldeInitial() {
 }
 
 // ── Transaction CRUD ──────────────────────────────────────────────
+function _populateEventsDatalist() {
+  const names = [...new Set(_all.map(t => t.evenement).filter(Boolean))].sort();
+  const dl = document.getElementById('events-datalist');
+  if (dl) dl.innerHTML = names.map(n => `<option value="${n}">`).join('');
+}
+
 function openDrawer(id) {
   _editId = id || null;
   _recurDrawerMode = 'tx';
   document.getElementById('drawer-title').textContent = id ? 'Modifier la transaction' : 'Nouvelle transaction';
   document.getElementById('drawer-save-btn').innerHTML = 'Enregistrer';
+  _populateEventsDatalist();
   if (id) {
     const t = _all.find(x => x.id === id);
     if (t) {
@@ -1798,6 +1805,7 @@ function openDrawer(id) {
       document.getElementById('f-categorie').value= t.categorie;
       document.getElementById('f-moyen').value    = t.moyen_paiement || 'cb';
       document.getElementById('f-fournisseur').value = t.fournisseur || '';
+      document.getElementById('f-evenement').value   = t.evenement || '';
       document.getElementById('f-notes').value    = t.notes || '';
     }
   } else {
