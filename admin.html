@@ -378,6 +378,11 @@
 
     <div class="admin-group-title">⚙️ Configuration</div>
     <div class="pages-grid">
+      <div class="page-card" id="page-card-bde" style="display:none;" onclick="selectPage('bde')">
+        <div class="page-card-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></div>
+        <div class="page-card-name">Paramètres du BDE</div>
+        <div class="page-card-desc">Nom, logo, couleurs, contact, modules</div>
+      </div>
       <div class="page-card" onclick="selectPage('parametres')">
         <div class="page-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
         <div class="page-card-name">Paramètres</div>
@@ -2401,6 +2406,12 @@
   </div>
 </div>
 
+<div id="step-bde" style="display:none;padding:2rem;max-width:760px;margin:0 auto;">
+  <h2 style="margin:0 0 .25rem;font-size:20px">Paramètres du BDE</h2>
+  <p style="font-size:13px;color:var(--gris-texte);margin:0 0 1.25rem">Ces informations sont reprises automatiquement sur les pages du site et dans les e-mails.</p>
+  <div id="bde-param-body"></div>
+</div>
+
 <div id="step-qr" style="display:none;padding:2rem;max-width:700px;margin:0 auto;">
   <div class="params-card">
     <h3>URL de destination</h3>
@@ -2470,6 +2481,7 @@
   </div>
 </div>
 
+<script src="js/admin/parametres.js?v=1"></script>
 <script src="js/admin/boutique.js?v=1"></script>
 </body>
 </html>

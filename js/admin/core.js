@@ -88,6 +88,8 @@ function showStep(step, opts = {}) {
   if (bilEl) bilEl.style.display = 'none';
   const qrEl = document.getElementById('step-qr');
   if (qrEl) qrEl.style.display = 'none';
+  const bdeEl = document.getElementById('step-bde');
+  if (bdeEl) bdeEl.style.display = 'none';
   const btqaEl = document.getElementById('step-boutique');
   if (btqaEl) btqaEl.style.display = 'none';
   document.getElementById('step-' + step).style.display = 'block';
@@ -97,7 +99,7 @@ function showStep(step, opts = {}) {
   try {
     if (step === 'pages') {
       if (location.search) history.replaceState({}, '', location.pathname);
-    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'liens', 'factures', 'billetterie', 'qr', 'boutique'].includes(step)) {
+    } else if (['fidelite', 'newsletter', 'finances', 'stats', 'planning', 'liens', 'factures', 'billetterie', 'qr', 'boutique', 'bde'].includes(step)) {
       const wanted = '?page=' + step;
       if (location.search !== wanted) history.replaceState({}, '', location.pathname + wanted);
     }
@@ -117,6 +119,7 @@ function goBack() {
   else if (prev === 'factures') { showStep('factures'); if (typeof initFactures === 'function') initFactures(); }
   else if (prev === 'billetterie') { showStep('billetterie'); if (typeof initBilletterie === 'function') initBilletterie(); }
   else if (prev === 'qr') { showStep('qr'); initQrPage(); }
+  else if (prev === 'bde') { showStep('bde'); initParametresBde(); }
   else if (prev === 'boutique') { showStep('boutique'); initBoutiqueAdmin(); }
   else if (prev.startsWith('sections:')) showStep('sections');
   else if (prev.startsWith('editor:')) {
@@ -185,6 +188,11 @@ function selectPage(page) {
         document.getElementById('editor-content').innerHTML = buildParametresEditor();
         showStep('editor');
       });
+  } else if (page === 'bde') {
+    navStack.push('bde');
+    showStep('bde');
+    document.title = 'Paramètres du BDE - Admin';
+    initParametresBde();
   } else if (page === 'qr') {
     navStack.push('qr');
     showStep('qr');

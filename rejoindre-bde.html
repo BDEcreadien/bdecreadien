@@ -90,10 +90,10 @@
   <!-- @include nav @start -->
 <nav id="navbar" aria-label="Navigation principale">
   <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
-    <img src="assets/Logo-nav.png" alt="Logo BDE CREAD Lyon" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
+    <img src="assets/Logo-nav.png" data-bde-src="logo_url" alt="Logo BDE CREAD Lyon" data-bde-alt="Logo {nom}" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
     <div class="nav-logo-text">
-      <span class="bde">BDE LYON</span>
-      <span class="cread">CREAD</span>
+      <span class="bde" data-bde="logo_ligne1">BDE LYON</span>
+      <span class="cread" data-bde="logo_ligne2">CREAD</span>
     </div>
   </a>
   <ul class="nav-links">
@@ -239,10 +239,10 @@
   <div class="footer-top">
     <div class="footer-brand">
       <a href="index.html" class="nav-logo" aria-label="BDE CREAD Lyon — Accueil">
-        <img src="assets/Logo-nav.png" alt="Logo BDE CREAD Lyon" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
-        <div class="nav-logo-text"><span class="bde">BDE LYON</span><span class="cread">CREAD</span></div>
+        <img src="assets/Logo-nav.png" data-bde-src="logo_url" alt="Logo BDE CREAD Lyon" data-bde-alt="Logo {nom}" width="44" height="44" loading="eager" decoding="async" style="border-radius:50%; object-fit:cover;">
+        <div class="nav-logo-text"><span class="bde" data-bde="logo_ligne1">BDE LYON</span><span class="cread" data-bde="logo_ligne2">CREAD</span></div>
       </a>
-      <p class="footer-tagline">Le bureau des étudiants de l'école CREAD Lyon.</p>
+      <p class="footer-tagline" data-bde="slogan">Le bureau des étudiants de l'école CREAD Lyon.</p>
     </div>
   </div>
   <div class="footer-bottom">
@@ -254,6 +254,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js?v=2"></script>
+<script src="js/bde-config.js?v=1"></script>
   <script>
     document.getElementById('rejoindre-form').addEventListener('submit', async (e) => {
       e.preventDefault();

@@ -64,6 +64,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     const btqCard = document.getElementById('page-card-boutique');
     if (btqCard) btqCard.style.display = '';
   }
+  if (profil && profil.role === 'admin') {
+    const bdeCard = document.getElementById('page-card-bde');
+    if (bdeCard) bdeCard.style.display = '';
+  }
+  // Modules désactivés dans « Paramètres du BDE » : on masque leurs cartes
+  try {
+    const { data: modRow } = await Auth.sb.from('bde_parametres').select('valeur').eq('cle', 'modules_actifs').maybeSingle();
+    if (modRow && modRow.valeur) {
+      const actifs = modRow.valeur.split(',').map(x => x.trim());
+      const PAGES_PAR_MODULE = {
+        contenu: ['agenda', 'annonces', 'accueil', 'communication', 'archives', 'galerie', 'partenaires', 'parametres'],
+        boutique: ['boutique'], billetterie: ['billetterie'], finances: ['finances'], facturation: ['factures'],
+        planning: ['planning'], newsletter: ['newsletter'], fidelite: ['fidelite'], liens: ['liens'], qr: ['qr'], stats: ['stats'],
+      };
+      Object.keys(PAGES_PAR_MODULE).forEach(m => {
+        if (actifs.includes(m)) return;
+        PAGES_PAR_MODULE[m].forEach(pg => document.querySelectorAll(`.page-card[onclick="selectPage('${pg}')"]`).forEach(c => { c.style.display = 'none'; }));
+      });
+    }
+  } catch (_) {}
   window._monProfilId = profil ? profil.id : null;
 
   // 2. Charger le token GitHub et l'upload secret depuis Supabase

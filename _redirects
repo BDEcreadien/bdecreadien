@@ -18,6 +18,7 @@
 /admin/partenaires       /admin.html?page=partenaires       200
 /admin/stats             /admin.html?page=stats             200
 /admin/fidelite          /admin.html?page=fidelite          200
+/admin/bde               /admin.html?page=bde               200
 /admin/newsletter        /admin.html?page=newsletter        200
 /admin/liens             /admin.html?page=liens             200
 /admin/parametres        /admin.html?page=parametres        200
