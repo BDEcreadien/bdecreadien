@@ -1197,35 +1197,60 @@ function initCharts() {
 
 function updateCharts() {
   if (!_chartSolde || !_chartCat) return;
-  // Solde line chart: full school year (Sep → Jun), always global view
+  // Solde line chart: Sep → Jun (full school year), with forecast for future months
   const sy = getSchoolYearBounds();
+  const now2 = new Date();
+  // Current month using local time (avoids UTC timezone shift midnight bug)
+  const nowYM = `${now2.getFullYear()}-${String(now2.getMonth()+1).padStart(2,'0')}`;
+  const syStartYM = sy.start.slice(0,7);
+  const junYM = `${parseInt(sy.end.slice(0,4))+1}-06`;
+
+  // Increment YYYY-MM by 1 month using string arithmetic (no Date object = no timezone)
+  function nextYM(ym) {
+    let [y,m] = ym.split('-').map(Number);
+    m++; if(m>12){m=1;y++;} return `${y}-${String(m).padStart(2,'0')}`;
+  }
+  const allMonths = [];
+  for(let ym=syStartYM; ym<=junYM; ym=nextYM(ym)) allMonths.push(ym);
+
   const groups = {};
-  for (const t of _all) {
-    if (t.date >= sy.start && t.date <= sy.end) {
-      const m = t.date.slice(0,7);
-      groups[m] = (groups[m] || 0) + Number(t.montant);
+  for(const t of _all) {
+    const ym = t.date.slice(0,7);
+    if(ym>=syStartYM && ym<=junYM) groups[ym]=(groups[ym]||0)+Number(t.montant);
+  }
+
+  // Forecast: average net of last 3 months with actual data
+  const pastWithData = allMonths.filter(ym=>ym<=nowYM && groups[ym]!==undefined);
+  const recentNets = pastWithData.slice(-3).map(ym=>groups[ym]||0);
+  const avgNet = recentNets.length ? recentNets.reduce((s,v)=>s+v,0)/recentNets.length : 0;
+
+  let running = _soldeInitial;
+  const labels=[], actualData=[], forecastData=[];
+  let forecastRunning = _soldeInitial;
+  for(const ym of allMonths) {
+    labels.push(fmtMonth(ym));
+    if(ym<=nowYM) {
+      running += (groups[ym]||0);
+      actualData.push(parseFloat(running.toFixed(2)));
+      forecastData.push(ym===nowYM ? parseFloat(running.toFixed(2)) : null);
+      forecastRunning = running;
+    } else {
+      actualData.push(null);
+      forecastRunning += avgNet;
+      forecastData.push(parseFloat(forecastRunning.toFixed(2)));
     }
   }
-  // Build all months Sep → Jun (or current month if earlier)
-  const junEnd = `${sy.end.slice(0,4)}-06`;
-  const nowYM  = new Date().toISOString().slice(0,7);
-  const lastM  = nowYM < junEnd ? nowYM : junEnd;
-  const allMonths = [];
-  const startM = sy.start.slice(0,7);
-  let cur = new Date(parseInt(startM.slice(0,4)), parseInt(startM.slice(5,7))-1, 1);
-  while (cur.toISOString().slice(0,7) <= lastM) {
-    allMonths.push(cur.toISOString().slice(0,7));
-    cur.setMonth(cur.getMonth()+1);
-  }
-  let running = _soldeInitial;
-  const labels = [], values = [];
-  for (const m of allMonths) {
-    running += (groups[m] || 0);
-    labels.push(fmtMonth(m));
-    values.push(parseFloat(running.toFixed(2)));
-  }
   _chartSolde.data.labels = labels;
-  _chartSolde.data.datasets[0].data = values;
+  _chartSolde.data.datasets[0].data = actualData;
+  if(_chartSolde.data.datasets.length<2) {
+    _chartSolde.data.datasets.push({
+      label:'Prévisionnel', data:forecastData, fill:false, tension:.4,
+      borderColor:'rgba(37,99,235,.5)', borderDash:[6,4], borderWidth:2,
+      pointRadius:2, pointBackgroundColor:'rgba(37,99,235,.5)',
+    });
+  } else {
+    _chartSolde.data.datasets[1].data = forecastData;
+  }
   _chartSolde.update();
 
   // Doughnut: depenses by category for current period
