@@ -16,6 +16,10 @@
 /js/*
   Cache-Control: public, max-age=604800, must-revalidate
 
+# Modules admin : toujours revalidés (déploiements fréquents)
+/js/admin/*
+  Cache-Control: no-cache
+
 # Favicon/manifest — cache moyen
 /favicon.ico
   Cache-Control: public, max-age=604800
