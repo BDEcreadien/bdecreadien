@@ -12,7 +12,7 @@ Priorités : P1 = bloquant pour un autre BDE, P2 = important, P3 = confort.
 | # | Constat | Priorité |
 |---|---|---|
 | T1 | **Le contenu du site (agenda, annonces, médias, équipe, galerie, partenaires) est enregistré en committant des fichiers JSON dans le dépôt GitHub du BDE** (`REPO = 'BDEcreadien/bdecreadien'` dans `core.js`, jeton GitHub dans la base). Un autre BDE devrait posséder un dépôt GitHub, un jeton et un déploiement. À remplacer par des tables de la base (le reste de l'admin y est déjà). | P1 |
-| T2 | **Secrets accessibles à tous les membres** : la table `bde_config` contient le jeton GitHub et le secret d'upload, lisibles par tout membre du BDE. Une clé Foursquare est écrite en clair dans `core.js` (`FSQ_KEY`). Rien de tout cela ne doit rester côté navigateur. Régénérer le jeton GitHub et la clé Foursquare. | P1 |
+| T2 | **Secrets accessibles à tous les membres** : la table `bde_config` contient le jeton GitHub et le secret d'upload, lisibles par tout membre du BDE. Une clé Foursquare est écrite en clair dans `core.js` (`FSQ_KEY`) ; elle semble inutilisée : la supprimer et la révoquer. Rien de tout cela ne doit rester côté navigateur. Régénérer le jeton GitHub, révoquer la clé Foursquare. | P1 |
 | T3 | **Adresses et services propres à CREAD en dur** : `bdecreadien.fr` (liens QR, fidélité, planning, mails), `sumup-proxy.bdecreadien.workers.dev`, `bde-notif.bdecreadien.workers.dev`, dépôt `BDEcreadien/bdecreadien`, jeton de la tâche planifiée (`helloasso-sync`). Tout doit venir des paramètres ou de la configuration de l'instance. | P1 |
 | T4 | **Mails automatiques** : « CREAD » et les textes sont dans le code de 10 fonctions. À alimenter par les paramètres (nom, expéditeur, couleurs, lieu de retrait) avec des textes modifiables depuis l'admin. | P1 |
 | T5 | **Paiement = HelloAsso uniquement** (France). Prévoir un « fournisseur de paiement » au choix (HelloAsso, Stripe, paiement sur place) ou au minimum rendre HelloAsso optionnel. | P2 |
@@ -36,7 +36,7 @@ Priorités : P1 = bloquant pour un autre BDE, P2 = important, P3 = confort.
 - Le plus gros chantier (T1). Écran de choix de pages puis éditeurs séparés.
 - Améliorer : une seule interface « Pages » avec un éditeur de blocs ; brouillon / publication ; aperçu avant publication ; galerie en glisser-déposer (déjà amorcé).
 - À rendre générique : pôles de l'équipe (aujourd'hui listés dans une configuration CREAD), exemples « CREAD15 », « promo-cread », « prenom@cread.fr » dans les champs d'aide.
-- Supprimer : l'autocomplétion de lieu via Foursquare (clé exposée, doublon avec Nominatim).
+- Supprimer : la constante `FSQ_KEY` (clé Foursquare non utilisée). L'autocomplétion de lieu passe déjà par Nominatim.
 
 ### Boutique / Merchandising
 - Très complet : commandes et statuts, vente physique, remises, récap et stock par design/couleur/taille, configuration des produits, analytiques, relances, QR de retrait.

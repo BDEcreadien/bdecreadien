@@ -183,7 +183,7 @@ function selectPage(page) {
     if (typeof initBilletterie === 'function') initBilletterie();
   } else if (page === 'parametres') {
     navStack = ['pages'];
-    document.getElementById('editor-title').textContent = 'Paramètres du site';
+    document.getElementById('editor-title').textContent = 'Page Contact';
     document.getElementById('editor-badge').textContent = 'Site';
     Auth.sb.from('bde_config').select('value').eq('id', 'qr_destination').maybeSingle()
       .then(({ data: row }) => { if (row?.value) data._qrDestination = row.value; })

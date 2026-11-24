@@ -179,8 +179,8 @@ function bdeParamRender() {
   const root = document.getElementById('bde-param-body');
   root.innerHTML = style + preview + tabs + panneaux + barre;
 
-  root.addEventListener('input', bdeParamOnInput);
-  root.addEventListener('change', bdeParamOnInput);
+  root.oninput = bdeParamOnInput;
+  root.onchange = bdeParamOnInput;
 }
 
 function bdeParamOnglet(id) {
@@ -222,7 +222,8 @@ function bdeParamAddCouleur() {
 }
 
 function bdeParamReset() {
-  if (window.BDE) { Object.keys(BDE.all()).length; BDE.appliquer(); }
+  document.documentElement.style.removeProperty('--gradient');   // annule l'aperçu des couleurs
+  if (window.BDE) BDE.appliquer();
   initParametresBde();
 }
 
@@ -288,6 +289,7 @@ async function bdeParamSave(btn) {
   const mods = [...document.querySelectorAll('.bdep-modchk:checked')].map(i => i.value).join(',');
   rows.push({ cle: 'modules_actifs', valeur: mods, updated_at: now, updated_by: user.id });
 
+  const modsAvant = _bdeParams.modules_actifs;
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   const { error } = await Auth.sb.from('bde_parametres').upsert(rows);
   btn.textContent = 'Enregistrer';
@@ -298,6 +300,7 @@ async function bdeParamSave(btn) {
   document.getElementById('bdep-dirty').hidden = true;
   document.getElementById('bdep-reset').hidden = true;
   if (window.BDE) { BDE.vider(); Object.assign(BDE.all(), _bdeParams); BDE.appliquer(); }
-  if (typeof adminBuildSidebar === 'function') adminBuildSidebar();   // modules activés / logo
-  showToast('Paramètres enregistrés', 'success');
+  const modsChanges = (modsAvant || '') !== mods;
+  showToast(modsChanges ? 'Paramètres enregistrés, rechargement…' : 'Paramètres enregistrés', 'success');
+  if (modsChanges) setTimeout(() => location.reload(), 900);   // les modules désactivés disparaissent du menu
 }
