@@ -1927,8 +1927,9 @@ function showSec(sec) {
   document.getElementById('header-title').innerHTML = SEC_TITLES[sec] + ' <span id="header-sub"></span>';
   setPeriod(_periodDef.type, true);
   document.getElementById('header-sub').innerHTML = `<span class="period-badge">${fmtPeriodLabel()}</span>`;
-  if (sec === 'dettes') renderDettes();
-  if (sec === 'export') renderExportPreview();
+  if (sec === 'rapport') renderRapport();
+  if (sec === 'params')  initParams();
+  if (sec === 'export')  renderExportPreview();
   closeMobSidebar();
 }
 
