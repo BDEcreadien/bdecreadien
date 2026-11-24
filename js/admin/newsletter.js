@@ -162,7 +162,7 @@ function nlTextToHtml(txt) {
     // Bouton call-to-action : [[BTN:label|url]]
     const btn = block.match(/^\[\[BTN:([^|]+)\|([^\]]+)\]\]$/);
     if (btn && isSafeUrl(btn[2])) {
-      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg, #2563eb 0%, #2563eb 18%, #1d4ed8 38%, #1d4ed8 58%, #1d4ed8 80%, #0ea5e9 100%);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
+      return `<p style="text-align:center;margin:20px 0;"><a href="${esc(btn[2])}" style="display:inline-block;background:linear-gradient(135deg, var(--accent) 0%, var(--accent) 18%, var(--accent-h) 38%, var(--accent-h) 58%, var(--accent-h) 80%, var(--accent-2) 100%);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">${esc(btn[1])}</a></p>`;
     }
     // Image seule : ![alt](url)
     const img = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
@@ -171,7 +171,7 @@ function nlTextToHtml(txt) {
     }
     // Titre H2 : ## Titre
     if (/^##\s+/.test(block)) {
-      return `<h2 style="font-size:20px;color:#2563eb;margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
+      return `<h2 style="font-size:20px;color:var(--accent);margin:16px 0 8px;">${nlInline(esc(block.replace(/^##\s+/, '')))}</h2>`;
     }
     // Paragraphe normal - un simple saut de ligne devient <br>
     const inner = block.split('\n').map(l => nlInline(esc(l))).join('<br>');
@@ -185,7 +185,7 @@ function nlInline(s) {
   s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
   // [label](url) - validation URL basique
   s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
-    '<a href="$2" style="color:#2563eb;">$1</a>');
+    '<a href="$2" style="color:var(--accent);">$1</a>');
   return s;
 }
 
@@ -276,7 +276,7 @@ function showNlMsg(text, type) {
   const colors = {
     success: 'background:#dcfce7;color:#166534;',
     error: 'background:#fee2e2;color:#991b1b;',
-    info: 'background:#dbeafe;color:#1e40af;'
+    info: 'background:color-mix(in srgb,var(--accent) 16%,white);color:#1e40af;'
   };
   el.setAttribute('style', 'margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:block;' + (colors[type] || ''));
 }

@@ -279,7 +279,7 @@ function btqaShowDetailStats() {
   modal.innerHTML = `
     <div style="background:white;border-radius:16px;padding:28px;min-width:400px;max-width:560px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <h3 style="margin:0;color:#2563eb;font-size:18px">Détail encaissements</h3>
+        <h3 style="margin:0;color:var(--accent);font-size:18px">Détail encaissements</h3>
         <button onclick="document.getElementById('btqa-detail-stats-modal').remove()"
           style="border:none;background:#f3f4f6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:#666">✕</button>
       </div>
@@ -324,7 +324,7 @@ function btqaWhoShow(i) {
   const titre = [f.design, f.couleur !== '-' ? f.couleur : '', f.taille != null ? f.taille : ''].filter(Boolean).join(' · ');
   const lignes = rows.map(r => `
     <tr style="border-top:1px solid #eef2f7">
-      <td style="padding:8px 10px;font-weight:800;color:#2563eb;white-space:nowrap">${btqaWhoEsc(r.c.numero)}</td>
+      <td style="padding:8px 10px;font-weight:800;color:var(--accent);white-space:nowrap">${btqaWhoEsc(r.c.numero)}</td>
       <td style="padding:8px 10px;font-weight:600">${btqaWhoEsc(r.c.nom_acheteur || '-')}</td>
       <td style="padding:8px 10px;color:#666;font-size:12px">${btqaWhoEsc(r.c.email_acheteur || '')}</td>
       <td style="padding:8px 10px;color:#555;font-size:12px;white-space:nowrap">${f.beart ? btqaWhoEsc(r.modele) + ' · ' : ''}${btqaWhoEsc(r.it.taille || '-')}</td>
@@ -341,10 +341,10 @@ function btqaWhoShow(i) {
   }
   m.innerHTML = `<div style="background:white;border-radius:16px;max-width:760px;width:100%;max-height:85vh;overflow:auto;padding:20px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <div style="flex:1"><div style="font-size:17px;font-weight:900;color:#2563eb">${btqaWhoEsc(titre)}</div>
+      <div style="flex:1"><div style="font-size:17px;font-weight:900;color:var(--accent)">${btqaWhoEsc(titre)}</div>
       <div style="font-size:12px;color:#888">${total} pièce${total > 1 ? 's' : ''} · ${rows.length} commande${rows.length > 1 ? 's' : ''}</div></div>
-      ${emails.length ? `<button style="font-size:12px;font-weight:700;padding:6px 12px;border:1.5px solid #2563eb;background:white;color:#2563eb;border-radius:8px;cursor:pointer" onclick="navigator.clipboard.writeText(${btqaWhoEsc(JSON.stringify(emails.join(', ')))}).then(()=>{this.textContent='Copié !'})">Copier les ${emails.length} e-mail${emails.length > 1 ? 's' : ''}</button>` : ''}
-      <button style="font-size:12px;font-weight:700;padding:6px 12px;border:1.5px solid #2563eb;background:white;color:#2563eb;border-radius:8px;cursor:pointer" onclick="document.getElementById('btqa-who-modal').style.display='none'">Fermer</button>
+      ${emails.length ? `<button style="font-size:12px;font-weight:700;padding:6px 12px;border:1.5px solid var(--accent);background:white;color:var(--accent);border-radius:8px;cursor:pointer" onclick="navigator.clipboard.writeText(${btqaWhoEsc(JSON.stringify(emails.join(', ')))}).then(()=>{this.textContent='Copié !'})">Copier les ${emails.length} e-mail${emails.length > 1 ? 's' : ''}</button>` : ''}
+      <button style="font-size:12px;font-weight:700;padding:6px 12px;border:1.5px solid var(--accent);background:white;color:var(--accent);border-radius:8px;cursor:pointer" onclick="document.getElementById('btqa-who-modal').style.display='none'">Fermer</button>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:13px">${lignes || '<tr><td style="padding:20px;color:#aaa;text-align:center">Aucune commande</td></tr>'}</table>
   </div>`;
@@ -355,7 +355,7 @@ function btqaSubTab(sub) {
   document.getElementById('btqr-view-recap').style.display  = sub === 'recap'  ? '' : 'none';
   document.getElementById('btqr-view-detail').style.display = sub === 'detail' ? '' : 'none';
   document.getElementById('btqr-view-design').style.display = sub === 'design' ? '' : 'none';
-  const active   = 'font-weight:800;font-size:13px;color:#2563eb;border-bottom:3px solid #2563eb;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
+  const active   = 'font-weight:800;font-size:13px;color:var(--accent);border-bottom:3px solid var(--accent);margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
   const inactive = 'font-weight:600;font-size:13px;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;padding:8px 20px;border:none;background:none';
   document.getElementById('btqr-sub-recap').style.cssText   = sub === 'recap'  ? active : inactive;
   document.getElementById('btqr-sub-detail').style.cssText  = sub === 'detail' ? active : inactive;
@@ -426,17 +426,17 @@ function btqaRenderDesignFournisseur() {
   };
 
   let html = `<div style="margin-bottom:28px">
-    <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+    <div style="background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
       <span style="font-size:16px;font-weight:900;letter-spacing:.5px">Collection Be Art — Par design &amp; couleur</span>
       <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:700">${totalGeneral} pièces</span>
     </div>
     <div style="border:1.5px solid #e2e8f0;border-top:none;overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:13px">
         <thead>
-          <tr style="background:#eff6ff">
-            <th style="padding:9px 16px;text-align:left;font-weight:700;color:#2563eb;white-space:nowrap">Design</th>
-            <th style="padding:9px 12px;text-align:left;font-weight:700;color:#2563eb;white-space:nowrap">Couleur</th>
-            <th style="padding:9px 10px;text-align:center;font-weight:700;color:#2563eb;white-space:nowrap">Total</th>
+          <tr style="background:var(--accent-lt)">
+            <th style="padding:9px 16px;text-align:left;font-weight:700;color:var(--accent);white-space:nowrap">Design</th>
+            <th style="padding:9px 12px;text-align:left;font-weight:700;color:var(--accent);white-space:nowrap">Couleur</th>
+            <th style="padding:9px 10px;text-align:center;font-weight:700;color:var(--accent);white-space:nowrap">Total</th>
             ${taillesPresentes.map(t => `<th style="padding:9px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">${t}</th>`).join('')}
           </tr>
         </thead>
@@ -452,7 +452,7 @@ function btqaRenderDesignFournisseur() {
       <td style="padding:7px 10px;text-align:center;font-weight:800;font-size:15px;color:#0f172a;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({beart:true,design:r.design,couleur:r.couleur})})">${r.total}</td>
       ${taillesPresentes.map(t => {
         const q = r.tailles[t] || 0;
-        return q ? `<td style="padding:7px 8px;text-align:center;font-weight:700;color:#2563eb;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({beart:true,design:r.design,couleur:r.couleur,taille:t})})">${q}</td>`
+        return q ? `<td style="padding:7px 8px;text-align:center;font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({beart:true,design:r.design,couleur:r.couleur,taille:t})})">${q}</td>`
                  : `<td style="padding:7px 8px;text-align:center;color:#ddd">—</td>`;
       }).join('')}
     </tr>`;
@@ -461,13 +461,13 @@ function btqaRenderDesignFournisseur() {
 
   html += `</tbody>
       <tfoot>
-        <tr style="border-top:2px solid #2563eb;background:#f8fafc">
-          <td style="padding:9px 16px;font-weight:800;color:#2563eb">TOTAL</td>
+        <tr style="border-top:2px solid var(--accent);background:#f8fafc">
+          <td style="padding:9px 16px;font-weight:800;color:var(--accent)">TOTAL</td>
           <td></td>
-          <td style="padding:9px 10px;text-align:center;font-weight:900;font-size:16px;color:#2563eb">${totalGeneral}</td>
+          <td style="padding:9px 10px;text-align:center;font-weight:900;font-size:16px;color:var(--accent)">${totalGeneral}</td>
           ${taillesPresentes.map(t => {
             const s = rows.reduce((acc, r) => acc + (r.tailles[t] || 0), 0);
-            return s ? `<td style="padding:9px 8px;text-align:center;font-weight:800;color:#2563eb">${s}</td>`
+            return s ? `<td style="padding:9px 8px;text-align:center;font-weight:800;color:var(--accent)">${s}</td>`
                      : `<td style="padding:9px 8px;text-align:center;color:#ddd">—</td>`;
           }).join('')}
         </tr>
@@ -548,7 +548,7 @@ function btqaRenderRecap() {
     for (const m of Object.values(modeles)) for (const d of Object.values(m)) for (const v of Object.values(d)) totalCol += v.qty;
 
     html += `<div style="margin-bottom:28px">
-      <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;border-radius:14px 14px 0 0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:16px;font-weight:900;letter-spacing:.5px">${collection}</span>
         <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:3px 14px;font-size:13px;font-weight:700">${totalCol} pièces</span>
       </div>`;
@@ -566,17 +566,17 @@ function btqaRenderRecap() {
       const sepStyle = mi > 0 ? 'margin-top:12px;border-top:1.5px solid #e2e8f0' : 'border-top:none';
       html += `<div style="border:1.5px solid #e2e8f0;${sepStyle};overflow-x:auto">
         <div style="background:#f8fafc;padding:10px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0">
-          <span style="font-weight:800;font-size:14px;color:#2563eb">${modele}</span>
+          <span style="font-weight:800;font-size:14px;color:var(--accent)">${modele}</span>
           <span style="color:#888;font-size:12px">${totalMod} pièces</span>
         </div>`;
 
       if (!hasTailles) {
         // Tableau simplifié sans tailles : Design | Total | Achetés | Offerts
         html += `<table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead><tr style="background:#eff6ff">
-            <th style="padding:8px 16px;text-align:left;font-weight:700;color:#2563eb">Produit</th>
-            <th style="padding:8px 16px;text-align:center;font-weight:700;color:#2563eb">Total</th>
-            <th style="padding:8px 16px;text-align:center;font-weight:700;color:#2563eb">Achetés</th>
+          <thead><tr style="background:var(--accent-lt)">
+            <th style="padding:8px 16px;text-align:left;font-weight:700;color:var(--accent)">Produit</th>
+            <th style="padding:8px 16px;text-align:center;font-weight:700;color:var(--accent)">Total</th>
+            <th style="padding:8px 16px;text-align:center;font-weight:700;color:var(--accent)">Achetés</th>
             <th style="padding:8px 16px;text-align:center;font-weight:700;color:#FF741F">Offerts</th>
           </tr></thead><tbody>`;
         for (const design of btqaSortDesigns(collection, modele, Object.keys(designs))) {
@@ -585,7 +585,7 @@ function btqaRenderRecap() {
             html += `<tr style="border-top:1px solid #eef2f7">
               <td style="padding:9px 16px;font-weight:600;color:#333">${design === 'Sans design' ? modele : design}</td>
               <td style="padding:9px 16px;text-align:center;font-weight:800;font-size:16px;color:#0f172a;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur:v.couleur})})">${v.qty}</td>
-              <td style="padding:9px 16px;text-align:center;font-weight:700;color:#2563eb">${achetes}</td>
+              <td style="padding:9px 16px;text-align:center;font-weight:700;color:var(--accent)">${achetes}</td>
               <td style="padding:9px 16px;text-align:center;font-weight:700;color:#FF741F">${v.offert || '—'}</td>
             </tr>`;
           }
@@ -596,10 +596,10 @@ function btqaRenderRecap() {
 
       html += `<table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
-            <tr style="background:#eff6ff">
-              <th style="padding:8px 16px;text-align:left;font-weight:700;color:#2563eb;white-space:nowrap">Design</th>
-              <th style="padding:8px 10px;text-align:left;font-weight:700;color:#2563eb;white-space:nowrap">Couleur</th>
-              <th style="padding:8px 8px;text-align:center;font-weight:700;color:#2563eb;white-space:nowrap">Total</th>
+            <tr style="background:var(--accent-lt)">
+              <th style="padding:8px 16px;text-align:left;font-weight:700;color:var(--accent);white-space:nowrap">Design</th>
+              <th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--accent);white-space:nowrap">Couleur</th>
+              <th style="padding:8px 8px;text-align:center;font-weight:700;color:var(--accent);white-space:nowrap">Total</th>
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">XS</th>
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">S</th>
               <th style="padding:8px 8px;text-align:center;font-size:11px;color:#888;white-space:nowrap">M</th>
@@ -630,7 +630,7 @@ function btqaRenderRecap() {
             const v = vList.find(x => x.taille.toUpperCase() === t.toUpperCase());
             if (!v) return '<td style="padding:6px 8px;text-align:center;color:#ddd">—</td>';
             const off = v.offert ? `<span style="font-size:10px;color:#FF741F;display:block">(+${v.offert})</span>` : '';
-            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:#2563eb;cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur,taille:t})})">${v.qty}${off}</td>`;
+            return `<td style="padding:6px 8px;text-align:center;font-weight:700;color:var(--accent);cursor:pointer;text-decoration:underline dotted" title="Voir qui" onclick="btqaWhoShow(${btqaWhoRef({collection,modele,design,couleur,taille:t})})">${v.qty}${off}</td>`;
           };
           const autresTailles = vList.filter(v => !tailleOrder.includes(v.taille.toUpperCase()) && v.taille !== '-');
           const autresCell = autresTailles.length
@@ -677,12 +677,12 @@ function btqaRenderRecap() {
     return `
       <div style="border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:12px;overflow:hidden">
         <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f8fafc;flex-wrap:wrap">
-          <span style="font-weight:800;color:#2563eb;font-size:14px">${c.numero}</span>
+          <span style="font-weight:800;color:var(--accent);font-size:14px">${c.numero}</span>
           <span style="font-weight:600;font-size:13px">${c.nom_acheteur || '-'}</span>
           <span style="font-size:12px;color:#888">${c.email_acheteur || ''}</span>
           <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
           <span style="font-size:11px;color:#aaa">${(() => { const _statutsPaies = ['payee','production','livraison','confirmee','remise','physique']; const _d = new Date((_statutsPaies.includes(c.statut) && c.updated_at) ? c.updated_at : c.created_at); return _d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + _d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); })()}</span>
-          <span style="margin-left:auto;font-weight:800;color:#2563eb">${btqaFmt(c.total_centimes)}</span>
+          <span style="margin-left:auto;font-weight:800;color:var(--accent)">${btqaFmt(c.total_centimes)}</span>
         </div>
         <div style="padding:4px 16px 10px">${itemsHtml || '<p style="color:#aaa;font-size:13px;margin:8px 0">Aucun article</p>'}</div>
       </div>`;
@@ -1210,7 +1210,7 @@ function btqaShowDetail(id) {
         <span style="flex:1;min-width:0">${i.produit_nom}${i.design_nom ? ` - ${i.design_nom}` : ''}${i.couleur ? ` - ${i.couleur}` : ''}${i.taille ? ` (${i.taille})` : ''} ×${i.quantite}${i.est_offert ? ' <span style="color:#FF741F;font-size:11px;font-weight:700">OFFERT</span>' : ''}</span>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           <span style="font-weight:700;color:var(--violet)">${i.est_offert ? '-' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
-          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:3px 9px;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer">Modifier</button>
+          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:3px 9px;font-size:11px;font-weight:700;color:var(--accent);cursor:pointer">Modifier</button>
         </div>
       </div>`).join('')}
     <hr style="border:none;border-top:1px solid #eef2f7;margin:12px 0">
@@ -1219,13 +1219,13 @@ function btqaShowDetail(id) {
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;min-height:24px">
       <p style="margin:0;font-size:12px;color:#888">Paiement : <strong style="color:#555">${c.moyen_paiement || '—'}</strong>${c.notes ? ` · ${c.notes}` : ''}</p>
-      <button onclick="btqaToggleDetailEdit('${c.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;color:#2563eb;cursor:pointer;flex-shrink:0;margin-left:8px">Modifier</button>
+      <button onclick="btqaToggleDetailEdit('${c.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--accent);cursor:pointer;flex-shrink:0;margin-left:8px">Modifier</button>
     </div>
     <div id="btqa-detail-edit-${c.id}" hidden style="margin-top:12px;padding:14px;background:#f8fafc;border-radius:14px;border:1.5px solid #e8eef6">
       <p style="margin:0 0 10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1.5px">Modifier la commande</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
         <div>
-          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:#2563eb">Moyen de paiement</p>
+          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:var(--accent)">Moyen de paiement</p>
           <select id="btqa-detail-paiement-${c.id}" style="width:100%;padding:9px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;background:white;outline:none">
             <option value="">— Non renseigné —</option>
             <option value="especes" ${c.moyen_paiement==='especes'?'selected':''}>Especes</option>
@@ -1237,12 +1237,12 @@ function btqaShowDetail(id) {
           </select>
         </div>
         <div>
-          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:#2563eb">Notes</p>
+          <p style="margin:0 0 5px;font-size:11px;font-weight:700;color:var(--accent)">Notes</p>
           <input id="btqa-detail-notes-${c.id}" type="text" value="${(c.notes||'').replace(/"/g,'&quot;')}" placeholder="Note libre…" style="width:100%;padding:9px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;box-sizing:border-box;outline:none">
         </div>
       </div>
       <div style="display:flex;gap:8px">
-        <button onclick="btqaSaveDetailEdit('${c.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer">Enregistrer</button>
+        <button onclick="btqaSaveDetailEdit('${c.id}')" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;border:none;border-radius:11px;font-size:13px;font-weight:800;cursor:pointer">Enregistrer</button>
         <button onclick="document.getElementById('btqa-detail-edit-${c.id}').hidden=true" style="padding:10px 16px;background:white;color:#666;border:1.5px solid #e2e8f0;border-radius:11px;font-size:13px;font-weight:600;cursor:pointer">Annuler</button>
       </div>
     </div>
@@ -1336,7 +1336,7 @@ function btqaMailBlock(data) {
   const sent = data.email_confirmation_sent_at ? `Dernier envoi : ${new Date(data.email_confirmation_sent_at).toLocaleString('fr-FR')}` : 'Aucun envoi enregistré';
   return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;background:#f8fafc;border:1.5px solid #e8eef6;border-radius:12px">
     <span style="font-size:12px;color:#666">Mail de confirmation de paiement<br><span style="color:#999">${sent}</span></span>
-    <button onclick="btqaRenvoyerMailFiche('${data.id}', this)" style="padding:8px 14px;background:white;color:#2563eb;border:1.5px solid #bfdbfe;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">✉ Renvoyer le mail</button>
+    <button onclick="btqaRenvoyerMailFiche('${data.id}', this)" style="padding:8px 14px;background:white;color:var(--accent);border:1.5px solid color-mix(in srgb,var(--accent) 28%,white);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">✉ Renvoyer le mail</button>
   </div>`;
 }
 async function btqaRenvoyerMailFiche(id, btn) {
@@ -1412,23 +1412,23 @@ function btqaRelanceCommandes() {
     const t = total(c);
     return `<label style="display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid #eef2f7;cursor:pointer;font-size:13px">
       <input type="checkbox" class="btqa-relance-cb" value="${esc(c.id)}" ${t > 0 ? 'checked' : 'disabled'} onchange="btqaRelanceCount()">
-      <span style="font-weight:800;color:#2563eb;white-space:nowrap">${esc(c.numero)}</span>
+      <span style="font-weight:800;color:var(--accent);white-space:nowrap">${esc(c.numero)}</span>
       <span style="flex:1;min-width:0"><b style="font-weight:600">${esc(c.nom_acheteur || '-')}</b> <span style="color:#888;font-size:12px">${esc(c.email_acheteur)}</span></span>
       <span style="font-weight:700;white-space:nowrap">${t > 0 ? btqaFmt(t) : '<span style="color:#dc2626">Vide</span>'}</span>
       <span class="btqa-badge ${c.statut}" style="font-size:11px">${btqaStatutLabel(c.statut)}</span>
     </label>`;
   }).join('');
   m.innerHTML = `<div style="background:white;border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow:auto;padding:20px">
-    <div style="font-size:17px;font-weight:900;color:#2563eb;margin-bottom:4px">Relancer des commandes</div>
+    <div style="font-size:17px;font-weight:900;color:var(--accent);margin-bottom:4px">Relancer des commandes</div>
     <div style="font-size:12px;color:#888;margin-bottom:10px">Décoche celles à ne pas relancer. Les commandes vides (0 €) ne peuvent pas être relancées.</div>
     <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #bfdbfe;background:white;color:#2563eb;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb:not(:disabled)').forEach(x=>x.checked=true);btqaRelanceCount()">Tout cocher</button>
-      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid #bfdbfe;background:white;color:#2563eb;border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=false);btqaRelanceCount()">Tout décocher</button>
+      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 28%,white);background:white;color:var(--accent);border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb:not(:disabled)').forEach(x=>x.checked=true);btqaRelanceCount()">Tout cocher</button>
+      <button style="font-size:12px;font-weight:700;padding:5px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 28%,white);background:white;color:var(--accent);border-radius:8px;cursor:pointer" onclick="document.querySelectorAll('.btqa-relance-cb').forEach(x=>x.checked=false);btqaRelanceCount()">Tout décocher</button>
     </div>
     ${lignes}
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
-      <button style="font-size:13px;font-weight:700;padding:8px 16px;border:1.5px solid #2563eb;background:white;color:#2563eb;border-radius:8px;cursor:pointer" onclick="document.getElementById('btqa-relance-modal').style.display='none'">Annuler</button>
-      <button id="btqa-relance-send" style="font-size:13px;font-weight:800;padding:8px 18px;border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border-radius:8px;cursor:pointer" onclick="btqaRelanceEnvoyer(this)">Envoyer</button>
+      <button style="font-size:13px;font-weight:700;padding:8px 16px;border:1.5px solid var(--accent);background:white;color:var(--accent);border-radius:8px;cursor:pointer" onclick="document.getElementById('btqa-relance-modal').style.display='none'">Annuler</button>
+      <button id="btqa-relance-send" style="font-size:13px;font-weight:800;padding:8px 18px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;border-radius:8px;cursor:pointer" onclick="btqaRelanceEnvoyer(this)">Envoyer</button>
     </div>
   </div>`;
   m.style.display = 'flex';
@@ -1576,11 +1576,11 @@ function btqaOpenProdModal(prodId) {
   const ow = document.getElementById('btqa-pm-options-wrap');
   ow.style.display = options.length ? '' : 'none';
   document.getElementById('btqa-pm-options').innerHTML = options.map((opt, oi) => `
-    <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid #dbeafe;border-radius:8px;cursor:pointer;font-size:13px">
+    <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 16%,white);border-radius:8px;cursor:pointer;font-size:13px">
       <input type="checkbox" data-oi="${oi}" data-remise="${opt.remise_produit_centimes||0}"
-        onchange="btqaPMRecalc()" style="accent-color:#2563eb;cursor:pointer">
+        onchange="btqaPMRecalc()" style="accent-color:var(--accent);cursor:pointer">
       <span style="flex:1">${opt.nom}</span>
-      <span style="font-weight:700;color:#2563eb">+${btqaFmt(opt.prix_centimes)}${opt.remise_produit_centimes ? ` <span style="color:#10b981;font-size:11px">(−${btqaFmt(opt.remise_produit_centimes)})</span>` : ''}</span>
+      <span style="font-weight:700;color:var(--accent)">+${btqaFmt(opt.prix_centimes)}${opt.remise_produit_centimes ? ` <span style="color:#10b981;font-size:11px">(−${btqaFmt(opt.remise_produit_centimes)})</span>` : ''}</span>
     </label>`).join('');
 
   // Guide des tailles
@@ -1793,7 +1793,7 @@ function btqaRenderPhysItems() {
           <p style="margin:0;font-size:11px;color:#888">${details}</p>
         </div>
         ${item.quantite > 1 ? `<span style="font-size:12px;color:#888;font-weight:600">×${item.quantite}</span>` : ''}
-        <span style="font-weight:700;font-size:13px;color:#2563eb;min-width:52px;text-align:right">${btqaFmt((item.prix_unitaire_centimes ?? prod?.prix_centimes ?? 0)*item.quantite)}</span>
+        <span style="font-weight:700;font-size:13px;color:var(--accent);min-width:52px;text-align:right">${btqaFmt((item.prix_unitaire_centimes ?? prod?.prix_centimes ?? 0)*item.quantite)}</span>
         <button onclick="_btqaPhysItems.splice(${i},1);btqaRefreshPhysCart()" style="border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;width:28px;height:28px;font-size:16px;flex-shrink:0">✕</button>
       </div>`;
   }).join('');
@@ -2050,7 +2050,7 @@ function btqaConfirmPhysOrder(mode = 'en_attente') {
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">${lignes}</div>
     <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #eef2f7">
       <strong>Total</strong>
-      <strong style="color:#2563eb">${(total/100).toLocaleString('fr-FR',{minimumFractionDigits:2})} €</strong>
+      <strong style="color:var(--accent)">${(total/100).toLocaleString('fr-FR',{minimumFractionDigits:2})} €</strong>
     </div>`;
 
   const overlay = document.getElementById('btqa-phys-confirm-overlay');
@@ -2183,7 +2183,7 @@ async function btqaLookup() {
           <p style="font-size:13px;font-weight:700;margin:0 0 10px">${cmds.length} commandes trouvées - choisis :</p>
           ${cmds.map((c,i) => { _btqaListMemberNames = _btqaListMemberNames || {}; _btqaListMemberNames[c.id] = memberName; return `
             <button onclick="btqaLookupById('${c.id}')" style="width:100%;text-align:left;background:white;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px">
-              <span style="font-weight:700;color:#2563eb">${c.numero}</span>
+              <span style="font-weight:700;color:var(--accent)">${c.numero}</span>
               <span class="btqa-badge ${c.statut}">${btqaStatutLabel(c.statut)}</span>
             </button>`;}).join('')}`;
         return;
@@ -2227,14 +2227,14 @@ async function btqaLookup() {
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           <span style="font-weight:700;font-size:13px;color:${i.est_offert ? '#16a34a' : '#2563eb'};white-space:nowrap">${i.est_offert ? '0,00 €' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
-          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;font-weight:700;color:#2563eb;flex-shrink:0">Modifier</button>
+          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0">Modifier</button>
         </div>
       </div>`).join('')}
     </div>
     ${btqaAddItemBlock(data.id)}
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:12px;border:1px solid #eef2f7;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#f8fafc,var(--accent-lt));border-radius:12px;border:1px solid #eef2f7;margin-bottom:14px">
       <span style="font-weight:700;font-size:15px">Total</span>
-      <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
+      <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--accent),var(--accent-h));-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
     </div>
     ${btqaMailBlock(data)}
     ${['confirmee','payee'].includes(data.statut) ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">Confirmer la remise</button>` : ''}
@@ -2249,7 +2249,7 @@ function btqaAddItemBlock(cmdId) {
   const opts = (_btqaProduits || []).map(p => `<option value="${p.id}">${p.nom}</option>`).join('');
   return `
     <div style="margin-bottom:14px">
-      <button onclick="document.getElementById('btqa-add-${cmdId}').hidden=!document.getElementById('btqa-add-${cmdId}').hidden" style="width:100%;padding:9px;border:1.5px dashed #bfdbfe;background:#f8fafc;border-radius:10px;font-size:13px;font-weight:700;color:#2563eb;cursor:pointer">+ Ajouter un article</button>
+      <button onclick="document.getElementById('btqa-add-${cmdId}').hidden=!document.getElementById('btqa-add-${cmdId}').hidden" style="width:100%;padding:9px;border:1.5px dashed color-mix(in srgb,var(--accent) 28%,white);background:#f8fafc;border-radius:10px;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer">+ Ajouter un article</button>
       <div id="btqa-add-${cmdId}" hidden style="margin-top:8px;padding:12px;background:#f8fafc;border:1.5px solid #e8eef6;border-radius:12px">
         <select id="btqa-add-prod-${cmdId}" onchange="btqaAddItemProdChange('${cmdId}')" style="${inp};margin-bottom:8px"><option value="">Choisir un produit…</option>${opts}</select>
         <input type="hidden" id="btqa-add-design-${cmdId}"><input type="hidden" id="btqa-add-couleur-${cmdId}"><input type="hidden" id="btqa-add-taille-${cmdId}">
@@ -2258,7 +2258,7 @@ function btqaAddItemBlock(cmdId) {
           <input id="btqa-add-qte-${cmdId}" type="number" min="1" value="1" placeholder="Quantité" style="${inp}">
           <input id="btqa-add-prix-${cmdId}" type="number" min="0" step="0.01" placeholder="Prix € (selon produit)" style="${inp}">
         </div>
-        <button onclick="btqaAddItemSave('${cmdId}')" style="width:100%;padding:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Ajouter à la commande</button>
+        <button onclick="btqaAddItemSave('${cmdId}')" style="width:100%;padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Ajouter à la commande</button>
       </div>
     </div>`;
 }
@@ -2368,7 +2368,7 @@ function btqaToggleProduitEdit() {
       `<button onclick="btqaEditSelectProduit('${p.id}')" data-prod-id="${p.id}"
         style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;color:#333;text-align:left;width:100%;transition:all .15s">
         <span>${p.nom}</span>
-        <span style="color:#2563eb;font-weight:700">${btqaFmt(p.prix_centimes)}</span>
+        <span style="color:var(--accent);font-weight:700">${btqaFmt(p.prix_centimes)}</span>
       </button>`
     ).join('');
     document.getElementById('btqa-edit-prod-step2').hidden = true;
@@ -2425,8 +2425,8 @@ function btqaEditSelectDesign(designNom, prix) {
 function btqaEditShowPrixRow(prodNom, designNom, prix) {
   const row = document.getElementById('btqa-edit-prod-prix-row');
   row.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:10px;border:1px solid #e8eef6;margin-top:4px">
-    <span style="font-size:12px;font-weight:700;color:#2563eb">${prodNom}${designNom ? ' — ' + designNom : ''}</span>
-    <span style="font-size:14px;font-weight:800;color:#1d4ed8">${btqaFmt(prix)}</span>
+    <span style="font-size:12px;font-weight:700;color:var(--accent)">${prodNom}${designNom ? ' — ' + designNom : ''}</span>
+    <span style="font-size:14px;font-weight:800;color:var(--accent-h)">${btqaFmt(prix)}</span>
   </div>`;
   row.hidden = false;
 }
@@ -2544,14 +2544,14 @@ async function btqaLookupById(id) {
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
           <span style="font-weight:700;font-size:13px;color:${i.est_offert ? '#16a34a' : '#2563eb'};white-space:nowrap">${i.est_offert ? '0,00 €' : btqaFmt(i.prix_unitaire_centimes * i.quantite)}</span>
-          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;font-weight:700;color:#2563eb;flex-shrink:0">Modifier</button>
+          <button onclick="btqaOpenEditModal('${i.id}')" style="border:none;background:#f1f5f9;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0">Modifier</button>
         </div>
       </div>`).join('')}
     </div>
     ${btqaAddItemBlock(data.id)}
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#f8fafc,#eff6ff);border-radius:12px;border:1px solid #eef2f7;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,#f8fafc,var(--accent-lt));border-radius:12px;border:1px solid #eef2f7;margin-bottom:14px">
       <span style="font-weight:700;font-size:15px">Total</span>
-      <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
+      <span style="font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--accent),var(--accent-h));-webkit-background-clip:text;background-clip:text;color:transparent">${btqaFmt(data.total_centimes)}</span>
     </div>
     ${btqaMailBlock(data)}
     ${['confirmee','payee'].includes(data.statut) ? `<button class="btn-save" style="width:100%;font-size:15px;padding:14px" onclick="btqaRemettreNum('${data.id}')">Confirmer la remise</button>` : ''}
@@ -2736,19 +2736,19 @@ function btqaGalleryRowHtml(idx, imageUrl) {
 }
 
 function btqaOptionRowHtml(idx, nom, prix_centimes, remise_centimes) {
-  return `<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;border:1px solid #dbeafe" data-opt-idx="${idx}">
+  return `<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;background:#f8fafc;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent) 16%,white)" data-opt-idx="${idx}">
     <input class="bp-opt-nom" placeholder="Nom (ex: Adhésion club de sport)" value="${nom || ''}"
-      style="flex:2;min-width:160px;padding:8px 10px;border:1.5px solid #dbeafe;border-radius:8px;font-size:13px">
+      style="flex:2;min-width:160px;padding:8px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 16%,white);border-radius:8px;font-size:13px">
     <div style="display:flex;align-items:center;gap:6px">
       <span style="font-size:11px;color:#888;white-space:nowrap">Prix +</span>
       <input class="bp-opt-prix" type="number" step="0.01" min="0" placeholder="0.00" value="${prix_centimes ? (prix_centimes/100).toFixed(2) : ''}"
-        style="width:75px;padding:8px 10px;border:1.5px solid #dbeafe;border-radius:8px;font-size:13px">
+        style="width:75px;padding:8px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 16%,white);border-radius:8px;font-size:13px">
       <span style="font-size:11px;color:#888">€</span>
     </div>
     <div style="display:flex;align-items:center;gap:6px">
       <span style="font-size:11px;color:#888;white-space:nowrap">Remise −</span>
       <input class="bp-opt-remise" type="number" step="0.01" min="0" placeholder="0.00" value="${remise_centimes ? (remise_centimes/100).toFixed(2) : ''}"
-        style="width:75px;padding:8px 10px;border:1.5px solid #dbeafe;border-radius:8px;font-size:13px">
+        style="width:75px;padding:8px 10px;border:1.5px solid color-mix(in srgb,var(--accent) 16%,white);border-radius:8px;font-size:13px">
       <span style="font-size:11px;color:#888">€</span>
     </div>
     <button type="button" onclick="this.closest('[data-opt-idx]').remove()"
@@ -3017,7 +3017,7 @@ function btqaRenderPackConditions() {
     }).join('');
     return `<div style="background:#f8fafc;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1.5px solid #eef2f7">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:12px;font-weight:700;color:#2563eb">Groupe ${i+1} <span style="font-weight:400;color:#888">- au moins un de ces produits</span></span>
+        <span style="font-size:12px;font-weight:700;color:var(--accent)">Groupe ${i+1} <span style="font-weight:400;color:#888">- au moins un de ces produits</span></span>
         <button onclick="_btqaPackConditions.splice(${i},1);btqaRenderPackConditions()"
           style="border:none;background:#fee2e2;color:#dc2626;border-radius:6px;cursor:pointer;padding:2px 8px;font-size:12px;font-weight:700">Supprimer</button>
       </div>
@@ -3259,7 +3259,7 @@ async function btqaOpenProduit(id) {
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eef2f7">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888">Options payantes</div>
-        <button type="button" onclick="btqaAddOptionRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid #2563eb;background:white;color:#2563eb;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
+        <button type="button" onclick="btqaAddOptionRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
       </div>
       <div id="bp-options-list" style="display:flex;flex-direction:column;gap:8px">
         ${(prod?.options_payantes || []).map((opt, idx) => btqaOptionRowHtml(idx, opt.nom, opt.prix_centimes, opt.remise_produit_centimes)).join('')}
@@ -3269,7 +3269,7 @@ async function btqaOpenProduit(id) {
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eef2f7">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888">Photos du produit</div>
-        <button type="button" onclick="btqaAddGalleryRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid #2563eb;background:white;color:#2563eb;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
+        <button type="button" onclick="btqaAddGalleryRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
       </div>
       <div id="bp-gallery-list" style="display:flex;flex-direction:column;gap:10px">
         ${(function() {
@@ -3283,7 +3283,7 @@ async function btqaOpenProduit(id) {
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eef2f7">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888">Designs de ce produit</div>
-        <button type="button" onclick="btqaAddDesignRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid #2563eb;background:white;color:#2563eb;font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
+        <button type="button" onclick="btqaAddDesignRow()" style="padding:4px 12px;border-radius:8px;border:1.5px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer">+ Ajouter</button>
       </div>
       <div id="bp-designs-list" style="display:flex;flex-direction:column;gap:10px">
         ${existingDesigns.map((d, idx) => btqaDesignRowHtml(idx, d.nom, d.images || {}, prod?.couleurs_disponibles || [], d.actif, d.couleurs_indispo)).join('')}

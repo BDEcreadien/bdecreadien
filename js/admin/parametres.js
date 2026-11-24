@@ -15,9 +15,9 @@ const BDE_PARAM_SCHEMA = [
     { cle: 'logo_url',     label: 'Logo',                      type: 'image' },
   ]},
   { titre: 'Couleurs', champs: [
-    { cle: 'couleur_principale', label: 'Couleur principale',  type: 'color', def: '#2563eb' },
-    { cle: 'couleur_secondaire', label: 'Couleur secondaire',  type: 'color', def: '#1d4ed8' },
-    { cle: 'couleur_accent',     label: 'Couleur d\'accent',   type: 'color', def: '#FF741F' },
+    { cle: 'couleur_principale', label: 'Couleur principale (boutons, menus, titres)',  type: 'color', def: '#2563eb' },
+    { cle: 'couleur_secondaire', label: 'Couleur secondaire (dégradés)',  type: 'color', def: '#1d4ed8' },
+    { cle: 'couleur_accent',     label: 'Couleur d\'accent (mises en avant)',   type: 'color', def: '#FF741F', theme: true },
   ]},
   { titre: 'Contact & réseaux', champs: [
     { cle: 'email_contact',    label: 'E-mail de contact',      ph: 'contact@…', type: 'email' },
@@ -37,10 +37,6 @@ const BDE_PARAM_SCHEMA = [
     { cle: 'asso_rna',         label: 'N° RNA' },
     { cle: 'asso_adresse',     label: 'Adresse du siège' },
     { cle: 'asso_responsable', label: 'Responsable de publication' },
-  ]},
-  { titre: 'Boutique', champs: [
-    { cle: 'boutique_retrait_lieu',    label: 'Lieu de retrait',    ph: 'Hall de l\'école' },
-    { cle: 'boutique_retrait_horaire', label: 'Horaires de retrait', ph: 'Midi de 12h30 à 14h' },
   ]},
 ];
 
@@ -75,6 +71,13 @@ async function initParametresBde() {
 
 function bdeParamRender() {
   const actifs = _bdeParams.modules_actifs ? _bdeParams.modules_actifs.split(',').map(s => s.trim()) : BDE_MODULES.map(m => m.id);
+  const palette = (() => { try { const l = JSON.parse(_bdeParams.palette || '[]'); return Array.isArray(l) ? l : []; } catch (_) { return []; } })();
+  const paletteHtml = `<div class="params-card" style="margin-bottom:1rem">
+      <h3>Palette complémentaire</h3>
+      <p style="font-size:13px;color:var(--gris-texte);margin:0 0 .75rem">Autres couleurs de ton BDE (ex. couleur d'un pôle, d'un événement). Elles sont disponibles pour tout le site. Ajoute ou supprime-les librement.</p>
+      <div id="bdep-palette">${palette.map(c => bdeParamPaletteRow(c.nom, c.hex)).join('')}</div>
+      <button type="button" onclick="bdeParamAddCouleur()" style="margin-top:8px;padding:8px 14px;border:1.5px dashed var(--border2,#cbd5e1);background:none;border-radius:8px;cursor:pointer;font-weight:600;color:var(--text2,#64748b);font-family:inherit">+ Ajouter une couleur</button>
+    </div>`;
   let html = BDE_PARAM_SCHEMA.map(sec => `
     <div class="params-card" style="margin-bottom:1rem">
       <h3>${sec.titre}</h3>
@@ -85,23 +88,38 @@ function bdeParamRender() {
         if (c.type === 'color') return `<div class="form-row"><label>${c.label}</label><div style="display:flex;gap:10px;align-items:center"><input type="color" id="${id}" value="${bdeParamEsc(v)}" style="width:56px;height:38px;padding:2px"><code style="font-size:12px;color:#888" id="${id}-hex">${bdeParamEsc(v)}</code></div></div>`;
         if (c.type === 'image') return `<div class="form-row"><label>${c.label}</label>
           <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-            <img id="${id}-preview" src="${bdeParamEsc(v)}" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:#eff6ff;border:1px solid #e2e8f0">
+            <img id="${id}-preview" src="${bdeParamEsc(v)}" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--accent-lt);border:1px solid #e2e8f0">
             <div style="flex:1;min-width:220px"><input type="text" id="${id}" value="${bdeParamEsc(v)}" placeholder="https://… ou /assets/logo.png" oninput="document.getElementById('${id}-preview').src=this.value">
-            <label style="display:inline-block;margin-top:8px;padding:7px 14px;border:1.5px solid #2563eb;color:#2563eb;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">📷 Envoyer une image<input type="file" accept="image/*" style="display:none" onchange="bdeParamUploadLogo(this)"></label></div>
+            <label style="display:inline-block;margin-top:8px;padding:7px 14px;border:1.5px solid var(--accent);color:var(--accent);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">📷 Envoyer une image<input type="file" accept="image/*" style="display:none" onchange="bdeParamUploadLogo(this)"></label></div>
           </div></div>`;
         return `<div class="form-row"><label>${c.label}</label><input type="${c.type || 'text'}" id="${id}" value="${bdeParamEsc(v)}" placeholder="${bdeParamEsc(c.ph || '')}"></div>`;
       }).join('')}
-    </div>`).join('');
+    </div>${sec.titre === 'Couleurs' ? paletteHtml : ''}`).join('');
   html += `<div class="params-card" style="margin-bottom:1rem"><h3>Modules activés</h3>
     <p style="font-size:13px;color:var(--gris-texte);margin:0 0 .75rem">Décoche ce que ce BDE n'utilise pas : les cartes correspondantes disparaissent de l'admin.</p>
     ${BDE_MODULES.map(m => `<label style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14px;cursor:pointer"><input type="checkbox" class="bdep-mod" value="${m.id}" ${actifs.includes(m.id) ? 'checked' : ''} style="width:auto"> ${m.label}</label>`).join('')}
   </div>
   <div style="display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;padding:12px 0;background:var(--bg,#f1f5f9)">
-    <button class="btn-primary" onclick="bdeParamSave(this)" style="padding:11px 26px;border:none;border-radius:10px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;cursor:pointer">Enregistrer</button>
+    <button class="btn-primary" onclick="bdeParamSave(this)" style="padding:11px 26px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-h));color:#fff;font-weight:800;cursor:pointer">Enregistrer</button>
   </div>`;
   document.getElementById('bde-param-body').innerHTML = html;
   document.querySelectorAll('#bde-param-body input[type=color]').forEach(i =>
-    i.addEventListener('input', () => { document.getElementById(i.id + '-hex').textContent = i.value; }));
+    i.addEventListener('input', () => {
+      const hex = document.getElementById(i.id + '-hex');
+      if (hex) hex.textContent = i.value;
+      if (i.id === 'bdep-couleur_principale') document.documentElement.style.setProperty('--accent', i.value); // aperçu immédiat
+    }));
+}
+
+function bdeParamPaletteRow(nom, hex) {
+  return `<div class="bdep-pal-row" style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+    <input type="color" value="${bdeParamEsc(hex || '#64748b')}" style="width:48px;height:36px;padding:2px;flex-shrink:0">
+    <input type="text" value="${bdeParamEsc(nom || '')}" placeholder="Nom de la couleur" style="flex:1;min-width:0">
+    <button type="button" onclick="this.closest('.bdep-pal-row').remove()" title="Supprimer" style="border:1px solid var(--border,#e2e8f0);background:#fff;border-radius:8px;width:34px;height:34px;cursor:pointer;color:#dc2626;font-size:16px;flex-shrink:0">×</button>
+  </div>`;
+}
+function bdeParamAddCouleur() {
+  document.getElementById('bdep-palette').insertAdjacentHTML('beforeend', bdeParamPaletteRow('', '#64748b'));
 }
 
 async function bdeParamUploadLogo(input) {
@@ -131,6 +149,10 @@ async function bdeParamSave(btn) {
     const el = document.getElementById('bdep-' + c.cle);
     if (el) rows.push({ cle: c.cle, valeur: el.value.trim(), updated_at: new Date().toISOString(), updated_by: user.id });
   }));
+  const pal = [...document.querySelectorAll('#bdep-palette .bdep-pal-row')].map(r => ({
+    hex: r.querySelector('input[type=color]').value, nom: r.querySelector('input[type=text]').value.trim()
+  })).filter(c => c.nom);
+  rows.push({ cle: 'palette', valeur: JSON.stringify(pal), updated_at: new Date().toISOString(), updated_by: user.id });
   const mods = [...document.querySelectorAll('.bdep-mod:checked')].map(i => i.value).join(',');
   rows.push({ cle: 'modules_actifs', valeur: mods, updated_at: new Date().toISOString(), updated_by: user.id });
   btn.disabled = true; btn.textContent = 'Enregistrement…';
@@ -138,6 +160,6 @@ async function bdeParamSave(btn) {
   btn.disabled = false; btn.textContent = 'Enregistrer';
   if (error) return showToast('Erreur : ' + error.message, 'error');
   rows.forEach(r => { _bdeParams[r.cle] = r.valeur; });
-  if (window.BDE) BDE.vider();
+  if (window.BDE) { BDE.vider(); Object.assign(BDE.all(), _bdeParams); BDE.appliquer(); }
   showToast('Paramètres enregistrés', 'success');
 }

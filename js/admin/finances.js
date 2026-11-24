@@ -205,7 +205,7 @@ function finShowRefreshing(on) {
   if (!el) {
     el = document.createElement('div');
     el.id = 'fin-refreshing';
-    el.style.cssText = 'position:fixed;top:70px;right:20px;background:rgba(37,99,235,0.95);color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;align-items:center;gap:8px;';
+    el.style.cssText = 'position:fixed;top:70px;right:20px;background:color-mix(in srgb,var(--accent) 95%,transparent);color:white;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);display:none;align-items:center;gap:8px;';
     el.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:finSpin 0.6s linear infinite;"></span>Actualisation…';
     document.body.appendChild(el);
     const style = document.createElement('style');
@@ -447,7 +447,7 @@ function finRender() {
     const isRecette = Number(tx.montant) > 0;
     const dateStr = new Date(tx.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
     const isVirt = tx._virtuel;
-    const badge = isVirt ? '<span style="background:#dbeafe;color:#2563eb;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:0.5px;margin-left:6px;">RÉCURRENTE</span>' : '';
+    const badge = isVirt ? '<span style="background:color-mix(in srgb,var(--accent) 16%,white);color:var(--accent);padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700;letter-spacing:0.5px;margin-left:6px;">RÉCURRENTE</span>' : '';
     const actions = isVirt
       ? `<span style="color:#999;font-size:11px;padding:0 12px;">automatique</span>`
       : `<button onclick="finEdit('${tx.id}')" title="Modifier" style="background:none;border:none;color:var(--violet);cursor:pointer;padding:6px;font-size:14px;">✎</button>

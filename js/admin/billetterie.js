@@ -197,7 +197,7 @@ function bilFcRenderCustom() {
           style="flex:2;min-width:140px;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;"
           oninput="_bilFcCustomFields[${i}].label=this.value;bilOnChange()">
         <select onchange="_bilFcCustomFields[${i}].type=this.value;bilFcRenderCustom();bilOnChange()"
-          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-weight:600;color:#2563eb;">
+          style="font-size:12px;padding:6px 8px;border-radius:8px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-weight:600;color:var(--accent);">
           <option value="text" ${!isChoice?'selected':''}>Texte libre</option>
           <option value="choice" ${isChoice?'selected':''}>Choix (liste)</option>
         </select>
@@ -549,7 +549,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
       .bil-p-cards { display:flex; flex-direction:column; gap:10px; }
       .bil-p-card  { background:white; border:1px solid #ede9fe; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:12px; }
       .bil-p-card:hover { background:#f8fafc; }
-      .bil-p-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+      .bil-p-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-h));color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
       .bil-p-avatar.scanned { background:linear-gradient(135deg,#059669,#10b981); }
       .bil-p-info  { flex:1; min-width:0; }
       .bil-p-name  { font-weight:700; color:#0f172a; font-size:14px; }
@@ -561,8 +561,8 @@ async function bilRendreParticipants(existingData, billetterieId) {
       .bil-p-boisson-badge { font-size:10px; font-weight:700; color:#ea580c; background:#fff7ed; border:1px solid #fed7aa; border-radius:20px; padding:2px 8px; white-space:nowrap; }
     </style>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
-      <div style="background:#f8fafc;border:1px solid #dbeafe;border-radius:14px;padding:14px 16px;">
-        <div style="font-size:28px;font-weight:800;color:#2563eb;">${total}${_bilParticipantsPlacesMax ? `<span style="font-size:16px;font-weight:500;color:#9ca3af;"> / ${_bilParticipantsPlacesMax}</span>` : ''}</div>
+      <div style="background:#f8fafc;border:1px solid color-mix(in srgb,var(--accent) 16%,white);border-radius:14px;padding:14px 16px;">
+        <div style="font-size:28px;font-weight:800;color:var(--accent);">${total}${_bilParticipantsPlacesMax ? `<span style="font-size:16px;font-weight:500;color:#9ca3af;"> / ${_bilParticipantsPlacesMax}</span>` : ''}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Inscriptions</div>
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px 16px;">
@@ -575,7 +575,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
         <div style="font-size:28px;font-weight:800;color:#ea580c;">${boissons}</div>
         <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Boissons</div>
       </div>
-      <a href="scan-entree.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
+      <a href="scan-entree.html?bil=${id}" target="_blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,var(--accent),var(--accent-h));border-radius:14px;padding:14px 16px;text-decoration:none;cursor:pointer;">
         <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="white" stroke-width="2"/><rect x="14" y="14" width="3" height="3" rx=".5" fill="white"/><rect x="19" y="14" width="2" height="2" rx=".5" fill="white"/><rect x="19" y="19" width="2" height="2" rx=".5" fill="white"/><rect x="14" y="19" width="2" height="2" rx=".5" fill="white"/></svg>
         <span style="font-size:11px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:.5px">Scanner</span>
       </a>
@@ -604,7 +604,7 @@ async function bilRendreParticipants(existingData, billetterieId) {
             <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
             <div class="bil-p-actions">
               <button onclick="bilEnvoyerEmail('${r.id}', this)"
-                style="padding:4px 8px;border-radius:20px;border:1px solid #bfdbfe;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+                style="padding:4px 8px;border-radius:20px;border:1px solid color-mix(in srgb,var(--accent) 28%,white);cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
                 title="Renvoyer l'email billet">✉</button>
               <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
                 style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"
@@ -654,7 +654,7 @@ function bilFiltrerParticipants() {
         <div class="bil-p-badges">${bilStatutChip(r.statut)}${scanBadge}${boissonBadge}</div>
         <div class="bil-p-actions">
           <button onclick="bilEnvoyerEmail('${r.id}', this)"
-            style="padding:4px 8px;border-radius:20px;border:1px solid #bfdbfe;cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
+            style="padding:4px 8px;border-radius:20px;border:1px solid color-mix(in srgb,var(--accent) 28%,white);cursor:pointer;font-size:11px;font-weight:600;background:white;color:#6d28d9;transition:all .15s;"
             title="Renvoyer l'email billet">✉</button>
           <button onclick="bilToggleBoisson('${r.id}', ${hasBoisson})"
             style="padding:4px 8px;border-radius:20px;border:1px solid ${hasBoisson ? '#fed7aa' : '#e5e7eb'};cursor:pointer;font-size:11px;font-weight:600;background:white;color:${hasBoisson ? '#ea580c' : '#374151'};transition:all .15s;"

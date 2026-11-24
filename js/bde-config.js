@@ -45,10 +45,27 @@
     root.querySelectorAll('[data-bde-alt]').forEach(function (el) {
       el.setAttribute('alt', tpl(el.getAttribute('data-bde-alt')));
     });
+    appliquerTheme();
+  }
+
+  // Couleurs du BDE -> variables CSS utilisées par tout le site (public + admin)
+  var DEFAUT = { p: '#460186', s: '#d2396d', a: '#ff741f' };
+  function slug(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function palette() { try { var l = JSON.parse(params.palette || '[]'); return Array.isArray(l) ? l : []; } catch (_) { return []; } }
+  function appliquerTheme() {
     var st = document.documentElement.style;
-    if (params.couleur_principale) st.setProperty('--bde-principale', params.couleur_principale);
-    if (params.couleur_secondaire) st.setProperty('--bde-secondaire', params.couleur_secondaire);
-    if (params.couleur_accent)     st.setProperty('--bde-accent', params.couleur_accent);
+    var P = params.couleur_principale, S = params.couleur_secondaire, A = params.couleur_accent;
+    if (P) { st.setProperty('--accent', P); st.setProperty('--violet', P); st.setProperty('--bde-principale', P); }
+    if (S) st.setProperty('--bde-secondaire', S);
+    if (A) { st.setProperty('--orange', A); st.setProperty('--bde-accent', A); }
+    // Dégradé de marque : recalculé seulement si les couleurs diffèrent de celles d'origine
+    if (P && S && A && !(P.toLowerCase() === DEFAUT.p && S.toLowerCase() === DEFAUT.s && A.toLowerCase() === DEFAUT.a)) {
+      var mix = function (c1, c2, n) { return 'color-mix(in srgb,' + c1 + ' ' + n + '%,' + c2 + ')'; };
+      var stops = mix(P, '#000', 80) + ' 0%,' + P + ' 18%,' + mix(P, S, 50) + ' 38%,' + S + ' 60%,' + mix(S, A, 50) + ' 80%,' + A + ' 100%';
+      st.setProperty('--gradient', 'linear-gradient(135deg,' + stops + ')');
+      st.setProperty('--gradient-h', 'linear-gradient(90deg,' + stops + ')');
+    }
+    palette().forEach(function (c) { if (c && c.hex) st.setProperty('--bde-c-' + (slug(c.nom) || 'couleur'), c.hex); });
   }
 
   function charger() {
@@ -68,6 +85,8 @@
     get: function (k, def) { return params[k] != null && params[k] !== '' ? params[k] : def; },
     all: function () { return params; },
     appliquer: appliquer,
+    palette: palette,
+    appliquerTheme: appliquerTheme,
     vider: function () { try { localStorage.removeItem(CACHE_KEY); } catch (_) {} },
     moduleActif: function (m) {
       var l = params.modules_actifs;
