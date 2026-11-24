@@ -1132,17 +1132,23 @@ function renderKPIs() {
   const prevDep = prev.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
 
   const grid = document.getElementById('kpi-grid');
+  // Read current displayed values BEFORE rebuilding DOM
+  const froms = Array.from(grid.querySelectorAll('.kpi-value')).map(el => {
+    const t = el.textContent.trim();
+    if (!t || t === '—') return null;
+    const neg = t.startsWith('−');
+    return (neg ? -1 : 1) * parseFloat(t.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+  });
   grid.innerHTML = [
     kpiCard('Solde actuel', solde, '💰', 'indigo', null, null, ''),
     kpiCard('Recettes', rec, '📈', 'green', 'gain', rec - prevRec, 'vs période préc.'),
     kpiCard('Dépenses', dep, '📉', 'red', 'dep', dep - prevDep, 'vs période préc.', true),
     kpiCard('Résultat net', net, '📊', net >= 0 ? 'green' : 'red', net >= 0 ? 'gain' : 'dep', null, ''),
   ].join('');
-
-  // Animate counters
-  grid.querySelectorAll('.kpi-value').forEach(el => {
-    const target = parseFloat(el.dataset.value || 0);
-    animateCounter(el, target);
+  const targets = [solde, rec, dep, net];
+  grid.querySelectorAll('.kpi-value').forEach((el, i) => {
+    // froms[i] null = first load, animate from target (instant display)
+    animateCounter(el, targets[i], froms[i] !== null && froms[i] !== undefined ? froms[i] : targets[i]);
   });
 }
 
