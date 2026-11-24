@@ -1158,14 +1158,14 @@ function kpiCard(label, value, icon, iconClass, valClass, diff, diffLabel, inver
     </div>`;
 }
 
-function animateCounter(el, target, duration = 800) {
+function animateCounter(el, target, duration = 800, from = 0) {
   const start = performance.now();
-  const prefix = target < 0 ? '−' : '';
-  const abs = Math.abs(target);
   function step(ts) {
     const p = Math.min((ts - start) / duration, 1);
     const ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = prefix + (ease * abs).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €';
+    const val = from + (target - from) * ease;
+    const prefix = val < 0 ? '−' : '';
+    el.textContent = prefix + Math.abs(val).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €';
     if (p < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
