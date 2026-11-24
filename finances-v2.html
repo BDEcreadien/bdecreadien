@@ -1782,21 +1782,6 @@ function confirmDelete(id, label) {
   }, 'Supprimer');
 }
 
-// ── Solde initial ─────────────────────────────────────────────────
-async function editSoldeInitial() {
-  const cur = _soldeInitial.toFixed(2).replace('.', ',');
-  const input = prompt('Solde initial (report année précédente) en € :', cur);
-  if (input == null) return;
-  const val = parseFloat(String(input).replace(',', '.'));
-  if (isNaN(val)) { toast('Valeur invalide', 'error'); return; }
-  const { error } = await _sb.from('bde_config').upsert({ id:'solde_initial', value:String(val) });
-  if (error) { toast('Erreur : ' + error.message, 'error'); return; }
-  _soldeInitial = val;
-  document.getElementById('solde-initial-val').textContent = formatEur(val);
-  renderKPIs();
-  updateCharts();
-  toast('Solde initial mis à jour', 'success');
-}
 
 // ── Export ────────────────────────────────────────────────────────
 function renderExportPreview() {
