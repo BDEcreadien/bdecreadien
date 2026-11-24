@@ -1127,20 +1127,20 @@ function renderKPIs() {
   const prevDep = prev.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
 
   const grid = document.getElementById('kpi-grid');
-  // Capture current displayed values before rewriting DOM
-  const prevVals = Array.from(grid.querySelectorAll('.kpi-value')).map(el => parseFloat(el.dataset.value) || 0);
+  const prevKpi = _kpiLast ? [..._kpiLast] : null;
   grid.innerHTML = [
     kpiCard('Solde actuel', solde, '💰', 'indigo', null, null, ''),
     kpiCard('Recettes', rec, '📈', 'green', 'gain', rec - prevRec, 'vs période préc.'),
     kpiCard('Dépenses', dep, '📉', 'red', 'dep', dep - prevDep, 'vs période préc.', true),
     kpiCard('Résultat net', net, '📊', net >= 0 ? 'green' : 'red', net >= 0 ? 'gain' : 'dep', null, ''),
   ].join('');
+  _kpiLast = [solde, rec, dep, net];
 
-  // Animate counters from previous value → new value
+  // Animate counters: from previous value if exists, else start at target (no anim on first load)
+  const targets = [solde, rec, dep, net];
   grid.querySelectorAll('.kpi-value').forEach((el, i) => {
-    const target = parseFloat(el.dataset.value || 0);
-    const from   = prevVals[i] !== undefined ? prevVals[i] : target;
-    animateCounter(el, target, 500, from);
+    const from = prevKpi ? prevKpi[i] : targets[i];
+    animateCounter(el, targets[i], 500, from);
   });
 }
 
