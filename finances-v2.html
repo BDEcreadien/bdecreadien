@@ -1487,98 +1487,210 @@ function confirmDeleteRecur(id, label) {
   }, 'Supprimer');
 }
 
-// ── Dettes & Créances (localStorage) ─────────────────────────────
-function loadDettes() {
-  try {
-    const s = localStorage.getItem('_bde_dettes');
-    return s ? JSON.parse(s) : { creances:[], dettes:[] };
-  } catch(_) { return { creances:[], dettes:[] }; }
-}
-function saveDettesData(data) {
-  try { localStorage.setItem('_bde_dettes', JSON.stringify(data)); } catch(_) {}
+// ── Rapport ───────────────────────────────────────────────────────
+function renderRapport() {
+  renderRapportActivite();
+  renderRapportMois();
 }
 
-function switchDetteTab(tab) {
-  _detteTab = tab;
-  document.getElementById('tab-creances').classList.toggle('active', tab === 'creances');
-  document.getElementById('tab-dettes').classList.toggle('active', tab === 'dettes');
-  document.getElementById('dette-drawer-title').textContent = tab === 'creances' ? 'Nouvelle créance' : 'Nouvelle dette';
-  renderDettes();
-}
-
-function renderDettes() {
-  const data  = loadDettes();
-  const items = data[_detteTab] || [];
-  const list  = document.getElementById('dettes-list');
-  if (!items.length) {
-    list.innerHTML = `<div class="empty-state"><div class="icon">${_detteTab==='creances'?'💰':'💸'}</div><h3>${_detteTab==='creances'?'Aucune créance':'Aucune dette'}</h3><p>${_detteTab==='creances'?'Personne ne vous doit d\'argent.':'Vous ne devez rien à personne.'}</p></div>`;
+function renderRapportActivite() {
+  const data = {};
+  for (const t of _all) {
+    const cat = t.categorie || 'autre';
+    if (!data[cat]) data[cat] = { rec: 0, dep: 0 };
+    const m = Number(t.montant);
+    if (m > 0) data[cat].rec += m; else data[cat].dep += Math.abs(m);
+  }
+  const rows = Object.entries(data)
+    .filter(([k]) => CATEGORIES[k])
+    .sort((a, b) => (b[1].rec + b[1].dep) - (a[1].rec + a[1].dep));
+  const tbody = document.getElementById('rapport-activite-body');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📊</div><h3>Pas encore de données</h3></div></td></tr>`;
     return;
   }
-  list.innerHTML = items.map((d, i) => `
-    <div class="dette-card">
-      <div class="dette-avatar">${(d.nom||'?')[0].toUpperCase()}</div>
-      <div class="dette-info">
-        <div class="dette-name">${esc(d.nom)}</div>
-        <div class="dette-desc">${esc(d.desc)}${d.echeance ? ` · Échéance ${fmtDate(d.echeance)}` : ''}</div>
-        ${d.notes ? `<div class="dette-desc" style="color:var(--text3)">${esc(d.notes)}</div>` : ''}
-      </div>
-      <div>
-        <div class="dette-amount ${_detteTab==='creances'?'recv':'debt'}">${formatEur(d.montant)}</div>
-        <div style="display:flex;gap:6px;margin-top:6px;justify-content:flex-end">
-          <button class="btn btn-secondary btn-sm" onclick="markDettePaid(${i})" title="Marquer payé">✓ Payé</button>
-          <button class="btn-icon danger" onclick="deleteDette(${i})">🗑️</button>
-        </div>
-      </div>
-    </div>`).join('');
+  tbody.innerHTML = rows.map(([cat, d]) => {
+    const c = CATEGORIES[cat];
+    const net = d.rec - d.dep;
+    const pureDepense = d.rec === 0;
+    const rentable = net >= 0;
+    const statusBg  = pureDepense ? 'rgba(100,116,139,.1)' : (rentable ? 'var(--gain-bg)' : 'var(--dep-bg)');
+    const statusClr = pureDepense ? 'var(--text2)' : (rentable ? 'var(--gain)' : 'var(--dep)');
+    const statusTxt = pureDepense ? 'Dépense pure' : (rentable ? '✓ Rentable' : '✗ Déficitaire');
+    return `<tr>
+      <td><span class="chip" style="background:${c.color}18;color:${c.color}"><span class="chip-dot" style="background:${c.color}"></span>${c.icon} ${c.label}</span></td>
+      <td style="text-align:right;color:var(--gain);font-weight:600">${d.rec > 0 ? '+'+formatEur(d.rec) : '—'}</td>
+      <td style="text-align:right;color:var(--dep);font-weight:600">${d.dep > 0 ? '−'+formatEur(d.dep) : '—'}</td>
+      <td style="text-align:right;font-weight:800;color:${pureDepense?'var(--dep)':rentable?'var(--gain)':'var(--dep)'}">${net>=0?'+':''}${formatEur(net)}</td>
+      <td><span class="chip" style="background:${statusBg};color:${statusClr}">${statusTxt}</span></td>
+    </tr>`;
+  }).join('');
 }
 
-function openDetteDrawer() {
-  document.getElementById('drawer-dettes').style.transform = 'translateX(0)';
-  document.getElementById('drawer-overlay').classList.add('open');
-  document.getElementById('dd-nom').value = '';
-  document.getElementById('dd-desc').value = '';
-  document.getElementById('dd-montant').value = '';
-  document.getElementById('dd-echeance').value = '';
-  document.getElementById('dd-notes').value = '';
-}
-function closeDetteDrawer() {
-  document.getElementById('drawer-dettes').style.transform = '';
-  document.getElementById('drawer-overlay').classList.remove('open');
-}
-
-function saveDette() {
-  const nom = document.getElementById('dd-nom').value.trim();
-  const desc = document.getElementById('dd-desc').value.trim();
-  const montant = parseFloat(document.getElementById('dd-montant').value);
-  const echeance = document.getElementById('dd-echeance').value;
-  const notes = document.getElementById('dd-notes').value.trim();
-  if (!nom || !desc || isNaN(montant)) { toast('Remplis les champs requis', 'error'); return; }
-  const data = loadDettes();
-  data[_detteTab].push({ nom, desc, montant, echeance:echeance||null, notes:notes||null, created: new Date().toISOString().slice(0,10) });
-  saveDettesData(data);
-  closeDetteDrawer();
-  renderDettes();
-  toast('Enregistré', 'success');
-}
-
-function markDettePaid(i) {
-  openModal('✅', 'Marquer comme payé ?', 'Cette entrée sera supprimée de la liste.', () => {
-    const data = loadDettes();
-    data[_detteTab].splice(i, 1);
-    saveDettesData(data);
-    renderDettes();
-    toast('Marqué comme payé', 'success');
-  }, 'Confirmer');
+function renderRapportMois() {
+  const months = {};
+  for (const t of _all) {
+    const m = t.date.slice(0,7);
+    if (!months[m]) months[m] = { rec: 0, dep: 0 };
+    const v = Number(t.montant);
+    if (v > 0) months[m].rec += v; else months[m].dep += Math.abs(v);
+  }
+  const sortedMonths = Object.keys(months).sort();
+  let cumul = _soldeInitial;
+  const tbody = document.getElementById('rapport-mois-body');
+  if (!sortedMonths.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📅</div><h3>Pas encore de données</h3></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sortedMonths.map(m => {
+    const d = months[m];
+    const net = d.rec - d.dep;
+    cumul += net;
+    const [y, mo] = m.split('-');
+    const lbl = new Date(parseInt(y), parseInt(mo)-1).toLocaleDateString('fr-FR', { month:'long', year:'numeric' });
+    return `<tr>
+      <td style="font-weight:600">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</td>
+      <td style="text-align:right;color:var(--gain);font-weight:600">+${formatEur(d.rec)}</td>
+      <td style="text-align:right;color:var(--dep);font-weight:600">−${formatEur(d.dep)}</td>
+      <td style="text-align:right;font-weight:800;color:${net>=0?'var(--gain)':'var(--dep)'}">${net>=0?'+':''}${formatEur(net)}</td>
+      <td style="text-align:right;font-weight:700;color:var(--accent)">${formatEur(cumul)}</td>
+    </tr>`;
+  }).join('');
 }
 
-function deleteDette(i) {
-  openModal('🗑️', 'Supprimer ?', 'Cette entrée sera supprimée définitivement.', () => {
-    const data = loadDettes();
-    data[_detteTab].splice(i, 1);
-    saveDettesData(data);
-    renderDettes();
-    toast('Supprimé', 'info');
-  }, 'Supprimer');
+function exportRapportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc  = new jsPDF();
+  const org  = 'BDE CREAD Lyon';
+  const now  = new Date().toLocaleDateString('fr-FR');
+  const sy   = getSchoolYearBounds();
+
+  // Header
+  doc.setFillColor(79,70,229);
+  doc.rect(0,0,210,32,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(18); doc.setFont('helvetica','bold');
+  doc.text('RAPPORT FINANCIER', 14, 13);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text(`${org} · Année ${sy.start.slice(0,4)}–${sy.end.slice(0,4)}`, 14, 22);
+  doc.text(`Généré le ${now}`, 160, 22);
+  doc.setTextColor(0,0,0);
+
+  // KPIs globaux
+  const totalRec = _all.filter(t=>Number(t.montant)>0).reduce((s,t)=>s+Number(t.montant),0);
+  const totalDep = _all.filter(t=>Number(t.montant)<0).reduce((s,t)=>s+Math.abs(Number(t.montant)),0);
+  const net = totalRec - totalDep;
+  const soldeActuel = _soldeInitial + _all.reduce((s,t)=>s+Number(t.montant),0);
+
+  doc.setFillColor(240,245,255); doc.rect(14,38,86,24,'F');
+  doc.setFillColor(240,255,244); doc.rect(108,38,86,24,'F');
+  doc.setTextColor(100,116,139); doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text('TOTAL RECETTES', 16,44); doc.text('TOTAL DÉPENSES', 110,44);
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.setTextColor(22,163,74); doc.text('+'+formatEur(totalRec), 16,55);
+  doc.setTextColor(220,38,38); doc.text('−'+formatEur(totalDep), 110,55);
+  doc.setTextColor(0,0,0);
+
+  // Rentabilité par activité
+  doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('Rentabilité par activité', 14, 74);
+
+  const actData = {};
+  for (const t of _all) {
+    const cat = t.categorie || 'autre';
+    if (!actData[cat]) actData[cat] = { rec:0, dep:0 };
+    const v = Number(t.montant);
+    if (v>0) actData[cat].rec += v; else actData[cat].dep += Math.abs(v);
+  }
+  const actRows = Object.entries(actData)
+    .filter(([k]) => CATEGORIES[k])
+    .sort((a,b) => (b[1].rec+b[1].dep)-(a[1].rec+a[1].dep))
+    .map(([cat,d]) => {
+      const net = d.rec - d.dep;
+      return [
+        CATEGORIES[cat].label,
+        d.rec > 0 ? '+'+formatEur(d.rec) : '—',
+        d.dep > 0 ? '−'+formatEur(d.dep) : '—',
+        (net>=0?'+':'')+formatEur(net),
+        d.rec===0 ? 'Dépense pure' : net>=0 ? 'Rentable ✓' : 'Déficitaire ✗'
+      ];
+    });
+
+  doc.autoTable({
+    startY: 78,
+    head: [['Activité','Recettes','Dépenses','Résultat','Statut']],
+    body: actRows,
+    styles: { fontSize:9, cellPadding:3 },
+    headStyles: { fillColor:[79,70,229], textColor:255, fontStyle:'bold' },
+    alternateRowStyles: { fillColor:[248,250,252] },
+    columnStyles: { 1:{halign:'right'}, 2:{halign:'right'}, 3:{halign:'right',fontStyle:'bold'} },
+    didParseCell: d => {
+      if (d.column.index===3 && d.section==='body') {
+        const v = parseFloat(d.cell.raw.replace(/[^0-9.,−-]/g,'').replace('−','-').replace(',','.'));
+        d.cell.styles.textColor = v<0 ? [220,38,38] : [22,163,74];
+      }
+      if (d.column.index===4 && d.section==='body') {
+        d.cell.styles.textColor = d.cell.raw.includes('✓') ? [22,163,74] : d.cell.raw.includes('✗') ? [220,38,38] : [100,116,139];
+      }
+    }
+  });
+
+  // Évolution mensuelle
+  const months2 = {};
+  for (const t of _all) {
+    const m = t.date.slice(0,7);
+    if (!months2[m]) months2[m] = { rec:0, dep:0 };
+    const v = Number(t.montant);
+    if (v>0) months2[m].rec+=v; else months2[m].dep+=Math.abs(v);
+  }
+  let cumul2 = _soldeInitial;
+  const moisRows = Object.keys(months2).sort().map(m => {
+    const d = months2[m];
+    const n = d.rec - d.dep;
+    cumul2 += n;
+    const [y,mo] = m.split('-');
+    const lbl = new Date(parseInt(y),parseInt(mo)-1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    return [lbl.charAt(0).toUpperCase()+lbl.slice(1), '+'+formatEur(d.rec), '−'+formatEur(d.dep), (n>=0?'+':'')+formatEur(n), formatEur(cumul2)];
+  });
+
+  const y2 = doc.lastAutoTable.finalY + 10;
+  doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('Évolution mensuelle', 14, y2);
+  doc.autoTable({
+    startY: y2+4,
+    head: [['Mois','Recettes','Dépenses','Net','Solde cumulé']],
+    body: moisRows,
+    styles: { fontSize:9, cellPadding:3 },
+    headStyles: { fillColor:[79,70,229], textColor:255, fontStyle:'bold' },
+    alternateRowStyles: { fillColor:[248,250,252] },
+    columnStyles: { 1:{halign:'right'}, 2:{halign:'right'}, 3:{halign:'right',fontStyle:'bold'}, 4:{halign:'right',fontStyle:'bold'} },
+    didParseCell: d => {
+      if (d.column.index===3 && d.section==='body') {
+        const v = parseFloat(d.cell.raw.replace(/[^0-9.,−-]/g,'').replace('−','-').replace(',','.'));
+        d.cell.styles.textColor = v<0 ? [220,38,38] : [22,163,74];
+      }
+    }
+  });
+
+  doc.save(`rapport-bde-${sy.start.slice(0,4)}-${sy.end.slice(0,4)}.pdf`);
+  toast('Rapport PDF généré', 'success');
+}
+
+// ── Paramètres ────────────────────────────────────────────────────
+function initParams() {
+  document.getElementById('params-solde').value = _soldeInitial > 0 ? _soldeInitial.toFixed(2) : '';
+  const sy = getSchoolYearBounds();
+  document.getElementById('params-annee').textContent = `${sy.start.slice(0,4)}–${sy.end.slice(0,4)}`;
+}
+
+async function saveSoldeInitial() {
+  const val = parseFloat(document.getElementById('params-solde').value);
+  if (isNaN(val)) { toast('Valeur invalide', 'error'); return; }
+  const { error } = await _sb.from('bde_config').upsert({ id:'solde_initial', value:String(val) });
+  if (error) { toast('Erreur : ' + error.message, 'error'); return; }
+  _soldeInitial = val;
+  renderKPIs(); updateCharts();
+  toast('Solde initial mis à jour', 'success');
 }
 
 // ── Transaction CRUD ──────────────────────────────────────────────
