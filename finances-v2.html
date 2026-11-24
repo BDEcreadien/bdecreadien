@@ -1183,6 +1183,33 @@ function animateCounter(el, target, from, duration = 500) {
 function initCharts() {
   Chart.defaults.font.family = "'Inter', sans-serif";
 
+  const tickHighlightPlugin = {
+    id: 'tickHighlight',
+    afterDraw(chart) {
+      const idx = chart._highlightIdx;
+      if (idx === undefined || idx < 0) return;
+      const { ctx, scales: { x } } = chart;
+      if (idx >= x.ticks.length) return;
+      const px = x.getPixelForTick(idx);
+      const tickFont = x.options.ticks?.font || {};
+      const fs = tickFont.size || 11;
+      const label = x.ticks[idx]?.label || '';
+      ctx.save();
+      ctx.font = `${tickFont.weight || ''} ${fs}px ${tickFont.family || 'Inter, sans-serif'}`.trim();
+      const tw = ctx.measureText(label).width;
+      const rx = Math.max(tw / 2 + 7, 14);
+      const ry = fs / 2 + 4;
+      const cy = x.bottom + fs / 2 + (x.options.ticks?.padding || 3) + 3;
+      const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2563eb';
+      ctx.beginPath();
+      ctx.ellipse(px, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
   _chartSolde = new Chart(document.getElementById('chart-solde'), {
     type: 'line',
     data: { labels:[], datasets:[{ label:'Solde', data:[], fill:true, tension:.4,
@@ -1191,7 +1218,8 @@ function initCharts() {
     options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false },
       tooltip:{ callbacks:{ label: ctx => ' ' + formatEur(ctx.raw) } } },
       scales:{ y:{ ticks:{ callback: v => formatEur(v) }, grid:{ color:'rgba(0,0,0,.04)' } },
-               x:{ grid:{ display:false } } } }
+               x:{ grid:{ display:false } } } },
+    plugins: [tickHighlightPlugin]
   });
 
   _chartCat = new Chart(document.getElementById('chart-cat'), {
