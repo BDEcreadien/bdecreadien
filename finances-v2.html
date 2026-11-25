@@ -1976,67 +1976,69 @@ function renderEvenements() {
   const container = document.getElementById('events-container');
   if (!container) return;
 
-  // Group transactions by evenement (ignore those without)
-  const groups = {};
-  for (const t of _all) {
-    if (!t.evenement) continue;
-    if (!groups[t.evenement]) groups[t.evenement] = [];
-    groups[t.evenement].push(t);
-  }
-  const evtNames = Object.keys(groups).sort((a, b) => {
-    // Sort by most recent transaction date desc
-    const dA = groups[a].map(t => t.date).sort().pop();
-    const dB = groups[b].map(t => t.date).sort().pop();
-    return dB > dA ? 1 : -1;
-  });
+  const CAT_ICONS = { soiree:'🎉', repas:'🍽️', sortie:'🎭', materiel:'📦', autre:'📎' };
 
-  if (!evtNames.length) {
-    container.innerHTML = `<div class="empty-state" style="padding:40px 0"><div class="icon">🎉</div><p>Aucun événement pour l'instant.<br><small>Associez une transaction à un événement via le champ "Événement" du formulaire.</small></p></div>`;
+  if (!_allEvenements.length) {
+    container.innerHTML = `<div class="empty-state" style="padding:40px 0"><div class="icon">🎉</div><h3>Aucun événement pour l'instant.</h3><p>Cliquez sur "+ Ajouter" pour créer votre premier événement.</p></div>`;
     return;
   }
 
-  container.innerHTML = evtNames.map(name => {
-    const txs  = groups[name];
-    const rec  = txs.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
-    const dep  = txs.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
-    const net  = rec - dep;
-    const dates = txs.map(t => t.date).sort();
-    const dateLabel = dates[0] === dates[dates.length-1]
-      ? fmtDate(dates[0])
-      : `${fmtDate(dates[0])} – ${fmtDate(dates[dates.length-1])}`;
-    const eid  = 'ev-' + btoa(encodeURIComponent(name)).replace(/[^a-z0-9]/gi,'').slice(0,12);
-    const txRows = [...txs].sort((a,b)=>b.date.localeCompare(a.date)).map(t => {
+  // Sort events by date desc
+  const evs = [..._allEvenements].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  container.innerHTML = evs.map(ev => {
+    const icon = CAT_ICONS[ev.categorie_budget] || '📎';
+    const linked = _all.filter(t => t.evenement && t.evenement.trim().toLowerCase() === (ev.titre || '').trim().toLowerCase());
+    const rec = linked.filter(t => Number(t.montant) > 0).reduce((s, t) => s + Number(t.montant), 0);
+    const dep = linked.filter(t => Number(t.montant) < 0).reduce((s, t) => s + Math.abs(Number(t.montant)), 0);
+    const net = rec - dep;
+    const gP  = Number(ev.gains_previsionnel) || 0;
+    const cP  = Number(ev.budget_previsionnel) || 0;
+    const eid = 'ev-detail-' + ev.id;
+    const txRows = linked.length ? [...linked].sort((a,b)=>b.date.localeCompare(a.date)).map(t => {
       const m = Number(t.montant);
-      const cat = CATEGORIES[t.categorie] || { label:t.categorie, color:'#94a3b8', icon:'📎' };
+      const cat = CATEGORIES[t.categorie] || { label:t.categorie||'', color:'#94a3b8', icon:'📎' };
       return `<tr>
-        <td style="color:var(--text2);font-size:12px">${fmtDate(t.date)}</td>
-        <td>${esc(t.libelle)}</td>
-        <td><span class="chip" style="background:${cat.color}18;color:${cat.color}">${cat.icon} ${cat.label}</span></td>
-        <td class="tx-montant ${m>=0?'pos':'neg'}" style="text-align:right">${m>=0?'+':''}${formatEur(m)}</td>
-        <td style="text-align:right"><button class="btn-icon" onclick="openDrawer('${t.id}')">✏️</button></td>
+        <td style="color:var(--text2);font-size:12px;padding:8px">${fmtDate(t.date)}</td>
+        <td style="padding:8px">${esc(t.libelle)}</td>
+        <td style="padding:8px"><span class="chip" style="background:${cat.color}18;color:${cat.color}">${cat.icon} ${cat.label}</span></td>
+        <td class="tx-montant ${m>=0?'pos':'neg'}" style="text-align:right;padding:8px">${m>=0?'+':''}${formatEur(m)}</td>
+        <td style="padding:8px;text-align:right"><button class="btn-icon" onclick="openDrawer('${t.id}')">✏️</button></td>
       </tr>`;
-    }).join('');
+    }).join('') : `<tr><td colspan="5" style="padding:16px;text-align:center;color:var(--text2);font-size:13px">Aucune transaction liée. Associez des transactions via le champ "Événement" du formulaire.</td></tr>`;
+
+    const prevRow = (gP || cP) ? `
+      <div class="ev-prev-row">
+        <span>Prévu : <span style="color:var(--gain)">+${formatEur(gP)}</span> gains · <span style="color:var(--dep)">−${formatEur(cP)}</span> coûts · <strong style="color:${gP-cP>=0?'var(--gain)':'var(--dep)'}">${gP-cP>=0?'+':''}${formatEur(gP-cP)}</strong></span>
+      </div>` : '';
+
     return `
-    <div class="card" style="margin-bottom:12px">
+    <div class="card" style="margin-bottom:12px;overflow:hidden">
       <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer" onclick="document.getElementById('${eid}').style.display=document.getElementById('${eid}').style.display==='none'?'block':'none'">
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:15px">🎉 ${esc(name)}</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:2px">${dateLabel} · ${txs.length} transaction${txs.length>1?'s':''}</div>
+          <div style="font-weight:700;font-size:15px">${icon} ${esc(ev.titre)}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">
+            ${fmtDate(ev.date)}${ev.lieu ? ' · ' + esc(ev.lieu) : ''} · ${linked.length} transaction${linked.length!==1?'s':''}
+          </div>
+          ${prevRow}
         </div>
-        <div style="display:flex;gap:16px;align-items:center;flex-shrink:0;font-size:13px">
-          <span style="color:var(--gain)">+${formatEur(rec)}</span>
-          <span style="color:var(--dep)">−${formatEur(dep)}</span>
-          <span style="font-weight:700;color:${net>=0?'var(--gain)':'var(--dep)'}">${net>=0?'+':''}${formatEur(net)}</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;font-size:13px">
+          <div>
+            <span style="color:var(--gain)">+${formatEur(rec)}</span>
+            <span style="color:var(--text2);margin:0 4px">·</span>
+            <span style="color:var(--dep)">−${formatEur(dep)}</span>
+          </div>
+          <span style="font-weight:700;font-size:14px;color:${net>=0?'var(--gain)':'var(--dep)'}">${net>=0?'+':''}${formatEur(net)}</span>
         </div>
-        <span style="color:var(--text3);font-size:11px;margin-left:8px">▼</span>
+        <button class="btn-icon" style="margin-left:8px;flex-shrink:0" onclick="event.stopPropagation();openEvDrawer('${ev.id}')">✏️</button>
       </div>
-      <div id="${eid}" style="display:none;border-top:1px solid var(--border);padding:0 4px 8px">
+      <div id="${eid}" style="display:none;border-top:1px solid var(--border)">
         <table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead><tr style="color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px">
-            <th style="padding:8px 8px;text-align:left;font-weight:600">Date</th>
-            <th style="padding:8px 8px;text-align:left;font-weight:600">Libellé</th>
-            <th style="padding:8px 8px;text-align:left;font-weight:600">Catégorie</th>
-            <th style="padding:8px 8px;text-align:right;font-weight:600">Montant</th>
+          <thead><tr style="color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--surface2)">
+            <th style="padding:8px;text-align:left;font-weight:600">Date</th>
+            <th style="padding:8px;text-align:left;font-weight:600">Libellé</th>
+            <th style="padding:8px;text-align:left;font-weight:600">Catégorie</th>
+            <th style="padding:8px;text-align:right;font-weight:600">Montant</th>
             <th></th>
           </tr></thead>
           <tbody>${txRows}</tbody>
