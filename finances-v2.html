@@ -1334,6 +1334,7 @@ function initCharts() {
 
 function updateCharts() {
   if (!_chartSolde || !_chartCat) return;
+  console.log('[chart] _all:', _all.length, 'tx | _soldeInitial:', _soldeInitial);
   // Solde line chart: Sep → Jun (full school year), with forecast for future months
   const sy = getSchoolYearBounds();
   const now2 = new Date();
