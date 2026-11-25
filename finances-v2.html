@@ -1870,9 +1870,12 @@ async function saveSoldeInitial() {
 
 // ── Transaction CRUD ──────────────────────────────────────────────
 function _populateEventsDatalist() {
-  const names = [...new Set(_all.map(t => t.evenement).filter(Boolean))].sort();
+  // Combine event names from finance_evenements + existing transaction tags
+  const fromDB = _allEvenements.map(e => e.titre).filter(Boolean);
+  const fromTx = _all.map(t => t.evenement).filter(Boolean);
+  const names = [...new Set([...fromDB, ...fromTx])].sort();
   const dl = document.getElementById('events-datalist');
-  if (dl) dl.innerHTML = names.map(n => `<option value="${n}">`).join('');
+  if (dl) dl.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
 }
 
 function openDrawer(id) {
