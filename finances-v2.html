@@ -1493,24 +1493,25 @@ function buildCategoryOptions() {
 }
 
 // ── Budget ────────────────────────────────────────────────────────
-function saveBudgets() {
+async function saveBudgets() {
   const inputs = document.querySelectorAll('.budget-input');
   const data = {};
   inputs.forEach(inp => { data[inp.dataset.cat] = parseFloat(inp.value) || 0; });
-  try { localStorage.setItem('_bde_budgets', JSON.stringify(data)); } catch(_){}
-  toast('Budgets sauvegardés', 'success');
+  _budgets = data;
+  try {
+    await _sb.from('bde_config').upsert({ id: 'budget_categories_v2', value: JSON.stringify(data) });
+    toast('Budgets sauvegardés et synchronisés', 'success');
+  } catch(_) { toast('Erreur sauvegarde budget', 'error'); }
 }
 
 function loadBudgets() {
-  try {
-    const s = localStorage.getItem('_bde_budgets');
-    return s ? JSON.parse(s) : {};
-  } catch(_) { return {}; }
+  return _budgets || {};
 }
 
 function resetBudgets() {
-  openModal('⚠️', 'Réinitialiser les budgets ?', 'Tous les montants prévisionnels seront remis à zéro.', () => {
-    localStorage.removeItem('_bde_budgets');
+  openModal('⚠️', 'Réinitialiser les budgets ?', 'Tous les montants prévisionnels seront remis à zéro sur tous les appareils.', async () => {
+    _budgets = {};
+    try { await _sb.from('bde_config').upsert({ id: 'budget_categories_v2', value: '{}' }); } catch(_) {}
     renderBudget();
     toast('Budgets réinitialisés', 'info');
   }, 'Réinitialiser');
