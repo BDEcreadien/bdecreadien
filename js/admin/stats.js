@@ -4,6 +4,11 @@
 // ============================================================
 
 function initStatsPage() {
+  adminRenderHero('step-stats', {
+    icon: '<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><rect x="3" y="19" width="18" height="2" rx="1" fill="currentColor" stroke="none"/></svg>',
+    title: 'Statistiques du site',
+    sub: 'Fréquentation, membres inscrits, activité récente'
+  });
   loadSbStats();
 }
 
