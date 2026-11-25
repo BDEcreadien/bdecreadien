@@ -1064,8 +1064,9 @@ function btqaRenderTable(list) {
     mList.innerHTML = list.map(c => {
       const d = new Date(c.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' });
       const actions = [];
+      const _spMobile = ['payee','production','livraison','confirmee','remise','physique'].includes(c.statut) && !(c.boutique_items?.length);
       if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Payée</button>`);
-      if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production')">Production</button>`);
+      if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtapeProd('${c.id}')">Production</button>`);
       if (c.statut === 'production') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison')">Livraison</button>`);
       if (c.statut === 'livraison')  actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee')">Récupérable</button>`);
       if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
@@ -1073,7 +1074,7 @@ function btqaRenderTable(list) {
       if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
       if (c.statut === 'panier') actions.push(`<button class="btqa-act-btn cancel" onclick="btqaDeletePanier('${c.id}')">Supprimer</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
-      return `<div style="background:white;border-top:1.5px solid #eef2f7;border-bottom:1.5px solid #eef2f7;margin-bottom:8px;">
+      return `<div style="background:${_spMobile ? '#fff5f5' : 'white'};border-top:1.5px solid #eef2f7;border-bottom:1.5px solid #eef2f7;margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#f8fafc;border-bottom:1px solid #eef2f7">
           <span style="font-weight:800;font-size:14px;color:var(--violet)">${c.numero || '-'}</span>
           <span class="btqa-badge ${c.statut}" style="font-size:10px">${btqaStatutLabel(c.statut)}</span>
