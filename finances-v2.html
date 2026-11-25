@@ -1296,7 +1296,9 @@ function initCharts() {
       const tw = ctx.measureText(label).width;
       const rx = Math.max(tw / 2 + 7, 14);
       const ry = fs / 2 + 4;
-      const cy = x.bottom + fs / 2 + (x.options.ticks?.padding || 3) + 3;
+      // Use actual tick label y-position from Chart.js internal _labelItems
+      const labelItem = x._labelItems?.[idx];
+      const cy = labelItem ? labelItem.translation[1] : x.top + (x.options.ticks?.padding ?? 3) + fs / 2 + 2;
       const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2563eb';
       ctx.beginPath();
       ctx.ellipse(px, cy, rx, ry, 0, 0, Math.PI * 2);
