@@ -307,6 +307,36 @@
       .btqa-header { flex-wrap:wrap; gap:.75rem; }
       .btqa-header-actions { flex-wrap:wrap; }
     }
+
+    /* === Hero par page === */
+    .admin-page-hero{border-radius:16px;padding:22px 26px;margin-bottom:22px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-h) 100%);color:#fff;min-height:88px;}
+    .admin-page-hero::after{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.07);border-radius:50%;pointer-events:none;}
+    .admin-page-hero::before{content:'';position:absolute;bottom:-70px;right:80px;width:140px;height:140px;background:rgba(255,255,255,.04);border-radius:50%;pointer-events:none;}
+    .aph-icon{width:52px;height:52px;background:rgba(255,255,255,.18);border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .aph-icon svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+    .aph-body{flex:1;min-width:0;}
+    .aph-title{font-size:21px;font-weight:800;letter-spacing:-.3px;}
+    .aph-sub{font-size:13px;opacity:.75;margin-top:2px;}
+    .aph-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+    .aph-chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+    .aph-actions{display:flex;gap:8px;flex-shrink:0;align-items:center;position:relative;z-index:1;}
+    .aph-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+    .aph-btn:hover{background:rgba(255,255,255,.28);}
+    .aph-btn-primary{background:#fff;color:var(--accent);}
+    .aph-btn-primary:hover{background:rgba(255,255,255,.92);}
+    /* Notice GitHub inline */
+    .admin-github-notice{background:white;border:1px solid var(--border);border-left:4px solid #f59e0b;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+    .admin-github-notice-text{flex:1;font-size:13px;color:var(--text2);}
+    .admin-github-notice-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px;}
+    .admin-github-notice-btn{padding:7px 14px;background:#f59e0b;color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;}
+    /* Topbar profile chip */
+    .tb-spacer{flex:1;}
+    .tb-profile{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 10px;border-radius:9px;transition:background .15s;}
+    .tb-profile:hover{background:var(--surface2);}
+    .tb-pf-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+    .tb-pf-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.2;}
+    .tb-pf-role{font-size:10px;color:var(--text2);}
+    @media(max-width:600px){.admin-page-hero{padding:16px;}.aph-actions{display:none;}.aph-title{font-size:17px;}.tb-pf-name,.tb-pf-role{display:none;}}
   </style>
 </head>
 <body>
