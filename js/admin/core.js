@@ -130,6 +130,7 @@ function goBack() {
 }
 
 function selectPage(page) {
+  if (window._adminInterdits && window._adminInterdits.has(page)) return;   // module masqué ou non autorisé
   window._adminPage = page;
   if (typeof adminSyncSidebar === 'function') adminSyncSidebar();
   navStack = ['pages'];

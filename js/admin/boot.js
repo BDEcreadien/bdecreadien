@@ -47,47 +47,44 @@ window.addEventListener('DOMContentLoaded', async () => {
   const profil = await Auth.getProfil();
   document.getElementById('screen-auth-check').style.display = 'none';
 
-  // Card Liens visible pour tous les membres
-  const lnkCard = document.getElementById('page-card-liens');
-  if (lnkCard) lnkCard.style.display = '';
-
-  // Cards bureau-only (Finances + Organisation soirée + Planning semaine)
-  if (profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true) {
-    const finCard = document.getElementById('page-card-finances');
-    if (finCard) finCard.style.display = '';
-    const plnCard = document.getElementById('page-card-planning');
-    if (plnCard) plnCard.style.display = '';
-    const facCard = document.getElementById('page-card-factures');
-    if (facCard) facCard.style.display = '';
-    const bilCard = document.getElementById('page-card-billetterie');
-    if (bilCard) bilCard.style.display = '';
-    const btqCard = document.getElementById('page-card-boutique');
-    if (btqCard) btqCard.style.display = '';
-  }
-  if (profil && profil.role === 'admin') {
+  // Accès aux modules : niveau de l'utilisateur (1 membre, 2 bureau, 3 admin) comparé au niveau requis,
+  // lu dans bde_acces (réglé dans « Paramètres du BDE > Équipe & accès »). Modules désactivés masqués.
+  // Le rôle vient de la table profils, protégée côté serveur : ce code ne fait qu'afficher le menu.
+  const niveau = profil && profil.role === 'admin' ? 3 : (profil && profil.bureau === true ? 2 : 1);
+  const NIV = { membre: 1, bureau: 2, admin: 3 };
+  const MIN_DEFAUT = { contenu: 'membre', newsletter: 'membre', fidelite: 'membre', stats: 'membre', liens: 'membre', qr: 'membre',
+                       boutique: 'bureau', billetterie: 'bureau', finances: 'bureau', facturation: 'bureau', planning: 'bureau' };
+  const PAGES_PAR_MODULE = {
+    contenu: ['agenda', 'annonces', 'accueil', 'communication', 'archives', 'galerie', 'partenaires', 'parametres'],
+    boutique: ['boutique'], billetterie: ['billetterie'], finances: ['finances'], facturation: ['factures'],
+    planning: ['planning'], newsletter: ['newsletter'], fidelite: ['fidelite'], liens: ['liens'], qr: ['qr'], stats: ['stats'],
+  };
+  let actifs = null; const acces = {};
+  try {
+    const [m, a] = await Promise.all([
+      Auth.sb.from('bde_parametres').select('valeur').eq('cle', 'modules_actifs').maybeSingle(),
+      Auth.sb.from('bde_acces').select('module,niveau'),
+    ]);
+    if (m.data && m.data.valeur) actifs = m.data.valeur.split(',').map(x => x.trim());
+    (a.data || []).forEach(r => { acces[r.module] = r.niveau; });
+  } catch (_) {}
+  window._adminInterdits = new Set();
+  Object.keys(PAGES_PAR_MODULE).forEach(mod => {
+    const requis = NIV[acces[mod] || MIN_DEFAUT[mod]] || 3;
+    const ok = (!actifs || actifs.includes(mod)) && niveau >= requis;
+    PAGES_PAR_MODULE[mod].forEach(pg => {
+      if (!ok) window._adminInterdits.add(pg);
+      document.querySelectorAll(`.page-card[onclick="selectPage('${pg}')"]`).forEach(c => { c.style.display = ok ? '' : 'none'; });
+    });
+  });
+  if (niveau === 3) {
     const bdeCard = document.getElementById('page-card-bde');
     if (bdeCard) bdeCard.style.display = '';
   }
-  // Modules désactivés dans « Paramètres du BDE » : on masque leurs cartes
-  try {
-    const { data: modRow } = await Auth.sb.from('bde_parametres').select('valeur').eq('cle', 'modules_actifs').maybeSingle();
-    if (modRow && modRow.valeur) {
-      const actifs = modRow.valeur.split(',').map(x => x.trim());
-      const PAGES_PAR_MODULE = {
-        contenu: ['agenda', 'annonces', 'accueil', 'communication', 'archives', 'galerie', 'partenaires', 'parametres'],
-        boutique: ['boutique'], billetterie: ['billetterie'], finances: ['finances'], facturation: ['factures'],
-        planning: ['planning'], newsletter: ['newsletter'], fidelite: ['fidelite'], liens: ['liens'], qr: ['qr'], stats: ['stats'],
-      };
-      Object.keys(PAGES_PAR_MODULE).forEach(m => {
-        if (actifs.includes(m)) return;
-        PAGES_PAR_MODULE[m].forEach(pg => document.querySelectorAll(`.page-card[onclick="selectPage('${pg}')"]`).forEach(c => { c.style.display = 'none'; }));
-      });
-    }
-  } catch (_) {}
   try {
     document.getElementById('sb-name').textContent = ((profil && profil.prenom) || '') + ' ' + ((profil && profil.nom) || '');
     document.getElementById('sb-avatar').textContent = ((profil && profil.prenom) || '?')[0].toUpperCase();
-    document.getElementById('sb-role').textContent = profil && profil.role === 'admin' ? 'Administrateur' : (profil && profil.bureau ? 'Bureau BDE' : 'Membre BDE');
+    document.getElementById('sb-role').textContent = niveau === 3 ? 'Administrateur' : (niveau === 2 ? 'Bureau BDE' : 'Membre BDE');
   } catch (_) {}
   adminBuildSidebar();
   window._monProfilId = profil ? profil.id : null;
