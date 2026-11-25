@@ -2017,8 +2017,29 @@ function openEvDrawer(id) {
   document.getElementById('ev-description').value = ev?.description || '';
   document.getElementById('ev-delete-btn').style.display = ev ? '' : 'none';
   updateEvSoldePreview();
+  _renderEvTxList(ev?.titre || null);
   document.getElementById('ev-drawer').classList.add('open');
   document.getElementById('ev-drawer-overlay').classList.add('open');
+}
+
+function _renderEvTxList(evTitre) {
+  const container = document.getElementById('ev-tx-list');
+  if (!container) return;
+  const txs = [..._all].sort((a,b) => b.date.localeCompare(a.date));
+  if (!txs.length) {
+    container.innerHTML = '<div style="padding:12px;color:var(--text2)">Aucune transaction</div>';
+    return;
+  }
+  container.innerHTML = txs.map(t => {
+    const m = Number(t.montant);
+    const isLinked = evTitre && t.evenement && t.evenement.trim().toLowerCase() === evTitre.trim().toLowerCase();
+    return `<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border)">
+      <input type="checkbox" class="ev-tx-cb" value="${t.id}" ${isLinked ? 'checked' : ''} style="accent-color:var(--accent);flex-shrink:0">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.libelle)}</span>
+      <span style="font-size:11px;color:var(--text2);flex-shrink:0">${fmtDate(t.date)}</span>
+      <span style="font-weight:700;color:${m>=0?'var(--gain)':'var(--dep)'};flex-shrink:0;min-width:72px;text-align:right">${m>=0?'+':''}${formatEur(m)}</span>
+    </label>`;
+  }).join('');
 }
 
 function closeEvDrawer() {
