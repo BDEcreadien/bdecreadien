@@ -2260,7 +2260,7 @@ function openModal(icon, title, desc, cb, btnLabel) {
   document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); _modalCb = null; }
-function confirmModalAction() { closeModal(); if (_modalCb) _modalCb(); }
+function confirmModalAction() { const cb = _modalCb; closeModal(); if (cb) cb(); }
 
 // ── Section nav ───────────────────────────────────────────────────
 const SEC_TITLES = { overview:'Vue d\'ensemble', journal:'Transactions', budget:'Budget', evenements:'Événements', recurrent:'Récurrents', rapport:'Rapport', export:'Export', params:'Paramètres' };
