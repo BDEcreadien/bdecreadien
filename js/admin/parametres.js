@@ -199,7 +199,7 @@ const BDE_PARAM_CSS = `<style>
   @keyframes bdepWord{from{opacity:0;transform:translateY(60%) rotate(3deg);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
   @keyframes bdepOrb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.15)}}
   @keyframes bdepCheck{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.25)}100%{transform:scale(1);opacity:1}}
-  .bdep-hero{position:relative;overflow:hidden;border-radius:0 0 28px 28px;color:#fff;padding:36px 32px 32px;margin:-1.75rem 0 24px;
+  .bdep-hero{position:relative;overflow:hidden;border-radius:0 0 28px 28px;color:#fff;padding:36px 32px 32px;margin:0 0 24px;
     background:var(--gradient,var(--accent));background-size:220% 220%;animation:bdepGrad 14s ease-in-out infinite}
   .bdep-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.42));pointer-events:none}
   .bdep-hero .orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.35;background:#fff;animation:bdepOrb 9s ease-in-out infinite;pointer-events:none}
