@@ -2087,11 +2087,24 @@ async function saveEv() {
 
   btn.disabled = false; spin.style.display = 'none';
   if (error) { toast('Erreur : ' + error.message, 'error'); return; }
+
+  // Update transaction links: set evenement field on checked transactions
+  const checked   = [...document.querySelectorAll('#ev-tx-list .ev-tx-cb:checked')].map(cb => cb.value);
+  const unchecked = [...document.querySelectorAll('#ev-tx-list .ev-tx-cb:not(:checked)')].map(cb => cb.value);
+  if (checked.length) {
+    await _sb.from('transactions').update({ evenement: titre }).in('id', checked);
+  }
+  if (unchecked.length) {
+    // Only unlink transactions that were previously linked to THIS event
+    await _sb.from('transactions').update({ evenement: null })
+      .in('id', unchecked)
+      .eq('evenement', titre);
+  }
+
   toast(_evEditId ? 'Événement modifié' : 'Événement créé', 'success');
   closeEvDrawer();
-  await loadEvenements();
-  renderEvenements();
-  // Mise à jour de l'autocomplete du champ événement dans le drawer transaction
+  await loadAll();
+  renderAll();
   _populateEventsDatalist();
 }
 
