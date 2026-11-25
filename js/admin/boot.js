@@ -86,10 +86,21 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (typeof adminBuildSidebar === 'function') adminBuildSidebar();
   };
   await window.adminAppliquerAcces();
+  window._adminProfil = profil;
+  const _roleTxt = niveau === 3 ? 'Administrateur' : (niveau === 2 ? 'Bureau BDE' : 'Membre BDE');
+  const _prenomInit = ((profil && profil.prenom) || '?')[0].toUpperCase();
+  const _prenomNom = (((profil && profil.prenom) || '') + ' ' + ((profil && profil.nom) || '')).trim();
   try {
-    document.getElementById('sb-name').textContent = ((profil && profil.prenom) || '') + ' ' + ((profil && profil.nom) || '');
-    document.getElementById('sb-avatar').textContent = ((profil && profil.prenom) || '?')[0].toUpperCase();
-    document.getElementById('sb-role').textContent = niveau === 3 ? 'Administrateur' : (niveau === 2 ? 'Bureau BDE' : 'Membre BDE');
+    document.getElementById('sb-name').textContent = _prenomNom;
+    document.getElementById('sb-avatar').textContent = _prenomInit;
+    document.getElementById('sb-role').textContent = _roleTxt;
+  } catch (_) {}
+  try {
+    const tpTop = document.getElementById('tb-profile');
+    if (tpTop) tpTop.style.display = '';
+    document.getElementById('tb-avatar-top').textContent = _prenomInit;
+    document.getElementById('tb-name-top').textContent = _prenomNom;
+    document.getElementById('tb-role-top').textContent = _roleTxt;
   } catch (_) {}
   adminBuildSidebar();
   window._monProfilId = profil ? profil.id : null;
