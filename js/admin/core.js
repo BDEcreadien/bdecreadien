@@ -140,6 +140,11 @@ function showStep(step, opts = {}) {
   if (bdeEl) bdeEl.style.display = 'none';
   const btqaEl = document.getElementById('step-boutique');
   if (btqaEl) btqaEl.style.display = 'none';
+  // Les steps hors #screen-app (planning, liens, factures, billetterie, qr, bde, boutique)
+  // doivent masquer #screen-app pour éviter le bandeau blanc (padding vide)
+  const outsideSteps = ['planning', 'planning-semaine', 'liens', 'factures', 'billetterie', 'qr', 'bde', 'boutique'];
+  const screenApp = document.getElementById('screen-app');
+  if (screenApp) screenApp.style.display = outsideSteps.includes(step) ? 'none' : '';
   document.getElementById('step-' + step).style.display = 'block';
   if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); }
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
