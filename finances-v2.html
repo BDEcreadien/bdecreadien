@@ -1319,7 +1319,13 @@ function initCharts() {
       borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,.08)', pointRadius:3,
       pointBackgroundColor:'#2563eb', borderWidth:2 }] },
     options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false },
-      tooltip:{ callbacks:{ label: ctx => ' ' + formatEur(ctx.raw) } } },
+      tooltip:{
+        filter: item => {
+          if (item.datasetIndex === 1) return item.chart.data.datasets[0].data[item.dataIndex] === null;
+          return item.raw !== null;
+        },
+        callbacks:{ label: ctx => ' ' + formatEur(ctx.raw) }
+      } },
       scales:{ y:{ ticks:{ callback: v => formatEur(v) }, grid:{ color:'rgba(0,0,0,.04)' } },
                x:{ grid:{ display:false } } } },
     plugins: [tickHighlightPlugin]
