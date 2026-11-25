@@ -31,6 +31,53 @@ function logout() {
   if (window.Auth && Auth.logout) Auth.logout();
   else window.location.href = '/';
 }
+
+// ============================================================
+// HERO PAR PAGE
+// ============================================================
+function adminRenderHero(containerId, { icon, title, sub, chips, actions } = {}) {
+  const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
+  if (!container) return;
+  const existing = container.querySelector('.admin-page-hero');
+  if (existing) existing.remove();
+  const chipsHtml = chips && chips.length
+    ? `<div class="aph-chips">${chips.map(c => `<span class="aph-chip">${c}</span>`).join('')}</div>` : '';
+  const actionsHtml = actions && actions.length
+    ? `<div class="aph-actions">${actions.map(a =>
+        `<button class="aph-btn${a.primary ? ' aph-btn-primary' : ''}" onclick="${a.onclick}">${a.label}</button>`
+      ).join('')}</div>` : '';
+  const div = document.createElement('div');
+  div.className = 'admin-page-hero';
+  div.innerHTML = `<div class="aph-icon">${icon || ''}</div><div class="aph-body"><div class="aph-title">${title || ''}</div>${sub ? `<div class="aph-sub">${sub}</div>` : ''}${chipsHtml}</div>${actionsHtml}`;
+  container.prepend(div);
+}
+
+function adminShowGitHubSetup() {
+  const notice = document.getElementById('admin-github-notice');
+  if (notice) notice.style.display = 'none';
+  document.getElementById('screen-app').style.display = 'none';
+  const loginEl = document.getElementById('screen-login');
+  if (loginEl) loginEl.style.display = 'flex';
+}
+
+function adminUpdateOverviewHero() {
+  const sub = document.getElementById('overview-hero-sub');
+  if (sub) {
+    const p = window._adminProfil;
+    const bdeNom = window.BDE ? window.BDE.get('nom', '') : '';
+    const prenom = p && p.prenom ? ' ' + p.prenom : '';
+    sub.textContent = 'Bonjour' + prenom + (bdeNom ? ' · ' + bdeNom : '');
+  }
+  const chips = document.getElementById('overview-hero-chips');
+  if (chips) {
+    const bdeNom = window.BDE ? window.BDE.get('nom', '') : '';
+    chips.innerHTML = bdeNom ? `<span class="aph-chip">${bdeNom}</span>` : '';
+  }
+  if (window._adminNoGitHub) {
+    const notice = document.getElementById('admin-github-notice');
+    if (notice) notice.style.display = 'flex';
+  }
+}
 async function init() {
   document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
