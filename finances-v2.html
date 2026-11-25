@@ -1885,6 +1885,7 @@ function openDrawer(id) {
   _recurDrawerMode = 'tx';
   document.getElementById('drawer-title').textContent = id ? 'Modifier la transaction' : 'Nouvelle transaction';
   document.getElementById('drawer-save-btn').innerHTML = 'Enregistrer';
+  document.getElementById('drawer-delete-btn').style.display = id ? '' : 'none';
   _populateEventsDatalist();
   if (id) {
     const t = _all.find(x => x.id === id);
