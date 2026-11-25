@@ -1972,6 +1972,101 @@ function confirmDelete(id, label) {
 
 
 // ── Événements ────────────────────────────────────────────────────
+// ── Événements ───────────────────────────────────────────────────
+async function loadEvenements() {
+  try {
+    const sy = getSchoolYearBounds();
+    const { data } = await _sb.from('finance_evenements')
+      .select('*')
+      .gte('date', sy.start)
+      .lte('date', sy.end)
+      .order('date', { ascending: false });
+    _allEvenements = data || [];
+  } catch(_) { _allEvenements = []; }
+}
+
+function openEvDrawer(id) {
+  _evEditId = id || null;
+  const ev = id ? _allEvenements.find(e => e.id === id) : null;
+  document.getElementById('ev-drawer-title').textContent = ev ? 'Modifier l\'événement' : 'Nouvel événement';
+  document.getElementById('ev-titre').value = ev?.titre || '';
+  document.getElementById('ev-date').value  = ev?.date  || new Date().toISOString().slice(0,10);
+  document.getElementById('ev-categorie').value = ev?.categorie_budget || 'soiree';
+  document.getElementById('ev-lieu').value  = ev?.lieu  || '';
+  document.getElementById('ev-gains-prev').value = ev?.gains_previsionnel != null ? ev.gains_previsionnel : '';
+  document.getElementById('ev-couts-prev').value = ev?.budget_previsionnel != null ? ev.budget_previsionnel : '';
+  document.getElementById('ev-description').value = ev?.description || '';
+  document.getElementById('ev-delete-btn').style.display = ev ? '' : 'none';
+  updateEvSoldePreview();
+  document.getElementById('ev-drawer').classList.add('open');
+  document.getElementById('ev-drawer-overlay').classList.add('open');
+}
+
+function closeEvDrawer() {
+  document.getElementById('ev-drawer').classList.remove('open');
+  document.getElementById('ev-drawer-overlay').classList.remove('open');
+}
+
+function updateEvSoldePreview() {
+  const g = parseFloat(document.getElementById('ev-gains-prev').value) || 0;
+  const c = parseFloat(document.getElementById('ev-couts-prev').value) || 0;
+  const net = g - c;
+  const el = document.getElementById('ev-solde-preview');
+  el.textContent = (net >= 0 ? '+' : '') + formatEur(net);
+  el.style.color = net >= 0 ? 'var(--gain)' : 'var(--dep)';
+}
+
+async function saveEv() {
+  const titre = document.getElementById('ev-titre').value.trim();
+  const date  = document.getElementById('ev-date').value;
+  if (!titre) { document.getElementById('ev-titre').classList.add('error'); return; }
+  document.getElementById('ev-titre').classList.remove('error');
+  if (!date)  { document.getElementById('ev-date').classList.add('error'); return; }
+  document.getElementById('ev-date').classList.remove('error');
+
+  const btn = document.getElementById('ev-save-btn');
+  const spin = document.getElementById('ev-spinner');
+  btn.disabled = true; spin.style.display = '';
+
+  const payload = {
+    titre,
+    date,
+    categorie_budget: document.getElementById('ev-categorie').value,
+    lieu:             document.getElementById('ev-lieu').value.trim() || null,
+    gains_previsionnel:  parseFloat(document.getElementById('ev-gains-prev').value) || null,
+    budget_previsionnel: parseFloat(document.getElementById('ev-couts-prev').value) || null,
+    description:      document.getElementById('ev-description').value.trim() || null,
+  };
+
+  let error;
+  if (_evEditId) {
+    ({ error } = await _sb.from('finance_evenements').update(payload).eq('id', _evEditId));
+  } else {
+    ({ error } = await _sb.from('finance_evenements').insert(payload));
+  }
+
+  btn.disabled = false; spin.style.display = 'none';
+  if (error) { toast('Erreur : ' + error.message, 'error'); return; }
+  toast(_evEditId ? 'Événement modifié' : 'Événement créé', 'success');
+  closeEvDrawer();
+  await loadEvenements();
+  renderEvenements();
+  // Mise à jour de l'autocomplete du champ événement dans le drawer transaction
+  _populateEventsDatalist();
+}
+
+async function deleteEv() {
+  if (!_evEditId) return;
+  openModal('🗑️', 'Supprimer cet événement ?', 'L\'événement sera supprimé. Les transactions liées ne sont pas affectées.', async () => {
+    const { error } = await _sb.from('finance_evenements').delete().eq('id', _evEditId);
+    if (error) { toast('Erreur : ' + error.message, 'error'); return; }
+    toast('Événement supprimé', 'info');
+    closeEvDrawer();
+    await loadEvenements();
+    renderEvenements();
+  }, 'Supprimer');
+}
+
 function renderEvenements() {
   const container = document.getElementById('events-container');
   if (!container) return;
