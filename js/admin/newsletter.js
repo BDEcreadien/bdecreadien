@@ -6,6 +6,11 @@ let _nlAbonnes = [];
 let _nlHistorique = [];
 
 async function initNewsletter() {
+  adminRenderHero('step-newsletter', {
+    icon: '<svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    title: 'Newsletter',
+    sub: 'Abonnés actifs et historique des envois'
+  });
   document.getElementById('nl-msg').style.display = 'none';
   document.getElementById('nl-count-badge').textContent = '… chargement';
   await Promise.all([loadAbonnes(), loadHistorique()]);
