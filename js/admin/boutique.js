@@ -1125,6 +1125,15 @@ function btqaRenderTable(list) {
   }).join('');
 }
 
+function btqaEtapeProd(id) {
+  const c = _btqaCommandes.find(x => x.id === id);
+  if (!c) return;
+  if (!(c.boutique_items?.length)) {
+    if (!confirm(`⚠️ Attention : la commande de ${c.nom_acheteur || 'cet acheteur'} n'a aucun article enregistré.\n\nTu vas quand même passer en production sans savoir ce qu'elle a commandé.\n\nContinuer ?`)) return;
+  }
+  btqaEtape(id, 'production');
+}
+
 let _btqaDateFilter = 'all';
 
 function btqaSetDateFilter(period) {
