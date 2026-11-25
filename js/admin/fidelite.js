@@ -6,6 +6,11 @@ let fideliteData = { cartes: [] };
 let fideliteSha = null;
 
 async function initFidelite() {
+  adminRenderHero('step-fidelite', {
+    icon: '<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/><path d="M14 15h4"/></svg>',
+    title: 'Cartes fidélité',
+    sub: 'Tampons et récompenses étudiants'
+  });
   document.getElementById('fid-list').innerHTML = '<p style="text-align:center;padding:2rem;color:var(--gris-texte);font-size:14px;">Chargement…</p>';
   document.getElementById('fid-empty').style.display = 'none';
   document.getElementById('form-fidelite').classList.remove('visible');
