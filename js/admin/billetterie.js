@@ -6,6 +6,11 @@
 let _bilCourante = null, _bilListe = [];
 
 async function initBilletterie() {
+  adminRenderHero('step-billetterie', {
+    icon: '<svg viewBox="0 0 24 24"><path d="M2 9V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v14"/></svg>',
+    title: 'Billetterie',
+    sub: 'Pages de vente et inscriptions aux événements'
+  });
   document.getElementById('bil-view-list').style.display = '';
   document.getElementById('bil-view-edit').style.display = 'none';
   await bilChargerListe();
