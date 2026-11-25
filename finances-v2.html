@@ -267,8 +267,8 @@ a{text-decoration:none;color:inherit}
 .btn-sm{padding:5px 11px;font-size:12px}
 
 /* Slide panel (drawer) */
-#drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;animation:fadeIn .15s ease}
-#drawer-overlay.open{display:block}
+#drawer-overlay,#ev-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;animation:fadeIn .15s ease}
+#drawer-overlay.open,#ev-drawer-overlay.open{display:block}
 #drawer{
   position:fixed;top:0;right:0;bottom:0;width:420px;max-width:95vw;
   background:var(--surface);box-shadow:var(--sh-lg);z-index:201;
