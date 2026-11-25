@@ -870,6 +870,7 @@ a{text-decoration:none;color:inherit}
   </div>
   <div class="drawer-footer">
     <button class="btn btn-secondary" style="flex:1" onclick="closeDrawer()">Annuler</button>
+    <button class="btn btn-danger" style="flex:1;display:none" id="drawer-delete-btn" onclick="confirmDeleteFromDrawer()">🗑️ Supprimer</button>
     <button class="btn btn-primary" style="flex:2" id="drawer-save-btn" onclick="saveTx()">
       <span class="spinner" id="drawer-spinner" style="display:none"></span>
       Enregistrer
