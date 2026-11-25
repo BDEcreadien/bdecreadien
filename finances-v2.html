@@ -1927,6 +1927,15 @@ function closeDrawer() {
 
 function editTx(id) { openDrawer(id); }
 
+function confirmDeleteFromDrawer() {
+  if (!_editId) return;
+  const t = _all.find(x => x.id === _editId);
+  const label = t?.libelle || 'cette transaction';
+  const id = _editId;
+  closeDrawer();
+  confirmDelete(id, label);
+}
+
 function setTxType(t) {
   _txType = t;
   document.getElementById('type-gain-btn').className = `type-btn ${t==='gain'?'sel-gain':''}`;
