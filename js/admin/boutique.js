@@ -1100,9 +1100,10 @@ function btqaRenderTable(list) {
     const typeLabel = c.type === 'physique'
       ? '<span class="btqa-badge physique">Physique</span>'
       : '<span style="font-size:11px;color:#999">En ligne</span>';
+    const sansProduits = _statutsPaies.includes(c.statut) && !(c.boutique_items?.length);
     const actions = [];
     if (c.statut === 'en_attente') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','payee')">Payée</button>`);
-    if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','production')">Production</button>`);
+    if (c.statut === 'payee')      actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtapeProd('${c.id}')">Production</button>`);
     if (c.statut === 'production') actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','livraison')">Livraison</button>`);
     if (c.statut === 'livraison')  actions.push(`<button class="btqa-act-btn confirm" onclick="btqaEtape('${c.id}','confirmee')">Récupérable</button>`);
     if (c.statut === 'confirmee')  actions.push(`<button class="btqa-act-btn remise"  onclick="btqaRemettre('${c.id}')">Remettre</button>`);
@@ -1110,14 +1111,14 @@ function btqaRenderTable(list) {
     if (['en_attente','payee','production','livraison','confirmee'].includes(c.statut)) actions.push(`<button class="btqa-act-btn cancel" onclick="btqaCancel('${c.id}')">Annuler</button>`);
     if (c.statut === 'panier') actions.push(`<button class="btqa-act-btn cancel" onclick="btqaDeletePanier('${c.id}')">Supprimer</button>`);
     actions.push(`<button class="btqa-act-btn detail" onclick="btqaShowDetail('${c.id}')">Détail</button>`);
-    return `<tr>
-      <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '-'}</td>
+    return `<tr${sansProduits ? ' style="background:#fff5f5"' : ''}>
+      <td style="font-weight:700;color:var(--violet);font-size:12px">${c.numero || '-'}${sansProduits ? ' <span title="Commande payée sans articles" style="color:#dc2626;font-size:14px">⚠️</span>' : ''}</td>
       <td>${c.nom_acheteur || '-'}</td>
       <td style="font-size:12px;color:#666">${c.email_acheteur || '-'}</td>
       <td style="font-size:12px;color:#999">${d}<br><span style="font-size:11px;color:#bbb">${h}</span></td>
       <td style="font-weight:700">${btqaFmt(c.total_centimes || 0)}</td>
       <td>${typeLabel}</td>
-      <td><span class="btqa-badge ${c.statut}">${btqaStatutLabel(c.statut)}</span></td>
+      <td><span class="btqa-badge ${c.statut}">${btqaStatutLabel(c.statut)}</span>${sansProduits ? '<br><span style="font-size:10px;color:#dc2626;font-weight:700">Sans articles</span>' : ''}</td>
       <td style="white-space:nowrap">${actions.join(' ')}</td>
     </tr>`;
   }).join('');
