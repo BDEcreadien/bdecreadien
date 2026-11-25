@@ -1061,6 +1061,15 @@ async function loadAll() {
   const { data: rec } = await _sb.from('transactions_recurrentes').select('*').order('created_at');
   _recur = rec || [];
 
+  // Load events
+  await loadEvenements();
+
+  // Load budget previsions from Supabase
+  try {
+    const { data: budgetRow } = await _sb.from('bde_config').select('value').eq('id', 'budget_categories_v2').maybeSingle();
+    _budgets = budgetRow?.value ? JSON.parse(budgetRow.value) : {};
+  } catch(_) { _budgets = {}; }
+
   applyPeriodFilter();
 }
 
