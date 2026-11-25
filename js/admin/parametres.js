@@ -296,7 +296,7 @@ const BDE_PARAM_CSS = `<style>
     .bdep-nav::-webkit-scrollbar{display:none}
     .bdep-tab{white-space:nowrap;padding:9px 12px;flex-shrink:0;border:1px solid var(--border,#e2e8f0);background:var(--surface,#fff)}
     .bdep-tab.on::before{display:none}
-    .bdep-hero{padding:26px 18px 24px;border-radius:0 0 22px 22px;margin-top:-1.1rem}
+    .bdep-hero{padding:26px 18px 24px;border-radius:0 0 22px 22px;margin-top:0}
     .bdep-hero .lg{width:72px;height:72px}
     .bdep-preview .body{grid-template-columns:1fr}.bdep-preview .col+.col{border-left:0;border-top:1px solid var(--border,#e2e8f0)}
     .bdep-eq{flex-wrap:wrap}.bdep-eq select{width:100%}
