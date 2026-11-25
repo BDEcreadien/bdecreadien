@@ -133,11 +133,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 4. Aucun token - admin voit le setup, membre voit l'écran d'attente
-  if (profil.role === 'admin') {
-    document.getElementById('screen-login').style.display = 'flex';
-  } else {
-    document.getElementById('screen-wait-admin').style.display = 'flex';
-  }
+  // 4. Aucun token — le contenu GitHub (agenda, annonces, médias) n'est pas modifiable,
+  //    mais tout le reste fonctionne. L'admin voit une notice dans la vue d'ensemble.
+  window._adminNoGitHub = true;
+  init();
 });
 
