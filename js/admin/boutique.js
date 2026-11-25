@@ -13,7 +13,11 @@ let _btqaPhysAdhesion  = null; // { remise_centimes, produit_id, label } si l'ac
 async function initBoutiqueAdmin() {
   const sb = window.Auth?.sb;
   if (!sb) return;
-
+  adminRenderHero('step-boutique', {
+    icon: '<svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>',
+    title: 'Merchandising',
+    sub: 'Commandes, stock, remises et ventes physiques'
+  });
   const profil = await window.Auth.getProfil();
   const autorise = profil && (profil.role === 'membre' || profil.role === 'admin') && profil.bureau === true;
   if (!autorise) {
