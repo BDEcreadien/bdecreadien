@@ -1301,7 +1301,7 @@ function initCharts() {
         const rx = Math.max(tw / 2 + 7, 14);
         const ry = fs / 2 + 4;
         const labelItem = x._labelItems?.[idx];
-        const cy = (labelItem?.translation?.[1]) ?? (x.bottom + fs / 2 + (x.options.ticks?.padding || 3) + 3);
+        const cy = labelItem?.y ?? (x.bottom + fs / 2 + (x.options.ticks?.padding || 3) + 3);
         const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#2563eb';
         ctx.beginPath();
         ctx.ellipse(px, cy, rx, ry, 0, 0, Math.PI * 2);
