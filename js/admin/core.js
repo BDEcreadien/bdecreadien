@@ -109,6 +109,7 @@ async function init() {
     selectPage(urlPage);
   } else {
     showStep('pages');
+    adminUpdateOverviewHero();
   }
 }
 
