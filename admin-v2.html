@@ -359,6 +359,11 @@
   <button class="tb-burger" onclick="adminToggleSidebar()" aria-label="Menu">☰</button>
   <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
   <span class="tb-title" id="tb-title"></span>
+  <div class="tb-spacer"></div>
+  <div class="tb-profile" id="tb-profile" onclick="selectPage('bde')" title="Paramètres du BDE" style="display:none">
+    <div class="tb-pf-avatar" id="tb-avatar-top">?</div>
+    <div><div class="tb-pf-name" id="tb-name-top">…</div><div class="tb-pf-role" id="tb-role-top"></div></div>
+  </div>
 </header>
 
 <!-- SETUP - token GitHub (visible uniquement pour admin lors du premier setup) -->
