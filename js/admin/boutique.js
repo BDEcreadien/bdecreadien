@@ -1081,7 +1081,7 @@ function btqaRenderTable(list) {
         </div>
         <div style="padding:10px 16px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-            <span style="font-weight:700;font-size:14px">${c.nom_acheteur || '-'}</span>
+            <span style="font-weight:700;font-size:14px">${c.nom_acheteur || '-'}${_spMobile ? ' <span style="color:#dc2626;font-size:13px">⚠️ Sans articles</span>' : ''}</span>
             <span style="font-weight:800;font-size:15px;color:var(--violet)">${btqaFmt(c.total_centimes || 0)}</span>
           </div>
           <div style="margin-bottom:10px;font-size:11px;color:#aaa">${d}${c.type === 'physique' ? ' · <span class="btqa-badge physique" style="font-size:9px">Physique</span>' : ''}</div>
