@@ -59,6 +59,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     boutique: ['boutique'], billetterie: ['billetterie'], finances: ['finances'], facturation: ['factures'],
     planning: ['planning'], newsletter: ['newsletter'], fidelite: ['fidelite'], liens: ['liens'], qr: ['qr'], stats: ['stats'],
   };
+  // Réappliqué à chaud quand les paramètres changent (pas de rechargement de page)
+  window.adminAppliquerAcces = async function () {
   let actifs = null; const acces = {};
   try {
     const [m, a] = await Promise.all([
@@ -81,6 +83,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     const bdeCard = document.getElementById('page-card-bde');
     if (bdeCard) bdeCard.style.display = '';
   }
+  if (typeof adminBuildSidebar === 'function') adminBuildSidebar();
+  };
+  await window.adminAppliquerAcces();
   try {
     document.getElementById('sb-name').textContent = ((profil && profil.prenom) || '') + ' ' + ((profil && profil.nom) || '');
     document.getElementById('sb-avatar').textContent = ((profil && profil.prenom) || '?')[0].toUpperCase();

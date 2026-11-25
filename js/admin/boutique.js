@@ -248,7 +248,8 @@ function btqaShowDetailStats() {
 
   // Frais SumUp 1,75% sur les ventes physiques payées en SumUp
   const totalSumUp = payees.filter(c => c.type === 'physique' && c.moyen_paiement === 'sumup').reduce((s,c) => s + (c.total_centimes||0), 0);
-  const fraisSumUp = Math.round(totalSumUp * 0.0175);
+  const tauxSumUp = (parseFloat(String((window.BDE && BDE.get('sumup_frais_pct', '1.75')) || '1.75').replace(',', '.')) || 1.75) / 100;   // réglable dans Paramètres > Intégrations
+  const fraisSumUp = Math.round(totalSumUp * tauxSumUp);
 
   const margeBrute = totalEncaisse - coutAchatCentimes;
   const margeNette = margeBrute - fraisSumUp;
@@ -264,7 +265,7 @@ function btqaShowDetailStats() {
     ['Taux de conversion',`${tauxConv}%`],
     null,
     ['Coût d\'achat',     btqaFmt(coutAchatCentimes)],
-    ...(fraisSumUp > 0 ? [['Frais SumUp (1,75%)', `<span style="color:#dc2626">−${btqaFmt(fraisSumUp)}</span>`]] : []),
+    ...(fraisSumUp > 0 ? [[`Frais SumUp (${(tauxSumUp * 100).toFixed(2).replace(/\.?0+$/, '').replace('.', ',')}%)`, `<span style="color:#dc2626">−${btqaFmt(fraisSumUp)}</span>`]] : []),
     ['Marge brute',       `<span style="color:${margeBrute>=0?'#166534':'#dc2626'};font-weight:800">${btqaFmt(margeBrute)} (${tauxMarge}%)</span>`],
     ...(fraisSumUp > 0 ? [['Marge nette', `<span style="color:${margeNette>=0?'#166534':'#dc2626'};font-weight:800">${btqaFmt(margeNette)} (${tauxMargeNette}%)</span>`]] : []),
   ];

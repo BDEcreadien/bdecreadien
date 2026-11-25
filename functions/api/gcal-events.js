@@ -1,8 +1,24 @@
 const ICS_URL = 'https://calendar.google.com/calendar/ical/4ecec32ec639d124f22369adfff74b9d7d91ef12bb10ef4751686bb166a9d49b%40group.calendar.google.com/public/basic.ics';
 
-export async function onRequest() {
+// Lien iCal de l'agenda : réglé dans Paramètres du BDE > Intégrations (table bde_parametres),
+// avec repli sur l'agenda historique du BDE.
+async function icsUrl(env) {
   try {
-    const res = await fetch(ICS_URL);
+    if (env && env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
+      const r = await fetch(env.SUPABASE_URL + '/rest/v1/bde_parametres?cle=eq.gcal_ics_url&select=valeur', {
+        headers: { apikey: env.SUPABASE_SERVICE_ROLE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_ROLE_KEY }
+      });
+      const rows = r.ok ? await r.json() : [];
+      const v = rows[0] && rows[0].valeur && rows[0].valeur.trim();
+      if (v && /^https:\/\/calendar\.google\.com\//.test(v)) return v;
+    }
+  } catch (_) {}
+  return ICS_URL;
+}
+
+export async function onRequest(context) {
+  try {
+    const res = await fetch(await icsUrl(context && context.env));
     if (!res.ok) return json({ error: 'Fetch ICS failed: ' + res.status }, 502);
     const text = await res.text();
     const events = parseICS(text);
