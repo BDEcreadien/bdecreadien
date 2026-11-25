@@ -4,6 +4,11 @@
 // QR CODE DYNAMIQUE
 // ============================================================
 async function initQrPage() {
+  adminRenderHero('step-qr', {
+    icon: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none"/><path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/></svg>',
+    title: 'QR code dynamique',
+    sub: 'Redirection modifiable sans réimpression'
+  });
   const { data: row } = await Auth.sb.from('bde_config').select('value').eq('id', 'qr_destination').maybeSingle();
   const dest = row?.value || '';
   document.getElementById('qr-dest-input').value = dest;
