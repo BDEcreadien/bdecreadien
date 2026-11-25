@@ -1467,7 +1467,7 @@ function txRow(t, withActions) {
       <td><span class="chip" style="background:${cat.color}18;color:${cat.color}"><span class="chip-dot" style="background:${cat.color}"></span>${cat.icon} ${cat.label}</span></td>
       <td><span class="mpay">${MOYEN_ICONS[moyen]||''} ${MOYEN_LABELS[moyen]||moyen}</span></td>
       <td class="tx-montant ${m>=0?'pos':'neg'}">${m>=0?'+':''}${formatEur(m)}</td>
-      ${withActions ? `<td><div class="tx-actions"><button class="btn-icon" title="Modifier" onclick="editTx('${t.id}')">✏️</button><button class="btn-icon danger" title="Supprimer" onclick="confirmDelete('${t.id}','${esc(t.libelle)}')">🗑️</button></div></td>` : '<td></td>'}
+      ${withActions ? `<td><div class="tx-actions"><button class="btn-icon" title="Modifier" onclick="editTx('${t.id}')">✏️</button><button class="btn-icon danger" title="Supprimer" data-id="${t.id}" data-label="${esc(t.libelle)}" onclick="confirmDelete(this.dataset.id,this.dataset.label)">🗑️</button></div></td>` : '<td></td>'}
     </tr>`;
 }
 
