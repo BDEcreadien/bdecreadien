@@ -396,11 +396,19 @@
 
   <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
   <div id="step-pages">
-    <div class="home-head"><h2>Vue d'ensemble</h2><p>Choisis un module pour le gérer.</p></div>
-    <style>
-      .admin-group-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#666; margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid #e5e7eb; }
-      .admin-group-title:first-of-type { margin-top:8px; }
-    </style>
+    <div class="admin-page-hero" id="admin-overview-hero">
+      <div class="aph-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <div class="aph-body">
+        <div class="aph-title">Administration</div>
+        <div class="aph-sub" id="overview-hero-sub">Chargement…</div>
+        <div class="aph-chips" id="overview-hero-chips"></div>
+      </div>
+    </div>
+    <div id="admin-github-notice" class="admin-github-notice" style="display:none">
+      <span style="font-size:20px;">⚠️</span>
+      <div class="admin-github-notice-text"><strong>Contenu GitHub non configuré</strong>Agenda, annonces et médias nécessitent un token GitHub. Les autres modules fonctionnent normalement.</div>
+      <button class="admin-github-notice-btn" onclick="adminShowGitHubSetup()">Configurer</button>
+    </div>
 
     <div class="admin-group-title">Pages publiques</div>
     <div class="pages-grid">
