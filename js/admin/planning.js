@@ -12,6 +12,11 @@ let _plnCurrentTab = 'events';
 let _plnTplBuffer = [];  // buffer d'édition des tâches d'un template
 
 async function initPlanning() {
+  adminRenderHero('step-planning', {
+    icon: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    title: 'Organisation',
+    sub: 'Répartition des membres sur les événements'
+  });
   _plnCurrentTab = 'events';
   document.querySelectorAll('.pln-tab-btn').forEach(b => b.classList.toggle('pln-tab-active', b.dataset.tab === 'events'));
   document.querySelectorAll('.pln-tab-content').forEach(c => c.style.display = c.id === 'pln-tab-events' ? '' : 'none');
