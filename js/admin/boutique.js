@@ -1382,18 +1382,66 @@ function btqaUpdateBulkBar() {
     }
   }
 }
+let _btqaBulkRunning = false;
 async function btqaBulk(from, to) {
+  if (_btqaBulkRunning) return;
   const targets = (_btqaCommandes || []).filter(c => c.statut === from);
   if (!targets.length) return;
   const label = _btqaEtapeLabels[to] || to;
-  if (!confirm(`Passer ${targets.length} commande(s) en "${label}" ? Un e-mail sera envoyé à chaque client.`)) return;
-  const ids = targets.map(c => c.id);
-  await window.Auth.sb.from('boutique_commandes').update({ statut: to }).in('id', ids);
-  targets.forEach(c => c.statut = to);
-  btqaRenderStats();
-  btqaUpdateBulkBar();
-  btqaFilterTable();
-  showToast(`${targets.length} commande(s) passées en "${label}"`);
+  if (!confirm(`Passer ${targets.length} commande(s) en "${label}" ? Un e-mail sera envoyé à chaque client. Garde cette page ouverte jusqu'à la fin de l'envoi.`)) return;
+
+  _btqaBulkRunning = true;
+  const warnLeave = e => { e.preventDefault(); e.returnValue = ''; };
+  window.addEventListener('beforeunload', warnLeave);
+  const btn = document.getElementById(`btqa-bulk-${to}`);
+  const btnHtml = btn.innerHTML;
+  btn.disabled = true;
+  const sb = window.Auth.sb;
+  let sent = 0, skipped = 0, failed = 0, streak = 0;
+  const stuck = [];
+  try {
+    for (const [i, c] of targets.entries()) {
+      btn.textContent = `Envoi ${i + 1} / ${targets.length}…`;
+      // Statut changé avant l'envoi, seulement s'il n'a pas bougé : évite les doublons
+      const { data, error } = await sb.from('boutique_commandes').update({ statut: to }).eq('id', c.id).eq('statut', from).select('id');
+      if (!error && !data?.length) { skipped++; continue; }
+      let ok = false;
+      if (!error) {
+        ok = await fetch('/api/boutique-email-etape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ commande_id: c.id, etape: to }),
+        }).then(r => r.ok).catch(() => false);
+        if (!ok) {
+          const { error: revertError } = await sb.from('boutique_commandes').update({ statut: from }).eq('id', c.id);
+          if (revertError) { c.statut = to; stuck.push(c.numero); }
+        }
+      }
+      if (ok) { c.statut = to; sent++; streak = 0; }
+      else { failed++; if (++streak === 5) break; }
+    }
+  } finally {
+    _btqaBulkRunning = false;
+    window.removeEventListener('beforeunload', warnLeave);
+    btn.disabled = false;
+    btn.innerHTML = btnHtml;
+    btqaRenderStats();
+    btqaUpdateBulkBar();
+    btqaFilterTable();
+  }
+
+  const remaining = targets.length - sent - skipped - failed;
+  showToast(`${sent} e-mail(s) envoyé(s), commandes passées en "${label}"`);
+  if (failed || skipped) {
+    alert([
+      `${sent} e-mail(s) envoyé(s) sur ${targets.length}.`,
+      failed ? `${failed} échec(s).` : '',
+      remaining ? `Envoi arrêté après 5 échecs de suite : ${remaining} commande(s) non traitée(s).` : '',
+      failed ? `Les commandes sans e-mail restent à leur statut précédent : reclique sur le bouton pour réessayer.` : '',
+      skipped ? `${skipped} commande(s) ignorée(s) car leur statut avait déjà changé (recharge la page).` : '',
+      stuck.length ? `Attention, passées en "${label}" sans e-mail : ${stuck.join(', ')}.` : '',
+    ].filter(Boolean).join('\n'));
+  }
 }
 
 // ── Export CSV ───────────────────────────────────────────────
