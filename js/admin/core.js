@@ -60,24 +60,6 @@ function adminShowGitHubSetup() {
   if (loginEl) loginEl.style.display = 'flex';
 }
 
-function adminUpdateOverviewHero() {
-  const sub = document.getElementById('overview-hero-sub');
-  if (sub) {
-    const p = window._adminProfil;
-    const bdeNom = window.BDE ? window.BDE.get('nom', '') : '';
-    const prenom = p && p.prenom ? ' ' + p.prenom : '';
-    sub.textContent = 'Bonjour' + prenom + (bdeNom ? ' · ' + bdeNom : '');
-  }
-  const chips = document.getElementById('overview-hero-chips');
-  if (chips) {
-    const bdeNom = window.BDE ? window.BDE.get('nom', '') : '';
-    chips.innerHTML = bdeNom ? `<span class="aph-chip">${bdeNom}</span>` : '';
-  }
-  if (window._adminNoGitHub) {
-    const notice = document.getElementById('admin-github-notice');
-    if (notice) notice.style.display = 'flex';
-  }
-}
 async function init() {
   document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
@@ -109,7 +91,6 @@ async function init() {
     selectPage(urlPage);
   } else {
     showStep('pages');
-    adminUpdateOverviewHero();
   }
 }
 
@@ -146,7 +127,7 @@ function showStep(step, opts = {}) {
   const screenApp = document.getElementById('screen-app');
   if (screenApp) screenApp.style.display = outsideSteps.includes(step) ? 'none' : 'block';
   document.getElementById('step-' + step).style.display = 'block';
-  if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); }
+  if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); if (typeof dashRender === 'function') dashRender(); }
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
   // Sync URL : /admin sans param quand on est sur les cartes de choix,
   // /admin?page=X sinon (permet un refresh cohérent avec ce qu'on voit)

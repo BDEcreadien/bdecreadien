@@ -289,6 +289,8 @@
     .page-card-desc { font-size:12px; color:var(--text2); }
     .page-card-preview { grid-column:2; color:var(--accent); font-size:11px; margin-top:4px; }
 
+    .dash-modules { margin-top:22px; font-size:18px; font-weight:800; color:var(--text); }
+
     /* Connexion / attente */
     .login-card { border:1px solid var(--border); box-shadow:0 4px 24px rgba(15,23,42,.08); }
     .btn-primary { background:var(--accent); }
@@ -396,20 +398,14 @@
 
   <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
   <div id="step-pages">
-    <div class="admin-page-hero" id="admin-overview-hero">
-      <div class="aph-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
-      <div class="aph-body">
-        <div class="aph-title">Administration</div>
-        <div class="aph-sub" id="overview-hero-sub">Chargement…</div>
-        <div class="aph-chips" id="overview-hero-chips"></div>
-      </div>
-    </div>
+    <div id="dash"></div>
     <div id="admin-github-notice" class="admin-github-notice" style="display:none">
       <span style="font-size:20px;">⚠️</span>
       <div class="admin-github-notice-text"><strong>Contenu GitHub non configuré</strong>Agenda, annonces et médias nécessitent un token GitHub. Les autres modules fonctionnent normalement.</div>
       <button class="admin-github-notice-btn" onclick="adminShowGitHubSetup()">Configurer</button>
     </div>
 
+    <div class="dash-modules">Tous les modules</div>
     <div class="admin-group-title">Pages publiques</div>
     <div class="pages-grid">
       <div class="page-card" onclick="selectPage('accueil')">
@@ -2603,6 +2599,7 @@
 <script src="js/admin/liens.js?v=1"></script>
 <script src="js/admin/facturation.js?v=1"></script>
 <script src="js/admin/billetterie.js?v=1"></script>
+<script src="js/admin/dashboard.js?v=1"></script>
 <script src="js/admin/boot.js?v=3"></script>
 
 <!-- MODAL + TAMPON ADMIN -->
