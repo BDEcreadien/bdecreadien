@@ -1358,7 +1358,6 @@ function updateCharts() {
     const ym = t.date.slice(0,7);
     if(ym>=syStartYM && ym<=junYM) groups[ym]=(groups[ym]||0)+Number(t.montant);
   }
-  console.log('[chart] groups:', JSON.stringify(groups));
 
   // Forecast: average net of last 3 months with actual data
   const pastWithData = allMonths.filter(ym=>ym<=nowYM && groups[ym]!==undefined);
