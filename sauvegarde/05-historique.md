@@ -4,6 +4,10 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-11-26 — Trésorerie : Événements filtrés par période
+
+- La liste et ses totaux suivent le sélecteur de période ; changer de période ramène à la liste
+
 ## 2026-11-26 — Boutique : le passage en masse envoie les e-mails
 
 - `btqaBulk` (`js/admin/boutique.js` et `admin.html`) : envoi un par un via `/api/boutique-email-etape`, avec progression
