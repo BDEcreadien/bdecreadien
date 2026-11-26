@@ -1283,27 +1283,27 @@ function animateCounter(el, target, from, duration = 500) {
 function initCharts() {
   Chart.defaults.font.family = "'Inter', sans-serif";
 
-  // Disque plein + anneau blanc + cercle fin autour du point de la période sélectionnée
+  // Disque plein + anneau blanc + cercle fin autour des points de la période sélectionnée
   const periodHighlightPlugin = {
     id: 'periodHighlight',
     afterDatasetsDraw(chart) {
-      const idx = chart._highlightIdx;
-      if (idx === undefined || idx < 0) return;
-      const ds = chart.data.datasets[0].data[idx] != null ? 0 : 1;
-      if (chart.data.datasets[ds]?.data[idx] == null) return;
-      const point = chart.getDatasetMeta(ds).data[idx];
-      if (!point) return;
       const { ctx } = chart;
-      const disc = (r, color) => {
+      const disc = (point, r, color) => {
         ctx.beginPath();
         ctx.arc(point.x, point.y, r, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
       };
       ctx.save();
-      disc(12, '#2563eb');
-      disc(10.5, '#fff');
-      disc(7.5, '#2563eb');
+      for (const idx of chart._highlightIdxs || []) {
+        const ds = chart.data.datasets[0].data[idx] != null ? 0 : 1;
+        if (chart.data.datasets[ds]?.data[idx] == null) continue;
+        const point = chart.getDatasetMeta(ds).data[idx];
+        if (!point) continue;
+        disc(point, 6.5, '#e8376e');
+        disc(point, 5.25, '#fff');
+        disc(point, 3.5, '#e8376e');
+      }
       ctx.restore();
     }
   };
@@ -1391,11 +1391,11 @@ function updateCharts() {
   } else {
     _chartSolde.data.datasets[1].data = forecastData;
   }
-  // Highlight the selected period's month on x-axis
-  const periodYM = _dateStart
-    ? `${_dateStart.getFullYear()}-${String(_dateStart.getMonth()+1).padStart(2,'0')}`
-    : nowYM;
-  _chartSolde._highlightIdx = allMonths.indexOf(periodYM);
+  // Highlight every month of the selected period
+  const toYM = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  const fromYM = _dateStart ? toYM(_dateStart) : nowYM;
+  const toEndYM = _dateEnd ? toYM(_dateEnd) : fromYM;
+  _chartSolde._highlightIdxs = allMonths.flatMap((ym, i) => ym >= fromYM && ym <= toEndYM ? [i] : []);
   _chartSolde.update();
 
   // Doughnut: depenses by category for current period
