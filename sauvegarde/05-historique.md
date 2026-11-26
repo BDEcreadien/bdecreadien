@@ -4,6 +4,12 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-11-26 — Admin v2 : vue d'ensemble en tableau de bord
+
+- Nouveau module `js/admin/dashboard.js` : hero, compte à rebours, chiffres clés, fréquentation 30 j, à traiter, événements, raccourcis
+- Données : RPC `bde_stats` et `analytics_stats`, tables `evenements`, `billetterie_inscriptions`, `boutique_commandes`
+- Les steps hors `#screen-app` le masquent (`showStep`) ; il doit être remis en `display:block` (masqué par défaut en CSS)
+
 ## 2026-07-10 — Système de partials (`_includes/`)
 
 - Création de `_includes/nav.html`, `_includes/footer.html`, `_includes/scripts-public.html`
