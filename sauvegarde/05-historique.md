@@ -4,6 +4,13 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-11-26 — Dates de la boutique réglables, bandeau admin supprimé
+
+- Ouverture et fermeture dans admin v2 > Merchandising (`bde_parametres` : `boutique_ouverture`, `boutique_fermeture`, écriture admin). Sans date d'ouverture : fermée
+- `js/boutique-dates.js` lu par `boutique.html`, `boutique-preview.html`, `boutique-merci.html` ; plus de date en dur, les liens pointent vers la preview qui redirige
+- Tableau de bord : carte billets seulement si billetterie active avec billets confirmés, carte commandes seulement si boutique ouverte ; "À traiter" inchangé
+- Bandeau du haut masqué sur ordinateur (conservé sur mobile pour le menu)
+
 ## 2026-11-26 — Trésorerie : Événements, retour au fonctionnement d'`admin?page=finances`
 
 - `finances-v2.html` : liste prévu / réel avec validation ; formulaire avec recettes et dépenses à cocher sur la période, montants partiels pour les recettes partagées
