@@ -50,14 +50,23 @@ async function dashCharger() {
   const lire = async (q) => {
     try { const r = await q; return r.error ? null : r.data; } catch (_) { return null; }
   };
-  const [stats, trafic, evs, billets, commandes] = await Promise.all([
+  const [stats, trafic, evs, billets, commandes, boutique] = await Promise.all([
     lire(sb.rpc('bde_stats')),
     dashPeut('stats') ? lire(sb.rpc('analytics_stats', { p_days: 30 })) : null,
     lire(sb.from('evenements').select('titre,date,lieu,horaire,bureau_only').gte('date', dashJour(new Date())).order('date', { ascending: true }).limit(4)),
-    dashPeut('billetterie') ? lire(sb.from('billetterie_inscriptions').select('quantite,created_at').eq('statut', 'confirme')) : null,
+    dashPeut('billetterie') ? dashBillets(lire) : 0,
     dashPeut('boutique') ? lire(sb.from('boutique_commandes').select('statut,total_centimes').in('statut', ['en_attente', 'payee', 'production', 'livraison', 'confirmee'])) : null,
+    dashPeut('boutique') ? boutiqueDates() : null,
   ]);
-  return { stats, trafic, evs, billets, commandes };
+  return { stats, trafic, evs, billets, commandes, boutiqueOuverte: !!boutique && boutique.etat === 'ouverte' };
+}
+
+// Billets confirmés des seules billetteries actives
+async function dashBillets(lire) {
+  const actives = await lire(Auth.sb.from('billetteries').select('slug').eq('actif', true));
+  if (!actives || !actives.length) return 0;
+  const l = await lire(Auth.sb.from('billetterie_inscriptions').select('quantite').eq('statut', 'confirme').in('billetterie_slug', actives.map(b => b.slug)));
+  return (l || []).reduce((a, r) => a + (r.quantite || 1), 0);
 }
 
 function dashSerie(trafic) {
@@ -87,8 +96,9 @@ function dashKpis(D) {
   const s = D.stats || {};
   const k = [];
   if (D.trafic) k.push({ page: 'stats', ic: 'eye', val: D.trafic.unique_visitors, lab: 'Visiteurs', sub: dashNb(D.trafic.pageviews_total) + ' pages vues · 30 j', spark: dashSerie(D.trafic).map(x => x.v) });
-  if (D.billets) k.push({ page: 'billetterie', ic: 'ticket', val: D.billets.reduce((a, r) => a + (r.quantite || 1), 0), lab: 'Billets confirmés', sub: 'toutes billetteries' });
-  if (D.commandes) {
+  // Billetterie et boutique : seulement quand une vente est en cours
+  if (D.billets > 0) k.push({ page: 'billetterie', ic: 'ticket', val: D.billets, lab: 'Billets confirmés', sub: 'billetteries actives' });
+  if (D.boutiqueOuverte && D.commandes) {
     const total = D.commandes.reduce((a, c) => a + (c.total_centimes || 0), 0) / 100;
     k.push({ page: 'boutique', ic: 'bag', val: D.commandes.length, lab: 'Commandes en cours', sub: total.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) + ' au total' });
   }

@@ -25,6 +25,8 @@ async function initBoutiqueAdmin() {
     return;
   }
 
+  btqaDates(profil.role === 'admin');
+
   // Charger commandes (tout sauf paniers)
   const { data: cmds } = await sb
     .from('boutique_commandes')
@@ -44,6 +46,48 @@ async function initBoutiqueAdmin() {
 }
 
 // ── Onglets ──────────────────────────────────────────────────
+// Ouverture et fermeture de la vente en ligne (écriture réservée aux admins par la base)
+async function btqaDates(admin) {
+  const box = document.getElementById('btqa-dates');
+  if (!box) return;
+  const d = await boutiqueDates();
+  if (!d) { box.innerHTML = '<p style="color:#991b1b;font-size:13px;margin:0 0 16px">Impossible de lire les dates de la boutique.</p>'; return; }
+  const local = x => x ? new Date(x - x.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : '';
+  const quand = x => x.toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+  const [txt, couleur] = d.etat === 'ouverte' ? ['Ouverte' + (d.fermeture ? " jusqu'au " + quand(d.fermeture) : ''), '#16a34a']
+    : d.etat === 'avant' ? ['Ouvre le ' + quand(d.ouverture), '#d97706'] : ['Fermée', '#64748b'];
+  const champ = (id, lab, v) => `<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--text2)">${lab}
+    <input type="datetime-local" id="${id}" value="${local(v)}" ${admin ? '' : 'disabled'} style="padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:10px;font:inherit;font-size:14px;background:white"></label>`;
+  box.innerHTML = `<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;background:white;border:1px solid #e2e8f0;border-radius:16px;padding:16px 18px;margin-bottom:18px">
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:15px;font-weight:800;margin-bottom:6px">Vente en ligne</div>
+      <div style="font-size:13px;font-weight:700;color:${couleur}">● ${txt}</div>
+      ${admin ? '' : '<div style="font-size:12px;color:var(--text2);margin-top:4px">Seul un administrateur peut modifier ces dates.</div>'}
+    </div>
+    ${champ('btqa-ouverture', 'Ouverture', d.ouverture)}
+    ${champ('btqa-fermeture', 'Fermeture', d.fermeture)}
+    ${admin ? '<button class="btqa-btn-solid" style="background:var(--accent);color:white;border:none;cursor:pointer;padding:10px 18px;border-radius:10px;font-weight:700" onclick="btqaDatesSave(this)">Enregistrer</button>' : ''}
+  </div>`;
+}
+
+async function btqaDatesSave(btn) {
+  const lire = id => { const v = document.getElementById(id).value; return v ? new Date(v).toISOString() : ''; };
+  const ouverture = lire('btqa-ouverture'), fermeture = lire('btqa-fermeture');
+  if (fermeture && !ouverture) { showToast("Indique aussi la date d'ouverture", 'error'); return; }
+  if (fermeture && fermeture <= ouverture) { showToast("La fermeture doit être après l'ouverture", 'error'); return; }
+  btn.disabled = true;
+  const user = await window.Auth.getUser();
+  const now = new Date().toISOString();
+  const { error } = await window.Auth.sb.from('bde_parametres').upsert(
+    [['boutique_ouverture', ouverture], ['boutique_fermeture', fermeture]]
+      .map(([cle, valeur]) => ({ cle, valeur, updated_at: now, updated_by: user.id })));
+  btn.disabled = false;
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  _dashAt = 0; // le tableau de bord relira l'état de la boutique
+  showToast('Dates enregistrées', 'success');
+  btqaDates(true);
+}
+
 function btqaSwitchTab(tab) {
   document.querySelectorAll('.btqa-tab').forEach((b, i) => {
     b.classList.toggle('active', ['commandes','physique','remise','recap','config','analytiques'][i] === tab);

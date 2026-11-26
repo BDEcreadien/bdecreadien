@@ -128,7 +128,7 @@ function showStep(step, opts = {}) {
   if (screenApp) screenApp.style.display = outsideSteps.includes(step) ? 'none' : 'block';
   document.getElementById('step-' + step).style.display = 'block';
   if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); if (typeof dashRender === 'function') dashRender(); }
-  document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
+  document.getElementById('btn-back').style.display = step === 'sections' || step === 'editor' ? 'inline-block' : 'none';
   // Sync URL : /admin sans param quand on est sur les cartes de choix,
   // /admin?page=X sinon (permet un refresh cohérent avec ce qu'on voit)
   try {

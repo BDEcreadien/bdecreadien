@@ -56,11 +56,13 @@
     </div>
     <a href="/" class="back">← Retour au site</a>
   </div>
+<script src="js/supabase-config.js?v=2"></script>
+<script src="js/boutique-dates.js?v=1"></script>
 <script>
-(function(){
-  const CLOSE = new Date('2026-11-23T17:00:00+01:00');
-  if(Date.now() < CLOSE) location.replace('/boutique.html');
-})();
+boutiqueDates().then(d => {
+  if(d && d.etat === 'ouverte') location.replace('/boutique.html');
+  if(d && d.etat === 'avant') location.replace('/boutique-preview.html');
+});
 </script>
 </body>
 </html>

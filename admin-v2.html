@@ -264,11 +264,12 @@
     #sb-overlay { display:none; }
 
     /* Barre du haut */
-    header.topbar { justify-content:flex-start; background:var(--surface); border-bottom:1px solid var(--border); padding:.7rem 1.5rem; display:flex; align-items:center; gap:.75rem; min-height:56px; position:sticky; top:0; z-index:40; }
+    header.topbar { justify-content:flex-start; background:var(--surface); border-bottom:1px solid var(--border); padding:.7rem 1.5rem; display:none; align-items:center; gap:.75rem; min-height:56px; position:sticky; top:0; z-index:40; }
     .tb-burger { display:none; border:1px solid var(--border); background:var(--surface); border-radius:8px; width:34px; height:34px; font-size:16px; cursor:pointer; color:var(--text); }
     .btn-back { background:var(--surface); border:1px solid var(--border); color:var(--text2); padding:6px 14px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; display:none; font-family:inherit; }
     .btn-back:hover { background:var(--surface2); color:var(--text); border-color:var(--border2); }
     .tb-title { font-weight:700; font-size:15px; }
+    #btn-back { margin-bottom:1rem; }
 
     #screen-app { max-width:1280px; width:100%; padding:1.75rem 2rem; margin:0 auto; }
     #step-editor, #step-sections { max-width:920px; margin:0 auto; }
@@ -302,7 +303,7 @@
       body.admin-ready.sb-open #sidebar { transform:none; }
       body.sb-open #sb-overlay { display:block; position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:45; }
       .tb-burger { display:block; }
-      header.topbar { padding:.6rem 1rem; }
+      header.topbar { display:flex; padding:.6rem 1rem; }
       #screen-app { padding:1.1rem 1rem; }
       #screen-app > div { min-width:0; }
       #screen-app > div[id^="step-"] { padding-left:0 !important; padding-right:0 !important; }
@@ -359,7 +360,6 @@
 <div id="admin-main">
 <header class="topbar">
   <button class="tb-burger" onclick="adminToggleSidebar()" aria-label="Menu">☰</button>
-  <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
   <span class="tb-title" id="tb-title"></span>
   <div class="tb-spacer"></div>
   <div class="tb-profile" id="tb-profile" onclick="selectPage('bde')" title="Paramètres du BDE" style="display:none">
@@ -395,6 +395,7 @@
 
 <!-- APP -->
 <div id="screen-app">
+  <button class="btn-back" id="btn-back" onclick="goBack()">← Retour</button>
 
   <!-- ÉTAPE 1 : CHOISIR UNE PAGE -->
   <div id="step-pages">
@@ -2011,6 +2012,8 @@
     </div>
   </div>
 
+  <div id="btqa-dates"></div>
+
   <!-- Onglets -->
   <div class="btqa-tabs">
     <button class="btqa-tab active" onclick="btqaSwitchTab('commandes')">Commandes</button>
@@ -2588,7 +2591,8 @@
 <script src="/js/image-utils.js?v=1"></script>
   <script src="js/auth.js?v=12"></script>
 <script defer src="js/notif.js?v=4"></script>
-<script src="js/admin/core.js?v=2"></script>
+<script src="js/boutique-dates.js?v=1"></script>
+<script src="js/admin/core.js?v=3"></script>
 <script src="js/admin/contenu.js?v=1"></script>
 <script src="js/admin/qr.js?v=1"></script>
 <script src="js/admin/stats.js?v=1"></script>
@@ -2599,7 +2603,7 @@
 <script src="js/admin/liens.js?v=1"></script>
 <script src="js/admin/facturation.js?v=1"></script>
 <script src="js/admin/billetterie.js?v=1"></script>
-<script src="js/admin/dashboard.js?v=1"></script>
+<script src="js/admin/dashboard.js?v=2"></script>
 <script src="js/admin/boot.js?v=3"></script>
 
 <!-- MODAL + TAMPON ADMIN -->
@@ -2619,6 +2623,6 @@
 </div>
 
 <script src="js/admin/parametres.js?v=3"></script>
-<script src="js/admin/boutique.js?v=3"></script>
+<script src="js/admin/boutique.js?v=4"></script>
 </body>
 </html>

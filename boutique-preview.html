@@ -79,23 +79,34 @@
       <p class="pretitle">BDE CREAD LYON · 2026-2027</p>
       <h1 class="title">BOUTIQUE</h1>
       <p class="sub">Merch officiel · Livraison à l'école</p>
-      <p class="cd-label" id="cd-label">Ouverture dans</p>
+      <p class="cd-label" id="cd-label"></p>
       <div class="cd-row" id="cd-row"></div>
-      <p class="cd-date" id="cd-date">Samedi 7 novembre à 12h00</p>
+      <p class="cd-date" id="cd-date"></p>
       <p class="open-msg" id="open-msg">La boutique est ouverte !</p>
       <a href="/boutique.html" class="open-link" id="open-link">Commander →</a>
     </div>
   </section>
 
+  <script src="js/supabase-config.js?v=2"></script>
+  <script src="js/boutique-dates.js?v=1"></script>
   <script>
-  (function(){
-    const OPEN = new Date('2026-11-07T12:00:00+01:00');
+  (async function(){
     function pad(n){return String(n).padStart(2,'0')}
     const row   = document.getElementById('cd-row');
     const label = document.getElementById('cd-label');
     const date  = document.getElementById('cd-date');
     const msg   = document.getElementById('open-msg');
     const link  = document.getElementById('open-link');
+
+    const dates = await boutiqueDates();
+    if(dates && dates.etat === 'ouverte') return location.replace('/boutique.html');
+    if(dates && dates.etat === 'fermee') return location.replace('/boutique-merci.html');
+    if(!dates){ label.textContent = 'Bientôt disponible'; return; }
+
+    const OPEN = dates.ouverture;
+    const jour = OPEN.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+    label.textContent = 'Ouverture dans';
+    date.textContent = jour.charAt(0).toUpperCase() + jour.slice(1) + ' à ' + pad(OPEN.getHours()) + 'h' + pad(OPEN.getMinutes());
 
     function tick(){
       const diff = OPEN - Date.now();

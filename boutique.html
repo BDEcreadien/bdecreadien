@@ -104,11 +104,11 @@
   <div class="btq-grid" id="btq-grid"></div>
   <div id="btq-packs-info" style="padding:60px 24px 60px;max-width:900px;margin:0 auto;"></div>
   <!-- Compte à rebours clôture boutique -->
-  <div id="btq-countdown-wrap" style="position:relative;z-index:1;max-width:700px;margin:0 auto 20px;padding:0 24px;text-align:center">
+  <div id="btq-countdown-wrap" style="display:none;position:relative;z-index:1;max-width:700px;margin:0 auto 20px;padding:0 24px;text-align:center">
     <p style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin:0 0 20px">Clôture de la boutique dans</p>
     <div id="btq-countdown" style="display:flex;justify-content:center;gap:14px"></div>
     <p id="btq-countdown-closed" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:32px;color:#D2396D;letter-spacing:2px;margin:0">Boutique clôturée</p>
-    <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:rgba(255,255,255,.25);margin:16px 0 0">Le 23 novembre à 17h00</p>
+    <p style="font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:rgba(255,255,255,.25);margin:16px 0 0" id="btq-countdown-date"></p>
   </div>
 </section>
 
@@ -1609,10 +1609,9 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
 
 <script defer src="js/main.js?v=20"></script>
 <script defer src="js/notif.js"></script>
+<script src="js/boutique-dates.js?v=1"></script>
 <script>
-(function(){
-  const OPEN  = new Date('2026-11-07T12:00:00+01:00');
-  const CLOSE = new Date('2026-11-23T17:00:00+01:00');
+(async function(){
   function pad(n){return String(n).padStart(2,'0')}
   function cdHtml(diff){
     const j = Math.floor(diff/86400000);
@@ -1623,23 +1622,31 @@ document.addEventListener('DOMContentLoaded', _startWhenReady);
       .map(([v,l])=>`<div class="btq-cd-box"><span class="btq-cd-num">${v}</span><span class="btq-cd-lbl">${l}</span></div>`).join('');
   }
 
+  const bloc = document.getElementById('btq-countdown-wrap');
+  const dates = await boutiqueDates();
+
   // ── Redirection si clôturée ──────────────────────────────
-  if(CLOSE <= Date.now()){
+  if(dates && dates.etat === 'fermee'){
     location.replace('/boutique-merci.html');
+    return;
   }
+  const CLOSE = dates && dates.fermeture;
+  if(!CLOSE) return;
 
   // ── Chrono clôture ───────────────────────────────────────
-  const wrap   = document.getElementById('btq-countdown');
-  const closed = document.getElementById('btq-countdown-closed');
+  const wrap = document.getElementById('btq-countdown');
+  document.getElementById('btq-countdown-date').textContent =
+    'Le ' + CLOSE.toLocaleDateString('fr-FR',{day:'numeric',month:'long'}) + ' à ' + pad(CLOSE.getHours()) + 'h' + pad(CLOSE.getMinutes());
+  bloc.style.display = '';
   function tickClose(){
     const diff = CLOSE - Date.now();
     if(diff <= 0){
-      if(wrap) wrap.style.display='none';
-      if(closed) closed.style.display='';
+      wrap.style.display='none';
+      document.getElementById('btq-countdown-closed').style.display='';
       location.replace('/boutique-merci.html');
       return;
     }
-    if(wrap) wrap.innerHTML = cdHtml(diff);
+    wrap.innerHTML = cdHtml(diff);
   }
   tickClose();
   setInterval(tickClose, 1000);
