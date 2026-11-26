@@ -568,7 +568,7 @@ label.ev-row input{width:16px;height:16px;accent-color:var(--accent);flex-shrink
       <button class="mob-menu" onclick="toggleMobSidebar()">☰</button>
       <div class="header-title" id="header-title">Vue d'ensemble <span id="header-sub"></span></div>
       <!-- Period selector -->
-      <div id="period-controls" style="display:flex;align-items:center;gap:4px;position:relative">
+      <div style="display:flex;align-items:center;gap:4px;position:relative">
         <button class="btn-nav" id="btn-prev" onclick="shiftMonth(-1)" title="Mois précédent">‹</button>
         <div class="period-select" onclick="togglePeriodDropdown()">
           <span>📅</span>
@@ -1159,6 +1159,7 @@ function setPeriod(type, skipReload) {
   closePeriodDropdown();
 
   if (!skipReload) {
+    _evViewId = null; _evPick = null;
     applyPeriodFilter();
     renderAll();
   }
@@ -1198,6 +1199,7 @@ function shiftMonth(delta) {
   _dateStart = new Date(y, m, 1);
   _dateEnd   = new Date(y, m + 1, 0);
   _periodDef.type = 'month_nav';
+  _evViewId = null; _evPick = null;
   // Deselect all dropdown opts
   document.querySelectorAll('.period-opt').forEach(el => el.classList.remove('active'));
   const label = fmtPeriodLabel();
@@ -2162,8 +2164,7 @@ function evForecast(ev) {
   if (ev.gains_previsionnel == null && ev.budget_previsionnel == null) return null;
   return evTotals([{ montant: Number(ev.gains_previsionnel) || 0 }, { montant: -(Number(ev.budget_previsionnel) || 0) }]);
 }
-function evToday() {
-  const d = new Date();
+function evYmd(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function evCount(n) { return `${n} transaction${n > 1 ? 's' : ''}`; }
@@ -2186,10 +2187,17 @@ function renderEvenements() {
     return;
   }
 
-  const total = evTotals(_allEvenements.flatMap(evTxs));
-  const today = evToday();
-  const upcoming = _allEvenements.filter(e => e.date > today).sort((a, b) => a.date.localeCompare(b.date));
-  const past = _allEvenements.filter(e => e.date <= today).sort((a, b) => b.date.localeCompare(a.date));
+  const from = evYmd(_dateStart), to = evYmd(_dateEnd);
+  const events = _allEvenements.filter(e => e.date >= from && e.date <= to);
+  if (!events.length) {
+    container.innerHTML = `<div class="empty-state" style="padding:40px 0"><div class="icon">📅</div><h3>Aucun événement sur cette période.</h3><p>Change de période en haut de la page, ou clique sur "+ Ajouter".</p></div>`;
+    return;
+  }
+
+  const total = evTotals(events.flatMap(evTxs));
+  const today = evYmd();
+  const upcoming = events.filter(e => e.date > today).sort((a, b) => a.date.localeCompare(b.date));
+  const past = events.filter(e => e.date <= today).sort((a, b) => b.date.localeCompare(a.date));
   const group = (title, list) => list.length
     ? `<h2 class="ev-group-title">${title} (${list.length})</h2><div class="ev-grid">${list.map(eventCard).join('')}</div>` : '';
 
@@ -2486,11 +2494,6 @@ function showSec(sec) {
   document.getElementById('header-title').innerHTML = SEC_TITLES[sec] + ' <span id="header-sub"></span>';
   setPeriod(_periodDef.type, true);
   document.getElementById('header-sub').innerHTML = `<span class="period-badge">${fmtPeriodLabel()}</span>`;
-  document.getElementById('period-controls').style.display = sec === 'evenements' ? 'none' : 'flex';
-  if (sec === 'evenements') {
-    const sy = getSchoolYearBounds();
-    document.getElementById('header-sub').innerHTML = `<span class="period-badge">Année ${sy.start.slice(0,4)}–${sy.end.slice(0,4)}</span>`;
-  }
   if (sec === 'rapport') renderRapport();
   if (sec === 'params')  initParams();
   if (sec === 'export')  renderExportPreview();
