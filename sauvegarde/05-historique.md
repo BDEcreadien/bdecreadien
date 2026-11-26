@@ -4,6 +4,12 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-11-26 — Trésorerie : refonte des Événements
+
+- `finances-v2.html` : liste en cartes (à venir / passés), page de détail avec réel vs prévu, ajout et retrait de transactions sur place ; le formulaire ne sert qu'à créer ou modifier
+- Liaison par texte : `transactions.evenement` = titre de l'événement. Titres uniques, les transactions suivent un renommage
+- Graphique "Évolution du solde" : rond gris sur chaque mois de la période sélectionnée
+
 ## 2026-11-26 — Admin v2 : vue d'ensemble en tableau de bord
 
 - Nouveau module `js/admin/dashboard.js` : hero, compte à rebours, chiffres clés, fréquentation 30 j, à traiter, événements, raccourcis
