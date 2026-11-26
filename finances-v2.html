@@ -1323,7 +1323,7 @@ function initCharts() {
       } },
       scales:{ y:{ ticks:{ callback: v => formatEur(v) }, grid:{ color:'rgba(0,0,0,.04)' } },
                x:{ grid:{ display:false } } } },
-    plugins: [tickHighlightPlugin]
+    plugins: [periodHighlightPlugin]
   });
 
   _chartCat = new Chart(document.getElementById('chart-cat'), {
