@@ -4,6 +4,12 @@ Ordre chronologique inverse (plus récent en haut).
 
 Consulter `git log --oneline` pour l'historique commit exact.
 
+## 2026-11-26 — Trésorerie : Événements, retour au fonctionnement d'`admin?page=finances`
+
+- `finances-v2.html` : liste prévu / réel avec validation ; formulaire avec recettes et dépenses à cocher sur la période, montants partiels pour les recettes partagées
+- Liaison : `transactions.finance_evenement_id` + `finance_evenements.tx_montants_partiels` (remplace les entrées ci-dessous sur la liaison par texte ; `transactions.evenement` n'est plus qu'un repli)
+- La page de détail et le sélecteur de transactions séparé sont supprimés
+
 ## 2026-11-26 — Trésorerie : Événements filtrés par période
 
 - La liste et ses totaux suivent le sélecteur de période ; changer de période ramène à la liste
