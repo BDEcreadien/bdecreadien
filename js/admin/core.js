@@ -144,7 +144,7 @@ function showStep(step, opts = {}) {
   // doivent masquer #screen-app pour éviter le bandeau blanc (padding vide)
   const outsideSteps = ['planning', 'planning-semaine', 'liens', 'factures', 'billetterie', 'qr', 'bde', 'boutique'];
   const screenApp = document.getElementById('screen-app');
-  if (screenApp) screenApp.style.display = outsideSteps.includes(step) ? 'none' : '';
+  if (screenApp) screenApp.style.display = outsideSteps.includes(step) ? 'none' : 'block';
   document.getElementById('step-' + step).style.display = 'block';
   if (step === 'pages') { window._adminPage = 'home'; if (typeof adminSyncSidebar === 'function') adminSyncSidebar(); }
   document.getElementById('btn-back').style.display = step === 'pages' ? 'none' : 'block';
